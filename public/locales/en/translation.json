@@ -1,0 +1,17 @@
+{
+    "nav": {
+      "home": "Home",
+      "realizations": "Realizations",
+      "about": "About Us",
+      "contact": "Contact"
+    },
+    "pageTitle": {
+      "home": "ROJEK - Home Page",
+      "realizations": "ROJEK - Realizations",
+      "about": "ROJEK - About Us",
+      "contact": "ROJEK - Contact"
+    },
+    "footer": {
+      "copy": "© {{year}} ROJEK windows & doors. All rights reserved."
+    }
+  }

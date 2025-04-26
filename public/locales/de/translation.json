@@ -1,0 +1,17 @@
+{
+    "nav": {
+      "home": "Startseite",
+      "realizations": "Projekte",
+      "about": "Über uns",
+      "contact": "Kontakt"
+    },
+    "pageTitle": {
+      "home": "ROJEK - Startseite",
+      "realizations": "ROJEK - Projekte",
+      "about": "ROJEK - Über uns",
+      "contact": "ROJEK - Kontakt"
+    },
+    "footer": {
+      "copy": "© {{year}} ROJEK Fenster & Türen. Alle Rechte vorbehalten."
+    }
+  }

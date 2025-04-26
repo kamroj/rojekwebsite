@@ -1,0 +1,26 @@
+{
+    "nav": {
+      "home": "Strona Główna",
+      "realizations": "Realizacje",
+      "about": "O Firmie",
+      "contact": "Kontakt"
+    },
+    "pageTitle": {
+      "home": "ROJEK - Strona Główna",
+      "realizations": "ROJEK - Realizacje",
+      "about": "ROJEK - O Firmie",
+      "contact": "ROJEK - Kontakt"
+    },
+    "footer": {
+      "copy": "© {{year}} ROJEK okna i drzwi. Wszelkie prawa zastrzeżone."
+    },
+    "intro": {
+    "text1": "Zobacz nasze realizacje",
+    "text2": "Odkryj okna drewniano-aluminiowe",
+    "text3": "Drzwi zewnętrzne dla Twojego domu",
+    "text4": "Nowoczesne systemy przesuwne"
+  },
+    "buttons": {
+      "details": "Zobacz szczegóły" 
+    }
+  }
