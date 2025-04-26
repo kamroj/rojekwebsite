@@ -1,14 +1,16 @@
+// src/components/home/IntroSection.jsx
 import React, { useState, useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 
-// Keyframe dla pojawiania się tekstu
+// Animation for text appearance
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(15px); }
   to { opacity: 1; transform: translateY(0); }
 `;
 
-// Wrapper sekcji Intro
+// Intro section wrapper
 const IntroWrapper = styled.section`
   height: 100vh;
   width: 100%;
@@ -17,10 +19,10 @@ const IntroWrapper = styled.section`
   left: 0;
   overflow: hidden;
   background-color: #000; // Fallback
-  z-index: 1; // Pod Headerem i MainContentWrapper
+  z-index: 1; // Below Header but above main content
 `;
 
-// Tło wideo
+// Video background
 const VideoBackground = styled.video`
   position: absolute;
   top: 50%;
@@ -34,132 +36,130 @@ const VideoBackground = styled.video`
   object-fit: cover;
 `;
 
-// Przyciemnienie wideo
+// Darkening overlay for video
 const VideoOverlay = styled.div`
   position: absolute;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.85); // Twoje przyciemnienie
+  background-color: ${({ theme }) => theme.colors.overlay};
   z-index: 2;
 `;
 
-// Kontener dla treści w prawym dolnym rogu
+// Content container for the bottom right corner
 const RightBottomContentWrapper = styled.div`
   position: absolute;
-  bottom: 8%; // Odstęp od dołu
-  right: 5%;  // Odstęp od prawej
+  bottom: 8%;
+  right: 5%;
   display: flex;
   flex-direction: column;
-  align-items: flex-end; // Wyrównaj elementy do prawej
-  gap: ${({ theme }) => theme.spacings.medium}; // Odstęp między tekstem a przyciskiem
-  z-index: 10; // Nad overlayem
-  text-align: right; // Wyrównaj tekst do prawej
-  max-width: 60%; // Ogranicz szerokość
+  align-items: flex-end;
+  gap: ${({ theme }) => theme.spacings.medium};
+  z-index: 10;
+  text-align: right;
+  max-width: 60%;
 `;
 
-// Stylizowany dynamiczny tekst
+// Animated dynamic text
 const DynamicText = styled.p`
   color: ${({ theme }) => theme.colors.textLight};
-  font-size: 5rem; // Zwiększona czcionka
+  font-size: 5rem;
   font-weight: 50;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6); // Mocniejszy cień
-  min-height: 70px; // Minimalna wysokość dla różnych długości tekstu
+  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
+  min-height: 70px;
   display: flex;
   align-items: center;
-  justify-content: flex-end; // Wyrównaj tekst do prawej wewnątrz kontenera
+  justify-content: flex-end;
   margin: 0;
-  opacity: 0; // Start niewidoczny dla animacji
-  animation: ${fadeIn} 1.4s ease-out forwards; // Wydłużona animacja fadeIn
+  opacity: 0;
+  animation: ${fadeIn} 1.4s ease-out forwards;
   word-wrap: break-word;
   overflow-wrap: break-word;
 `;
 
-// Przycisk z prostą animacją hover
-const BasicButton = styled.a`
+// Call-to-action button
+const CTAButton = styled(Link)`
   display: inline-block;
   background: transparent;
-  border: 1px solid #017e547a; // Twój półprzezroczysty zielony border
+  border: 1px solid ${({ theme }) => theme.colors.borderAccent};
   color: ${({ theme }) => theme.colors.textLight};
   padding: 1rem 2.5rem;
-  font-size: 1.4rem; // Mniejsza czcionka dla "Zobacz"
+  font-size: 1.4rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1.5px;
   cursor: pointer;
   text-decoration: none;
-  /* border-radius: 4px; */
-  transition: background-color 0.3s ease, border-color 0.3s ease; // Płynne przejścia
+  transition: background-color ${({ theme }) => theme.transitions.default}, 
+              border-color ${({ theme }) => theme.transitions.default};
   text-align: center;
 
   &:hover {
-    background-color: ${({ theme }) => "#017e543f"}; // Pełne zielone tło na hover
-    border-color: ${({ theme }) => "theme.colors.secondary"}; // Pełny zielony border na hover
+    background-color: ${({ theme }) => "#017e543f"};
+    border-color: ${({ theme }) => theme.colors.secondary};
   }
 `;
 
-// --- Komponent Główny IntroSection ---
-
+// Main component
 const IntroSection = ({ id }) => {
   const { t } = useTranslation();
-  const videoMp4Url = "/videos/background4.mp4"; // Ścieżka do Twojego wideo
-
-  // Mapa kluczy tłumaczeń do docelowych ID sekcji
-  // DOSTOSUJ TE ID DO SEKCJI W TWOIM App.jsx!
+  const videoMp4Url = "/videos/background4.mp4"; // Video path
+  
+  // Translation keys mapped to section IDs
   const introLinks = {
-    'intro.text1': '#realizations', // np. Zobacz nasze realizacje
-    'intro.text2': '#about',       // np. Odkryj okna... -> O firmie
-    'intro.text3': '#contact',     // np. Drzwi zewnętrzne... -> Kontakt
-    'intro.text4': '#realizations', // np. Nowoczesne systemy... -> Realizacje
+    'intro.text1': '/realizations',
+    'intro.text2': '/about',
+    'intro.text3': '/contact',
+    'intro.text4': '/realizations',
   };
-  const introTextKeys = Object.keys(introLinks); // Pobierz listę kluczy
+  const introTextKeys = Object.keys(introLinks);
 
   const [currentTextIndex, setCurrentTextIndex] = useState(0);
-  // Stan używany jako klucz do restartowania animacji CSS
   const [animationKey, setAnimationKey] = useState(0);
 
-  // Efekt do cyklicznej zmiany tekstu co 7 sekund
+  // Effect for cycling text every 7 seconds
   useEffect(() => {
     const intervalId = setInterval(() => {
-      // Zaktualizuj indeks, zapętlając go
       setCurrentTextIndex((prevIndex) => (prevIndex + 1) % introTextKeys.length);
-      // Zmień klucz animacji, aby ją zrestartować dla nowego tekstu
       setAnimationKey(prevKey => prevKey + 1);
-    }, 7000); // 7 sekund
+    }, 7000);
 
-    // Wyczyszczenie interwału przy odmontowaniu komponentu
     return () => clearInterval(intervalId);
-  }, [introTextKeys.length]); // Zależność tylko od długości tablicy (stała)
+  }, [introTextKeys.length]);
 
-  // Pobierz aktualny klucz tekstu i odpowiadający mu link
+  // Get current text key and corresponding link
   const currentTextKey = introTextKeys[currentTextIndex];
-  const currentLinkHref = introLinks[currentTextKey] || '#realizations'; // Domyślny link, jeśli coś pójdzie nie tak
+  const currentLinkHref = introLinks[currentTextKey] || '/realizations';
 
   return (
-    <IntroWrapper>
-      {/* Tło wideo */}
-      <VideoBackground autoPlay muted loop playsInline poster="/images/video_poster.jpg">
+    <IntroWrapper id={id}>
+      {/* Video background */}
+      <VideoBackground 
+        autoPlay 
+        muted 
+        loop 
+        playsInline 
+        poster="/images/video_poster.jpg"
+      >
         <source src={videoMp4Url} type="video/mp4" />
         Your browser does not support the video tag.
       </VideoBackground>
 
-      {/* Przyciemnienie */}
+      {/* Darkening overlay */}
       <VideoOverlay />
 
-      {/* Kontener z treścią w prawym dolnym rogu */}
+      {/* Bottom right content */}
       <RightBottomContentWrapper>
-        {/* Dynamiczny tekst z animacją */}
+        {/* Dynamic text with animation */}
         <DynamicText key={animationKey}>
-          {/* Pobierz tłumaczenie dla aktualnego klucza */}
-          {t(currentTextKey, '')} {/* Drugi argument to fallback */}
+          {t(currentTextKey, '')}
         </DynamicText>
 
-        {/* Przycisk z dynamicznym linkiem */}
-        <BasicButton href={currentLinkHref}>
-           {/* Tekst przycisku */}
-           {t('buttons.see', 'Zobacz')}
-        </BasicButton>
+        {/* CTA button */}
+        <CTAButton to={currentLinkHref}>
+          {t('buttons.see', 'Zobacz')}
+        </CTAButton>
       </RightBottomContentWrapper>
     </IntroWrapper>
   );

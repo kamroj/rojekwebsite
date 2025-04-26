@@ -1,12 +1,12 @@
+// src/components/layout/Header.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { useTranslation } from 'react-i18next';
+import { Link } from 'react-router-dom';
 import LanguageSwitcher from '../common/LanguageSwitcher';
+import Navigation from '../common/Navigation';
 import logoSrc from '../../assets/images/logo.png';
-import IntroNavigation from '../home/IntroNavigation';
 
-// --- Styled Components ---
-
+// Main header wrapper
 const HeaderWrapper = styled.header`
   position: fixed;
   top: 0;
@@ -16,41 +16,43 @@ const HeaderWrapper = styled.header`
   justify-content: space-between;
   align-items: center;
   padding: 0 ${({ theme }) => theme.spacings.medium};
-  height: 80px;
+  height: ${({ theme }) => theme.layout.headerHeight};
   z-index: 1000;
-  transition: opacity 0.3s ease-out, background-color 0.1s linear, border-color 0.1s linear, color 0.1s linear; /* Dodano color do transition */
+  transition: opacity ${({ theme }) => theme.transitions.default}, 
+              background-color 0.1s linear, 
+              border-color 0.1s linear, 
+              color 0.1s linear;
 
-  /* Twoje tła */
+  /* Background changes based on scroll position */
   background-color: ${({ isPastThreshold, isVisible, theme }) =>
     isPastThreshold && isVisible ? "#f8f9fa" : '#017e5414'};
 
-  /* Twój stały border */
+  /* Border styling */
   border-bottom-width: 1px;
   border-bottom-style: solid;
   border-bottom-color: #e6c71968;
 
+  /* Visibility control */
   opacity: ${({ isVisible }) => (isVisible ? 1 : 0)};
   pointer-events: ${({ isVisible }) => (isVisible ? 'auto' : 'none')};
 
-  /* === KLUCZOWA ZMIANA: Kolor tekstu === */
+  /* Text color changes with background */
   color: ${({ isPastThreshold, isVisible, theme }) =>
-    /* Jeśli tło jest jasne -> użyj ciemnego tekstu */
     isPastThreshold && isVisible ? theme.colors.text : theme.colors.textLight};
 
-  /* Specyficzne style dla linków (<a>) wewnątrz HeaderWrapper */
+  /* Style for all links inside the header */
   a {
-     /* Dziedzicz kolor z HeaderWrapper - automatycznie się dostosuje */
-     color: inherit;
-     transition: color 0.3s ease;
+    color: inherit;
+    transition: color ${({ theme }) => theme.transitions.default};
 
-     &:hover {
-        /* Kolor hover zawsze secondary, niezależnie od tła */
-        color: ${({ theme }) => "#e6c619"};
-     }
+    &:hover {
+      color: ${({ theme }) => theme.colors.accent};
+    }
   }
 `;
 
-const LogoLink = styled.a`
+// Logo link styling
+const LogoLink = styled(Link)`
   display: block;
   height: 50px;
   cursor: pointer;
@@ -60,28 +62,27 @@ const LogoLink = styled.a`
     height: 100%;
     width: auto;
     display: block;
-    /* Dodajemy filtr, gdy tekst jest ciemny, aby logo było lepiej widoczne na jasnym tle? Opcjonalne */
     filter: ${({ isPastThreshold, isVisible }) =>
-      isPastThreshold && isVisible ? 'brightness(0.5)' : 'none'}; /* Przykład: przyciemnij logo na jasnym tle */
-     transition: filter 0.1s linear;
+      isPastThreshold && isVisible ? 'brightness(0.5)' : 'none'};
+    transition: filter 0.1s linear;
   }
 `;
 
+// Container for right-side controls (language switcher)
 const RightControls = styled.div`
   display: flex;
   align-items: center;
 `;
 
-// --- Komponent Header ---
-
+// Main Header component
 const Header = () => {
-  const { t } = useTranslation(); // Używamy t do tłumaczeń
   const [isPastThreshold, setIsPastThreshold] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
   const SCROLL_THRESHOLD = 5;
 
+  // Handle scroll events for header visibility and styling
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
@@ -101,26 +102,33 @@ const Header = () => {
       lastScrollY.current = currentScrollY;
       ticking.current = false;
     };
+
     const onScroll = () => {
       if (!ticking.current) {
         window.requestAnimationFrame(handleScroll);
         ticking.current = true;
       }
     };
+
+    // Initialize scroll position
     lastScrollY.current = window.scrollY;
     setIsPastThreshold(lastScrollY.current > SCROLL_THRESHOLD);
-    setIsVisible(true); // Zawsze widoczny na starcie
+    setIsVisible(true);
+
+    // Add scroll listener
     window.addEventListener('scroll', onScroll, { passive: true });
+    
+    // Clean up
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   return (
     <HeaderWrapper isPastThreshold={isPastThreshold} isVisible={isVisible}>
-      <LogoLink href="/" isPastThreshold={isPastThreshold} isVisible={isVisible}>
+      <LogoLink to="/" isPastThreshold={isPastThreshold} isVisible={isVisible}>
         <img src={logoSrc} alt="ROJEK okna i drzwi Logo" />
       </LogoLink>
 
-      <IntroNavigation />
+      <Navigation variant="header" />
 
       <RightControls>
         <LanguageSwitcher />

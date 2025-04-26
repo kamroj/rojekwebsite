@@ -1,20 +1,25 @@
+// src/layouts/MainLayout.jsx
 import React from 'react';
 import styled from 'styled-components';
-import { Outlet } from 'react-router-dom'; // Import Outlet
+import { Outlet } from 'react-router-dom';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 
+// Main layout wrapper
 const LayoutWrapper = styled.div`
   display: flex;
   flex-direction: column;
-  min-height: 100vh; // Ensure layout takes at least full viewport height
+  min-height: 100vh;
 `;
 
+// Main content area
 const MainContent = styled.main`
-  flex-grow: 1; // Allows main content to expand and push footer down
-  /* padding: ${({ theme }) => theme.spacings.large} 0; // Add some top/bottom padding */
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
 `;
 
+// MainLayout component wraps all pages with Header and Footer
 const MainLayout = () => {
   return (
     <LayoutWrapper>

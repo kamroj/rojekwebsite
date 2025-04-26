@@ -1,17 +1,16 @@
+// src/pages/AboutPage.jsx
 import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
+import Section from '../components/common/Section';
 
-// Stylowany wrapper dla sekcji
-const AboutPageWrapper = styled.section`
-  padding: 60px 20px; /* Więcej paddingu góra/dół */
-  min-height: 60vh; /* Minimalna wysokość dla treści */
-  background-color: #ffffff; /* Białe tło dla odróżnienia */
+const AboutContent = styled.div`
+  padding: 2rem 0;
+  min-height: 60vh;
   display: flex;
   flex-direction: column;
-  align-items: center; /* Wycentruj zawartość */
+  align-items: center;
   justify-content: center;
-  text-align: center; /* Wycentruj tekst */
 
   h2 {
     font-size: 3.2rem;
@@ -22,27 +21,27 @@ const AboutPageWrapper = styled.section`
   p {
     font-size: 1.7rem;
     line-height: 1.7;
-    max-width: 800px; /* Ogranicz szerokość tekstu dla czytelności */
+    max-width: 800px;
     color: ${({ theme }) => theme.colors.text};
+    text-align: center;
   }
 `;
 
-// Komponent sekcji "O Firmie"
-const AboutPage = ({ id }) => {
+const AboutPage = () => {
   const { t } = useTranslation();
 
   return (
-    // Użyj przekazanego ID
-    <AboutPageWrapper id={id}>
-      <h2>{t('pageTitle.about')}</h2>
-      <p>
-        Jesteśmy firmą ROJEK okna i drzwi, specjalizującą się w dostarczaniu
-        najwyższej jakości stolarki otworowej. Nasza misja to zapewnienie
-        bezpieczeństwa, komfortu i estetyki w Państwa domach dzięki nowoczesnym
-        i trwałym rozwiązaniom. Poznaj naszą historię i wartości.
-        {/* Tutaj dodasz więcej treści, być może pobieranej z Sanity */}
-      </p>
-    </AboutPageWrapper>
+    <Section>
+      <AboutContent>
+        <h2>{t('pageTitle.about', 'O firmie')}</h2>
+        <p>
+          Jesteśmy firmą ROJEK okna i drzwi, specjalizującą się w dostarczaniu
+          najwyższej jakości stolarki otworowej. Nasza misja to zapewnienie
+          bezpieczeństwa, komfortu i estetyki w Państwa domach dzięki nowoczesnym
+          i trwałym rozwiązaniom. Poznaj naszą historię i wartości.
+        </p>
+      </AboutContent>
+    </Section>
   );
 };
 

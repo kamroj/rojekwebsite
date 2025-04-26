@@ -1,41 +1,64 @@
+// src/pages/RealizationsPage.jsx
 import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
+import Section from '../components/common/Section';
+import RealizationsGallery from '../components/gallery/RealizationsGallery';
 
-const RealizationsPageWrapper = styled.section`
-  padding: 60px 20px;
+const RealizationsContent = styled.div`
+  padding: 2rem 0;
   min-height: 70vh;
-  background-color: #f8f9fa; /* Jasnoszare tło */
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  text-align: center;
 
   h2 {
     font-size: 3.2rem;
     color: ${({ theme }) => theme.colors.primary};
-    margin-bottom: ${({ theme }) => theme.spacings.large}; /* Większy odstęp */
-  }
-
-  /* Placeholder for gallery/items */
-  .gallery-placeholder {
-    color: ${({ theme }) => theme.colors.secondary};
-    font-style: italic;
+    margin-bottom: ${({ theme }) => theme.spacings.large};
   }
 `;
 
-const RealizationsPage = ({ id }) => {
+// Example realization data
+const realizationData = [
+  { id: 1, src: '/images/realizations/realization1.jpg', title: 'Dom jednorodzinny, Wrocław' },
+  { id: 2, src: '/images/realizations/realization2.jpg', title: 'Nowoczesne osiedle, Poznań' },
+  { id: 3, src: '/images/realizations/realization3.jpg', title: 'Renowacja kamienicy, Kraków' },
+  { id: 4, src: '/images/realizations/realization4.jpg', title: 'Biurowiec klasy A, Warszawa' },
+  { id: 5, src: '/images/realizations/realization5.jpg', title: 'Lofty w starej fabryce, Łódź' },
+  { id: 6, src: '/images/realizations/realization6.jpg', title: 'Willa pod miastem, Gdańsk' },
+];
+
+const RealizationsPage = () => {
   const { t } = useTranslation();
 
   return (
-    <RealizationsPageWrapper id={id}>
-      <h2>{t('pageTitle.realizations')}</h2>
-      <div className="gallery-placeholder">
-        (Tutaj pojawi się galeria zdjęć z naszymi realizacjami okien i drzwi)
-        {/* Implementacja galerii np. z siatką zdjęć */}
-      </div>
-    </RealizationsPageWrapper>
+    <Section
+      customStyles={`
+        background-color: #f8f9fa;
+      `}
+    >
+      <RealizationsContent>
+        <h2>{t('pageTitle.realizations', 'Realizacje')}</h2>
+        
+        {/* If we have realizations data, display the gallery */}
+        {realizationData && realizationData.length > 0 ? (
+          <RealizationsGallery 
+            images={realizationData}
+            options={{
+              slidesPerViewDesktop: 3,
+              slidesPerViewTablet: 2,
+              slidesPerViewMobile: 1,
+            }}
+          />
+        ) : (
+          <div className="gallery-placeholder">
+            (Tutaj pojawi się galeria zdjęć z naszymi realizacjami okien i drzwi)
+          </div>
+        )}
+      </RealizationsContent>
+    </Section>
   );
 };
 

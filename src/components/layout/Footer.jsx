@@ -1,3 +1,4 @@
+// src/components/layout/Footer.jsx
 import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +8,16 @@ const FooterWrapper = styled.footer`
   color: ${({ theme }) => theme.colors.textLight};
   padding: ${({ theme }) => theme.spacings.large} ${({ theme }) => theme.spacings.medium};
   text-align: center;
-  /* Usunięto margin-top: auto; - nie jest już potrzebne w tej strukturze */
+`;
+
+const FooterContent = styled.div`
+  max-width: ${({ theme }) => theme.layout.maxWidth};
+  margin: 0 auto;
+  
+  p {
+    margin-bottom: 0;
+    font-size: 1.4rem;
+  }
 `;
 
 const Footer = () => {
@@ -16,7 +26,9 @@ const Footer = () => {
 
   return (
     <FooterWrapper>
-      <p>{t('footer.copy', { year: currentYear })}</p>
+      <FooterContent>
+        <p>{t('footer.copy', { year: currentYear })}</p>
+      </FooterContent>
     </FooterWrapper>
   );
 };
