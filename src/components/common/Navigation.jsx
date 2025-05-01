@@ -1,10 +1,10 @@
 // src/components/common/Navigation.jsx
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 
-// Base navigation styles
+// Bazowe style dla kontenera nawigacji
 const BaseNavContainer = styled.nav`
   display: flex;
   gap: ${({ theme }) => theme.spacings.large};
@@ -12,7 +12,7 @@ const BaseNavContainer = styled.nav`
   flex-grow: 1;
 `;
 
-// Base styles for navigation items
+// Bazowe style dla elementów nawigacji
 const BaseNavItem = styled(Link)`
   text-decoration: none;
   font-size: 1.4rem;
@@ -28,7 +28,7 @@ const BaseNavItem = styled(Link)`
     color: ${({ theme }) => theme.colors.accent};
   }
 
-  /* Optional active state indication */
+  /* Opcjonalne oznaczenie aktywnego stanu */
   &.active {
     font-weight: 700;
     &::after {
@@ -43,32 +43,33 @@ const BaseNavItem = styled(Link)`
   }
 `;
 
-// Extended styles for different contexts
+// Rozszerzone style dla różnych kontekstów
 export const HeaderNavContainer = styled(BaseNavContainer)`
-  /* Any header-specific nav container styles */
+  /* Specyficzne style dla nawigacji w nagłówku */
 `;
 
 export const HeaderNavItem = styled(BaseNavItem)`
-  /* Any header-specific nav item styles */
+  /* Specyficzne style dla elementów nawigacji w nagłówku */
 `;
 
 export const IntroNavContainer = styled(BaseNavContainer)`
-  /* Any intro-specific nav container styles */
+  /* Specyficzne style dla nawigacji wprowadzającej */
 `;
 
 export const IntroNavItem = styled(BaseNavItem)`
-  /* Any intro-specific nav item styles */
+  /* Specyficzne style dla elementów nawigacji wprowadzającej */
 `;
 
-// The navigation component itself - reusable across contexts
+// Sam komponent nawigacji - wielokrotnego użytku w różnych kontekstach
 const Navigation = ({ variant = 'header' }) => {
   const { t } = useTranslation();
+  const location = useLocation();
   
-  // Choose container and item styles based on variant
+  // Wybierz style kontenera i elementu na podstawie wariantu
   const NavContainer = variant === 'intro' ? IntroNavContainer : HeaderNavContainer;
   const NavItem = variant === 'intro' ? IntroNavItem : HeaderNavItem;
   
-  // Navigation items - centralized in one place
+  // Elementy nawigacji - scentralizowane w jednym miejscu
   const navItems = [
     { key: 'offer', path: '/realizations', label: 'nav.offer', fallback: 'Oferta' },
     { key: 'realizations', path: '/realizations', label: 'nav.realizations', fallback: 'Realizacje' },
@@ -76,10 +77,24 @@ const Navigation = ({ variant = 'header' }) => {
     { key: 'contact', path: '/contact', label: 'nav.contact', fallback: 'Kontakt' }
   ];
   
+  // Funkcja sprawdzająca, czy element jest aktywny
+  const isActive = (path) => {
+    // Dla strony głównej sprawdź dokładnie
+    if (path === '/' && location.pathname === '/') {
+      return true;
+    }
+    // Dla innych stron sprawdź, czy ścieżka zaczyna się od podanej
+    return path !== '/' && location.pathname.startsWith(path);
+  };
+  
   return (
     <NavContainer>
       {navItems.map(item => (
-        <NavItem to={item.path} key={item.key}>
+        <NavItem 
+          to={item.path} 
+          key={item.key}
+          className={isActive(item.path) ? 'active' : ''}
+        >
           {t(item.label, item.fallback)}
         </NavItem>
       ))}

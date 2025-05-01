@@ -63,7 +63,7 @@ const ProductDetailsWrapper = styled.div`
 
 const ProductVideoWrapper = styled.div`
   flex: 1;
-  max-width: 50%;
+  max-width: 40%;
   min-width: 300px;
   position: relative;
   
@@ -74,14 +74,15 @@ const ProductVideoWrapper = styled.div`
   }
 `;
 
+// Kontener dla wideo
 const ProductVideoContainer = styled.div`
   width: 100%;
   position: relative;
   border-radius: 4px;
-  background-color: ${({ theme }) => theme.colors.videoBackground};
+  background-color: ${({ theme }) => theme.colors.background};
   box-shadow: ${({ theme }) => theme.shadows.large};
   overflow: hidden;
-  aspect-ratio: 16 / 9;
+  padding-bottom: 75%; /* Proporcja 4:3 - węższe okno */
 `;
 
 // Spinner Animation
@@ -90,23 +91,39 @@ const spinAnimation = keyframes`
   100% { transform: rotate(360deg); }
 `;
 
-const LoadingSpinner = styled.div`
+// Opakowanie dla spinnera, które jest dokładnie dopasowane do kontenera wideo
+const SpinnerWrapper = styled.div`
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5;
+  pointer-events: none;
+  opacity: ${props => props.isLoading ? 1 : 0};
+  transition: opacity 0.3s ease;
+`;
+
+const LoadingSpinner = styled.div`
   width: 50px;
   height: 50px;
   border: 5px solid rgba(26, 96, 57, 0.1);
   border-top: 5px solid ${({ theme }) => theme.colors.bottleGreen};
   border-radius: 50%;
   animation: ${spinAnimation} 1s linear infinite;
-  display: ${props => props.isLoading ? 'block' : 'none'};
 `;
 
 const Video = styled.video`
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
+  object-fit: contain;
+  background-color: #fff;
   display: block;
   opacity: ${props => props.isLoading ? 0 : 1};
   transition: opacity ${({ theme }) => theme.transitions.default};
@@ -201,7 +218,11 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
       <ProductDetailsWrapper>
         <ProductVideoWrapper>
           <ProductVideoContainer>
-            <LoadingSpinner isLoading={isLoading} />
+            {/* Opakowanie spinnera dla lepszego wyśrodkowania */}
+            <SpinnerWrapper isLoading={isLoading}>
+              <LoadingSpinner />
+            </SpinnerWrapper>
+            
             <Video
               ref={videoRef}
               key={currentProduct.videoSrc}

@@ -2,21 +2,26 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import Section from '../components/common/Section';
 import RealizationsGallery from '../components/gallery/RealizationsGallery';
 
-const RealizationsContent = styled.div`
-  padding: 2rem 0;
-  min-height: 70vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
+// Stylizowany kontener dla tytułu strony
+const PageTitleContainer = styled.div`
+  background-color: #1a1a1a; /* Ciemne tło dla nagłówka */
+  padding: 60px 20px 30px;
+  text-align: center;
+  
   h2 {
     font-size: 3.2rem;
-    color: ${({ theme }) => theme.colors.primary};
-    margin-bottom: ${({ theme }) => theme.spacings.large};
+    color: ${({ theme }) => theme.colors.textLight}; /* Jasny tekst na ciemnym tle */
+    margin-bottom: 1rem;
+  }
+  
+  p {
+    color: ${({ theme }) => theme.colors.textLight}; /* Jasny tekst na ciemnym tle */
+    opacity: 0.8;
+    max-width: 800px;
+    margin: 0 auto;
+    font-size: 1.6rem;
   }
 `;
 
@@ -28,37 +33,32 @@ const realizationData = [
   { id: 4, src: '/images/realizations/realization4.jpg', title: 'Biurowiec klasy A, Warszawa' },
   { id: 5, src: '/images/realizations/realization5.jpg', title: 'Lofty w starej fabryce, Łódź' },
   { id: 6, src: '/images/realizations/realization6.jpg', title: 'Willa pod miastem, Gdańsk' },
+  { id: 7, src: '/images/realizations/realization3.jpg', title: 'Kamienica zabytkowa, Kraków' },
+  { id: 8, src: '/images/realizations/realization5.jpg', title: 'Apartamenty loftowe, Łódź' },
+  { id: 9, src: '/images/realizations/realization1.jpg', title: 'Rezydencja prywatna, Wrocław' },
 ];
 
 const RealizationsPage = () => {
   const { t } = useTranslation();
 
   return (
-    <Section
-      customStyles={`
-        background-color: #f8f9fa;
-      `}
-    >
-      <RealizationsContent>
+    <>
+      <PageTitleContainer>
         <h2>{t('pageTitle.realizations', 'Realizacje')}</h2>
-        
-        {/* If we have realizations data, display the gallery */}
-        {realizationData && realizationData.length > 0 ? (
-          <RealizationsGallery 
-            images={realizationData}
-            options={{
-              slidesPerViewDesktop: 3,
-              slidesPerViewTablet: 2,
-              slidesPerViewMobile: 1,
-            }}
-          />
-        ) : (
-          <div className="gallery-placeholder">
-            (Tutaj pojawi się galeria zdjęć z naszymi realizacjami okien i drzwi)
-          </div>
-        )}
-      </RealizationsContent>
-    </Section>
+        <p>Poniżej prezentujemy wybrane projekty, które realizowaliśmy dla naszych klientów. Każde zlecenie to dla nas nowe wyzwanie, któremu stawiamy czoła z pasją i profesjonalizmem.</p>
+      </PageTitleContainer>
+
+      {/* Galeria realizacji z ciemnym tłem */}
+      <RealizationsGallery 
+        images={realizationData}
+        options={{
+          slidesPerViewDesktop: 3,
+          slidesPerViewTablet: 2,
+          slidesPerViewMobile: 1,
+          delay: 3000,
+        }}
+      />
+    </>
   );
 };
 

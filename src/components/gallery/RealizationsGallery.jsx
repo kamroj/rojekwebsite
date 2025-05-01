@@ -181,14 +181,21 @@ const RealizationsGallery = ({ images, options = {} }) => {
   // Fallback for too few images
   if (!images || totalImages < config.slidesPerViewDesktop) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', gap: '15px', flexWrap: 'wrap', marginTop: '20px' }}>
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        gap: '15px', 
+        flexWrap: 'wrap', 
+        marginTop: '20px',
+        padding: '0 20px'
+      }}>
         {images?.map((imgData, i) => (
           <div 
             key={imgData.id || i} 
             style={{ 
               borderRadius: '4px', 
               overflow: 'hidden', 
-              boxShadow: '0 4px 8px rgba(0,0,0,0.1)' 
+              boxShadow: '0 4px 8px rgba(0,0,0,0.3)' 
             }}
           >
             <img 

@@ -82,6 +82,34 @@ const AboutText = styled.div`
   }
 `;
 
+// Ciemna sekcja z galerią realizacji
+const DarkSection = styled.section`
+  background-color: #1a1a1a; /* Ciemne tło */
+  padding: 60px 0;
+  margin-top: 8rem;
+  color: ${({ theme }) => theme.colors.textLight}; /* Jasny tekst */
+  position: relative;
+`;
+
+// Label dla sekcji realizacji
+const SectionLabel = styled.div`
+  box-shadow: ${({ theme }) => theme.shadows.large};
+  background-color: ${({ theme }) => theme.colors.bottleGreen};
+  color: ${({ theme }) => theme.colors.textLight};
+  height: 60px;
+  font-weight: 500;
+  font-size: 1.6rem;
+  padding: 0 50px;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -30px;
+  right: 60px;
+  z-index: 1;
+`;
+
 // HomePage component
 const HomePage = () => {
   return (
@@ -97,25 +125,22 @@ const HomePage = () => {
         />
       </Section>
       
-      {/* Realizations section with gallery */}
-      <Section 
-        label="REALIZACJE" 
-        dark={true}
-        customStyles={`
-          padding-bottom: 5rem;
-          padding-top: 5rem;
-        `}
-      >
-        <RealizationsGallery 
-          images={realizationData}
-          options={{
-            slidesPerViewDesktop: 3,
-            slidesPerViewTablet: 2,
-            slidesPerViewMobile: 1,
-            delay: 3500,
-          }}
-        />
-      </Section>
+      {/* Realizacje section with dark background */}
+      <DarkSection>
+        <SectionLabel>REALIZACJE</SectionLabel>
+        
+        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
+          <RealizationsGallery 
+            images={realizationData}
+            options={{
+              slidesPerViewDesktop: 3,
+              slidesPerViewTablet: 2,
+              slidesPerViewMobile: 1,
+              delay: 3500,
+            }}
+          />
+        </div>
+      </DarkSection>
       
       {/* About us section */}
       <Section label="O NAS" labelPosition="left" align="left">

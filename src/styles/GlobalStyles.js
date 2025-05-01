@@ -2,6 +2,11 @@
 import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyles = createGlobalStyle`
+  /* Zmienne dla menu mobilnego */
+  :root {
+    --header-height: 80px;
+  }
+  
   /* Reset and base styles */
   *,
   *::before,
