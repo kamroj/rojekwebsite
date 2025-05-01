@@ -1,168 +1,293 @@
 // src/components/home/IntroSection.jsx
-import React, { useState, useEffect } from 'react';
-import styled, { keyframes } from 'styled-components';
+import React, { useState, useEffect, useRef } from 'react';
+import styled, { keyframes, useTheme } from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { FiPlay, FiPause } from 'react-icons/fi';
 
-// Animation for text appearance
+// Animacja tekstu przy wczytywaniu
 const fadeIn = keyframes`
   from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
+  to   { opacity: 1; transform: translateY(0); }
 `;
 
-// Intro section wrapper
 const IntroWrapper = styled.section`
   height: 100vh;
   width: 100%;
   position: relative;
-  top: 0;
-  left: 0;
   overflow: hidden;
-  background-color: #000; // Fallback
-  z-index: 1; // Below Header but above main content
+  background-color: #000;
+  z-index: 1;
 `;
 
-// Video background
 const VideoBackground = styled.video`
   position: absolute;
-  top: 50%;
-  left: 50%;
-  min-width: 100%;
-  min-height: 100%;
-  width: auto;
-  height: auto;
+  top: 50%; left: 50%;
+  min-width: 100%; min-height: 100%;
   transform: translate(-50%, -50%);
-  z-index: 1;
   object-fit: cover;
+  pointer-events: none;
+  z-index: 1;
 `;
 
-// Darkening overlay for video
 const VideoOverlay = styled.div`
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
   background-color: ${({ theme }) => theme.colors.overlay};
+  pointer-events: none;
   z-index: 2;
 `;
 
-// Content container for the bottom right corner
-const RightBottomContentWrapper = styled.div`
+// Nowy wrapper flexowy trzymający play/pause i tekst+CTA
+const BottomOverlay = styled.div`
   position: absolute;
   bottom: 8%;
+  left: 5%;
   right: 5%;
+  display: flex;
+  align-items: flex-end;      /* przyklejamy elementy do dołu kontenera */
+  justify-content: space-between;
+  min-height: 56px;           /* co najmniej wysokość przycisku */
+  z-index: 10;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    bottom: 5%;
+    min-height: 52px;
+  }
+`;
+
+// Kontener dla SVG pierścienia + przycisku
+const ProgressContainer = styled.div`
+  position: relative;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    width: 52px;
+    height: 52px;
+  }
+`;
+
+const VideoControlButton = styled.button`
+  appearance: none;
+  margin: 0;
+  padding: 0;
+
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  border: none;
+  border-radius: 50%;
+  background-color: rgba(0,0,0,0.5);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #fff;
+  font-size: 2.2rem;
+  cursor: pointer;
+  outline: none;
+  transition: opacity ${({ theme }) => theme.transitions.default};
+  opacity: 0.8;
+
+  z-index: 2;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  &:hover {
+    opacity: 1;
+  }
+`;
+
+const RightBottomContentWrapper = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-end;
   gap: ${({ theme }) => theme.spacings.medium};
-  z-index: 10;
   text-align: right;
-  max-width: 60%;
+  flex: 1;
+  min-width: 0; /* pozwala tekstowi zawijać się zamiast wypychać przycisk */
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    gap: ${({ theme }) => theme.spacings.small};
+  }
 `;
 
-// Animated dynamic text
 const DynamicText = styled.p`
   color: ${({ theme }) => theme.colors.textLight};
-  font-size: 5rem;
-  font-weight: 50;
-  text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
-  min-height: 70px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  font-weight: 300;
+  line-height: 1.2;
+  text-shadow: 1px 1px 4px rgba(0,0,0,0.6);
   margin: 0;
   opacity: 0;
   animation: ${fadeIn} 1.4s ease-out forwards;
   word-wrap: break-word;
-  overflow-wrap: break-word;
+  width: 100%;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: clamp(2.4rem, 5vw, 4rem);
+  }
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    font-size: clamp(2rem, 5vw, 3.2rem);
+  }
 `;
 
-// Call-to-action button
 const CTAButton = styled(Link)`
   display: inline-block;
   background: transparent;
   border: 1px solid ${({ theme }) => theme.colors.borderAccent};
   color: ${({ theme }) => theme.colors.textLight};
   padding: 1rem 2.5rem;
-  font-size: 1.4rem;
+  font-size: clamp(1.2rem, 2vw, 1.4rem);
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 1.5px;
-  cursor: pointer;
   text-decoration: none;
-  transition: background-color ${({ theme }) => theme.transitions.default}, 
+  transition: background-color ${({ theme }) => theme.transitions.default},
               border-color ${({ theme }) => theme.transitions.default};
-  text-align: center;
 
   &:hover {
-    background-color: ${({ theme }) => "#017e543f"};
+    background-color: #017e543f;
     border-color: ${({ theme }) => theme.colors.secondary};
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    padding: 0.8rem 2rem;
   }
 `;
 
-// Main component
-const IntroSection = ({ id }) => {
+export default function IntroSection({ id }) {
   const { t } = useTranslation();
-  const videoMp4Url = "/videos/background4.mp4"; // Video path
-  
-  // Translation keys mapped to section IDs
+  const theme = useTheme();
+  const videoRef = useRef(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [progress, setProgress] = useState(0);
+  const [resetting, setResetting] = useState(false);
+  const prevProgress = useRef(0);
+
   const introLinks = {
     'intro.text1': '/realizations',
     'intro.text2': '/about',
     'intro.text3': '/contact',
     'intro.text4': '/realizations',
   };
-  const introTextKeys = Object.keys(introLinks);
+  const keys = Object.keys(introLinks);
+  const [idx, setIdx] = useState(0);
+  const [keyAnim, setKeyAnim] = useState(0);
 
-  const [currentTextIndex, setCurrentTextIndex] = useState(0);
-  const [animationKey, setAnimationKey] = useState(0);
-
-  // Effect for cycling text every 7 seconds
+  // cykl dynamicznych tekstów
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setCurrentTextIndex((prevIndex) => (prevIndex + 1) % introTextKeys.length);
-      setAnimationKey(prevKey => prevKey + 1);
+    const iv = setInterval(() => {
+      setIdx(i => (i + 1) % keys.length);
+      setKeyAnim(k => k + 1);
     }, 7000);
+    return () => clearInterval(iv);
+  }, [keys.length]);
 
-    return () => clearInterval(intervalId);
-  }, [introTextKeys.length]);
+  // obsługa pętli i postępu wideo
+  const onTimeUpdate = () => {
+    const v = videoRef.current;
+    if (!v?.duration) return;
+    const p = Math.min(1, v.currentTime / v.duration);
+    if (p < prevProgress.current) {
+      setResetting(true);
+      setProgress(0);
+    } else {
+      setProgress(p);
+    }
+    prevProgress.current = p;
+  };
 
-  // Get current text key and corresponding link
-  const currentTextKey = introTextKeys[currentTextIndex];
-  const currentLinkHref = introLinks[currentTextKey] || '/realizations';
+  useEffect(() => {
+    if (resetting) {
+      const to = setTimeout(() => setResetting(false), 50);
+      return () => clearTimeout(to);
+    }
+  }, [resetting]);
+
+  const toggle = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) {
+      v.play(); setIsPlaying(true);
+    } else {
+      v.pause(); setIsPlaying(false);
+    }
+  };
+
+  // parametry SVG pierścienia
+  const SIZE = 56;
+  const STROKE = 2;
+  const R = (SIZE - STROKE) / 2;
+  const C = 2 * Math.PI * R;
+  const dashOffset = C * (1 - progress);
 
   return (
     <IntroWrapper id={id}>
-      {/* Video background */}
-      <VideoBackground 
-        autoPlay 
-        muted 
-        loop 
-        playsInline 
+      <VideoBackground
+        ref={videoRef}
+        src="/videos/background4.mp4"
+        type="video/mp4"
+        autoPlay muted loop playsInline webkit-playsinline="true"
         poster="/images/video_poster.jpg"
-      >
-        <source src={videoMp4Url} type="video/mp4" />
-        Your browser does not support the video tag.
-      </VideoBackground>
-
-      {/* Darkening overlay */}
+        onTimeUpdate={onTimeUpdate}
+      />
       <VideoOverlay />
 
-      {/* Bottom right content */}
-      <RightBottomContentWrapper>
-        {/* Dynamic text with animation */}
-        <DynamicText key={animationKey}>
-          {t(currentTextKey, '')}
-        </DynamicText>
+      <BottomOverlay>
+        <ProgressContainer>
+          <svg
+            viewBox={`0 0 ${SIZE} ${SIZE}`}
+            style={{
+              position: 'absolute',
+              top: 0, left: 0,
+              width: '100%', height: '100%',
+              pointerEvents: 'none'
+            }}
+          >
+            <circle
+              cx={SIZE/2} cy={SIZE/2} r={R}
+              fill="none"
+              stroke={theme.colors.borderAccent}
+              strokeWidth={STROKE}
+            />
+            <circle
+              cx={SIZE/2} cy={SIZE/2} r={R}
+              fill="none"
+              stroke={theme.colors.secondary}
+              strokeWidth={STROKE}
+              strokeDasharray={C}
+              strokeDashoffset={dashOffset}
+              transform={`rotate(-90 ${SIZE/2} ${SIZE/2})`}
+              style={{
+                transition: resetting ? 'none' : 'stroke-dashoffset 0.1s linear'
+              }}
+            />
+          </svg>
+          <VideoControlButton
+            type="button"
+            onClick={toggle}
+            onTouchEnd={e => { e.preventDefault(); toggle(); }}
+            aria-label={isPlaying ? t('buttons.pause','Pause') : t('buttons.play','Play')}
+          >
+            {isPlaying ? <FiPause /> : <FiPlay />}
+          </VideoControlButton>
+        </ProgressContainer>
 
-        {/* CTA button */}
-        <CTAButton to={currentLinkHref}>
-          {t('buttons.see', 'Zobacz')}
-        </CTAButton>
-      </RightBottomContentWrapper>
+        <RightBottomContentWrapper>
+          <DynamicText key={keyAnim}>
+            {t(keys[idx], '')}
+          </DynamicText>
+          <CTAButton to={introLinks[keys[idx]]}>
+            {t('buttons.see','Zobacz')}
+          </CTAButton>
+        </RightBottomContentWrapper>
+      </BottomOverlay>
     </IntroWrapper>
   );
-};
-
-export default IntroSection;
+}

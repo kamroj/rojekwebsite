@@ -216,10 +216,12 @@ const RealizationsGallery = ({ images, options = {} }) => {
 
   // Handle drag interactions for proper styling
   const handleDragStart = (swiper, event) => {
+    if (!swiper || !event) return;
+    
     const slideEl = event.target.closest('.swiper-slide');
-    if (slideEl) {
+    if (slideEl && swiper.slides) {
       // Clear class from all slides first
-      swiper.slides.forEach(slide => {
+      Array.from(swiper.slides).forEach(slide => {
         slide.classList.remove('swiper-slide-grabbed');
       });
       // Add class to the clicked slide
@@ -228,31 +230,44 @@ const RealizationsGallery = ({ images, options = {} }) => {
   };
 
   const handleDragEnd = (swiper) => {
-    // Remove class from all slides after dragging ends
-    swiper.slides.forEach(slide => {
+    // Fix: Check if swiper and swiper.slides exist before calling forEach
+    if (!swiper || !swiper.slides || !swiper.slides.length) return;
+    
+    // Use Array.from to ensure we have an array we can iterate over
+    Array.from(swiper.slides).forEach(slide => {
       slide.classList.remove('swiper-slide-grabbed');
     });
   };
 
   // Setup drag tracking
   useEffect(() => {
-    if (swiperRef.current && swiperRef.current.swiper) {
-      const swiper = swiperRef.current.swiper;
+    // Safety check
+    if (!swiperRef.current) return;
+    
+    const swiperInstance = swiperRef.current.swiper;
+    if (!swiperInstance) return;
 
-      // Add event listeners
-      swiper.on('touchStart', (_, event) => handleDragStart(swiper, event));
-      swiper.on('touchEnd', () => handleDragEnd(swiper));
-      swiper.on('mousedown', (event) => handleDragStart(swiper, event));
-      document.addEventListener('mouseup', () => handleDragEnd(swiper));
+    // Add event listeners
+    const touchStartHandler = (_, event) => handleDragStart(swiperInstance, event);
+    const touchEndHandler = () => handleDragEnd(swiperInstance);
+    const mouseDownHandler = (event) => handleDragStart(swiperInstance, event);
+    const mouseUpHandler = () => handleDragEnd(swiperInstance);
+    
+    swiperInstance.on('touchStart', touchStartHandler);
+    swiperInstance.on('touchEnd', touchEndHandler);
+    swiperInstance.on('mousedown', mouseDownHandler);
+    document.addEventListener('mouseup', mouseUpHandler);
 
-      // Cleanup on unmount
-      return () => {
-        swiper.off('touchStart');
-        swiper.off('touchEnd');
-        swiper.off('mousedown');
-        document.removeEventListener('mouseup', () => handleDragEnd(swiper));
-      };
-    }
+    // Cleanup on unmount
+    return () => {
+      // Check if swiper instance still exists before removing listeners
+      if (swiperInstance && typeof swiperInstance.off === 'function') {
+        swiperInstance.off('touchStart', touchStartHandler);
+        swiperInstance.off('touchEnd', touchEndHandler);
+        swiperInstance.off('mousedown', mouseDownHandler);
+      }
+      document.removeEventListener('mouseup', mouseUpHandler);
+    };
   }, []);
 
   return (

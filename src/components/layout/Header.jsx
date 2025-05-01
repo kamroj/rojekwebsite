@@ -40,7 +40,7 @@ const HeaderWrapper = styled.header`
   /* Styl bordera */
   border-bottom-width: 1px;
   border-bottom-style: solid;
-  border-bottom-color: #e6c71968;
+  border-bottom-color: #059c4e68;
 
   /* Kontrola widoczności */
   opacity: ${({ isVisible }) => (isVisible ? 1 : 0)};
@@ -56,7 +56,8 @@ const HeaderWrapper = styled.header`
     transition: color ${({ theme }) => theme.transitions.default};
 
     &:hover {
-      color: ${({ theme }) => theme.colors.accent};
+      /* color: ${({ theme }) => theme.colors.accent}; */
+      color: #0ae875;
     }
   }
   
