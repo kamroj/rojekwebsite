@@ -143,7 +143,7 @@ const HomePage = () => {
       </DarkSection>
       
       {/* About us section */}
-      <Section label="O NAS" labelPosition="left" align="left">
+      <Section label="DLACZEGO  NASZA FIRMA?" labelPosition="left" align="left">
         <AboutText>
           <h2>Poznaj ROJEK</h2>
           <p>

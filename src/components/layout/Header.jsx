@@ -81,20 +81,20 @@ const LogoLink = styled(Link)`
     height: 100%;
     width: auto;
     display: block;
-    filter: ${({ isPastThreshold, isVisible }) =>
-      isPastThreshold && isVisible ? 'brightness(0.5)' : 'none'};
-    transition: filter 0.1s linear;
+    filter: ${({ isPastThreshold }) =>
+      isPastThreshold ? 'brightness(0.3)' : 'brightness(1)'};
+    transition: filter 0.3s linear;
   }
   
-  /* Ciemniejsze logo na mobilnych urządzeniach */
+  /* Ciemniejsze logo zawsze na mobilnych urządzeniach */
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     img {
-      filter: brightness(0.5);
+      filter: brightness(0.3);
     }
   }
 `;
 
-// Kontener dla desktopowej nawigacji - POPRAWIONA
+// Kontener dla desktopowej nawigacji
 const DesktopNav = styled.div`
   display: flex;
   align-items: center;
@@ -107,7 +107,7 @@ const DesktopNav = styled.div`
   }
 `;
 
-// Kontener dla przełącznika języka w wersji desktop - NOWY
+// Kontener dla przełącznika języka w wersji desktop
 const DesktopLangContainer = styled.div`
   display: flex;
   align-items: center;
@@ -423,7 +423,7 @@ const Header = () => {
       isPastThreshold={isPastThreshold} 
       isVisible={isVisible}
     >
-      <LogoLink to="/" isPastThreshold={isPastThreshold} isVisible={isVisible}>
+      <LogoLink to="/" isPastThreshold={isPastThreshold}>
         <img src={logoSrc} alt="ROJEK okna i drzwi Logo" />
       </LogoLink>
 
@@ -434,7 +434,7 @@ const Header = () => {
       
       {/* Przełącznik języka na desktop - PO PRAWEJ */}
       <DesktopLangContainer>
-        <LanguageSwitcher />
+        <LanguageSwitcher isPastThreshold={isPastThreshold} />
       </DesktopLangContainer>
 
       {/* Przycisk menu mobilnego */}
@@ -455,15 +455,6 @@ const Header = () => {
         <SwipeHandler onSwipeRight={closeMobileMenu} enabled={isMobileMenuOpen}>
           <MobileMenuLogo>
             <img src={logoSrc} alt="ROJEK okna i drzwi Logo" />
-            {/* USUNIĘTY DRUGI PRZYCISK X
-            <MobileMenuButton 
-              onClick={toggleMobileMenu} 
-              aria-label={t('nav.closeMenu', 'Zamknij menu')}
-              isOpen={true}
-            >
-              <FiX />
-            </MobileMenuButton>
-            */}
           </MobileMenuLogo>
 
           {/* Nawigacja mobilna */}
@@ -483,7 +474,7 @@ const Header = () => {
 
           {/* Przełącznik języka w menu mobilnym */}
           <MobileLangSwitcher>
-            <LanguageSwitcher isMobile={true} />
+            <LanguageSwitcher isMobile={true} isPastThreshold={true} />
           </MobileLangSwitcher>
         </SwipeHandler>
       </MobileMenuContainer>

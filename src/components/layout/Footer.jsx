@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
 const FooterWrapper = styled.footer`
-  background-color: ${({ theme }) => theme.colors.secondary};
+  background-color: ${({ theme }) => theme.colors.bottleGreen};
   color: ${({ theme }) => theme.colors.textLight};
   padding: ${({ theme }) => theme.spacings.large} ${({ theme }) => theme.spacings.medium};
   text-align: center;

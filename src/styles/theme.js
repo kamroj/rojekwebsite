@@ -14,7 +14,7 @@ const theme = {
     overlay: 'rgba(0, 0, 0, 0.85)', // Dark overlay
     galleryOverlay: 'rgba(0, 0, 0, 0.65)',   // Gallery overlay
     videoBackground: '#e0e0e0', // Video background placeholder color
-    bottleGreen: '#1a6039',     // Special bottle green color
+    bottleGreen: '#0b4625',     // Special bottle green color
     bottleGreenLight: '#008a62' // Lighter bottle green
   },
   fonts: {

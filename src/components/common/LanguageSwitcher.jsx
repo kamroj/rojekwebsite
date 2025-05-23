@@ -40,13 +40,23 @@ const CurrentLanguageButton = styled.button`
   align-items: center;
   justify-content: center;
   line-height: 0;
-  font-size: 2.6rem; /* Zwiększony rozmiar flag na desktopie */
   
-  ${props => props.isMobile && css`
-    font-size: 2.2rem;
-  `}
+  /* Dodanie obramowania dla flag */
+  .flag-container {
+    border-radius: 2px;
+    overflow: hidden;
+    border: 1px solid ${({ isPastThreshold }) => 
+      isPastThreshold ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.7)'};
+    line-height: 0;
+  }
   
-  &:hover span {
+  /* Ustaw rozmiar dla ikony głównej */
+  .flag-icon {
+    width: 30px !important;
+    height: auto;
+  }
+  
+  &:hover .flag-container {
     opacity: 0.8;
   }
 `;
@@ -90,7 +100,6 @@ const LanguageOption = styled.button`
   display: flex;
   align-items: center;
   line-height: 0;
-  font-size: 2.6rem; /* Zwiększony rozmiar flag */
   position: relative;
   opacity: ${({ isActive }) => (isActive ? 1 : 0.7)};
   border-radius: 3px;
@@ -98,7 +107,6 @@ const LanguageOption = styled.button`
               background-color ${({ theme }) => theme.transitions.default};
 
   ${props => props.isMobile && css`
-    font-size: 2.2rem;
     background-color: ${props => props.isActive ? 'rgba(1, 126, 84, 0.1)' : 'transparent'};
     
     .lang-name {
@@ -108,6 +116,21 @@ const LanguageOption = styled.button`
       color: ${({ theme, isActive }) => isActive ? theme.colors.bottleGreen : theme.colors.text};
     }
   `}
+
+  /* Dodanie obramowania dla flag */
+  .flag-container {
+    border-radius: 2px;
+    overflow: hidden;
+    border: 1px solid ${({ isDropdown }) => 
+      isDropdown ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.5)'};
+    line-height: 0;
+  }
+  
+  /* Ustaw rozmiar dla ikon w menu rozwijanym */
+  .dropdown-flag-icon {
+    width: 24px !important;
+    height: auto;
+  }
 
   &:hover {
     opacity: 1;
@@ -120,7 +143,7 @@ const LanguageOption = styled.button`
 `;
 
 // Główny komponent
-const LanguageSwitcher = ({ isMobile }) => {
+const LanguageSwitcher = ({ isMobile, isPastThreshold = false }) => {
   const { i18n, t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef(null);
@@ -193,18 +216,21 @@ const LanguageSwitcher = ({ isMobile }) => {
               disabled={currentLanguage === langCode}
               isActive={currentLanguage === langCode}
               isMobile={true}
+              isPastThreshold={true} // W mobilnym menu zawsze ciemne obramowanie
               aria-label={t(`switcher.switchTo.${langCode}`, `Switch to ${langCode.toUpperCase()}`)}
             >
-              <ReactCountryFlag
-                countryCode={languageToCountryCode[langCode]}
-                svg
-                style={{
-                  width: '1.4em',
-                  height: 'auto',
-                  display: 'block',
-                }}
-                aria-label={getAltText(langCode)}
-              />
+              <div className="flag-container">
+                <ReactCountryFlag
+                  countryCode={languageToCountryCode[langCode]}
+                  svg
+                  style={{
+                    width: '1.4em',
+                    height: 'auto',
+                    display: 'block',
+                  }}
+                  aria-label={getAltText(langCode)}
+                />
+              </div>
               <span className="lang-name">{getLanguageName(langCode)}</span>
             </LanguageOption>
           ))}
@@ -216,16 +242,20 @@ const LanguageSwitcher = ({ isMobile }) => {
             onClick={toggleDropdown} 
             aria-label={t('switcher.changeLanguage', 'Change language')}
             isMobile={isMobile}
+            isPastThreshold={isPastThreshold}
           >
-            <ReactCountryFlag
-              countryCode={languageToCountryCode[currentLanguage]}
-              svg
-              style={{
-                width: '1.4em',
-                height: 'auto',
-              }}
-              aria-label={getAltText(currentLanguage)}
-            />
+            <div className="flag-container">
+              <ReactCountryFlag
+                countryCode={languageToCountryCode[currentLanguage]}
+                svg
+                style={{
+                  width: '1.4em',
+                  height: 'auto',
+                }}
+                className="flag-icon"
+                aria-label={getAltText(currentLanguage)}
+              />
+            </div>
           </CurrentLanguageButton>
 
           <DropdownMenu isOpen={isOpen} isMobile={false}>
@@ -236,18 +266,22 @@ const LanguageSwitcher = ({ isMobile }) => {
                 disabled={currentLanguage === langCode}
                 isActive={currentLanguage === langCode}
                 isMobile={false}
+                isDropdown={true}
                 aria-label={t(`switcher.switchTo.${langCode}`, `Switch to ${langCode.toUpperCase()}`)}
               >
-                <ReactCountryFlag
-                  countryCode={languageToCountryCode[langCode]}
-                  svg
-                  style={{
-                    width: '1.4em',
-                    height: 'auto',
-                    display: 'block',
-                  }}
-                  aria-label={getAltText(langCode)}
-                />
+                <div className="flag-container">
+                  <ReactCountryFlag
+                    countryCode={languageToCountryCode[langCode]}
+                    svg
+                    style={{
+                      width: '1.4em',
+                      height: 'auto',
+                      display: 'block',
+                    }}
+                    className="dropdown-flag-icon"
+                    aria-label={getAltText(langCode)}
+                  />
+                </div>
               </LanguageOption>
             ))}
           </DropdownMenu>
