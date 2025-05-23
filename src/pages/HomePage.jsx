@@ -5,6 +5,7 @@ import IntroSection from '../components/home/IntroSection';
 import Section from '../components/common/Section';
 import ProductSection from '../components/home/ProducSection';
 import RealizationsGallery from '../components/gallery/RealizationsGallery';
+import WhyUsSection from '../components/home/WhyUsSection';
 
 // Mock data for products
 const productData = {
@@ -64,23 +65,6 @@ const realizationData = [
   { id: 5, src: '/images/realizations/realization5.jpg', title: 'Lofty w starej fabryce, Łódź' },
   { id: 6, src: '/images/realizations/realization6.jpg', title: 'Willa pod miastem, Gdańsk' },
 ];
-
-// About section text styling
-const AboutText = styled.div`
-  h2 {
-    font-size: 2.8rem;
-    color: ${({ theme }) => theme.colors.bottleGreen};
-    margin-bottom: ${({ theme }) => theme.spacings.medium};
-  }
-  
-  p {
-    font-size: 1.6rem;
-    line-height: 1.7;
-    color: ${({ theme }) => theme.colors.textMuted};
-    max-width: 900px;
-    margin: 0 auto;
-  }
-`;
 
 // Ciemna sekcja z galerią realizacji
 const DarkSection = styled.section`
@@ -142,19 +126,12 @@ const HomePage = () => {
         </div>
       </DarkSection>
       
-      {/* About us section */}
-      <Section label="DLACZEGO  NASZA FIRMA?" labelPosition="left" align="left">
-        <AboutText>
-          <h2>Poznaj ROJEK</h2>
-          <p>
-            Nasza Firma jest kontynuatorem działalności Przedsiębiorstwa Rewaloryzacji Zabytków w branży stolarskiej, 
-            której częścią był nasz zakład działający nieprzerwanie od 1981 roku. Pomimo upływu czasu, wdrożenia 
-            innowacyjnych technologii i znaczącą część naszej produkcji stanowi stolarka do obiektów zabytkowych 
-            lub podlegających ochronie konserwatorskiej. Królewskie miasto Kraków wraz z jego mieszkańcami zawsze 
-            będą dla nas priorytetem, a rekonstrukcja zabytkowych okien, bram i drzwi wyzwaniem, które od wielu lat 
-            stawiamy na pierwszym miejscu.
-          </p>
-        </AboutText>
+      {/* Why Us section - NOWA SEKCJA */}
+      <Section label="DLACZEGO MY?" labelPosition="left">
+        <WhyUsSection />
+      </Section>
+      <Section label="NASI PARTNERZY">
+        Tutaj
       </Section>
     </>
   );
