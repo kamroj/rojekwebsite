@@ -17,7 +17,7 @@ const SectionLabel = styled.div`
   box-shadow: ${({ theme }) => theme.shadows.large};
   background-color: ${({ theme }) => theme.colors.bottleGreen};
   color: ${({ theme }) => theme.colors.textLight};
-  height: 60px;
+  height: 50px;
   font-weight: 500;
   font-size: 1.6rem;
   padding: 0 50px;
@@ -26,7 +26,7 @@ const SectionLabel = styled.div`
   align-items: center;
   justify-content: center;
   position: absolute;
-  top: -30px;
+  top: -25px;
   z-index: 1;
   ${({ left }) => left ? css`left: 60px; right: auto;` : css`right: 60px; left: auto;`}
 `;
