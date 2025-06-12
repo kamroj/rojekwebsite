@@ -5,10 +5,12 @@ import styled, { css } from 'styled-components';
 // Base Section component
 const SectionWrapper = styled.section`
   margin-top: 8rem;
-  padding: 3.5rem;
-  background-color: ${({ theme, dark }) => dark ? theme.colors.galleryBackgroundDark : theme.colors.background};
-  border: 1px solid ${({ theme, dark }) => dark ? theme.colors.galleryBorder : theme.colors.borderAccent};
+  padding: ${({ dark }) => dark ? '60px 0' : '3.5rem'};
+  background-color: ${({ theme, dark }) => dark ? 'black' : theme.colors.background};
+  border: ${({ dark }) => dark ? 'none' : '1px solid'};
+  border-color: ${({ theme, dark }) => dark ? 'transparent' : theme.colors.borderAccent};
   position: relative;
+  color: ${({ theme, dark }) => dark ? theme.colors.textLight : 'inherit'};
   ${({ customStyles }) => customStyles && css`${customStyles}`}
 `;
 

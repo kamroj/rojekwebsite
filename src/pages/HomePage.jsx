@@ -6,6 +6,7 @@ import Section from '../components/common/Section';
 import ProductSection from '../components/home/ProducSection';
 import RealizationsGallery from '../components/gallery/RealizationsGallery';
 import WhyUsSection from '../components/home/WhyUsSection';
+import CompanyPresentationSection from '../components/home/CompanyPresentationSection';
 
 // Mock data for products
 const productData = {
@@ -110,26 +111,28 @@ const HomePage = () => {
       </Section>
       
       {/* Realizacje section with dark background */}
-      <DarkSection>
-        <SectionLabel>REALIZACJE</SectionLabel>
-        
-        <div style={{ maxWidth: '1200px', margin: '0 auto', width: '100%' }}>
-          <RealizationsGallery 
-            images={realizationData}
-            options={{
-              slidesPerViewDesktop: 3,
-              slidesPerViewTablet: 2,
-              slidesPerViewMobile: 1,
-              delay: 3500,
-            }}
-          />
-        </div>
-      </DarkSection>
+      <Section dark label="REALIZACJE">
+        <RealizationsGallery 
+          images={realizationData}
+          options={{
+            slidesPerViewDesktop: 3,
+            slidesPerViewTablet: 2,
+            slidesPerViewMobile: 1,
+            delay: 3500,
+          }}
+        />
+      </Section>
       
-      {/* Why Us section - NOWA SEKCJA */}
+      {/* Why Us section */}
       <Section label="DLACZEGO MY?" labelPosition="left">
         <WhyUsSection />
       </Section>
+      
+      {/* Company Presentation section - NOWA SEKCJA Z FILMEM */}
+      <Section dark label="PREZENTACJA FIRMY" labelPosition="right" noPadding>
+        <CompanyPresentationSection />
+      </Section>
+      
       <Section label="NASI PARTNERZY">
         Tutaj
       </Section>

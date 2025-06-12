@@ -124,7 +124,7 @@ const StyledSwiperContainer = styled.div`
 const GalleryImage = styled.img`
   display: block;
   width: 100%;
-  height: 400px;
+  height: 450px;
   object-fit: cover;
   user-select: none;
   transition: transform 0.3s ease;
