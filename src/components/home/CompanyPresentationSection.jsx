@@ -70,57 +70,54 @@ const VideoPlaceholder = styled.div`
   }
 `;
 
-// Przycisk play
-const PlayButton = styled.button`
+// Kontener dla przycisku - podobny do IntroSection
+const PlayButtonContainer = styled.div`
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   z-index: 2;
-  width: 70px;
-  height: 70px;
+`;
+
+// Przycisk play - skopiowany styl z IntroSection
+const PlayButton = styled.button`
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  
+  width: 56px;
+  height: 56px;
+  border: 1px solid #07be56;
   border-radius: 50%;
-  background-color: ${({ theme }) => theme.colors.bottleGreen};
-  border: none;
-  cursor: pointer;
+  background-color: rgb(3 84 0 / 58%);
+  
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: transform 0.3s ease, background-color 0.3s ease;
+  
+  color: #fff;
+  font-size: 2.2rem;
+  cursor: pointer;
+  outline: none;
+  transition: opacity ${({ theme }) => theme.transitions.default};
+  opacity: 0.8;
+  
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
   
   &:hover {
-    transform: scale(1.1);
-    background-color: ${({ theme }) => theme.colors.bottleGreenLight};
+    opacity: 1;
+  }
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    width: 52px;
+    height: 52px;
+    font-size: 2rem;
   }
   
   svg {
-    font-size: 2.8rem;
-    color: white;
     margin-left: 5px; /* Centrowanie wizualne ikony play */
-  }
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    width: 60px;
-    height: 60px;
-    
-    svg {
-      font-size: 2.4rem;
-    }
-  }
-`;
-
-// Tekst nad przyciskiem play
-const PlayText = styled.p`
-  position: absolute;
-  top: -40px;
-  left: 50%;
-  transform: translateX(-50%);
-  color: white;
-  font-size: 1.8rem;
-  font-weight: 500;
-  white-space: nowrap;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    font-size: 1.6rem;
-    top: -35px;
   }
 `;
 
@@ -173,10 +170,11 @@ const CompanyPresentationSection = () => {
             aria-label={t('presentation.playVideo', 'Odtwórz film prezentacyjny')}
             tabIndex={0}
           >
-            <PlayText>{t('presentation.watchPresentation', 'Zobacz prezentację')}</PlayText>
-            <PlayButton type="button" aria-hidden="true">
-              <FiPlay />
-            </PlayButton>
+            <PlayButtonContainer>
+              <PlayButton type="button" aria-hidden="true">
+                <FiPlay />
+              </PlayButton>
+            </PlayButtonContainer>
           </VideoPlaceholder>
         ) : (
           <VideoFrame

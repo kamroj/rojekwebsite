@@ -5,7 +5,7 @@ import styled, { css } from 'styled-components';
 // Base Section component
 const SectionWrapper = styled.section`
   margin-top: 8rem;
-  padding: ${({ dark }) => dark ? '60px 0' : '3.5rem'};
+  padding: ${({ dark }) => dark ? '20px 0' : '3.5rem'};
   background-color: ${({ theme, dark }) => dark ? 'black' : theme.colors.background};
   border: ${({ dark }) => dark ? 'none' : '1px solid'};
   border-color: ${({ theme, dark }) => dark ? 'transparent' : theme.colors.borderAccent};

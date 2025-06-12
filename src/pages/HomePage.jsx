@@ -133,7 +133,7 @@ const HomePage = () => {
         <CompanyPresentationSection />
       </Section>
       
-      <Section label="NASI PARTNERZY">
+      <Section label="NASI PARTNERZY" labelPosition="left">
         Tutaj
       </Section>
     </>

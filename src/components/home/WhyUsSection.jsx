@@ -1,31 +1,69 @@
 // src/components/home/WhyUsSection.jsx
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/navigation';
 
 // Kontener dla całej sekcji
 const WhyUsContainer = styled.div`
   width: 100%;
   max-width: ${({ theme }) => theme.layout.maxWidth};
   margin: 0 auto;
+  position: relative;
 `;
 
-// Grid dla kafelek
-const FeaturesGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 4rem;
+// Desktop Grid (pokazuje się tylko na największych ekranach)
+const DesktopGrid = styled.div`
+  display: none;
   
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 3rem;
-    margin-top: 4rem;
+  @media (min-width: 1400px) {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4rem;
   }
+`;
+
+// Mobile/Tablet Swiper Container
+const MobileSwiperContainer = styled.div`
+  display: block;
+  position: relative;
   
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    grid-template-columns: 1fr;
-    gap: 2.5rem;
-    margin-top: 3rem;
+  @media (min-width: 1400px) {
+    display: none;
+  }
+
+  .swiper {
+    width: 100%;
+    padding: 20px 0 20px;
+    overflow: visible;
+
+    @media (max-width: 1400px) {
+      cursor: grab;
+    }
+  }
+
+  .swiper-slide {
+    height: auto;
+    display: flex;
+    justify-content: center;
+  }
+`;
+
+// Kontener dla przycisków nawigacji na dole
+const NavigationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  
+  @media (min-width: 1400px) {
+    display: none;
   }
 `;
 
@@ -39,11 +77,13 @@ const FeatureCard = styled.div`
   border-radius: 8px;
   transition: transform ${({ theme }) => theme.transitions.default},
               background-color ${({ theme }) => theme.transitions.default};
-  
+  width: 100%;
+  max-width: 350px;
 `;
 
 // Kontener na ikonę z obramowaniem
 const IconWrapper = styled.div`
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.35);
   width: 150px;
   height: 150px;
   border: 1px solid ${({ theme }) => theme.colors.bottleGreenLight};
@@ -73,7 +113,6 @@ const IconWrapper = styled.div`
       opacity: 0.05;
     }
   }
-
 `;
 
 // Ikona
@@ -92,7 +131,7 @@ const FeatureTitle = styled.h3`
   color: ${({ theme }) => theme.colors.bottleGreen};
   margin-bottom: 1rem;
   line-height: 1.3;
-  min-height: 2.6em; /* Zapewnia równą wysokość dla 2-liniowych tytułów */
+  min-height: 2.6em;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -112,6 +151,41 @@ const FeatureDescription = styled.p`
   
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     font-size: 1.3rem;
+  }
+`;
+
+// Przycisk nawigacji - styl jak w video
+const NavigationButton = styled.button`
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background-color: #254429;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  outline: none;
+  transition: opacity ${({ theme }) => theme.transitions.default},
+              background-color ${({ theme }) => theme.transitions.default};
+  opacity: ${({ disabled }) => disabled ? 0.3 : 1};
+  
+  pointer-events: ${({ disabled }) => disabled ? 'none' : 'auto'};
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    width: 44px;
+    height: 44px;
+    font-size: 1.8rem;
   }
 `;
 
@@ -169,28 +243,109 @@ const features = [
 
 const WhyUsSection = () => {
   const { t } = useTranslation();
+  const prevRef = useRef(null);
+  const nextRef = useRef(null);
+  const swiperRef = useRef(null);
+  const [isBeginning, setIsBeginning] = useState(true);
+  const [isEnd, setIsEnd] = useState(false);
+
+  // Update navigation state
+  const handleSlideChange = (swiper) => {
+    setIsBeginning(swiper.isBeginning);
+    setIsEnd(swiper.isEnd);
+  };
+
+  // Custom navigation handlers
+  const goToPrev = () => {
+    if (swiperRef.current && swiperRef.current.swiper) {
+      swiperRef.current.swiper.slidePrev();
+    }
+  };
+
+  const goToNext = () => {
+    if (swiperRef.current && swiperRef.current.swiper) {
+      swiperRef.current.swiper.slideNext();
+    }
+  };
+
+  // Render feature card
+  const renderFeatureCard = (feature) => (
+    <FeatureCard key={feature.id}>
+      <IconWrapper>
+        <Icon 
+          src={feature.icon} 
+          alt={t(feature.titleKey, feature.defaultTitle)}
+          loading="lazy"
+        />
+      </IconWrapper>
+      <FeatureTitle>
+        {t(feature.titleKey, feature.defaultTitle)}
+      </FeatureTitle>
+      <FeatureDescription>
+        {t(feature.descriptionKey, feature.defaultDescription)}
+      </FeatureDescription>
+    </FeatureCard>
+  );
 
   return (
     <WhyUsContainer>
-      <FeaturesGrid>
-        {features.map((feature) => (
-          <FeatureCard key={feature.id}>
-            <IconWrapper>
-              <Icon 
-                src={feature.icon} 
-                alt={t(feature.titleKey, feature.defaultTitle)}
-                loading="lazy"
-              />
-            </IconWrapper>
-            <FeatureTitle>
-              {t(feature.titleKey, feature.defaultTitle)}
-            </FeatureTitle>
-            <FeatureDescription>
-              {t(feature.descriptionKey, feature.defaultDescription)}
-            </FeatureDescription>
-          </FeatureCard>
-        ))}
-      </FeaturesGrid>
+      {/* Desktop Grid - tylko na bardzo dużych ekranach */}
+      <DesktopGrid>
+        {features.map(renderFeatureCard)}
+      </DesktopGrid>
+
+      {/* Mobile/Tablet Swiper */}
+      <MobileSwiperContainer>
+        <Swiper
+          ref={swiperRef}
+          modules={[Navigation]}
+          spaceBetween={20}
+          slidesPerView={1}
+          centeredSlides={true}
+          onSlideChange={handleSlideChange}
+          onSwiper={handleSlideChange}
+          breakpoints={{
+            576: {
+              slidesPerView: 2,
+              centeredSlides: false,
+              spaceBetween: 30,
+            },
+            992: {
+              slidesPerView: 3,
+              centeredSlides: false,
+              spaceBetween: 40,
+            },
+          }}
+          speed={400}
+          className="why-us-swiper"
+        >
+          {features.map((feature) => (
+            <SwiperSlide key={feature.id}>
+              {renderFeatureCard(feature)}
+            </SwiperSlide>
+          ))}
+        </Swiper>
+        
+        <NavigationContainer>
+          <NavigationButton 
+            ref={prevRef} 
+            onClick={goToPrev}
+            disabled={isBeginning}
+            aria-label={t('navigation.previous', 'Poprzedni')}
+          >
+            <FiChevronLeft />
+          </NavigationButton>
+          
+          <NavigationButton 
+            ref={nextRef} 
+            onClick={goToNext}
+            disabled={isEnd}
+            aria-label={t('navigation.next', 'Następny')}
+          >
+            <FiChevronRight />
+          </NavigationButton>
+        </NavigationContainer>
+      </MobileSwiperContainer>
     </WhyUsContainer>
   );
 };

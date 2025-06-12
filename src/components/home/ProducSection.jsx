@@ -80,7 +80,7 @@ const ProductVideoContainer = styled.div`
   position: relative;
   border-radius: 4px;
   background-color: ${({ theme }) => theme.colors.background};
-  box-shadow: ${({ theme }) => theme.shadows.large};
+  /* box-shadow: ${({ theme }) => theme.shadows.large}; */
   overflow: hidden;
   padding-bottom: 75%; /* Proporcja 4:3 - węższe okno */
 `;
