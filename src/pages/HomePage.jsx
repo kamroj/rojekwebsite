@@ -67,39 +67,11 @@ const realizationData = [
   { id: 6, src: '/images/realizations/realization6.jpg', title: 'Willa pod miastem, Gdańsk' },
 ];
 
-// Ciemna sekcja z galerią realizacji
-const DarkSection = styled.section`
-  background-color: #1a1a1a; /* Ciemne tło */
-  padding: 60px 0;
-  margin-top: 8rem;
-  color: ${({ theme }) => theme.colors.textLight}; /* Jasny tekst */
-  position: relative;
-`;
-
-// Label dla sekcji realizacji
-const SectionLabel = styled.div`
-  box-shadow: ${({ theme }) => theme.shadows.large};
-  background-color: ${({ theme }) => theme.colors.bottleGreen};
-  color: ${({ theme }) => theme.colors.textLight};
-  height: 50px;
-  font-weight: 500;
-  font-size: 1.6rem;
-  padding: 0 50px;
-  white-space: nowrap;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  position: absolute;
-  top: -25px;
-  right: 60px;
-  z-index: 1;
-`;
-
 // HomePage component
 const HomePage = () => {
   return (
     <>
-      {/* Full-screen intro with video background */}
+      {/* Full-screen intro with video background - BEZ Section wrapper */}
       <IntroSection />
       
       {/* Products section */}

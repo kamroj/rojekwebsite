@@ -14,7 +14,24 @@ const SectionWrapper = styled.section`
   ${({ customStyles }) => customStyles && css`${customStyles}`}
 `;
 
-// Section label (tag)
+// Container dla labela - ogranicza pozycjonowanie do szerokości contentu
+const LabelContainer = styled.div`
+  position: absolute;
+  top: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: ${({ theme }) => theme.layout.maxWidth};
+  padding: 0 60px;
+  pointer-events: none;
+  z-index: 1;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    padding: 0 20px;
+  }
+`;
+
+// Section label (tag) - teraz pozycjonowany względem kontenera
 const SectionLabel = styled.div`
   box-shadow: ${({ theme }) => theme.shadows.large};
   background-color: ${({ theme }) => theme.colors.bottleGreen};
@@ -28,9 +45,27 @@ const SectionLabel = styled.div`
   align-items: center;
   justify-content: center;
   position: absolute;
-  top: -25px;
-  z-index: 1;
-  ${({ left }) => left ? css`left: 60px; right: auto;` : css`right: 60px; left: auto;`}
+  pointer-events: auto;
+  
+  ${({ left }) => left ? css`
+    left: 0;
+    right: auto;
+  ` : css`
+    right: 0;
+    left: auto;
+  `}
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    padding: 0 30px;
+    font-size: 1.4rem;
+    height: 45px;
+  }
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    padding: 0 20px;
+    font-size: 1.3rem;
+    height: 40px;
+  }
 `;
 
 // Content container for section content
@@ -56,9 +91,11 @@ const Section = ({
   return (
     <SectionWrapper dark={dark} customStyles={customStyles} {...props}>
       {label && (
-        <SectionLabel left={labelPosition === 'left'}>
-          {label}
-        </SectionLabel>
+        <LabelContainer>
+          <SectionLabel left={labelPosition === 'left'}>
+            {label}
+          </SectionLabel>
+        </LabelContainer>
       )}
       <ContentContainer align={align} noPadding={noPadding}>
         {children}

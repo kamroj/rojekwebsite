@@ -13,17 +13,37 @@ const fadeIn = keyframes`
 
 const IntroWrapper = styled.section`
   height: 100vh;
-  width: 100%;
+  width: 100vw;
   position: relative;
   overflow: hidden;
   background-color: #000;
   z-index: 1;
+  
+  /* Zapewnienie pełnej wysokości na różnych urządzeniach */
+  min-height: 100vh;
+  min-height: 100dvh; /* Dynamic viewport height dla nowszych przeglądarek */
+  
+  /* Usunięcie wszelkich marginów i paddingów */
+  margin: 0;
+  padding: 0;
+  
+  /* Pozycjonowanie bez przesunięć */
+  top: 0;
+  left: 0;
+  
+  /* Wyciągnięcie poza kontener główny jeśli potrzeba */
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
 `;
 
 const VideoBackground = styled.video`
   position: absolute;
-  top: 50%; left: 50%;
-  min-width: 100%; min-height: 100%;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
   transform: translate(-50%, -50%);
   object-fit: cover;
   pointer-events: none;
@@ -32,8 +52,10 @@ const VideoBackground = styled.video`
 
 const VideoOverlay = styled.div`
   position: absolute;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0; 
+  left: 0;
+  width: 100%; 
+  height: 100%;
   background-color: ${({ theme }) => theme.colors.overlay};
   pointer-events: none;
   z-index: 2;
@@ -54,6 +76,8 @@ const BottomOverlay = styled.div`
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     bottom: 5%;
     min-height: 52px;
+    left: 3%;
+    right: 3%;
   }
 `;
 
@@ -101,6 +125,10 @@ const VideoControlButton = styled.button`
   &:hover {
     opacity: 1;
   }
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    font-size: 2rem;
+  }
 `;
 
 const RightBottomContentWrapper = styled.div`
@@ -114,6 +142,10 @@ const RightBottomContentWrapper = styled.div`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     gap: ${({ theme }) => theme.spacings.small};
+  }
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    margin-left: ${({ theme }) => theme.spacings.medium};
   }
 `;
 
@@ -158,6 +190,7 @@ const CTAButton = styled(Link)`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     padding: 0.8rem 2rem;
+    font-size: clamp(1.1rem, 2vw, 1.3rem);
   }
 `;
 
