@@ -1,6 +1,7 @@
 // src/components/home/ProductSection.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import styled, { css, keyframes } from 'styled-components';
+import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 
 // --- Styled Components ---
 const ProductContentContainer = styled.div`
@@ -18,6 +19,39 @@ const ProductListContainer = styled.div`
   gap: 1rem;
   margin-bottom: 3rem;
   flex-wrap: wrap;
+  position: relative;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    display: none; /* Ukryj na mobile */
+  }
+`;
+
+// Kontener dla Swiper na mobile
+const MobileButtonsContainer = styled.div`
+  display: none;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    position: relative;
+    margin-bottom: 3rem;
+    gap: 2rem;
+    padding: 0 20px;
+  }
+`;
+
+// Pojedynczy przycisk na mobile - wyśrodkowany
+const MobileSingleButton = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 200px;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    min-width: 180px;
+  }
 `;
 
 const ProductListButton = styled.button`
@@ -32,6 +66,8 @@ const ProductListButton = styled.button`
               color ${({ theme }) => theme.transitions.default};
   font-weight: 500;
   margin: 0 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
   
   &:hover {
     color: ${({ theme }) => theme.colors.bottleGreen};
@@ -45,6 +81,56 @@ const ProductListButton = styled.button`
       font-weight: 700;
       border-bottom-color: ${theme.colors.bottleGreen};
     `}
+    
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: 1.5rem;
+    padding: 6px 16px;
+    margin: 0 3px;
+  }
+`;
+
+// Przycisk nawigacji - tylko na mobile
+const NavigationButton = styled.button`
+  appearance: none;
+  margin: 0;
+  padding: 0;
+  
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background-color: #254429;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  color: #fff;
+  font-size: 2rem;
+  cursor: pointer;
+  outline: none;
+  transition: opacity ${({ theme }) => theme.transitions.default},
+              background-color ${({ theme }) => theme.transitions.default};
+  opacity: ${({ disabled }) => disabled ? 0.3 : 1};
+  
+  pointer-events: ${({ disabled }) => disabled ? 'none' : 'auto'};
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  flex-shrink: 0;
+  
+  &:hover:not(:disabled) {
+    background-color: ${({ theme }) => theme.colors.bottleGreen};
+  }
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    width: 44px;
+    height: 44px;
+    font-size: 1.8rem;
+  }
+  
+  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+    display: none; /* Ukryj na desktop */
+  }
 `;
 
 const ProductDetailsWrapper = styled.div`
@@ -187,6 +273,12 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
   const [isLoading, setIsLoading] = useState(true);
   const videoRef = useRef(null);
   const currentProduct = productData[selectedProductId];
+  
+  // Dla mobile navigation
+  const productIds = Object.keys(productData);
+  const currentIndex = productIds.indexOf(selectedProductId);
+  const isFirstProduct = currentIndex === 0;
+  const isLastProduct = currentIndex === productIds.length - 1;
 
   // Reset loading state when product changes
   useEffect(() => {
@@ -201,8 +293,24 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
     setIsLoading(false);
   };
 
+  // Mobile navigation functions
+  const goToPrevProduct = () => {
+    if (!isFirstProduct) {
+      const prevIndex = currentIndex - 1;
+      setSelectedProductId(productIds[prevIndex]);
+    }
+  };
+
+  const goToNextProduct = () => {
+    if (!isLastProduct) {
+      const nextIndex = currentIndex + 1;
+      setSelectedProductId(productIds[nextIndex]);
+    }
+  };
+
   return (
     <ProductContentContainer>
+      {/* Desktop version - wszystkie przyciski */}
       <ProductListContainer>
         {Object.values(productData).map((product) => (
           <ProductListButton
@@ -214,6 +322,34 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
           </ProductListButton>
         ))}
       </ProductListContainer>
+
+      {/* Mobile version - jeden przycisk ze strzałkami */}
+      <MobileButtonsContainer>
+        <NavigationButton 
+          onClick={goToPrevProduct}
+          disabled={isFirstProduct}
+          aria-label="Poprzedni produkt"
+        >
+          <FiChevronLeft />
+        </NavigationButton>
+        
+        <MobileSingleButton>
+          <ProductListButton
+            active={true}
+            disabled={true}
+          >
+            {currentProduct.name}
+          </ProductListButton>
+        </MobileSingleButton>
+        
+        <NavigationButton 
+          onClick={goToNextProduct}
+          disabled={isLastProduct}
+          aria-label="Następny produkt"
+        >
+          <FiChevronRight />
+        </NavigationButton>
+      </MobileButtonsContainer>
       
       <ProductDetailsWrapper>
         <ProductVideoWrapper>

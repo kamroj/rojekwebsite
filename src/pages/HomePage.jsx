@@ -7,6 +7,7 @@ import ProductSection from '../components/home/ProducSection';
 import RealizationsGallery from '../components/gallery/RealizationsGallery';
 import WhyUsSection from '../components/home/WhyUsSection';
 import CompanyPresentationSection from '../components/home/CompanyPresentationSection';
+import PartnersSection from '../components/home/PartnersSection';
 
 // Mock data for products
 const productData = {
@@ -100,13 +101,14 @@ const HomePage = () => {
         <WhyUsSection />
       </Section>
       
-      {/* Company Presentation section - NOWA SEKCJA Z FILMEM */}
+      {/* Company Presentation section */}
       <Section dark label="PREZENTACJA FIRMY" labelPosition="right" noPadding>
         <CompanyPresentationSection />
       </Section>
       
+      {/* Partners section */}
       <Section label="NASI PARTNERZY" labelPosition="left">
-        Tutaj
+        <PartnersSection />
       </Section>
     </>
   );

@@ -27,7 +27,7 @@ const LabelContainer = styled.div`
   z-index: 1;
   
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    padding: 0 20px;
+    padding: 0 30px; /* Zwiększony padding na mobile */
   }
 `;
 
@@ -59,12 +59,30 @@ const SectionLabel = styled.div`
     padding: 0 30px;
     font-size: 1.4rem;
     height: 45px;
+    
+    /* Na mobile odsunięcie o 30px od krawędzi */
+    ${({ left }) => left ? css`
+      left: 30px;
+      right: auto;
+    ` : css`
+      right: 30px;
+      left: auto;
+    `}
   }
   
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     padding: 0 20px;
     font-size: 1.3rem;
     height: 40px;
+    
+    /* Na małych ekranach mniejsze odsunięcie */
+    ${({ left }) => left ? css`
+      left: 20px;
+      right: auto;
+    ` : css`
+      right: 20px;
+      left: auto;
+    `}
   }
 `;
 

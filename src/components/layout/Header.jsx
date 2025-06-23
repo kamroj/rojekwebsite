@@ -86,12 +86,7 @@ const LogoLink = styled(Link)`
     transition: filter 0.3s linear;
   }
   
-  /* Ciemniejsze logo zawsze na mobilnych urządzeniach */
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    img {
-      filter: brightness(0.3);
-    }
-  }
+  /* USUŃ całe @media query */
 `;
 
 // Kontener dla desktopowej nawigacji
