@@ -9,7 +9,7 @@ import WhyUsSection from '../components/home/WhyUsSection';
 import CompanyPresentationSection from '../components/home/CompanyPresentationSection';
 import PartnersSection from '../components/home/PartnersSection';
 
-// Mock data for products
+// Updated product data with interior doors
 const productData = {
   windows: {
     id: 'windows',
@@ -26,9 +26,9 @@ const productData = {
       'Doskonałe parametry izolacyjności termicznej i akustycznej'
     ]
   },
-  doors: {
-    id: 'doors',
-    name: 'DRZWI',
+  exteriorDoors: {
+    id: 'exteriorDoors',
+    name: 'DRZWI ZEWNĘTRZNE',
     videoSrc: '/videos/door.mp4',
     posterSrc: '/images/posters/door_poster.jpg',
     description: 'Drzwi zewnętrzne stanowią wizytówkę domu. Nasze drzwi łączą bezkompromisowe bezpieczeństwo, wysublimowaną estetykę i doskonałą izolację termiczną.',
@@ -39,6 +39,21 @@ const productData = {
       'Szeroki wybór wzorów, od klasycznych po nowoczesne',
       'Możliwość zastosowania nowoczesnych systemów kontroli dostępu',
       'Indywidualne dopasowanie wymiarów i dodatków'
+    ]
+  },
+  interiorDoors: {
+    id: 'interiorDoors',
+    name: 'DRZWI WEWNĘTRZNE',
+    videoSrc: '/videos/interior-door.mp4',
+    posterSrc: '/images/posters/interior_door_poster.jpg',
+    description: 'Drzwi wewnętrzne to element wyposażenia wnętrza, który łączy funkcjonalność z elegancją. Nasze drzwi wewnętrzne doskonale komponują się z każdym stylem aranżacji.',
+    benefits: [
+      'Elegancki design harmonizujący z wystrojem wnętrza',
+      'Szerokie możliwości personalizacji wzorów i kolorów',
+      'Doskonała izolacja akustyczna między pomieszczeniami',
+      'Trwała konstrukcja z wysokiej jakości materiałów',
+      'Precyzyjne wykonanie zapewniające płynne działanie',
+      'Bogaty wybór okuć i dodatków funkcjonalnych'
     ]
   },
   sliding: {
