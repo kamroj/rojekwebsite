@@ -33,8 +33,9 @@ const LabelContainer = styled.div`
 
 // Section label (tag) - teraz pozycjonowany względem kontenera
 const SectionLabel = styled.div`
-  box-shadow: ${({ theme }) => theme.shadows.large};
-  background-color: ${({ theme }) => theme.colors.bottleGreen};
+  border: 1px solid #06c5065e;
+  /* box-shadow: ${({ theme }) => theme.shadows.large}; */
+  background-color: #01200d;
   color: ${({ theme }) => theme.colors.textLight};
   height: 50px;
   font-weight: 500;

@@ -33,7 +33,7 @@ const ContactSection = styled.div`
   h3 {
     font-size: 2rem;
     margin-bottom: 2rem;
-    color: #017e54;
+    color: ${({ theme }) => theme.colors.textLight};
     font-weight: 500;
   }
 `;
@@ -110,7 +110,7 @@ const MapSection = styled.div`
   h3 {
     font-size: 2rem;
     margin-bottom: 2rem;
-    color: #017e54;
+    color: ${({ theme }) => theme.colors.textLight};
     font-weight: 500;
   }
 `;
