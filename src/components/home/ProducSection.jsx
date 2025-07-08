@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import SwipeHandler from '../common/SwipeHandler';
 
 // --- Styled Components ---
 const ProductContentContainer = styled.div`
@@ -26,7 +27,7 @@ const ProductListContainer = styled.div`
   }
 `;
 
-// Kontener dla Swiper na mobile
+// Kontener dla Swiper na mobile - teraz z obsługą gestów
 const MobileButtonsContainer = styled.div`
   display: none;
   
@@ -267,10 +268,25 @@ const ProductBenefitItem = styled.li`
   }
 `;
 
+// Wrapper dla obsługi gestów - tylko na mobile
+const SwipeableContainer = styled.div`
+  width: 100%;
+  
+  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+    /* Na desktop wyłącz gesty */
+    pointer-events: none;
+    
+    * {
+      pointer-events: auto;
+    }
+  }
+`;
+
 // --- Main Component ---
 const ProductSection = ({ productData, initialProductId = Object.keys(productData)[0] }) => {
   const [selectedProductId, setSelectedProductId] = useState(initialProductId);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   const videoRef = useRef(null);
   const currentProduct = productData[selectedProductId];
   
@@ -279,6 +295,18 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
   const currentIndex = productIds.indexOf(selectedProductId);
   const isFirstProduct = currentIndex === 0;
   const isLastProduct = currentIndex === productIds.length - 1;
+
+  // Sprawdź czy to mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 992); // breakpoint md
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // Reset loading state when product changes
   useEffect(() => {
@@ -308,85 +336,107 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
     }
   };
 
-  return (
-    <ProductContentContainer>
-      {/* Desktop version - wszystkie przyciski */}
-      <ProductListContainer>
-        {Object.values(productData).map((product) => (
-          <ProductListButton
-            key={product.id}
-            onClick={() => setSelectedProductId(product.id)}
-            active={selectedProductId === product.id}
-          >
-            {product.name}
-          </ProductListButton>
-        ))}
-      </ProductListContainer>
+  // Obsługa gestów swipe - tylko na mobile
+  const handleSwipeLeft = () => {
+    if (isMobile && !isLastProduct) {
+      goToNextProduct();
+    }
+  };
 
-      {/* Mobile version - jeden przycisk ze strzałkami */}
-      <MobileButtonsContainer>
-        <NavigationButton 
-          onClick={goToPrevProduct}
-          disabled={isFirstProduct}
-          aria-label="Poprzedni produkt"
-        >
-          <FiChevronLeft />
-        </NavigationButton>
-        
-        <MobileSingleButton>
-          <ProductListButton
-            active={true}
-            disabled={true}
-          >
-            {currentProduct.name}
-          </ProductListButton>
-        </MobileSingleButton>
-        
-        <NavigationButton 
-          onClick={goToNextProduct}
-          disabled={isLastProduct}
-          aria-label="Następny produkt"
-        >
-          <FiChevronRight />
-        </NavigationButton>
-      </MobileButtonsContainer>
-      
-      <ProductDetailsWrapper>
-        <ProductVideoWrapper>
-          <ProductVideoContainer>
-            {/* Opakowanie spinnera dla lepszego wyśrodkowania */}
-            <SpinnerWrapper isLoading={isLoading}>
-              <LoadingSpinner />
-            </SpinnerWrapper>
-            
-            <Video
-              ref={videoRef}
-              key={currentProduct.videoSrc}
-              src={currentProduct.videoSrc}
-              autoPlay
-              loop
-              muted
-              playsInline
-              poster={currentProduct.posterSrc}
-              preload="metadata"
-              isLoading={isLoading}
-              onLoadedData={handleVideoLoaded}
-              onPlaying={handleVideoLoaded}
-            />
-          </ProductVideoContainer>
-        </ProductVideoWrapper>
-        
-        <ProductDescriptionContainer>
-          <ProductDescriptionTitle>{currentProduct.name}</ProductDescriptionTitle>
-          <ProductDescriptionText>{currentProduct.description}</ProductDescriptionText>
-          <ProductBenefitsList>
-            {currentProduct.benefits.map((benefit, index) => (
-              <ProductBenefitItem key={index}>{benefit}</ProductBenefitItem>
+  const handleSwipeRight = () => {
+    if (isMobile && !isFirstProduct) {
+      goToPrevProduct();
+    }
+  };
+
+  return (
+    <SwipeableContainer>
+      <SwipeHandler 
+        onSwipeLeft={handleSwipeLeft} 
+        onSwipeRight={handleSwipeRight}
+        enabled={isMobile}
+        threshold={80}
+      >
+        <ProductContentContainer>
+          {/* Desktop version - wszystkie przyciski */}
+          <ProductListContainer>
+            {Object.values(productData).map((product) => (
+              <ProductListButton
+                key={product.id}
+                onClick={() => setSelectedProductId(product.id)}
+                active={selectedProductId === product.id}
+              >
+                {product.name}
+              </ProductListButton>
             ))}
-          </ProductBenefitsList>
-        </ProductDescriptionContainer>
-      </ProductDetailsWrapper>
-    </ProductContentContainer>
+          </ProductListContainer>
+
+          {/* Mobile version - jeden przycisk ze strzałkami */}
+          <MobileButtonsContainer>
+            <NavigationButton 
+              onClick={goToPrevProduct}
+              disabled={isFirstProduct}
+              aria-label="Poprzedni produkt"
+            >
+              <FiChevronLeft />
+            </NavigationButton>
+            
+            <MobileSingleButton>
+              <ProductListButton
+                active={true}
+                disabled={true}
+              >
+                {currentProduct.name}
+              </ProductListButton>
+            </MobileSingleButton>
+            
+            <NavigationButton 
+              onClick={goToNextProduct}
+              disabled={isLastProduct}
+              aria-label="Następny produkt"
+            >
+              <FiChevronRight />
+            </NavigationButton>
+          </MobileButtonsContainer>
+          
+          <ProductDetailsWrapper>
+            <ProductVideoWrapper>
+              <ProductVideoContainer>
+                {/* Opakowanie spinnera dla lepszego wyśrodkowania */}
+                <SpinnerWrapper isLoading={isLoading}>
+                  <LoadingSpinner />
+                </SpinnerWrapper>
+                
+                <Video
+                  ref={videoRef}
+                  key={currentProduct.videoSrc}
+                  src={currentProduct.videoSrc}
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  poster={currentProduct.posterSrc}
+                  preload="metadata"
+                  isLoading={isLoading}
+                  onLoadedData={handleVideoLoaded}
+                  onPlaying={handleVideoLoaded}
+                />
+              </ProductVideoContainer>
+            </ProductVideoWrapper>
+            
+            <ProductDescriptionContainer>
+              <ProductDescriptionTitle>{currentProduct.name}</ProductDescriptionTitle>
+              <ProductDescriptionText>{currentProduct.description}</ProductDescriptionText>
+              <ProductBenefitsList>
+                {currentProduct.benefits.map((benefit, index) => (
+                  <ProductBenefitItem key={index}>{benefit}</ProductBenefitItem>
+                ))}
+              </ProductBenefitsList>
+            </ProductDescriptionContainer>
+          </ProductDetailsWrapper>
+        </ProductContentContainer>
+      </SwipeHandler>
+    </SwipeableContainer>
   );
 };
 
