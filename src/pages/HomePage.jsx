@@ -103,7 +103,13 @@ const HomePage = () => {
         dark 
         label="REALIZACJE"
         customStyles={`
-          background: linear-gradient(323deg,rgba(0, 0, 0, 1) 0%, rgba(9, 20, 10, 1) 86%, rgba(13, 31, 15, 1) 100%);
+          /* Desktop background */
+          background: linear-gradient(2deg, rgba(0, 0, 0, 1) 0%, #001c13 80%, #003d29 110%);
+          
+          /* Mobile background */
+          @media (max-width: 992px) {
+            background: linear-gradient(2deg, rgba(0, 0, 0, 1) 0%, #001c13 95%, #003d29 110%);
+          }
         `}
         noPadding
       >

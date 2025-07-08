@@ -66,7 +66,7 @@ const PartnerItem = styled.a`
   display: block;
   width: 100%;
   max-width: 280px;
-  height: 250px;
+  height: 200px;
   padding: ${({ theme }) => theme.spacings.large};
   transition: transform ${({ theme }) => theme.transitions.default},
               box-shadow ${({ theme }) => theme.transitions.default},
@@ -79,7 +79,8 @@ const PartnerItem = styled.a`
   justify-content: center;
   
   box-shadow: rgb(0 0 0 / 14%) 0px 2px 18px 0px;
-  border-radius: 12px;
+  border: 1px solid #003d2988;
+  border-radius: 4px;
   
   &:hover {
     transform: translateY(-8px);
@@ -97,8 +98,8 @@ const MobilePartnerItem = styled.a`
   display: block;
   width: 220px;
   height: 140px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  border-radius: 8px;
+  border: 1px solid #003d2988;
+  border-radius: 4px;
   padding: ${({ theme }) => theme.spacings.medium};
   background-color: ${({ theme }) => theme.colors.background};
   cursor: pointer;
