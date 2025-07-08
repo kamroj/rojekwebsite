@@ -187,6 +187,19 @@ const Footer = () => {
             </ContactGroup>
             <ContactGroup>
               <ContactRole>Dystrybucja, markieting, produkcja</ContactRole>
+              <ContactName>Przemysław Rojek</ContactName>
+              <ContactInfo>
+                <a href="tel:+48886988561">
+                  <ContactIcon><FiPhone /></ContactIcon>
+                  <ContactText>+48 886 988 561</ContactText>
+                </a>
+              </ContactInfo>
+              <ContactInfo>
+                <a href="mailto:przemyslaw.rojek@rojekoid.pl">
+                  <ContactIcon><FiMail /></ContactIcon>
+                  <ContactText>przemyslaw.rojek@rojekoid.pl</ContactText>
+                </a>
+              </ContactInfo>
               <ContactName>Tomasz Rojek</ContactName>
               <ContactInfo>
                 <a href="tel:+48889194388">
@@ -198,19 +211,6 @@ const Footer = () => {
                 <a href="mailto:tomasz.rojek@rojekoid.pl">
                   <ContactIcon><FiMail /></ContactIcon>
                   <ContactText>tomasz.rojek@rojekoid.pl</ContactText>
-                </a>
-              </ContactInfo>
-              <ContactName>Przemysław Rojek</ContactName>
-              <ContactInfo>
-                <a href="tel:+48886988561">
-                  <ContactIcon><FiPhone /></ContactIcon>
-                  <ContactText>+48 886 988 561</ContactText>
-                </a>
-              </ContactInfo>
-              <ContactInfo>
-                <a href="mailto:przemyslaw.rojek@rojekoid.pl">
-                  <ContactIcon><FiMail /></ContactIcon>
-                  <ContactText>przemyslaw.rojek@okno-expert.pl</ContactText>
                 </a>
               </ContactInfo>
             </ContactGroup>
