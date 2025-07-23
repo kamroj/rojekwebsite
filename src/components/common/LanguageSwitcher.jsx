@@ -43,17 +43,12 @@ const CurrentLanguageButton = styled.button`
   }
   
   .flag-icon {
-    width: 30px !important;
+    width: 28px !important;
     height: auto;
   }
   
   &:hover .flag-container {
     opacity: 0.8;
-  }
-
-  &:focus {
-    outline: 2px solid ${({ theme }) => theme.colors.secondary};
-    outline-offset: 2px;
   }
 `;
 
@@ -63,7 +58,7 @@ const DropdownMenu = styled.div`
   right: 0;
   background-color: rgba(40, 40, 40, 0.9);
   border-radius: 4px;
-  padding: ${({ theme }) => theme.spacings.small};
+  padding: 2px;
   margin-top: 10px;
   min-width: auto;
   box-shadow: ${({ theme }) => theme.shadows.medium};
@@ -120,7 +115,7 @@ const LanguageOption = styled.button`
   }
   
   .dropdown-flag-icon {
-    width: 24px !important;
+    width: 100% !important;
     height: auto;
   }
 
