@@ -101,10 +101,9 @@ const GlobalStyles = createGlobalStyle`
     display: block;
   }
 
-  /* Focus styles for accessibility */
-  :focus-visible {
-    outline: 3px solid ${({ theme }) => theme.colors.secondary};
-    outline-offset: 2px;
+  /* Remove all focus outlines */
+  * {
+    outline: none;
   }
 
   /* Remove animations for users who prefer reduced motion */

@@ -54,10 +54,6 @@ const HeaderWrapper = styled.header`
       color: #0ae875;
     }
 
-    &:focus {
-      outline: 2px solid ${({ theme }) => theme.colors.secondary};
-      outline-offset: 2px;
-    }
   }
   
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
@@ -83,10 +79,6 @@ const LogoLink = styled(Link)`
     transition: filter 0.3s linear;
   }
 
-  &:focus {
-    outline: 2px solid ${({ theme }) => theme.colors.secondary};
-    outline-offset: 2px;
-  }
 `;
 
 const DesktopNav = styled.div`
@@ -145,10 +137,6 @@ const MobileMenuButton = styled.button`
     transform: scale(0.95);
   }
 
-  &:focus {
-    outline: 2px solid ${({ theme }) => theme.colors.secondary};
-    outline-offset: 2px;
-  }
 `;
 
 const MobileMenuOverlay = styled.div`
@@ -256,10 +244,6 @@ const MobileNavItem = styled(Link)`
     color: ${({ theme }) => theme.colors.secondary};
   }
 
-  &:focus {
-    outline: 2px solid ${({ theme }) => theme.colors.secondary};
-    outline-offset: 2px;
-  }
   
   &:active {
     background-color: rgba(0, 0, 0, 0.05);

@@ -124,10 +124,6 @@ const LanguageOption = styled.button`
     background-color: ${props => props.$isMobile ? 'rgba(1, 126, 84, 0.05)' : 'transparent'};
   }
 
-  &:focus {
-    outline: 2px solid ${({ theme }) => theme.colors.secondary};
-    outline-offset: 2px;
-  }
 
   &:disabled {
     cursor: default;

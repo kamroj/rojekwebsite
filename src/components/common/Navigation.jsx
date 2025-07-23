@@ -26,10 +26,6 @@ const BaseNavItem = styled(Link)`
     color: ${({ theme }) => theme.colors.accent};
   }
 
-  &:focus {
-    outline: 2px solid ${({ theme }) => theme.colors.secondary};
-    outline-offset: 2px;
-  }
 
   &.active {
     font-weight: 700;

@@ -80,11 +80,6 @@ const ContactInfo = styled.div`
     &:hover {
       color: ${({ theme }) => theme.colors.accent};
     }
-
-    &:focus {
-      outline: 2px solid ${({ theme }) => theme.colors.secondary};
-      outline-offset: 2px;
-    }
   }
 `;
 
