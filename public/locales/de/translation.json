@@ -94,13 +94,16 @@
     }
   },
   "realizations": {
+    "description": "Unten präsentieren wir ausgewählte Projekte, die wir für unsere Kunden realisiert haben. Jeder Auftrag ist für uns eine neue Herausforderung, der wir mit Leidenschaft und Professionalität begegnen.",
     "items": [
       { "title": "Einfamilienhaus, Wrocław" },
       { "title": "Moderne Wohnsiedlung, Poznań" },
       { "title": "Mietshausrenovierung, Kraków" },
       { "title": "Bürogebäude Klasse A, Warschau" },
       { "title": "Lofts in alter Fabrik, Łódź" },
-      { "title": "Villa außerhalb der Stadt, Gdańsk" }
+      { "title": "Villa außerhalb der Stadt, Gdańsk" },
+      { "title": "Stadtresidenz, Wrocław" },
+      { "title": "Wohnkomplex, Gdańsk" }
     ]
   },
   "whyUs": {
@@ -185,6 +188,7 @@
     "general": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
   },
   "loading": "Laden...",
+  "loading.resources": "Ressourcen",
   "navigation": {
     "previous": "Vorherige",
     "next": "Nächste"

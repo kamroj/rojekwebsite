@@ -94,13 +94,16 @@
     }
   },
   "realizations": {
+    "description": "Below we present selected projects that we have implemented for our clients. Each order is a new challenge for us, which we face with passion and professionalism.",
     "items": [
       { "title": "Single-family house, Wrocław" },
       { "title": "Modern housing estate, Poznań" },
       { "title": "Tenement renovation, Kraków" },
       { "title": "Class A office building, Warsaw" },
       { "title": "Lofts in old factory, Łódź" },
-      { "title": "Villa outside the city, Gdańsk" }
+      { "title": "Villa outside the city, Gdańsk" },
+      { "title": "Urban residence, Wrocław" },
+      { "title": "Residential complex, Gdańsk" }
     ]
   },
   "whyUs": {
@@ -185,6 +188,7 @@
     "general": "An error occurred. Please try again."
   },
   "loading": "Loading...",
+  "loading.resources": "resources",
   "navigation": {
     "previous": "Previous",
     "next": "Next"

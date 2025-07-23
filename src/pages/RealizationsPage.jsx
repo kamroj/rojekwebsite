@@ -3,6 +3,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import RealizationsGallery from '../components/gallery/RealizationsGallery';
+import { REALIZATION_IMAGES } from '../constants';
 
 // Stylizowany kontener dla tytułu strony
 const PageTitleContainer = styled.div`
@@ -25,30 +26,22 @@ const PageTitleContainer = styled.div`
   }
 `;
 
-// Example realization data
-const realizationData = [
-  { id: 1, src: '/images/realizations/realization1.jpg', title: 'Dom jednorodzinny, Wrocław' },
-  { id: 2, src: '/images/realizations/realization2.jpg', title: 'Nowoczesne osiedle, Poznań' },
-  { id: 3, src: '/images/realizations/realization3.jpg', title: 'Renowacja kamienicy, Kraków' },
-  { id: 4, src: '/images/realizations/realization4.jpg', title: 'Biurowiec klasy A, Warszawa' },
-  { id: 5, src: '/images/realizations/realization5.jpg', title: 'Lofty w starej fabryce, Łódź' },
-  { id: 6, src: '/images/realizations/realization6.jpg', title: 'Willa pod miastem, Gdańsk' },
-  { id: 7, src: '/images/realizations/realization3.jpg', title: 'Kamienica zabytkowa, Kraków' },
-  { id: 8, src: '/images/realizations/realization5.jpg', title: 'Apartamenty loftowe, Łódź' },
-  { id: 9, src: '/images/realizations/realization1.jpg', title: 'Rezydencja prywatna, Wrocław' },
-];
-
 const RealizationsPage = () => {
   const { t } = useTranslation();
+
+  // Create realization data with translations
+  const realizationData = REALIZATION_IMAGES.map((img, index) => ({
+    ...img,
+    title: t(`realizations.items.${index}.title`, `Realizacja ${index + 1}`)
+  }));
 
   return (
     <>
       <PageTitleContainer>
-        <h2>{t('pageTitle.realizations', 'Realizacje')}</h2>
-        <p>Poniżej prezentujemy wybrane projekty, które realizowaliśmy dla naszych klientów. Każde zlecenie to dla nas nowe wyzwanie, któremu stawiamy czoła z pasją i profesjonalizmem.</p>
+        <h2>{t('sections.realizations')}</h2>
+        <p>{t('realizations.description', 'Poniżej prezentujemy wybrane projekty, które realizowaliśmy dla naszych klientów. Każde zlecenie to dla nas nowe wyzwanie, któremu stawiamy czoła z pasją i profesjonalizmem.')}</p>
       </PageTitleContainer>
 
-      {/* Galeria realizacji z ciemnym tłem */}
       <RealizationsGallery 
         images={realizationData}
         options={{

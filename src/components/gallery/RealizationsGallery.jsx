@@ -301,7 +301,6 @@ const RealizationsGallery = ({ images, options = {} }) => {
               <GalleryImage 
                 src={item.src} 
                 alt={item.title} 
-                loading="lazy" 
                 draggable="false" 
               />
               <GalleryImageTitle>{item.title}</GalleryImageTitle>

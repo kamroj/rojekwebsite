@@ -9,7 +9,7 @@ import SwipeHandler from '../common/SwipeHandler';
 import { useScrollPosition, useResponsive } from '../../hooks';
 import { ROUTES, IMAGE_PATHS } from '../../constants';
 import { handleKeyboardNavigation } from '../../utils';
-import logoSrc from '../../assets/images/logo.png';
+import logoSrc from '/images/logo.png';
 import { fadeIn, fadeOut, slideInRight, slideOutRight, hamburgerToX } from '../../styles/animations.js';
 
 const activeLinkHighlight = keyframes`

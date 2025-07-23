@@ -3,48 +3,25 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { ThemeProvider } from 'styled-components';
 import { Suspense } from 'react';
-import styled, { keyframes } from 'styled-components';
 
 import App from './App.jsx';
 import GlobalStyles from './styles/GlobalStyles.js';
 import theme from './styles/theme.js';
+import LoadingScreen from './components/common/LoadingScreen.jsx';
 // Import internationalization
 import './i18n.js';
 
-// Spinner animation
-const spinAnimation = keyframes`
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-`;
-
-// Loading container
-const LoadingContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  width: 100vw;
-  background-color: #000000;
-  position: fixed;
-  top: 0;
-  left: 0;
-`;
-
-// Green spinner component
-const GreenSpinner = styled.div`
-  width: 60px;
-  height: 60px;
-  border: 6px solid rgba(1, 126, 84, 0.1);
-  border-top: 6px solid #017e54;
-  border-radius: 50%;
-  animation: ${spinAnimation} 1s linear infinite;
-`;
-
-// Loading component with green spinner
+// Loading fallback using our LoadingScreen
 const LoadingFallback = () => (
-  <LoadingContainer>
-    <GreenSpinner />
-  </LoadingContainer>
+  <ThemeProvider theme={theme}>
+    <LoadingScreen 
+      isVisible={true}
+      isHiding={false}
+      progress={0}
+      loadedCount={0}
+      totalCount={0}
+    />
+  </ThemeProvider>
 );
 
 ReactDOM.createRoot(document.getElementById('root')).render(

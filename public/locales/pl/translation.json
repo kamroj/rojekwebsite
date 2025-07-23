@@ -94,13 +94,16 @@
     }
   },
   "realizations": {
+    "description": "Poniżej prezentujemy wybrane projekty, które realizowaliśmy dla naszych klientów. Każde zlecenie to dla nas nowe wyzwanie, któremu stawiamy czoła z pasją i profesjonalizmem.",
     "items": [
       { "title": "Dom jednorodzinny, Wrocław" },
       { "title": "Nowoczesne osiedle, Poznań" },
       { "title": "Renowacja kamienicy, Kraków" },
       { "title": "Biurowiec klasy A, Warszawa" },
       { "title": "Lofty w starej fabryce, Łódź" },
-      { "title": "Willa pod miastem, Gdańsk" }
+      { "title": "Willa pod miastem, Gdańsk" },
+      { "title": "Rezydencja miejska, Wrocław" },
+      { "title": "Kompleks mieszkaniowy, Gdańsk" }
     ]
   },
   "whyUs": {
@@ -185,6 +188,7 @@
     "general": "Wystąpił błąd. Spróbuj ponownie."
   },
   "loading": "Ładowanie...",
+  "loading.resources": "zasobów",
   "navigation": {
     "previous": "Poprzedni",
     "next": "Następny"
