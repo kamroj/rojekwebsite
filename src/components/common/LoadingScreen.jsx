@@ -23,7 +23,7 @@ const LoadingOverlay = styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  background: linear-gradient(135deg, #1a1a1a 10%, #2d2d2d 50%, #00412b 100%);
+  background: linear-gradient(135deg, #000000 10%, #0c0c0c 50%, #002719 100%);
   display: flex;
   flex-direction: column;
   justify-content: center;
