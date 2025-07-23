@@ -38,7 +38,7 @@ const useImagePreloader = (imageUrls = []) => {
           loadedCountRef.current++;
           setLoadedCount(loadedCountRef.current);
           console.warn(`Failed to load image: ${url}`);
-          resolve(url); // Resolve anyway to not block other images
+          resolve(url); 
         };
         
         img.onload = handleLoad;
