@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
@@ -108,6 +108,31 @@ const LoadingScreen = ({
   totalCount = 0 
 }) => {
   const { t } = useTranslation();
+
+  // Block scrolling when loading screen is visible
+  useEffect(() => {
+    if (isVisible && !isHiding) {
+      // Save current scroll position
+      const scrollY = window.scrollY;
+      
+      // Block scrolling
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = '100%';
+      document.body.style.overflow = 'hidden';
+      
+      return () => {
+        // Restore scrolling
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.width = '';
+        document.body.style.overflow = '';
+        
+        // Restore scroll position
+        window.scrollTo(0, scrollY);
+      };
+    }
+  }, [isVisible, isHiding]);
 
   // Don't render if not visible and not hiding
   if (!isVisible && !isHiding) return null;
