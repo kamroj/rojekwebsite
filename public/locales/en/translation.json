@@ -1,17 +1,206 @@
 {
-    "nav": {
-      "home": "Home",
-      "realizations": "Realizations",
-      "about": "About Us",
-      "contact": "Contact"
+  "nav": {
+    "home": "Home",
+    "realizations": "Realizations",
+    "about": "About Us",
+    "contact": "Contact",
+    "mainNavigation": "Main navigation",
+    "mobileNavigation": "Mobile navigation",
+    "toggleMenu": "Toggle menu",
+    "logoAlt": "ROJEK windows & doors Logo"
+  },
+  "pageTitle": {
+    "home": "ROJEK - Home Page",
+    "realizations": "ROJEK - Realizations",
+    "about": "ROJEK - About Us",
+    "contact": "ROJEK - Contact"
+  },
+  "footer": {
+    "copy": "© {{year}} ROJEK windows & doors. All rights reserved."
+  },
+  "intro": {
+    "text1": "See our realizations",
+    "text2": "Discover wood-aluminum windows",
+    "text3": "Exterior doors for your home",
+    "text4": "Modern sliding systems"
+  },
+  "buttons": {
+    "details": "See details",
+    "backToHome": "Back to home page",
+    "contact": "Contact us",
+    "viewMore": "View more",
+    "close": "Close",
+    "pause": "Pause",
+    "play": "Play",
+    "see": "See"
+  },
+  "sections": {
+    "products": "PRODUCTS",
+    "realizations": "REALIZATIONS",
+    "whyUs": "WHY US?",
+    "companyPresentation": "COMPANY PRESENTATION",
+    "partners": "OUR PARTNERS",
+    "aboutUs": "ABOUT US",
+    "contactInfo": "CONTACT"
+  },
+  "products": {
+    "windows": {
+      "name": "WINDOWS",
+      "description": "Wooden windows are an investment in the highest possible quality. An ecological solution and unique design that will give character to any interior.",
+      "benefits": [
+        "Highest quality natural wood",
+        "Environmentally friendly and healthy for residents",
+        "Unique design and aesthetics",
+        "Rich palette of colors and finishes",
+        "Very long lifespan and structural durability",
+        "Excellent thermal and acoustic insulation parameters"
+      ]
     },
-    "pageTitle": {
-      "home": "ROJEK - Home Page",
-      "realizations": "ROJEK - Realizations",
-      "about": "ROJEK - About Us",
-      "contact": "ROJEK - Contact"
+    "exteriorDoors": {
+      "name": "EXTERIOR DOORS",
+      "description": "Exterior doors are the business card of the house. Our doors combine uncompromising security, refined aesthetics and excellent thermal insulation.",
+      "benefits": [
+        "Solid construction guaranteeing security",
+        "High thermal and acoustic insulation",
+        "Resistance to weather conditions and warping",
+        "Wide selection of patterns, from classic to modern",
+        "Possibility of using modern access control systems",
+        "Individual adjustment of dimensions and accessories"
+      ]
     },
-    "footer": {
-      "copy": "© {{year}} ROJEK windows & doors. All rights reserved."
+    "interiorDoors": {
+      "name": "INTERIOR DOORS",
+      "description": "Interior doors are an interior element that combines functionality with elegance. Our interior doors perfectly complement any arrangement style.",
+      "benefits": [
+        "Elegant design harmonizing with interior decor",
+        "Wide possibilities for personalizing patterns and colors",
+        "Excellent acoustic insulation between rooms",
+        "Durable construction from high-quality materials",
+        "Precise workmanship ensuring smooth operation",
+        "Rich selection of hardware and functional accessories"
+      ]
+    },
+    "sliding": {
+      "name": "SLIDING WINDOWS",
+      "description": "HS sliding systems are a modern solution that allows creating impressive glazing and smooth connection of interior with terrace or garden, blurring the boundaries between home and nature.",
+      "benefits": [
+        "Maximum interior lighting thanks to large glass surfaces",
+        "Space saving compared to traditional balcony doors",
+        "Easy and comfortable operation even of very large sashes",
+        "Modern design and possibility of creating panoramic views",
+        "High tightness and excellent thermal insulation parameters",
+        "Possibility of execution in low-threshold system for full comfort"
+      ]
     }
+  },
+  "realizations": {
+    "items": [
+      { "title": "Single-family house, Wrocław" },
+      { "title": "Modern housing estate, Poznań" },
+      { "title": "Tenement renovation, Kraków" },
+      { "title": "Class A office building, Warsaw" },
+      { "title": "Lofts in old factory, Łódź" },
+      { "title": "Villa outside the city, Gdańsk" }
+    ]
+  },
+  "whyUs": {
+    "title": "Why choose ROJEK?",
+    "items": [
+      {
+        "title": "Experience",
+        "description": "Over 20 years of experience in the windows and doors industry"
+      },
+      {
+        "title": "Quality",
+        "description": "We use only the highest quality materials and components"
+      },
+      {
+        "title": "Service",
+        "description": "Comprehensive service from design to installation and service"
+      },
+      {
+        "title": "Warranty",
+        "description": "Long-term warranty on all our products"
+      }
+    ],
+    "tradition": {
+      "title": "Tradition and experience",
+      "description": "Since 1981, we have been creating the highest quality carpentry, combining years of experience with modern technologies."
+    },
+    "individual": {
+      "title": "Individual approach",
+      "description": "We treat each order exceptionally, adapting solutions to the needs and expectations of our clients."
+    },
+    "ecological": {
+      "title": "Ecological materials",
+      "description": "We use only certified, environmentally friendly materials of the highest quality."
+    },
+    "precision": {
+      "title": "Precision of execution",
+      "description": "Attention to the smallest details and perfect finishing is our hallmark."
+    },
+    "warranty": {
+      "title": "Warranty and service",
+      "description": "We provide multi-year warranty and professional service for our products."
+    },
+    "delivery": {
+      "title": "Timely delivery",
+      "description": "We meet agreed deadlines, respecting our clients' time."
+    }
+  },
+  "company": {
+    "title": "About our company",
+    "description": "ROJEK is a family company with many years of experience in the production of windows and doors. We specialize in wooden and wood-aluminum solutions of the highest quality."
+  },
+  "presentation": {
+    "playVideo": "Play presentation video",
+    "title": "ROJEK company presentation"
+  },
+  "partners": {
+    "title": "We cooperate with the best"
+  },
+  "contact": {
+    "title": "Contact us",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email",
+    "hours": "Opening hours",
+    "contactTitle": "Contact",
+    "locationTitle": "Our location",
+    "roles": {
+      "quotes": "Quotes, inquiries",
+      "distribution": "Distribution, marketing, production"
+    },
+    "people": {
+      "wieslaw": "Wiesław Rojek",
+      "przemyslaw": "Przemysław Rojek",
+      "tomasz": "Tomasz Rojek"
+    }
+  },
+  "errors": {
+    "404": {
+      "title": "404 - Page not found",
+      "message": "Sorry, the page you are looking for does not exist."
+    },
+    "general": "An error occurred. Please try again."
+  },
+  "loading": "Loading...",
+  "navigation": {
+    "previous": "Previous",
+    "next": "Next"
+  },
+  "language": {
+    "switcher": {
+      "label": "Language",
+      "changeLanguage": "Change language",
+      "switchTo": {
+        "pl": "Switch to Polish",
+        "en": "Switch to English",
+        "de": "Switch to German"
+      }
+    },
+    "pl": "Polish",
+    "en": "English",
+    "de": "German"
   }
+}

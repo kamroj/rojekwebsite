@@ -1,17 +1,206 @@
 {
-    "nav": {
-      "home": "Startseite",
-      "realizations": "Projekte",
-      "about": "Über uns",
-      "contact": "Kontakt"
+  "nav": {
+    "home": "Startseite",
+    "realizations": "Projekte",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "mainNavigation": "Hauptnavigation",
+    "mobileNavigation": "Mobile Navigation",
+    "toggleMenu": "Menü umschalten",
+    "logoAlt": "ROJEK Fenster & Türen Logo"
+  },
+  "pageTitle": {
+    "home": "ROJEK - Startseite",
+    "realizations": "ROJEK - Projekte",
+    "about": "ROJEK - Über uns",
+    "contact": "ROJEK - Kontakt"
+  },
+  "footer": {
+    "copy": "© {{year}} ROJEK Fenster & Türen. Alle Rechte vorbehalten."
+  },
+  "intro": {
+    "text1": "Sehen Sie unsere Projekte",
+    "text2": "Entdecken Sie Holz-Aluminium-Fenster",
+    "text3": "Außentüren für Ihr Zuhause",
+    "text4": "Moderne Schiebeanlagen"
+  },
+  "buttons": {
+    "details": "Details ansehen",
+    "backToHome": "Zurück zur Startseite",
+    "contact": "Kontaktieren Sie uns",
+    "viewMore": "Mehr anzeigen",
+    "close": "Schließen",
+    "pause": "Pause",
+    "play": "Abspielen",
+    "see": "Ansehen"
+  },
+  "sections": {
+    "products": "PRODUKTE",
+    "realizations": "PROJEKTE",
+    "whyUs": "WARUM WIR?",
+    "companyPresentation": "FIRMENPRÄSENTATION",
+    "partners": "UNSERE PARTNER",
+    "aboutUs": "ÜBER UNS",
+    "contactInfo": "KONTAKT"
+  },
+  "products": {
+    "windows": {
+      "name": "FENSTER",
+      "description": "Holzfenster sind eine Investition in höchstmögliche Qualität. Eine ökologische Lösung und einzigartiges Design, das jedem Interieur Charakter verleiht.",
+      "benefits": [
+        "Höchste Qualität von Naturholz",
+        "Umweltfreundlich und gesund für Bewohner",
+        "Einzigartiges Design und Ästhetik",
+        "Reiche Palette von Farben und Oberflächen",
+        "Sehr lange Lebensdauer und strukturelle Haltbarkeit",
+        "Ausgezeichnete Wärme- und Schalldämmparameter"
+      ]
     },
-    "pageTitle": {
-      "home": "ROJEK - Startseite",
-      "realizations": "ROJEK - Projekte",
-      "about": "ROJEK - Über uns",
-      "contact": "ROJEK - Kontakt"
+    "exteriorDoors": {
+      "name": "AUSSЕНТÜREN",
+      "description": "Außentüren sind die Visitenkarte des Hauses. Unsere Türen verbinden kompromisslose Sicherheit, raffinierte Ästhetik und ausgezeichnete Wärmedämmung.",
+      "benefits": [
+        "Solide Konstruktion garantiert Sicherheit",
+        "Hohe Wärme- und Schalldämmung",
+        "Widerstandsfähigkeit gegen Witterungseinflüsse und Verformungen",
+        "Große Auswahl an Mustern, von klassisch bis modern",
+        "Möglichkeit der Verwendung moderner Zugangskontrollsysteme",
+        "Individuelle Anpassung von Abmessungen und Zubehör"
+      ]
     },
-    "footer": {
-      "copy": "© {{year}} ROJEK Fenster & Türen. Alle Rechte vorbehalten."
+    "interiorDoors": {
+      "name": "INNENTÜREN",
+      "description": "Innentüren sind ein Einrichtungselement, das Funktionalität mit Eleganz verbindet. Unsere Innentüren ergänzen perfekt jeden Einrichtungsstil.",
+      "benefits": [
+        "Elegantes Design harmoniert mit der Inneneinrichtung",
+        "Breite Möglichkeiten zur Personalisierung von Mustern und Farben",
+        "Ausgezeichnete Schalldämmung zwischen Räumen",
+        "Langlebige Konstruktion aus hochwertigen Materialien",
+        "Präzise Verarbeitung gewährleistet reibungslosen Betrieb",
+        "Reiche Auswahl an Beschlägen und funktionellem Zubehör"
+      ]
+    },
+    "sliding": {
+      "name": "SCHIEBEFENSTER",
+      "description": "HS-Schiebeanlagen sind eine moderne Lösung, die beeindruckende Verglasungen und eine nahtlose Verbindung von Innenraum mit Terrasse oder Garten ermöglicht und die Grenzen zwischen Haus und Natur verwischt.",
+      "benefits": [
+        "Maximale Innenbeleuchtung dank großer Glasflächen",
+        "Platzersparnis im Vergleich zu herkömmlichen Balkontüren",
+        "Einfache und komfortable Bedienung auch sehr großer Flügel",
+        "Modernes Design und Möglichkeit panoramischer Ausblicke",
+        "Hohe Dichtheit und ausgezeichnete Wärmedämmparameter",
+        "Möglichkeit der Ausführung im niedrigschwelligen System für vollen Komfort"
+      ]
     }
+  },
+  "realizations": {
+    "items": [
+      { "title": "Einfamilienhaus, Wrocław" },
+      { "title": "Moderne Wohnsiedlung, Poznań" },
+      { "title": "Mietshausrenovierung, Kraków" },
+      { "title": "Bürogebäude Klasse A, Warschau" },
+      { "title": "Lofts in alter Fabrik, Łódź" },
+      { "title": "Villa außerhalb der Stadt, Gdańsk" }
+    ]
+  },
+  "whyUs": {
+    "title": "Warum ROJEK wählen?",
+    "items": [
+      {
+        "title": "Erfahrung",
+        "description": "Über 20 Jahre Erfahrung in der Fenster- und Türenbranche"
+      },
+      {
+        "title": "Qualität",
+        "description": "Wir verwenden nur hochwertigste Materialien und Komponenten"
+      },
+      {
+        "title": "Service",
+        "description": "Umfassender Service von der Planung bis zur Installation und Wartung"
+      },
+      {
+        "title": "Garantie",
+        "description": "Langzeitgarantie auf alle unsere Produkte"
+      }
+    ],
+    "tradition": {
+      "title": "Tradition und Erfahrung",
+      "description": "Seit 1981 schaffen wir Tischlerei höchster Qualität und verbinden jahrelange Erfahrung mit modernen Technologien."
+    },
+    "individual": {
+      "title": "Individueller Ansatz",
+      "description": "Wir behandeln jeden Auftrag außergewöhnlich und passen Lösungen an die Bedürfnisse und Erwartungen unserer Kunden an."
+    },
+    "ecological": {
+      "title": "Ökologische Materialien",
+      "description": "Wir verwenden nur zertifizierte, umweltfreundliche Materialien höchster Qualität."
+    },
+    "precision": {
+      "title": "Präzision der Ausführung",
+      "description": "Aufmerksamkeit für kleinste Details und perfekte Verarbeitung ist unser Markenzeichen."
+    },
+    "warranty": {
+      "title": "Garantie und Service",
+      "description": "Wir bieten mehrjährige Garantie und professionellen Service für unsere Produkte."
+    },
+    "delivery": {
+      "title": "Pünktliche Lieferung",
+      "description": "Wir halten vereinbarte Termine ein und respektieren die Zeit unserer Kunden."
+    }
+  },
+  "company": {
+    "title": "Über unser Unternehmen",
+    "description": "ROJEK ist ein Familienunternehmen mit langjähriger Erfahrung in der Herstellung von Fenstern und Türen. Wir spezialisieren uns auf Holz- und Holz-Aluminium-Lösungen höchster Qualität."
+  },
+  "presentation": {
+    "playVideo": "Präsentationsvideo abspielen",
+    "title": "ROJEK Firmenpräsentation"
+  },
+  "partners": {
+    "title": "Wir arbeiten mit den Besten zusammen"
+  },
+  "contact": {
+    "title": "Kontaktieren Sie uns",
+    "address": "Adresse",
+    "phone": "Telefon",
+    "email": "E-Mail",
+    "hours": "Öffnungszeiten",
+    "contactTitle": "Kontakt",
+    "locationTitle": "Unser Standort",
+    "roles": {
+      "quotes": "Angebote, Anfragen",
+      "distribution": "Vertrieb, Marketing, Produktion"
+    },
+    "people": {
+      "wieslaw": "Wiesław Rojek",
+      "przemyslaw": "Przemysław Rojek",
+      "tomasz": "Tomasz Rojek"
+    }
+  },
+  "errors": {
+    "404": {
+      "title": "404 - Seite nicht gefunden",
+      "message": "Entschuldigung, die gesuchte Seite existiert nicht."
+    },
+    "general": "Ein Fehler ist aufgetreten. Bitte versuchen Sie es erneut."
+  },
+  "loading": "Laden...",
+  "navigation": {
+    "previous": "Vorherige",
+    "next": "Nächste"
+  },
+  "language": {
+    "switcher": {
+      "label": "Sprache",
+      "changeLanguage": "Sprache ändern",
+      "switchTo": {
+        "pl": "Auf Polnisch wechseln",
+        "en": "Auf Englisch wechseln",
+        "de": "Auf Deutsch wechseln"
+      }
+    },
+    "pl": "Polnisch",
+    "en": "Englisch",
+    "de": "Deutsch"
   }
+}

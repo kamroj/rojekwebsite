@@ -1,26 +1,206 @@
 {
-    "nav": {
-      "home": "Strona Główna",
-      "realizations": "Realizacje",
-      "about": "O Firmie",
-      "contact": "Kontakt"
-    },
-    "pageTitle": {
-      "home": "ROJEK - Strona Główna",
-      "realizations": "ROJEK - Realizacje",
-      "about": "ROJEK - O Firmie",
-      "contact": "ROJEK - Kontakt"
-    },
-    "footer": {
-      "copy": "© {{year}} ROJEK okna i drzwi. Wszelkie prawa zastrzeżone."
-    },
-    "intro": {
+  "nav": {
+    "home": "Strona Główna",
+    "realizations": "Realizacje",
+    "about": "O Firmie",
+    "contact": "Kontakt",
+    "mainNavigation": "Główna nawigacja",
+    "mobileNavigation": "Nawigacja mobilna",
+    "toggleMenu": "Przełącz menu",
+    "logoAlt": "ROJEK okna i drzwi Logo"
+  },
+  "pageTitle": {
+    "home": "ROJEK - Strona Główna",
+    "realizations": "ROJEK - Realizacje",
+    "about": "ROJEK - O Firmie",
+    "contact": "ROJEK - Kontakt"
+  },
+  "footer": {
+    "copy": "© {{year}} ROJEK okna i drzwi. Wszelkie prawa zastrzeżone."
+  },
+  "intro": {
     "text1": "Zobacz nasze realizacje",
     "text2": "Odkryj okna drewniano-aluminiowe",
     "text3": "Drzwi zewnętrzne dla Twojego domu",
     "text4": "Nowoczesne systemy przesuwne"
   },
-    "buttons": {
-      "details": "Zobacz szczegóły" 
+  "buttons": {
+    "details": "Zobacz szczegóły",
+    "backToHome": "Wróć do strony głównej",
+    "contact": "Skontaktuj się z nami",
+    "viewMore": "Zobacz więcej",
+    "close": "Zamknij",
+    "pause": "Pauza",
+    "play": "Odtwórz",
+    "see": "Zobacz"
+  },
+  "sections": {
+    "products": "PRODUKTY",
+    "realizations": "REALIZACJE",
+    "whyUs": "DLACZEGO MY?",
+    "companyPresentation": "PREZENTACJA FIRMY",
+    "partners": "NASI PARTNERZY",
+    "aboutUs": "O FIRMIE",
+    "contactInfo": "KONTAKT"
+  },
+  "products": {
+    "windows": {
+      "name": "OKNA",
+      "description": "Okna drewniane to inwestycja w najwyższą z możliwych jakości. Ekologiczne rozwiązanie i niepowtarzalny design, który nada charakter każdemu wnętrzu.",
+      "benefits": [
+        "Najwyższa jakość naturalnego drewna",
+        "Przyjazne dla środowiska i zdrowe dla mieszkańców",
+        "Wyjątkowy design i estetyka",
+        "Bogata paleta kolorów i wykończeń",
+        "Bardzo długa żywotność i trwałość konstrukcji",
+        "Doskonałe parametry izolacyjności termicznej i akustycznej"
+      ]
+    },
+    "exteriorDoors": {
+      "name": "DRZWI ZEWNĘTRZNE",
+      "description": "Drzwi zewnętrzne stanowią wizytówkę domu. Nasze drzwi łączą bezkompromisowe bezpieczeństwo, wysublimowaną estetykę i doskonałą izolację termiczną.",
+      "benefits": [
+        "Solidna konstrukcja gwarantująca bezpieczeństwo",
+        "Wysoka izolacyjność termiczna i akustyczna",
+        "Odporność na warunki atmosferyczne i wypaczenia",
+        "Szeroki wybór wzorów, od klasycznych po nowoczesne",
+        "Możliwość zastosowania nowoczesnych systemów kontroli dostępu",
+        "Indywidualne dopasowanie wymiarów i dodatków"
+      ]
+    },
+    "interiorDoors": {
+      "name": "DRZWI WEWNĘTRZNE",
+      "description": "Drzwi wewnętrzne to element wyposażenia wnętrza, który łączy funkcjonalność z elegancją. Nasze drzwi wewnętrzne doskonale komponują się z każdym stylem aranżacji.",
+      "benefits": [
+        "Elegancki design harmonizujący z wystrojem wnętrza",
+        "Szerokie możliwości personalizacji wzorów i kolorów",
+        "Doskonała izolacja akustyczna między pomieszczeniami",
+        "Trwała konstrukcja z wysokiej jakości materiałów",
+        "Precyzyjne wykonanie zapewniające płynne działanie",
+        "Bogaty wybór okuć i dodatków funkcjonalnych"
+      ]
+    },
+    "sliding": {
+      "name": "OKNA PRZESUWNE",
+      "description": "Systemy przesuwne HS to nowoczesne rozwiązanie pozwalające na tworzenie imponujących przeszkleń i płynne połączenie wnętrza z tarasem lub ogrodem, zacierając granice między domem a naturą.",
+      "benefits": [
+        "Maksymalne doświetlenie wnętrz dzięki dużym powierzchniom szyb",
+        "Oszczędność miejsca w porównaniu do tradycyjnych drzwi balkonowych",
+        "Łatwa i komfortowa obsługa nawet bardzo dużych skrzydeł",
+        "Nowoczesny design i możliwość tworzenia panoramicznych widoków",
+        "Wysoka szczelność i doskonałe parametry termoizolacyjne",
+        "Możliwość wykonania w systemie niskoprogowym dla pełnej wygody"
+      ]
     }
+  },
+  "realizations": {
+    "items": [
+      { "title": "Dom jednorodzinny, Wrocław" },
+      { "title": "Nowoczesne osiedle, Poznań" },
+      { "title": "Renowacja kamienicy, Kraków" },
+      { "title": "Biurowiec klasy A, Warszawa" },
+      { "title": "Lofty w starej fabryce, Łódź" },
+      { "title": "Willa pod miastem, Gdańsk" }
+    ]
+  },
+  "whyUs": {
+    "title": "Dlaczego warto wybrać ROJEK?",
+    "items": [
+      {
+        "title": "Doświadczenie",
+        "description": "Ponad 20 lat doświadczenia w branży okien i drzwi"
+      },
+      {
+        "title": "Jakość",
+        "description": "Używamy tylko najwyższej jakości materiałów i komponentów"
+      },
+      {
+        "title": "Serwis",
+        "description": "Kompleksowa obsługa od projektu po montaż i serwis"
+      },
+      {
+        "title": "Gwarancja",
+        "description": "Długoterminowa gwarancja na wszystkie nasze produkty"
+      }
+    ],
+    "tradition": {
+      "title": "Tradycja i doświadczenie",
+      "description": "Od 1981 roku tworzymy stolarkę najwyższej jakości, łącząc wieloletnie doświadczenie z nowoczesnymi technologiami."
+    },
+    "individual": {
+      "title": "Indywidualne podejście",
+      "description": "Każde zlecenie traktujemy wyjątkowo, dostosowując rozwiązania do potrzeb i oczekiwań naszych klientów."
+    },
+    "ecological": {
+      "title": "Ekologiczne materiały",
+      "description": "Wykorzystujemy wyłącznie certyfikowane, przyjazne środowisku materiały najwyższej jakości."
+    },
+    "precision": {
+      "title": "Precyzja wykonania",
+      "description": "Dbałość o najmniejsze detale i perfekcyjne wykończenie to nasza wizytówka."
+    },
+    "warranty": {
+      "title": "Gwarancja i serwis",
+      "description": "Zapewniamy wieloletnią gwarancję oraz profesjonalny serwis naszych produktów."
+    },
+    "delivery": {
+      "title": "Terminowość dostaw",
+      "description": "Dotrzymujemy ustalonych terminów realizacji, szanując czas naszych klientów."
+    }
+  },
+  "company": {
+    "title": "O naszej firmie",
+    "description": "ROJEK to rodzinna firma z wieloletnim doświadczeniem w produkcji okien i drzwi. Specjalizujemy się w rozwiązaniach drewnianych i drewniano-aluminiowych najwyższej jakości."
+  },
+  "presentation": {
+    "playVideo": "Odtwórz film prezentacyjny",
+    "title": "Prezentacja firmy ROJEK"
+  },
+  "partners": {
+    "title": "Współpracujemy z najlepszymi"
+  },
+  "contact": {
+    "title": "Skontaktuj się z nami",
+    "address": "Adres",
+    "phone": "Telefon",
+    "email": "Email",
+    "hours": "Godziny otwarcia",
+    "contactTitle": "Kontakt",
+    "locationTitle": "Nasza lokalizacja",
+    "roles": {
+      "quotes": "Wyceny, zapytania",
+      "distribution": "Dystrybucja, marketing, produkcja"
+    },
+    "people": {
+      "wieslaw": "Wiesław Rojek",
+      "przemyslaw": "Przemysław Rojek",
+      "tomasz": "Tomasz Rojek"
+    }
+  },
+  "errors": {
+    "404": {
+      "title": "404 - Strona nie znaleziona",
+      "message": "Przepraszamy, strona której szukasz nie istnieje."
+    },
+    "general": "Wystąpił błąd. Spróbuj ponownie."
+  },
+  "loading": "Ładowanie...",
+  "navigation": {
+    "previous": "Poprzedni",
+    "next": "Następny"
+  },
+  "language": {
+    "switcher": {
+      "label": "Język",
+      "changeLanguage": "Zmień język",
+      "switchTo": {
+        "pl": "Przełącz na polski",
+        "en": "Przełącz na angielski",
+        "de": "Przełącz na niemiecki"
+      }
+    },
+    "pl": "Polski",
+    "en": "Angielski",
+    "de": "Niemiecki"
   }
+}

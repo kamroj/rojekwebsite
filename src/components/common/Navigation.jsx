@@ -1,10 +1,9 @@
-// src/components/common/Navigation.jsx
 import React from 'react';
 import styled, { css } from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
+import { ROUTES } from '../../constants';
 
-// Bazowe style dla kontenera nawigacji
 const BaseNavContainer = styled.nav`
   display: flex;
   gap: ${({ theme }) => theme.spacings.large};
@@ -12,7 +11,6 @@ const BaseNavContainer = styled.nav`
   flex-grow: 1;
 `;
 
-// Bazowe style dla elementów nawigacji
 const BaseNavItem = styled(Link)`
   text-decoration: none;
   font-size: 1.4rem;
@@ -28,7 +26,11 @@ const BaseNavItem = styled(Link)`
     color: ${({ theme }) => theme.colors.accent};
   }
 
-  /* Opcjonalne oznaczenie aktywnego stanu */
+  &:focus {
+    outline: 2px solid ${({ theme }) => theme.colors.secondary};
+    outline-offset: 2px;
+  }
+
   &.active {
     font-weight: 700;
     &::after {
@@ -43,59 +45,83 @@ const BaseNavItem = styled(Link)`
   }
 `;
 
-// Rozszerzone style dla różnych kontekstów
 export const HeaderNavContainer = styled(BaseNavContainer)`
-  /* Specyficzne style dla nawigacji w nagłówku */
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    display: none;
+  }
 `;
 
 export const HeaderNavItem = styled(BaseNavItem)`
-  /* Specyficzne style dla elementów nawigacji w nagłówku */
+  color: ${({ theme }) => theme.colors.text};
 `;
 
 export const IntroNavContainer = styled(BaseNavContainer)`
-  /* Specyficzne style dla nawigacji wprowadzającej */
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacings.medium};
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
+    flex-direction: row;
+    gap: ${({ theme }) => theme.spacings.large};
+  }
 `;
 
 export const IntroNavItem = styled(BaseNavItem)`
-  /* Specyficzne style dla elementów nawigacji wprowadzającej */
+  color: ${({ theme }) => theme.colors.textLight};
+  font-size: 1.6rem;
+  
+  @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
+    font-size: 1.4rem;
+  }
 `;
 
-// Sam komponent nawigacji - wielokrotnego użytku w różnych kontekstach
 const Navigation = ({ variant = 'header' }) => {
   const { t } = useTranslation();
   const location = useLocation();
   
-  // Wybierz style kontenera i elementu na podstawie wariantu
   const NavContainer = variant === 'intro' ? IntroNavContainer : HeaderNavContainer;
   const NavItem = variant === 'intro' ? IntroNavItem : HeaderNavItem;
   
-  // Elementy nawigacji - scentralizowane w jednym miejscu
   const navItems = [
-    { key: 'offer', path: '/realizations', label: 'nav.offer', fallback: 'Oferta' },
-    { key: 'realizations', path: '/realizations', label: 'nav.realizations', fallback: 'Realizacje' },
-    { key: 'about', path: '/about', label: 'nav.about', fallback: 'O nas' },
-    { key: 'contact', path: '/contact', label: 'nav.contact', fallback: 'Kontakt' }
+    { 
+      key: 'home', 
+      path: ROUTES.HOME, 
+      label: 'nav.home'
+    },
+    { 
+      key: 'realizations', 
+      path: ROUTES.REALIZATIONS, 
+      label: 'nav.realizations'
+    },
+    { 
+      key: 'about', 
+      path: ROUTES.ABOUT, 
+      label: 'nav.about'
+    },
+    { 
+      key: 'contact', 
+      path: ROUTES.CONTACT, 
+      label: 'nav.contact'
+    }
   ];
   
-  // Funkcja sprawdzająca, czy element jest aktywny
   const isActive = (path) => {
-    // Dla strony głównej sprawdź dokładnie
-    if (path === '/' && location.pathname === '/') {
+    if (path === ROUTES.HOME && location.pathname === ROUTES.HOME) {
       return true;
     }
-    // Dla innych stron sprawdź, czy ścieżka zaczyna się od podanej
-    return path !== '/' && location.pathname.startsWith(path);
+    return path !== ROUTES.HOME && location.pathname.startsWith(path);
   };
   
   return (
-    <NavContainer>
+    <NavContainer role="navigation" aria-label={t('nav.mainNavigation', 'Main navigation')}>
       {navItems.map(item => (
         <NavItem 
           to={item.path} 
           key={item.key}
           className={isActive(item.path) ? 'active' : ''}
+          aria-current={isActive(item.path) ? 'page' : undefined}
         >
-          {t(item.label, item.fallback)}
+          {t(item.label)}
         </NavItem>
       ))}
     </NavContainer>

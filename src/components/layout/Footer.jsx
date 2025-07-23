@@ -1,4 +1,3 @@
-// src/components/layout/Footer.jsx
 import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
@@ -15,7 +14,6 @@ const FooterContent = styled.div`
   margin: 0 auto;
 `;
 
-// Główny kontener z danymi kontaktowymi i mapą
 const FooterMainContent = styled.div`
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -28,7 +26,6 @@ const FooterMainContent = styled.div`
   }
 `;
 
-// Kontener z danymi kontaktowymi
 const ContactSection = styled.div`
   h3 {
     font-size: 2rem;
@@ -38,7 +35,6 @@ const ContactSection = styled.div`
   }
 `;
 
-// Grupa kontaktowa (osoba + funkcja)
 const ContactGroup = styled.div`
   margin-bottom: 2rem;
   
@@ -47,7 +43,6 @@ const ContactGroup = styled.div`
   }
 `;
 
-// Funkcja/rola osoby - teraz na górze
 const ContactRole = styled.div`
   font-size: 1.4rem;
   color: ${({ theme }) => theme.colors.accent};
@@ -57,7 +52,6 @@ const ContactRole = styled.div`
   letter-spacing: 0.5px;
 `;
 
-// Nazwa osoby
 const ContactName = styled.div`
   font-size: 1.6rem;
   font-weight: 500;
@@ -65,7 +59,6 @@ const ContactName = styled.div`
   color: ${({ theme }) => theme.colors.textLight};
 `;
 
-// Kontener dla kontaktu (telefon/email)
 const ContactInfo = styled.div`
   display: flex;
   align-items: center;
@@ -87,10 +80,14 @@ const ContactInfo = styled.div`
     &:hover {
       color: ${({ theme }) => theme.colors.accent};
     }
+
+    &:focus {
+      outline: 2px solid ${({ theme }) => theme.colors.secondary};
+      outline-offset: 2px;
+    }
   }
 `;
 
-// Ikona kontaktu
 const ContactIcon = styled.div`
   color: ${({ theme }) => theme.colors.bottleGreenLight};
   font-size: 1.8rem;
@@ -100,12 +97,10 @@ const ContactIcon = styled.div`
   flex-shrink: 0;
 `;
 
-// Tekst kontaktu
 const ContactText = styled.span`
   font-size: 1.4rem;
 `;
 
-// Kontener mapy
 const MapSection = styled.div`
   h3 {
     font-size: 2rem;
@@ -115,7 +110,6 @@ const MapSection = styled.div`
   }
 `;
 
-// Kontener iframe mapy
 const MapContainer = styled.div`
   width: 100%;
   height: 300px;
@@ -134,7 +128,6 @@ const MapContainer = styled.div`
   }
 `;
 
-// Copyright na dole
 const CopyrightSection = styled.div`
   text-align: center;
   padding-top: 2rem;
@@ -151,78 +144,82 @@ const Footer = () => {
   const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
 
-  // Adres dla mapy Google
+  const contactData = [
+    {
+      role: t('contact.roles.quotes'),
+      people: [
+        {
+          name: t('contact.people.wieslaw'),
+          phone: '+48 603 923 011',
+          emails: ['biuro@rojekoid.pl', 'wieslaw.rojek@rojekoid.pl']
+        }
+      ]
+    },
+    {
+      role: t('contact.roles.distribution'),
+      people: [
+        {
+          name: t('contact.people.przemyslaw'),
+          phone: '+48 886 988 561',
+          emails: ['przemyslaw.rojek@rojekoid.pl']
+        },
+        {
+          name: t('contact.people.tomasz'),
+          phone: '+48 889 194 388',
+          emails: ['tomasz.rojek@rojekoid.pl']
+        }
+      ]
+    }
+  ];
+
   const companyAddress = "FPHU.PRZ Stolarnia Wiesław Rojek, Krakowiaków 26, 32-060 Kryspinów";
-  const encodedAddress = encodeURIComponent(companyAddress);
+  const mapSrc = `https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2560.8982345678!2d19.8912345!3d50.0123456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471644c5e2e5e5e5%3A0x123456789abcdef!2sKrakowiakow%2026%2C%2032-060%20Kryspinow!5e0!3m2!1spl!2spl!4v1234567890123!5m2!1spl!2spl`;
 
   return (
     <FooterWrapper>
       <FooterContent>
         <FooterMainContent>
-          {/* Sekcja kontaktowa */}
           <ContactSection>
-            <h3>Kontakt</h3>
+            <h3>{t('contact.contactTitle')}</h3>
             
-            <ContactGroup>
-              <ContactRole>Wyceny, zapytania</ContactRole>
-              <ContactName>Wiesław Rojek</ContactName>
-              <ContactInfo>
-                <a href="tel:+48603923011">
-                  <ContactIcon><FiPhone /></ContactIcon>
-                  <ContactText>+48 603 923 011</ContactText>
-                </a>
-              </ContactInfo>
-              <ContactInfo>
-                <a href="mailto:biuro.rojek@rojekoid.pl">
-                  <ContactIcon><FiMail /></ContactIcon>
-                  <ContactText>biuro@rojekoid.pl</ContactText>
-                </a>
-              </ContactInfo>
-              <ContactInfo>
-                <a href="mailto:biuro.rojek@rojekoid.pl">
-                  <ContactIcon><FiMail /></ContactIcon>
-                  <ContactText>wieslaw.rojek@rojekoid.pl</ContactText>
-                </a>
-              </ContactInfo>
-            </ContactGroup>
-            <ContactGroup>
-              <ContactRole>Dystrybucja, markieting, produkcja</ContactRole>
-              <ContactName>Przemysław Rojek</ContactName>
-              <ContactInfo>
-                <a href="tel:+48886988561">
-                  <ContactIcon><FiPhone /></ContactIcon>
-                  <ContactText>+48 886 988 561</ContactText>
-                </a>
-              </ContactInfo>
-              <ContactInfo>
-                <a href="mailto:przemyslaw.rojek@rojekoid.pl">
-                  <ContactIcon><FiMail /></ContactIcon>
-                  <ContactText>przemyslaw.rojek@rojekoid.pl</ContactText>
-                </a>
-              </ContactInfo>
-              <ContactName>Tomasz Rojek</ContactName>
-              <ContactInfo>
-                <a href="tel:+48889194388">
-                  <ContactIcon><FiPhone /></ContactIcon>
-                  <ContactText>+48 889 194 388</ContactText>
-                </a>
-              </ContactInfo>
-              <ContactInfo>
-                <a href="mailto:tomasz.rojek@rojekoid.pl">
-                  <ContactIcon><FiMail /></ContactIcon>
-                  <ContactText>tomasz.rojek@rojekoid.pl</ContactText>
-                </a>
-              </ContactInfo>
-            </ContactGroup>
+            {contactData.map((group, groupIndex) => (
+              <ContactGroup key={groupIndex}>
+                <ContactRole>{group.role}</ContactRole>
+                {group.people.map((person, personIndex) => (
+                  <div key={personIndex}>
+                    <ContactName>{person.name}</ContactName>
+                    <ContactInfo>
+                      <a 
+                        href={`tel:${person.phone.replace(/\s/g, '')}`}
+                        aria-label={`${t('contact.phone')}: ${person.phone}`}
+                      >
+                        <ContactIcon><FiPhone /></ContactIcon>
+                        <ContactText>{person.phone}</ContactText>
+                      </a>
+                    </ContactInfo>
+                    {person.emails.map((email, emailIndex) => (
+                      <ContactInfo key={emailIndex}>
+                        <a 
+                          href={`mailto:${email}`}
+                          aria-label={`${t('contact.email')}: ${email}`}
+                        >
+                          <ContactIcon><FiMail /></ContactIcon>
+                          <ContactText>{email}</ContactText>
+                        </a>
+                      </ContactInfo>
+                    ))}
+                  </div>
+                ))}
+              </ContactGroup>
+            ))}
           </ContactSection>
 
-          {/* Sekcja mapy */}
           <MapSection>
-            <h3>Nasza lokalizacja</h3>
+            <h3>{t('contact.locationTitle')}</h3>
             <MapContainer>
               <iframe
-                src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2560.8982345678!2d19.8912345!3d50.0123456!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x471644c5e2e5e5e5%3A0x123456789abcdef!2sKrakowiakow%2026%2C%2032-060%20Kryspinow!5e0!3m2!1spl!2spl!4v1234567890123!5m2!1spl!2spl`}
-                title="Mapa lokalizacji FPHU.PRZ Stolarnia Wiesław Rojek"
+                src={mapSrc}
+                title={t('contact.locationTitle')}
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
                 allowFullScreen
@@ -231,9 +228,8 @@ const Footer = () => {
           </MapSection>
         </FooterMainContent>
 
-        {/* Sekcja copyright */}
         <CopyrightSection>
-          <p>© {currentYear} ROJEK okna i drzwi. Wszystkie prawa zastrzeżone.</p>
+          <p>{t('footer.copy', { year: currentYear })}</p>
         </CopyrightSection>
       </FooterContent>
     </FooterWrapper>

@@ -1,22 +1,22 @@
-// src/components/layout/Header.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { FiMenu, FiX, FiCheck } from 'react-icons/fi'; // Dodano ikonę fajki
+import { FiMenu, FiX } from 'react-icons/fi';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import Navigation from '../common/Navigation';
 import SwipeHandler from '../common/SwipeHandler';
+import { useScrollPosition, useResponsive } from '../../hooks';
+import { ROUTES, IMAGE_PATHS } from '../../constants';
+import { handleKeyboardNavigation } from '../../utils';
 import logoSrc from '../../assets/images/logo.png';
 import { fadeIn, fadeOut, slideInRight, slideOutRight, hamburgerToX } from '../../styles/animations.js';
 
-// Animacja podświetlenia aktywnego elementu menu
 const activeLinkHighlight = keyframes`
   0% { transform: translateX(-10px) scaleY(0.5); opacity: 0; }
   100% { transform: translateX(0) scaleY(1); opacity: 1; }
 `;
 
-// Główny wrapper headera
 const HeaderWrapper = styled.header`
   position: fixed;
   top: 0;
@@ -33,44 +33,41 @@ const HeaderWrapper = styled.header`
               border-color 0.1s linear, 
               color 0.1s linear;
 
-  /* Tło zmienia się na podstawie pozycji przewijania */
-  background-color: ${({ isPastThreshold, isVisible, theme }) =>
-    isPastThreshold && isVisible ? "#f8f9fa" : '#017e5414'};
+  background-color: ${({ $isPastThreshold, $isVisible, theme }) =>
+    $isPastThreshold && $isVisible ? "#f8f9fa" : '#017e5414'};
 
-  /* Styl bordera */
   border-bottom-width: 1px;
   border-bottom-style: solid;
   border-bottom-color: #059c4e68;
 
-  /* Kontrola widoczności */
-  opacity: ${({ isVisible }) => (isVisible ? 1 : 0)};
-  pointer-events: ${({ isVisible }) => (isVisible ? 'auto' : 'none')};
+  opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
+  pointer-events: ${({ $isVisible }) => ($isVisible ? 'auto' : 'none')};
 
-  /* Kolor tekstu zmienia się z tłem */
-  color: ${({ isPastThreshold, isVisible, theme }) =>
-    isPastThreshold ? theme.colors.text : theme.colors.textLight};
+  color: ${({ $isPastThreshold, $isVisible, theme }) =>
+    $isPastThreshold ? theme.colors.text : theme.colors.textLight};
 
-  /* Styl dla wszystkich linków wewnątrz headera */
   a {
     color: inherit;
     transition: color ${({ theme }) => theme.transitions.default};
 
     &:hover {
-      /* color: ${({ theme }) => theme.colors.accent}; */
       color: #0ae875;
+    }
+
+    &:focus {
+      outline: 2px solid ${({ theme }) => theme.colors.secondary};
+      outline-offset: 2px;
     }
   }
   
-  /* Tylko ciemniejsze tło gdy przewinięto stronę (zachowaj przezroczysty header na górze) */
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    background-color: ${({ isPastThreshold, isVisible, theme }) =>
-      isPastThreshold && isVisible ? "rgba(248, 249, 250, 0.9)" : '#017e5414'};
-    color: ${({ isPastThreshold, theme }) =>
-      isPastThreshold ? theme.colors.text : theme.colors.textLight};
+    background-color: ${({ $isPastThreshold, $isVisible, theme }) =>
+      $isPastThreshold && $isVisible ? "rgba(248, 249, 250, 0.9)" : '#017e5414'};
+    color: ${({ $isPastThreshold, theme }) =>
+      $isPastThreshold ? theme.colors.text : theme.colors.textLight};
   }
 `;
 
-// Stylizowany link z logo
 const LogoLink = styled(Link)`
   display: block;
   height: 50px;
@@ -81,15 +78,17 @@ const LogoLink = styled(Link)`
     height: 100%;
     width: auto;
     display: block;
-    filter: ${({ isPastThreshold }) =>
-      isPastThreshold ? 'brightness(0.3)' : 'brightness(1)'};
+    filter: ${({ $isPastThreshold }) =>
+      $isPastThreshold ? 'brightness(0.3)' : 'brightness(1)'};
     transition: filter 0.3s linear;
   }
-  
-  /* USUŃ całe @media query */
+
+  &:focus {
+    outline: 2px solid ${({ theme }) => theme.colors.secondary};
+    outline-offset: 2px;
+  }
 `;
 
-// Kontener dla desktopowej nawigacji
 const DesktopNav = styled.div`
   display: flex;
   align-items: center;
@@ -102,7 +101,6 @@ const DesktopNav = styled.div`
   }
 `;
 
-// Kontener dla przełącznika języka w wersji desktop
 const DesktopLangContainer = styled.div`
   display: flex;
   align-items: center;
@@ -112,17 +110,15 @@ const DesktopLangContainer = styled.div`
   }
 `;
 
-// Przycisk menu mobilnego
 const MobileMenuButton = styled.button`
   display: none;
   background: none;
   border: none;
   font-size: 2.4rem;
   cursor: pointer;
-  /* Kolor przycisku menu zależy od pozycji przewijania */
-  color: ${({ theme, isPastThreshold, isOpen }) => 
-    isOpen ? theme.colors.text : // Gdy menu jest otwarte, zawsze czarny
-    (isPastThreshold ? theme.colors.text : theme.colors.textLight)}; // Inaczej zależy od przewinięcia
+  color: ${({ theme, $isPastThreshold, $isOpen }) => 
+    $isOpen ? theme.colors.text : 
+    ($isPastThreshold ? theme.colors.text : theme.colors.textLight)};
   padding: 8px;
   margin: -8px;
   z-index: 1010;
@@ -136,7 +132,7 @@ const MobileMenuButton = styled.button`
   
   svg {
     transition: transform 0.3s ease;
-    ${props => props.isOpen && css`
+    ${props => props.$isOpen && css`
       animation: ${hamburgerToX} 0.3s forwards;
     `}
   }
@@ -148,9 +144,13 @@ const MobileMenuButton = styled.button`
   &:active {
     transform: scale(0.95);
   }
+
+  &:focus {
+    outline: 2px solid ${({ theme }) => theme.colors.secondary};
+    outline-offset: 2px;
+  }
 `;
 
-// Overlay dla menu mobilnego
 const MobileMenuOverlay = styled.div`
   position: fixed;
   top: 0;
@@ -159,17 +159,14 @@ const MobileMenuOverlay = styled.div`
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.7);
   z-index: 1005;
-  animation: ${props => props.isOpen ? fadeIn : fadeOut} 0.3s forwards;
-  opacity: ${({ isOpen }) => (isOpen ? 1 : 0)};
-  visibility: ${({ isOpen }) => (isOpen ? 'visible' : 'hidden')};
+  animation: ${props => props.$isOpen ? fadeIn : fadeOut} 0.3s forwards;
+  opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
+  visibility: ${({ $isOpen }) => ($isOpen ? 'visible' : 'hidden')};
   transition: visibility 0.3s;
-  
-  /* Dodatkowe style dla płynniejszego przejścia */
-  backdrop-filter: ${({ isOpen }) => (isOpen ? 'blur(2px)' : 'blur(0)')};
+  backdrop-filter: ${({ $isOpen }) => ($isOpen ? 'blur(2px)' : 'blur(0)')};
   transition: backdrop-filter 0.3s ease, visibility 0.3s;
 `;
 
-// Kontener dla mobilnego menu
 const MobileMenuContainer = styled.div`
   position: fixed;
   top: 0;
@@ -177,35 +174,27 @@ const MobileMenuContainer = styled.div`
   width: 80%;
   max-width: 350px;
   height: 100vh;
-  /* Obsługa bezpiecznego obszaru na telefonach z notchem */
   height: 100dvh;
   background-color: ${({ theme }) => theme.colors.background};
   z-index: 1009;
   box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
-  animation: ${props => props.isOpen ? slideInRight : slideOutRight} 0.3s forwards;
+  animation: ${props => props.$isOpen ? slideInRight : slideOutRight} 0.3s forwards;
   padding: ${({ theme }) => theme.spacings.large} ${({ theme }) => theme.spacings.medium};
-  /* Dodatkowy padding dla urządzeń z notchem */
   padding-top: env(safe-area-inset-top, ${({ theme }) => theme.spacings.large});
   padding-right: env(safe-area-inset-right, ${({ theme }) => theme.spacings.medium});
   padding-bottom: env(safe-area-inset-bottom, ${({ theme }) => theme.spacings.large});
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  
-  /* Jawne ustawienie koloru tekstu na czarny */
   color: ${({ theme }) => theme.colors.text};
-  
-  /* Zapobiega widoczności menu przed animacją */
-  visibility: ${({ isOpen }) => (isOpen ? 'visible' : 'hidden')};
+  visibility: ${({ $isOpen }) => ($isOpen ? 'visible' : 'hidden')};
   transition: visibility 0.3s;
   
-  /* Pełne menu na małych ekranach */
   @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
     width: 100%;
     max-width: none;
   }
 
-  /* Scrollbar */
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -220,7 +209,6 @@ const MobileMenuContainer = styled.div`
   }
 `;
 
-// Logo w mobilnym menu
 const MobileMenuLogo = styled.div`
   display: flex;
   justify-content: space-between;
@@ -233,20 +221,17 @@ const MobileMenuLogo = styled.div`
   }
 `;
 
-// Nawigacja w mobilnym menu
 const MobileNavigation = styled.nav`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   margin-top: ${({ theme }) => theme.spacings.large};
   
-  /* Więcej przestrzeni na wyższych ekranach */
   @media (min-height: 700px) {
     margin-top: ${({ theme }) => theme.spacings.xlarge};
   }
 `;
 
-// Link nawigacyjny w mobilnym menu
 const MobileNavItem = styled(Link)`
   font-size: 1.8rem;
   font-weight: 500;
@@ -258,13 +243,10 @@ const MobileNavItem = styled(Link)`
   align-items: center;
   text-decoration: none;
   position: relative;
-  
-  /* Obsługa długich nazw */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   
-  /* Więcej przestrzeni na wyższych ekranach */
   @media (min-height: 700px) {
     padding: ${({ theme }) => theme.spacings.medium} 0;
     font-size: 2rem;
@@ -273,13 +255,16 @@ const MobileNavItem = styled(Link)`
   &:hover {
     color: ${({ theme }) => theme.colors.secondary};
   }
+
+  &:focus {
+    outline: 2px solid ${({ theme }) => theme.colors.secondary};
+    outline-offset: 2px;
+  }
   
-  /* Efekt po kliknięciu - feedback dla użytkownika */
   &:active {
     background-color: rgba(0, 0, 0, 0.05);
   }
   
-  /* Aktywny link */
   &.active {
     color: ${({ theme }) => theme.colors.bottleGreen};
     font-weight: 600;
@@ -298,13 +283,11 @@ const MobileNavItem = styled(Link)`
     }
   }
   
-  /* Animacja dla każdego elementu menu z opóźnieniem */
   animation: ${fadeIn} 0.3s forwards;
-  animation-delay: ${props => props.index * 0.05}s;
+  animation-delay: ${props => props.$index * 0.05}s;
   opacity: 0;
 `;
 
-// Kontener dla switcher języka w mobilnym menu
 const MobileLangSwitcher = styled.div`
   margin-top: auto;
   padding-top: ${({ theme }) => theme.spacings.large};
@@ -314,35 +297,25 @@ const MobileLangSwitcher = styled.div`
   opacity: 0;
 `;
 
-// Główny komponent Header
 const Header = () => {
-  const [isPastThreshold, setIsPastThreshold] = useState(false);
-  const [isVisible, setIsVisible] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
   const lastScrollY = useRef(0);
   const ticking = useRef(false);
-  const SCROLL_THRESHOLD = 5;
+  
   const { t } = useTranslation();
   const location = useLocation();
+  const { isPastThreshold, scrollY, isScrollingUp, isScrollingDown } = useScrollPosition(5);
+  const { isMobile } = useResponsive();
 
-  // Obsługa zdarzeń przewijania dla widoczności i stylowania headera
   useEffect(() => {
     const handleScroll = () => {
-      const currentScrollY = window.scrollY;
-      const scrollingDown = currentScrollY > lastScrollY.current;
-      const scrollingUp = currentScrollY < lastScrollY.current;
-      const pastThreshold = currentScrollY > SCROLL_THRESHOLD;
-
-      setIsPastThreshold(pastThreshold);
-
-      if (!pastThreshold) {
+      if (!isPastThreshold) {
         setIsVisible(true);
       } else {
-        if (scrollingUp) setIsVisible(true);
-        else if (scrollingDown && !isMobileMenuOpen) setIsVisible(false);
+        if (isScrollingUp) setIsVisible(true);
+        else if (isScrollingDown && !isMobileMenuOpen) setIsVisible(false);
       }
-
-      lastScrollY.current = currentScrollY;
       ticking.current = false;
     };
 
@@ -353,121 +326,108 @@ const Header = () => {
       }
     };
 
-    // Inicjalizacja pozycji przewijania
-    lastScrollY.current = window.scrollY;
-    setIsPastThreshold(lastScrollY.current > SCROLL_THRESHOLD);
-    setIsVisible(true);
-
-    // Dodanie nasłuchiwacza zdarzeń przewijania
     window.addEventListener('scroll', onScroll, { passive: true });
-    
-    // Czyszczenie
     return () => window.removeEventListener('scroll', onScroll);
-  }, [isMobileMenuOpen]);
+  }, [isPastThreshold, isScrollingUp, isScrollingDown, isMobileMenuOpen]);
 
-  // Efekt zamykania menu przy zmianie strony
   useEffect(() => {
     if (isMobileMenuOpen) {
       closeMobileMenu();
     }
   }, [location.pathname]);
 
-  // Przełączanie menu mobilnego
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
     
-    // Blokowanie przewijania body gdy menu jest otwarte
     if (!isMobileMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
-      // Małe opóźnienie, aby animacja wyjścia mogła się zakończyć
       setTimeout(() => {
         document.body.style.overflow = '';
       }, 300);
     }
   };
 
-  // Zamykanie menu po kliknięciu w link
   const closeMobileMenu = () => {
     setIsMobileMenuOpen(false);
-    
-    // Małe opóźnienie, aby animacja wyjścia mogła się zakończyć
     setTimeout(() => {
       document.body.style.overflow = '';
     }, 300);
   };
 
-  // Lista elementów nawigacji
+  const handleMenuButtonKeyDown = (event) => {
+    handleKeyboardNavigation(
+      event,
+      toggleMobileMenu,
+      toggleMobileMenu
+    );
+  };
+
   const navItems = [
-    { key: 'offer', path: '/realizations', label: 'nav.offer', fallback: 'Oferta' },
-    { key: 'realizations', path: '/realizations', label: 'nav.realizations', fallback: 'Realizacje' },
-    { key: 'about', path: '/about', label: 'nav.about', fallback: 'O nas' },
-    { key: 'contact', path: '/contact', label: 'nav.contact', fallback: 'Kontakt' }
+    { key: 'home', path: ROUTES.HOME, label: 'nav.home' },
+    { key: 'realizations', path: ROUTES.REALIZATIONS, label: 'nav.realizations' },
+    { key: 'about', path: ROUTES.ABOUT, label: 'nav.about' },
+    { key: 'contact', path: ROUTES.CONTACT, label: 'nav.contact' }
   ];
   
-  // Funkcja sprawdzająca, czy element jest aktywny
   const isActive = (path) => {
-    if (path === '/' && location.pathname === '/') {
+    if (path === ROUTES.HOME && location.pathname === ROUTES.HOME) {
       return true;
     }
-    return path !== '/' && location.pathname.startsWith(path);
+    return path !== ROUTES.HOME && location.pathname.startsWith(path);
   };
 
   return (
     <HeaderWrapper 
-      isPastThreshold={isPastThreshold} 
-      isVisible={isVisible}
+      $isPastThreshold={isPastThreshold} 
+      $isVisible={isVisible}
     >
-      <LogoLink to="/" isPastThreshold={isPastThreshold}>
-        <img src={logoSrc} alt="ROJEK okna i drzwi Logo" />
+      <LogoLink to={ROUTES.HOME} $isPastThreshold={isPastThreshold}>
+        <img src={logoSrc} alt={t('nav.logoAlt', 'ROJEK okna i drzwi Logo')} />
       </LogoLink>
 
-      {/* Nawigacja na desktop - WYCENTROWANA */}
       <DesktopNav>
         <Navigation variant="header" />
       </DesktopNav>
       
-      {/* Przełącznik języka na desktop - PO PRAWEJ */}
       <DesktopLangContainer>
         <LanguageSwitcher isPastThreshold={isPastThreshold} />
       </DesktopLangContainer>
 
-      {/* Przycisk menu mobilnego */}
       <MobileMenuButton 
-        onClick={toggleMobileMenu} 
-        aria-label={t('nav.toggleMenu', 'Przełącz menu')} 
-        isOpen={isMobileMenuOpen}
-        isPastThreshold={isPastThreshold}
+        onClick={toggleMobileMenu}
+        onKeyDown={handleMenuButtonKeyDown}
+        aria-label={t('nav.toggleMenu', 'Toggle menu')} 
+        aria-expanded={isMobileMenuOpen}
+        $isOpen={isMobileMenuOpen}
+        $isPastThreshold={isPastThreshold}
       >
         {isMobileMenuOpen ? <FiX /> : <FiMenu />}
       </MobileMenuButton>
 
-      {/* Overlay dla menu mobilnego */}
-      <MobileMenuOverlay isOpen={isMobileMenuOpen} onClick={closeMobileMenu} />
+      <MobileMenuOverlay $isOpen={isMobileMenuOpen} onClick={closeMobileMenu} />
 
-      {/* Kontener menu mobilnego z obsługą gestów */}
-      <MobileMenuContainer isOpen={isMobileMenuOpen}>
+      <MobileMenuContainer $isOpen={isMobileMenuOpen}>
         <SwipeHandler onSwipeRight={closeMobileMenu} enabled={isMobileMenuOpen}>
           <MobileMenuLogo>
-            <img src={logoSrc} alt="ROJEK okna i drzwi Logo" />
+            <img src={logoSrc} alt={t('nav.logoAlt', 'ROJEK okna i drzwi Logo')} />
           </MobileMenuLogo>
 
-          {/* Nawigacja mobilna */}
-          <MobileNavigation>
+          <MobileNavigation role="navigation" aria-label={t('nav.mobileNavigation', 'Mobile navigation')}>
             {navItems.map((item, index) => (
               <MobileNavItem 
                 key={item.key} 
                 to={item.path} 
                 onClick={closeMobileMenu}
                 className={isActive(item.path) ? 'active' : ''}
-                index={index}
+                $index={index}
+                aria-current={isActive(item.path) ? 'page' : undefined}
               >
-                {t(item.label, item.fallback)}
+                {t(item.label)}
               </MobileNavItem>
             ))}
           </MobileNavigation>
 
-          {/* Przełącznik języka w menu mobilnym */}
           <MobileLangSwitcher>
             <LanguageSwitcher isMobile={true} isPastThreshold={true} />
           </MobileLangSwitcher>
