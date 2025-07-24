@@ -2,10 +2,6 @@ import React, { useEffect } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
-const fadeIn = keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
-`;
 
 const fadeOut = keyframes`
   from { opacity: 1; }

@@ -1,57 +1,142 @@
-// src/pages/RealizationsPage.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
-import { useTranslation } from 'react-i18next';
-import RealizationsGallery from '../components/gallery/RealizationsGallery';
-import { REALIZATION_IMAGES } from '../constants';
+import RealizationCard from '../components/gallery/RealizationCard';
+import Pagination from '../components/common/Pagination';
 
-// Stylizowany kontener dla tytułu strony
-const PageTitleContainer = styled.div`
-  background-color: #1a1a1a; /* Ciemne tło dla nagłówka */
-  padding: 60px 20px 30px;
-  text-align: center;
-  
-  h2 {
-    font-size: 3.2rem;
-    color: ${({ theme }) => theme.colors.textLight}; /* Jasny tekst na ciemnym tle */
-    margin-bottom: 1rem;
-  }
-  
-  p {
-    color: ${({ theme }) => theme.colors.textLight}; /* Jasny tekst na ciemnym tle */
-    opacity: 0.8;
-    max-width: 800px;
-    margin: 0 auto;
-    font-size: 1.6rem;
+const PAGE_SIZE = 6;
+
+
+const PageWrapper = styled.div`
+  width: 100%;
+  padding: 0 20px;
+  position: relative;
+  z-index: 2;
+`;
+
+const HeaderImageWrapper = styled.div`
+  position: relative;
+  width: 100vw;
+  height: 400px;
+  margin-bottom: 40px;
+  overflow: hidden;
+  border-radius: 0;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: rgb(0 0 0 / 65%);
+    pointer-events: none;
+    z-index: 1;
   }
 `;
 
-const RealizationsPage = () => {
-  const { t } = useTranslation();
+const HeaderImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  position: relative;
+  z-index: 0;
+`;
 
-  // Create realization data with translations
-  const realizationData = REALIZATION_IMAGES.map((img, index) => ({
-    ...img,
-    title: t(`realizations.items.${index}.title`, `Realizacja ${index + 1}`)
-  }));
+const HeaderTitle = styled.h1`
+  position: absolute;
+  bottom: 15px;
+  right: 20px;
+  margin: 0;
+  padding: 8px 16px;
+  background-color: ${({ theme }) => theme.colors.bottleGreen}cc;
+  color: ${({ theme }) => theme.colors.textLight};
+  font-size: 2.5rem;
+  font-weight: 100;
+  border-radius: 6px;
+  user-select: none;
+  z-index: 2;
+`;
+
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 50px 50px;
+  max-width: ${({ theme }) => theme.layout.maxWidth};
+  margin: 0 auto;
+  padding: 0 40px;
+  box-sizing: border-box;
+
+  @media (max-width: 900px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const FixedSizeCardWrapper = styled.div`
+  width: 100%;
+  height: 350px;
+`;
+
+const exampleRealizations = [
+  { id: 1, src: '/public/images/realizations/realization1.jpg', title: 'Realization 1' },
+  { id: 2, src: '/public/images/realizations/realization2.jpg', title: 'Realization 2' },
+  { id: 3, src: '/public/images/realizations/realization3.jpg', title: 'Realization 3' },
+  { id: 4, src: '/public/images/realizations/realization4.jpg', title: 'Realization 4' },
+  { id: 5, src: '/public/images/realizations/realization5.jpg', title: 'Realization 5' },
+  { id: 6, src: '/public/images/realizations/realization6.jpg', title: 'Realization 6' },
+  { id: 7, src: '/public/images/realizations/realization7.jpg', title: 'Realization 7' },
+  { id: 8, src: '/public/images/realizations/realization8.jpg', title: 'Realization 8' },
+  { id: 9, src: '/public/images/realizations/realization1.jpg', title: 'Realization 9' },
+  { id: 10, src: '/public/images/realizations/realization2.jpg', title: 'Realization 10' },
+  { id: 11, src: '/public/images/realizations/realization3.jpg', title: 'Realization 11' },
+  { id: 12, src: '/public/images/realizations/realization4.jpg', title: 'Realization 12' },
+];
+
+const RealizationsPage = () => {
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const totalPages = Math.ceil(exampleRealizations.length / PAGE_SIZE);
+
+  const currentItems = exampleRealizations.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
   return (
-    <>
-      <PageTitleContainer>
-        <h2>{t('sections.realizations')}</h2>
-        <p>{t('realizations.description', 'Poniżej prezentujemy wybrane projekty, które realizowaliśmy dla naszych klientów. Każde zlecenie to dla nas nowe wyzwanie, któremu stawiamy czoła z pasją i profesjonalizmem.')}</p>
-      </PageTitleContainer>
-
-      <RealizationsGallery 
-        images={realizationData}
-        options={{
-          slidesPerViewDesktop: 3,
-          slidesPerViewTablet: 2,
-          slidesPerViewMobile: 1,
-          delay: 3000,
+    <PageWrapper>
+      <HeaderImageWrapper>
+        <HeaderImage src="/public/images/realizations/top.jpg" alt="Realizations Header" />
+        <HeaderTitle>Realizacje</HeaderTitle>
+      </HeaderImageWrapper>
+      <Grid id="realizations-grid">
+        {currentItems.map(({ id, src, title }) => (
+          <FixedSizeCardWrapper key={id}>
+            <RealizationCard id={id} src={src} title={title} />
+          </FixedSizeCardWrapper>
+        ))}
+      </Grid>
+      <Pagination
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={(page) => {
+          handlePageChange(page);
+          // Scroll to top of the grid, not the whole page
+          const gridElement = document.querySelector('#realizations-grid');
+          if (gridElement) {
+            gridElement.scrollIntoView({ behavior: 'smooth' });
+          }
         }}
       />
-    </>
+    </PageWrapper>
   );
 };
 
