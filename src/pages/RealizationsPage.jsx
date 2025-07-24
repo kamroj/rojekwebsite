@@ -57,10 +57,6 @@ const HeaderTitle = styled.h1`
   border-radius: 6px;
   user-select: none;
   z-index: 2;
-
-  @media (max-width: 600px) {
-      font-size: 1.8rem;
-  }
 `;
 
 const Grid = styled.div`
