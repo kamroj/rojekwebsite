@@ -5,7 +5,6 @@ import Pagination from '../components/common/Pagination';
 
 const PAGE_SIZE = 6;
 
-
 const PageWrapper = styled.div`
   width: 100%;
   padding: 0 20px;
@@ -57,6 +56,10 @@ const HeaderTitle = styled.h1`
   border-radius: 6px;
   user-select: none;
   z-index: 2;
+
+  @media (max-width: 600px) {
+      font-size: 1.8rem;
+  }
 `;
 
 const Grid = styled.div`
@@ -85,18 +88,18 @@ const FixedSizeCardWrapper = styled.div`
 `;
 
 const exampleRealizations = [
-  { id: 1, src: '/public/images/realizations/realization1.jpg', title: 'Realization 1' },
-  { id: 2, src: '/public/images/realizations/realization2.jpg', title: 'Realization 2' },
-  { id: 3, src: '/public/images/realizations/realization3.jpg', title: 'Realization 3' },
-  { id: 4, src: '/public/images/realizations/realization4.jpg', title: 'Realization 4' },
-  { id: 5, src: '/public/images/realizations/realization5.jpg', title: 'Realization 5' },
-  { id: 6, src: '/public/images/realizations/realization6.jpg', title: 'Realization 6' },
-  { id: 7, src: '/public/images/realizations/realization7.jpg', title: 'Realization 7' },
-  { id: 8, src: '/public/images/realizations/realization8.jpg', title: 'Realization 8' },
-  { id: 9, src: '/public/images/realizations/realization1.jpg', title: 'Realization 9' },
-  { id: 10, src: '/public/images/realizations/realization2.jpg', title: 'Realization 10' },
-  { id: 11, src: '/public/images/realizations/realization3.jpg', title: 'Realization 11' },
-  { id: 12, src: '/public/images/realizations/realization4.jpg', title: 'Realization 12' },
+  { id: 1, src: '/images/realizations/realization1.jpg', title: 'Realization 1' },
+  { id: 2, src: '/images/realizations/realization2.jpg', title: 'Realization 2' },
+  { id: 3, src: '/images/realizations/realization3.jpg', title: 'Realization 3' },
+  { id: 4, src: '/images/realizations/realization4.jpg', title: 'Realization 4' },
+  { id: 5, src: '/images/realizations/realization5.jpg', title: 'Realization 5' },
+  { id: 6, src: '/images/realizations/realization6.jpg', title: 'Realization 6' },
+  { id: 7, src: '/images/realizations/realization7.jpg', title: 'Realization 7' },
+  { id: 8, src: '/images/realizations/realization8.jpg', title: 'Realization 8' },
+  { id: 9, src: '/images/realizations/realization1.jpg', title: 'Realization 9' },
+  { id: 10, src: '/images/realizations/realization2.jpg', title: 'Realization 10' },
+  { id: 11, src: '/images/realizations/realization3.jpg', title: 'Realization 11' },
+  { id: 12, src: '/images/realizations/realization4.jpg', title: 'Realization 12' },
 ];
 
 const RealizationsPage = () => {
@@ -116,7 +119,7 @@ const RealizationsPage = () => {
   return (
     <PageWrapper>
       <HeaderImageWrapper>
-        <HeaderImage src="/public/images/realizations/top.jpg" alt="Realizations Header" />
+        <HeaderImage src="/images/realizations/top.jpg" alt="Realizations Header" />
         <HeaderTitle>Realizacje</HeaderTitle>
       </HeaderImageWrapper>
       <Grid id="realizations-grid">
@@ -131,7 +134,7 @@ const RealizationsPage = () => {
         totalPages={totalPages}
         onPageChange={(page) => {
           handlePageChange(page);
-          // Scroll to top of the grid, not the whole page
+          // Always scroll to top of the grid on pagination button click
           const gridElement = document.querySelector('#realizations-grid');
           if (gridElement) {
             gridElement.scrollIntoView({ behavior: 'smooth' });
