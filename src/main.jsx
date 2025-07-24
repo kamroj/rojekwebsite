@@ -8,6 +8,7 @@ import App from './App.jsx';
 import GlobalStyles from './styles/GlobalStyles.js';
 import theme from './styles/theme.js';
 import LoadingScreen from './components/common/LoadingScreen.jsx';
+import { ResourceCollectorProvider } from './context/ResourceCollectorContext.jsx';
 // Import internationalization
 import './i18n.js';
 
@@ -29,8 +30,10 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     {/* Suspense for async loading of translations */}
     <Suspense fallback={<LoadingFallback />}>
       <ThemeProvider theme={theme}>
-        <GlobalStyles />
-        <App />
+        <ResourceCollectorProvider>
+          <GlobalStyles />
+          <App />
+        </ResourceCollectorProvider>
       </ThemeProvider>
     </Suspense>
   </React.StrictMode>

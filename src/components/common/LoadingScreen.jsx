@@ -29,7 +29,7 @@ const LoadingOverlay = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  animation: ${props => props.$isHiding ? fadeOut : fadeIn} 0.5s ease-in-out;
+  animation: ${props => props.$isHiding ? fadeOut : 'none'} 0.5s ease-in-out;
   
   ${props => props.$isHiding && `
     pointer-events: none;

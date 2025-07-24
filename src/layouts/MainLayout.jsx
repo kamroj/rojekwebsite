@@ -2,11 +2,13 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Outlet, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import LoadingScreen from '../components/common/LoadingScreen';
-import { useImagePreloader } from '../hooks';
-import { REALIZATION_IMAGES, PARTNER_LOGOS, WHY_US_ICONS, IMAGE_PATHS } from '../constants';
+import { PRODUCT_TYPES, VIDEO_SOURCES } from '../constants';
+import { collectPageResources } from '../utils/resourceCollector';
+import { useResourceCollector } from '../context/ResourceCollectorContext';
 
 // Main layout wrapper
 const LayoutWrapper = styled.div`
@@ -24,44 +26,74 @@ const MainContent = styled.main`
 
 // MainLayout component wraps all pages with Header and Footer
 const MainLayout = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(true);
   const [isHiding, setIsHiding] = useState(false);
   const [hasInitialLoad, setHasInitialLoad] = useState(false);
 
-  // Determine which images to preload based on current route
-  const getImagesToPreload = () => {
-    const baseImages = [
-      '/images/logo.png', // Use public path
-      ...Object.values(WHY_US_ICONS)
-    ];
+  const {
+    resourcesLoaded,
+    loadedCount,
+    totalCount,
+    progress,
+    addResources,
+    resetResources
+  } = useResourceCollector();
 
-    switch (location.pathname) {
-      case '/realizations':
-        return [
-          ...baseImages,
-          ...REALIZATION_IMAGES.map(img => img.src)
-        ];
-      case '/':
-        return [
-          ...baseImages,
-          ...REALIZATION_IMAGES.slice(0, 6).map(img => img.src), // First 6 for homepage
-          ...PARTNER_LOGOS.map(logo => logo.src)
-        ];
-      default:
-        return baseImages;
+  // Przygotuj dane produktów dla HomePage (potrzebne do kolektora zasobów)
+  const getAdditionalData = () => {
+    if (location.pathname === '/') {
+      return {
+        productData: {
+          [PRODUCT_TYPES.WINDOWS]: {
+            id: PRODUCT_TYPES.WINDOWS,
+            name: t('products.windows.name'),
+            videoSrc: VIDEO_SOURCES.WINDOWS,
+            description: t('products.windows.description'),
+            benefits: t('products.windows.benefits', { returnObjects: true })
+          },
+          [PRODUCT_TYPES.EXTERIOR_DOORS]: {
+            id: PRODUCT_TYPES.EXTERIOR_DOORS,
+            name: t('products.exteriorDoors.name'),
+            videoSrc: VIDEO_SOURCES.EXTERIOR_DOORS,
+            description: t('products.exteriorDoors.description'),
+            benefits: t('products.exteriorDoors.benefits', { returnObjects: true })
+          },
+          [PRODUCT_TYPES.INTERIOR_DOORS]: {
+            id: PRODUCT_TYPES.INTERIOR_DOORS,
+            name: t('products.interiorDoors.name'),
+            videoSrc: VIDEO_SOURCES.INTERIOR_DOORS,
+            description: t('products.interiorDoors.description'),
+            benefits: t('products.interiorDoors.benefits', { returnObjects: true })
+          },
+          [PRODUCT_TYPES.SLIDING]: {
+            id: PRODUCT_TYPES.SLIDING,
+            name: t('products.sliding.name'),
+            videoSrc: VIDEO_SOURCES.SLIDING,
+            description: t('products.sliding.description'),
+            benefits: t('products.sliding.benefits', { returnObjects: true })
+          }
+        }
+      };
     }
+    return {};
   };
 
-  const imagesToPreload = getImagesToPreload();
-  const { imagesLoaded, loadedCount, totalCount, progress } = useImagePreloader(imagesToPreload);
+  // Resetuj i dodaj zasoby przy zmianie strony
+  useEffect(() => {
+    resetResources();
+    const resources = collectPageResources(location.pathname, getAdditionalData());
+    addResources(resources);
+    setIsLoading(true);
+    setIsHiding(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname, t]);
 
   useEffect(() => {
-    if (imagesLoaded && isLoading) {
-      // Add a small delay to show completion
+    if (resourcesLoaded && isLoading) {
       setTimeout(() => {
         setIsHiding(true);
-        // Hide loader completely after animation
         setTimeout(() => {
           setIsLoading(false);
           setIsHiding(false);
@@ -69,15 +101,7 @@ const MainLayout = () => {
         }, 500);
       }, 300);
     }
-  }, [imagesLoaded, isLoading]);
-
-  // Only reset loading state on first load, not on route changes
-  useEffect(() => {
-    if (!hasInitialLoad) {
-      setIsLoading(true);
-      setIsHiding(false);
-    }
-  }, [location.pathname, hasInitialLoad]);
+  }, [resourcesLoaded, isLoading]);
 
   return (
     <LayoutWrapper>
@@ -90,7 +114,7 @@ const MainLayout = () => {
           totalCount={totalCount}
         />
       )}
-      
+
       <Header />
       <MainContent>
         <Outlet /> {/* Child routes will be rendered here */}
