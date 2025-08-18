@@ -31,11 +31,11 @@ const PageButton = styled.button`
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const handlePrev = () => {
-    if (currentPage > 1) onPageChange(currentPage - 1);
+    if (currentPage > 1) onPageChange(currentPage - 1, { via: 'arrow' });
   };
 
   const handleNext = () => {
-    if (currentPage < totalPages) onPageChange(currentPage + 1);
+    if (currentPage < totalPages) onPageChange(currentPage + 1, { via: 'arrow' });
   };
 
   const renderPageNumbers = () => {
@@ -45,7 +45,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
         <PageButton
           key={i}
           active={i === currentPage}
-          onClick={() => onPageChange(i)}
+          onClick={() => onPageChange(i, { via: 'number' })}
           aria-current={i === currentPage ? 'page' : undefined}
         >
           {i}

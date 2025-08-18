@@ -108,8 +108,9 @@ const LoadingScreen = ({
   // Block scrolling when loading screen is visible
   useEffect(() => {
     if (isVisible && !isHiding) {
-      // Save current scroll position
+      // Save current scroll position and current path
       const scrollY = window.scrollY;
+      const initialPath = window.location.pathname;
       
       // Block scrolling
       document.body.style.position = 'fixed';
@@ -118,16 +119,15 @@ const LoadingScreen = ({
       document.body.style.overflow = 'hidden';
       
       return () => {
-        // Restore scrolling
+        // Restore scrolling styles (do not restore scroll position here — navigation should control it)
         document.body.style.position = '';
         document.body.style.top = '';
         document.body.style.width = '';
         document.body.style.overflow = '';
-        
-        // Restore scroll position
-        window.scrollTo(0, scrollY);
       };
     }
+    // no cleanup needed if we didn't lock scrolling
+    return undefined;
   }, [isVisible, isHiding]);
 
   // Don't render if not visible and not hiding

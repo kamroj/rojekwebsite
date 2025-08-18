@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
@@ -130,7 +130,7 @@ const FiltersContainer = styled.div`
   box-shadow: ${({ theme }) => theme.shadows.medium};
   border: 1px solid ${({ theme }) => theme.colors.border};
   position: sticky;
-  top: 100px;
+  top: var(--header-offset, 80px);
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     width: 100%;
@@ -236,7 +236,7 @@ const SubcategoryButton = styled(FilterButton)`
   border-style: dashed;
   border-width: 1px;
   opacity: ${({ parentActive }) => parentActive ? 1 : 0.6};
-  pointer-events: ${({ parentActive }) => parentActive ? 'auto' : 'none'};
+  cursor: pointer;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     margin-left: 0.8rem;
@@ -404,18 +404,36 @@ const RealizationsPage = () => {
     return null;
   };
 
-  const handlePageChange = (page) => {
+  const handlePageChange = (page, options = {}) => {
+    // update page
     setCurrentPage(page);
-    // Scroll to top of content
-    const gridElement = document.querySelector('#realizations-grid');
-    if (gridElement) {
-      gridElement.scrollIntoView({ behavior: 'smooth' });
-    }
+
+    // schedule scroll in next tick to ensure consistent behavior
+    // regardless of whether caller was arrow or number button
+    setTimeout(() => {
+      // unified scroll behavior: scroll so content starts just after header image
+      const headerEl = document.querySelector('#realizations-header');
+      if (headerEl) {
+        const headerRect = headerEl.getBoundingClientRect();
+        const headerBottom = headerRect.top + window.pageYOffset + headerEl.offsetHeight;
+        const headerOffsetStr = getComputedStyle(document.documentElement).getPropertyValue('--header-offset');
+        const headerOffset = headerOffsetStr ? parseFloat(headerOffsetStr) : 80;
+        const scrollTarget = Math.max(0, headerBottom - headerOffset);
+        window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
+        return;
+      }
+
+      // Fallback: scroll to grid top if header not found
+      const gridElement = document.querySelector('#realizations-grid');
+      if (gridElement) {
+        gridElement.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, 50);
   };
 
   return (
     <PageWrapper>
-      <HeaderImageWrapper>
+      <HeaderImageWrapper id="realizations-header">
         <HeaderImage src="/images/realizations/top.jpg" alt="Realizations Header" />
         <HeaderTitle>Realizacje</HeaderTitle>
       </HeaderImageWrapper>
@@ -454,7 +472,7 @@ const RealizationsPage = () => {
               <SubcategoryButton
                 active={selectedSubcategory === SUBCATEGORIES.DOORS_INTERIOR}
                 parentActive={selectedCategory === CATEGORIES.DOORS}
-                onClick={() => handleSubcategorySelect(SUBCATEGORIES.DOORS_INTERIOR)}
+                onClick={() => { handleCategorySelect(CATEGORIES.DOORS); handleSubcategorySelect(SUBCATEGORIES.DOORS_INTERIOR); }}
               >
                 Wewnętrzne
               </SubcategoryButton>
@@ -462,7 +480,7 @@ const RealizationsPage = () => {
               <SubcategoryButton
                 active={selectedSubcategory === SUBCATEGORIES.DOORS_EXTERIOR}
                 parentActive={selectedCategory === CATEGORIES.DOORS}
-                onClick={() => handleSubcategorySelect(SUBCATEGORIES.DOORS_EXTERIOR)}
+                onClick={() => { handleCategorySelect(CATEGORIES.DOORS); handleSubcategorySelect(SUBCATEGORIES.DOORS_EXTERIOR); }}
               >
                 Zewnętrzne
               </SubcategoryButton>
@@ -477,7 +495,7 @@ const RealizationsPage = () => {
               <SubcategoryButton
                 active={selectedSubcategory === SUBCATEGORIES.WINDOWS_WOOD}
                 parentActive={selectedCategory === CATEGORIES.WINDOWS}
-                onClick={() => handleSubcategorySelect(SUBCATEGORIES.WINDOWS_WOOD)}
+                onClick={() => { handleCategorySelect(CATEGORIES.WINDOWS); handleSubcategorySelect(SUBCATEGORIES.WINDOWS_WOOD); }}
               >
                 Drewno
               </SubcategoryButton>
@@ -485,7 +503,7 @@ const RealizationsPage = () => {
               <SubcategoryButton
                 active={selectedSubcategory === SUBCATEGORIES.WINDOWS_WOOD_ALU}
                 parentActive={selectedCategory === CATEGORIES.WINDOWS}
-                onClick={() => handleSubcategorySelect(SUBCATEGORIES.WINDOWS_WOOD_ALU)}
+                onClick={() => { handleCategorySelect(CATEGORIES.WINDOWS); handleSubcategorySelect(SUBCATEGORIES.WINDOWS_WOOD_ALU); }}
               >
                 Drewno-Alu
               </SubcategoryButton>
@@ -493,7 +511,7 @@ const RealizationsPage = () => {
               <SubcategoryButton
                 active={selectedSubcategory === SUBCATEGORIES.WINDOWS_PVC}
                 parentActive={selectedCategory === CATEGORIES.WINDOWS}
-                onClick={() => handleSubcategorySelect(SUBCATEGORIES.WINDOWS_PVC)}
+                onClick={() => { handleCategorySelect(CATEGORIES.WINDOWS); handleSubcategorySelect(SUBCATEGORIES.WINDOWS_PVC); }}
               >
                 PVC
               </SubcategoryButton>

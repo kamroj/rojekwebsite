@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import LoadingScreen from '../components/common/LoadingScreen';
+import ScrollToTop from '../components/common/ScrollToTop';
 import { PRODUCT_TYPES, VIDEO_SOURCES } from '../constants';
 import { collectPageResources } from '../utils/resourceCollector';
 import { useResourceCollector } from '../context/ResourceCollectorContext';
@@ -82,6 +83,18 @@ const MainLayout = () => {
 
   // Resetuj i dodaj zasoby przy zmianie strony
   useEffect(() => {
+    // Ensure we're at the top of the page when navigating between routes
+    try {
+      // Clear any body locking styles that could remain from LoadingScreen
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      document.body.style.overflow = '';
+    } catch (e) {
+      // ignore in non-browser environments
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+
     resetResources();
     const resources = collectPageResources(location.pathname, getAdditionalData());
     addResources(resources);
@@ -116,6 +129,7 @@ const MainLayout = () => {
       )}
 
       <Header />
+      <ScrollToTop />
       <MainContent>
         <Outlet /> {/* Child routes will be rendered here */}
       </MainContent>

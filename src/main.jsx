@@ -12,6 +12,14 @@ import { ResourceCollectorProvider } from './context/ResourceCollectorContext.js
 // Import internationalization
 import './i18n.js';
 
+if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
+  try {
+    window.history.scrollRestoration = 'manual';
+  } catch (e) {
+    // ignore - defensive in some browsers
+  }
+}
+
 // Loading fallback using our LoadingScreen
 const LoadingFallback = () => (
   <ThemeProvider theme={theme}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styled, { css, keyframes } from 'styled-components';
+import styled, { css, keyframes, useTheme } from 'styled-components';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FiMenu, FiX } from 'react-icons/fi';
@@ -291,6 +291,19 @@ const Header = () => {
   const location = useLocation();
   const { isPastThreshold, scrollY, isScrollingUp, isScrollingDown } = useScrollPosition(5);
   const { isMobile } = useResponsive();
+  const theme = useTheme();
+
+  // Expose dynamic header height to CSS as a variable for sticky elements offsets
+  useEffect(() => {
+    const gap = theme.spacings.small; // small space below visible header
+    // When header is hidden, keep a small top gap so filters are not flush to the very top
+    const offset = isVisible ? `calc(${theme.layout.headerHeight} + ${gap})` : gap;
+    document.documentElement.style.setProperty('--header-offset', offset);
+    return () => {
+      // keep a sane default on unmount
+      document.documentElement.style.setProperty('--header-offset', `calc(${theme.layout.headerHeight} + ${gap})`);
+    };
+  }, [isVisible, theme.layout.headerHeight, theme.spacings.small]);
 
   useEffect(() => {
     const handleScroll = () => {
