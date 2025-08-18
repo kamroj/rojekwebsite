@@ -206,5 +206,35 @@
     "pl": "Polnisch",
     "en": "Englisch",
     "de": "Deutsch"
+  },
+  "history": {
+    "title": "Unsere Geschichte",
+    "subtitle": "Über 40 Jahre Erfahrung in der Branche",
+    "headerAlt": "ROJEK Firmengeschichte",
+    "intro1": "ROJEK ist ein Familienunternehmen mit über 40-jähriger Tradition. Von Anfang an setzen wir auf höchste Qualität, individuelle Kundenbetreuung und kontinuierliche Entwicklung.",
+    "intro2": "Unsere Geschichte ist eine Geschichte von Leidenschaft, Entschlossenheit und dem ständigen Streben nach Exzellenz. Jede Phase unserer Entwicklung war durchdacht und darauf ausgerichtet, Produkte zu liefern, die höchsten Standards entsprechen.",
+    "item1": {
+      "title": "Firmengründung",
+      "text": "Gründung des Familienunternehmens ROJEK. Beginn der Produktion hochwertiger Fenster- und Türtischlerei mit Leidenschaft und Liebe zum Detail."
+    },
+    "item2": {
+      "title": "Entwicklung und Innovation",
+      "text": "Erweiterung der Produktionsanlage und Einführung moderner Technologien. Erweiterung des Angebots um neue Produktlinien."
+    },
+    "item3": {
+      "title": "Internationale Expansion",
+      "text": "Aufbau von Kooperationen mit renommierten ausländischen Partnern. Implementierung höchster Qualitätsstandards."
+    },
+    "item4": {
+      "title": "Produktionsmodernisierung",
+      "text": "Umfassende Modernisierung der Produktionslinien. Einführung fortschrittlicher technologischer Lösungen."
+    },
+    "item5": {
+      "title": "Neue Ära",
+      "text": "Einführung innovativer Holz-Aluminium- und HS-Schiebesysteme. Öffnung für neue Möglichkeiten."
+    },
+    "ctaTitle": "Lernen Sie uns besser kennen",
+    "ctaText": "Kontaktieren Sie uns und erfahren Sie mehr über unsere Produkte und Dienstleistungen",
+    "ctaButton": "Kontaktieren Sie uns"
   }
 }

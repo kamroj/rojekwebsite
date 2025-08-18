@@ -41,7 +41,9 @@
     "companyPresentation": "PREZENTACJA FIRMY",
     "partners": "NASI PARTNERZY",
     "aboutUs": "O FIRMIE",
-    "contactInfo": "KONTAKT"
+    "contactInfo": "KONTAKT",
+    "history": "HISTORIA",
+    "headquarters": "SIEDZIBA FIRMY"
   },
   "products": {
     "windows": {
@@ -206,5 +208,64 @@
     "pl": "Polski",
     "en": "Angielski",
     "de": "Niemiecki"
+  },
+  "history": {
+    "title": "Nasza Historia",
+    "subtitle": "Ponad 40 lat doświadczenia w branży",
+    "headerAlt": "Historia firmy ROJEK",
+    "intro1": "Firma ROJEK to rodzinne przedsiębiorstwo z ponad 40-letnią tradycją. Od samego początku stawiamy na najwyższą jakość, indywidualne podejście do klienta oraz ciągły rozwój.",
+    "intro2": "Nasza historia to opowieść o pasji, determinacji i nieustannym dążeniu do doskonałości. Każdy etap naszego rozwoju był przemyślany i ukierunkowany na dostarczanie produktów spełniających najwyższe standardy.",
+    "item1": {
+      "title": "Powstanie firmy",
+      "text": "Założenie rodzinnej firmy ROJEK. Rozpoczęcie produkcji wysokiej jakości stolarki otworowej z pasją i dbałością o każdy detal."
+    },
+    "item2": {
+      "title": "Rozwój i innowacje",
+      "text": "Rozbudowa zakładu produkcyjnego i wprowadzenie nowoczesnych technologii. Poszerzenie oferty o nowe linie produktów."
+    },
+    "item3": {
+      "title": "Ekspansja międzynarodowa",
+      "text": "Nawiązanie współpracy z renomowanymi partnerami zagranicznymi. Wdrożenie najwyższych standardów jakości."
+    },
+    "item4": {
+      "title": "Modernizacja produkcji",
+      "text": "Kompleksowa modernizacja linii produkcyjnych. Wprowadzenie zaawansowanych rozwiązań technologicznych."
+    },
+    "item5": {
+      "title": "Nowa era",
+      "text": "Wprowadzenie innowacyjnych systemów drewniano-aluminiowych i przesuwnych HS. Otwarcie na nowe możliwości."
+    },
+    "ctaTitle": "Poznaj nas lepiej",
+    "ctaText": "Skontaktuj się z nami i dowiedz się więcej o naszych produktach i usługach",
+    "ctaButton": "Skontaktuj się"
+  },
+  "headquarters": {
+    "title": "Siedziba firmy",
+    "subtitle": "Nasza lokalizacja",
+    "description1": "Nasza siedziba znajduje się w malowniczej miejscowości w województwie dolnośląskim. To tutaj, w nowoczesnym zakładzie produkcyjnym, powstają nasze wysokiej jakości okna i drzwi.",
+    "description2": "Zapraszamy do odwiedzenia naszego showroomu, gdzie można zobaczyć pełną gamę naszych produktów oraz uzyskać fachowe doradztwo.",
+    "imageAlt": "Siedziba firmy ROJEK"
+  },
+  "management": {
+    "label": "ZARZĄD",
+    "title": "Management",
+    "members": [
+      {
+        "name": "Wiesław Rojek",
+        "role": "Właściciel"
+      },
+      {
+        "name": "Przemysław Rojek",
+        "role": "Właściciel"
+      },
+      {
+        "name": "Tomasz Rojek",
+        "role": "Właściciel"
+      },
+      {
+        "name": "Anna Nowak",
+        "role": "Kierownik produkcji"
+      }
+    ]
   }
 }

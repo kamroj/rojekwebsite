@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import MainLayout from '../layouts/MainLayout';
 import HomePage from '../pages/HomePage';
 import RealizationsPage from '../pages/RealizationsPage';
-import AboutPage from '../pages/AboutPage';
+import AboutUsPage from '../pages/AboutUsPage';
 import ContactPage from '../pages/ContactPage';
 import { ROUTES } from '../constants';
 
@@ -103,7 +103,7 @@ const router = createBrowserRouter([
       },
       {
         path: ROUTES.ABOUT.slice(1),
-        element: <AboutPage />,
+        element: <AboutUsPage />,
       },
       {
         path: ROUTES.CONTACT.slice(1),

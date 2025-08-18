@@ -206,5 +206,35 @@
     "pl": "Polish",
     "en": "English",
     "de": "German"
+  },
+  "history": {
+    "title": "Our History",
+    "subtitle": "Over 40 years of experience in the industry",
+    "headerAlt": "ROJEK company history",
+    "intro1": "ROJEK is a family business with over 40 years of tradition. From the very beginning, we focus on the highest quality, individual approach to customers and continuous development.",
+    "intro2": "Our history is a story of passion, determination and constant pursuit of excellence. Each stage of our development was thoughtful and aimed at delivering products that meet the highest standards.",
+    "item1": {
+      "title": "Company foundation",
+      "text": "Establishment of the ROJEK family company. Beginning production of high-quality window and door joinery with passion and attention to every detail."
+    },
+    "item2": {
+      "title": "Development and innovation",
+      "text": "Expansion of the production plant and introduction of modern technologies. Expanding the offer with new product lines."
+    },
+    "item3": {
+      "title": "International expansion",
+      "text": "Establishing cooperation with renowned foreign partners. Implementation of the highest quality standards."
+    },
+    "item4": {
+      "title": "Production modernization",
+      "text": "Comprehensive modernization of production lines. Introduction of advanced technological solutions."
+    },
+    "item5": {
+      "title": "New era",
+      "text": "Introduction of innovative wood-aluminum and HS sliding systems. Opening to new possibilities."
+    },
+    "ctaTitle": "Get to know us better",
+    "ctaText": "Contact us and learn more about our products and services",
+    "ctaButton": "Contact us"
   }
 }
