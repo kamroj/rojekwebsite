@@ -57,7 +57,7 @@
       ]
     },
     "exteriorDoors": {
-      "name": "AUSSЕНТÜREN",
+      "name": "AUSSENTÜREN",
       "description": "Außentüren sind die Visitenkarte des Hauses. Unsere Türen verbinden kompromisslose Sicherheit, raffinierte Ästhetik und ausgezeichnete Wärmedämmung.",
       "benefits": [
         "Solide Konstruktion garantiert Sicherheit",
@@ -214,24 +214,32 @@
     "intro1": "ROJEK ist ein Familienunternehmen mit über 40-jähriger Tradition. Von Anfang an setzen wir auf höchste Qualität, individuelle Kundenbetreuung und kontinuierliche Entwicklung.",
     "intro2": "Unsere Geschichte ist eine Geschichte von Leidenschaft, Entschlossenheit und dem ständigen Streben nach Exzellenz. Jede Phase unserer Entwicklung war durchdacht und darauf ausgerichtet, Produkte zu liefern, die höchsten Standards entsprechen.",
     "item1": {
-      "title": "Firmengründung",
-      "text": "Gründung des Familienunternehmens ROJEK. Beginn der Produktion hochwertiger Fenster- und Türtischlerei mit Leidenschaft und Liebe zum Detail."
+      "title": "Restaurierung historischer Gebäude",
+      "text": "Unter meiner Leitung haben wir zahlreiche prestigeträchtige Restaurierungen historischer Gebäude in Kraków sowie in Polen und Europa durchgeführt."
     },
     "item2": {
-      "title": "Entwicklung und Innovation",
-      "text": "Erweiterung der Produktionsanlage und Einführung moderner Technologien. Erweiterung des Angebots um neue Produktlinien."
+      "title": "Neue Produktionslinie",
+      "text": "Wir haben eine moderne Produktionslinie für einrahmige Holzfenster eingeführt und damit Tausende Quadratmeter Fenster für Investoren, Wohnsiedlungen und private Kunden gefertigt."
     },
     "item3": {
-      "title": "Internationale Expansion",
-      "text": "Aufbau von Kooperationen mit renommierten ausländischen Partnern. Implementierung höchster Qualitätsstandards."
+      "title": "PRZ Stolarnia",
+      "text": "Durch eine Umstrukturierung entstand PRZ Stolarnia als eigenständiges Unternehmen, in dem ich die Tätigkeit gemeinsam mit meinen Söhnen fortführe."
     },
     "item4": {
-      "title": "Produktionsmodernisierung",
-      "text": "Umfassende Modernisierung der Produktionslinien. Einführung fortschrittlicher technologischer Lösungen."
+      "title": "Schiebefenster",
+      "text": "Wir haben HS- und PSK-Schiebefenster in die Produktion eingeführt, ausgestattet mit innovativen G-U-Beschlägen und thermischen Verbundschwellen."
     },
     "item5": {
-      "title": "Neue Ära",
-      "text": "Einführung innovativer Holz-Aluminium- und HS-Schiebesysteme. Öffnung für neue Möglichkeiten."
+      "title": "Holz‑Aluminium Fenster",
+      "text": "Wir begannen mit der Produktion von Holz‑Aluminium-Fenstern – die Schönheit des Holzes innen kombiniert mit langlebigem Schutz außen. Diese Lösungen werden zunehmend von nationalen und internationalen Kunden geschätzt."
+    },
+    "item6": {
+      "title": "Historische Projekte",
+      "text": "Gemeinsam mit unseren Partnern aus Frankreich haben wir ein Fenster-Modell nach traditionellen historischen Vorbildern mit Cremona-Beschlägen entwickelt und zur Serienreife gebracht. Das Produkt ist für historische Gebäude gedacht; wir haben bereits mehrere Realisierungen in Paris, u. a. im Bereich von Versailles."
+    },
+    "item7": {
+      "title": "Modell für den belgischen Markt",
+      "text": "Wir haben unser Angebot um ein modifiziertes Fenster-Modell mit einer hölzernen Tropfkante erweitert, das für den belgischen Markt bestimmt ist."
     },
     "ctaTitle": "Lernen Sie uns besser kennen",
     "ctaText": "Kontaktieren Sie uns und erfahren Sie mehr über unsere Produkte und Dienstleistungen",

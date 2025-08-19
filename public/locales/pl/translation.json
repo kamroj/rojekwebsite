@@ -12,7 +12,7 @@
   "pageTitle": {
     "home": "ROJEK - Strona Główna",
     "realizations": "ROJEK - Realizacje",
-    "about": "ROJEK - O Firmie",
+    "about": "O NAS",
     "contact": "ROJEK - Kontakt"
   },
   "footer": {
@@ -40,7 +40,7 @@
     "whyUs": "DLACZEGO MY?",
     "companyPresentation": "PREZENTACJA FIRMY",
     "partners": "NASI PARTNERZY",
-    "aboutUs": "O FIRMIE",
+    "aboutUs": "O NAS",
     "contactInfo": "KONTAKT",
     "history": "HISTORIA",
     "headquarters": "SIEDZIBA FIRMY"
@@ -216,24 +216,32 @@
     "intro1": "Firma ROJEK to rodzinne przedsiębiorstwo z ponad 40-letnią tradycją. Od samego początku stawiamy na najwyższą jakość, indywidualne podejście do klienta oraz ciągły rozwój.",
     "intro2": "Nasza historia to opowieść o pasji, determinacji i nieustannym dążeniu do doskonałości. Każdy etap naszego rozwoju był przemyślany i ukierunkowany na dostarczanie produktów spełniających najwyższe standardy.",
     "item1": {
-      "title": "Powstanie firmy",
-      "text": "Założenie rodzinnej firmy ROJEK. Rozpoczęcie produkcji wysokiej jakości stolarki otworowej z pasją i dbałością o każdy detal."
+      "title": "Renowacje zabytków",
+      "text": "Pod moim kierownictwem wykonaliśmy setki prestiżowych realizacji obiektów zabytkowych w Krakowie oraz na terenie kraju i Europy."
     },
     "item2": {
-      "title": "Rozwój i innowacje",
-      "text": "Rozbudowa zakładu produkcyjnego i wprowadzenie nowoczesnych technologii. Poszerzenie oferty o nowe linie produktów."
+      "title": "Nowa linia produkcyjna",
+      "text": "Uruchomiliśmy nowoczesną linię produkcyjną jednoramowych okien drewnianych. Wyprodukowaliśmy w ten sposób okna o powierzchni wielu tysięcy m², przeznaczone dla inwestycji deweloperskich, osiedli oraz odbiorców indywidualnych."
     },
     "item3": {
-      "title": "Ekspansja międzynarodowa",
-      "text": "Nawiązanie współpracy z renomowanymi partnerami zagranicznymi. Wdrożenie najwyższych standardów jakości."
+      "title": "PRZ Stolarnia",
+      "text": "W wyniku restrukturyzacji powstała PRZ Stolarnia jako samodzielny podmiot gospodarczy, w którym kontynuuję działalność wraz z moimi synami."
     },
     "item4": {
-      "title": "Modernizacja produkcji",
-      "text": "Kompleksowa modernizacja linii produkcyjnych. Wprowadzenie zaawansowanych rozwiązań technologicznych."
+      "title": "Okna przesuwne",
+      "text": "Wprowadziliśmy do produkcji okna przesuwne typu HS i PSK wyposażone w innowacyjne rozwiązania na okuciach G-U oraz termiczne progi kompozytowe."
     },
     "item5": {
-      "title": "Nowa era",
-      "text": "Wprowadzenie innowacyjnych systemów drewniano-aluminiowych i przesuwnych HS. Otwarcie na nowe możliwości."
+      "title": "Okna drewniano-aluminiowe",
+      "text": "Rozpoczęliśmy produkcję okien drewniano-aluminiowych — piękno drewna od wnętrza po trwałą ochronę na zewnątrz. Nasze rozwiązania zdobywają uznanie klientów krajowych i zagranicznych."
+    },
+    "item6": {
+      "title": "Projekty historyczne",
+      "text": "Przy udziale naszych partnerów z Francji opracowaliśmy i wdrożyliśmy do produkcji model okna opartego na tradycyjnych historycznych wzorcach z użyciem okuć baskwilowych Cremona. Produkt przeznaczony jest do budynków historycznych. Aktualnie możemy poszczycić się kilkoma realizacjami na terenie Paryża, w tym w dzielnicy Wersal."
+    },
+    "item7": {
+      "title": "Model dla rynku belgijskiego",
+      "text": "Uzupełniliśmy ofertę o zmodyfikowany model okien z okapnikiem drewnianym przeznaczony na rynek belgijski."
     },
     "ctaTitle": "Poznaj nas lepiej",
     "ctaText": "Skontaktuj się z nami i dowiedz się więcej o naszych produktach i usługach",
@@ -242,7 +250,7 @@
   "headquarters": {
     "title": "Siedziba firmy",
     "subtitle": "Nasza lokalizacja",
-    "description1": "Nasza siedziba znajduje się w malowniczej miejscowości w województwie dolnośląskim. To tutaj, w nowoczesnym zakładzie produkcyjnym, powstają nasze wysokiej jakości okna i drzwi.",
+    "description1": "Zakład produkcyjny mieści się w miejscowości Kryspinów 399, przy autostradzie A4.",
     "description2": "Zapraszamy do odwiedzenia naszego showroomu, gdzie można zobaczyć pełną gamę naszych produktów oraz uzyskać fachowe doradztwo.",
     "imageAlt": "Siedziba firmy ROJEK"
   },

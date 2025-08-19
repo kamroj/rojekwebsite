@@ -2,7 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { FiCalendar, FiMapPin, FiPhone, FiMail } from 'react-icons/fi';
+import { FiCalendar, FiMapPin, FiPhone, FiMail, FiCheckCircle } from 'react-icons/fi';
 import Section from '../components/common/Section';
 
 const PageWrapper = styled.div`
@@ -98,6 +98,84 @@ const IntroText = styled(motion.div)`
   }
 `;
 
+/* About-specific variants and styled list for services */
+const AboutIntro = styled(IntroText)`
+  text-align: left;
+
+  p {
+    text-align: left;
+  }
+`;
+
+const ServicesList = styled(motion.ul)`
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 18px;
+  max-width: 900px;
+  grid-template-columns: repeat(2, 1fr);
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const ServiceItem = styled(motion.li)`
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: ${({ theme }) => theme.colors.background};
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  padding: 18px 20px;
+  border-radius: 12px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+  color: ${({ theme }) => theme.colors.text};
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 14px 30px rgba(0,0,0,0.08);
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    padding: 14px;
+  }
+`;
+
+const ServiceIcon = styled.div`
+  width: 52px;
+  height: 52px;
+  min-width: 52px;
+  border-radius: 12px;
+  background: linear-gradient(180deg, ${({ theme }) => theme.colors.bottleGreenLight}22, transparent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: ${({ theme }) => theme.colors.bottleGreen};
+  font-size: 1.4rem;
+  box-shadow: 0 6px 14px rgba(7,65,32,0.06);
+`;
+
+const ServiceContent = styled.div`
+  flex: 1;
+
+  h4 {
+    margin: 0 0 6px 0;
+    font-size: 1.05rem;
+    color: ${({ theme }) => theme.colors.primary};
+    font-weight: 600;
+  }
+
+  p {
+    margin: 0;
+    color: ${({ theme }) => theme.colors.text};
+    font-size: 0.98rem;
+    line-height: 1.5;
+    opacity: 0.95;
+  }
+`;
+
 /* Timeline */
 const TimelineContainer = styled.div`
   position: relative;
@@ -122,7 +200,7 @@ const TimelineContainer = styled.div`
     transform: translateX(-50%);
 
     @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-      left: 30px;
+      left: 20px;
     }
   }
 `;
@@ -135,7 +213,7 @@ const TimelineItem = styled(motion.div)`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     justify-content: flex-start;
-    padding-left: 60px;
+    padding-left: 40px;
   }
 `;
 
@@ -174,7 +252,7 @@ const TimelineMarker = styled.div`
   box-shadow: 0 0 0 4px rgba(7, 65, 32, 0.2);
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    left: 30px;
+    left: 20px;
   }
 `;
 
@@ -182,12 +260,12 @@ const YearBadge = styled.div`
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: ${({ theme }) => theme.colors.bottleGreen};
+  background: #01491f;
   color: ${({ theme }) => theme.colors.textLight};
   padding: 10px 20px;
   border-radius: 25px;
   font-weight: 600;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   margin-bottom: 20px;
 `;
 
@@ -297,16 +375,19 @@ const ManagementGrid = styled.div`
   max-width: ${({ theme }) => theme.layout.maxWidth};
   margin: 60px auto 0;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* create columns that are at most 220px wide; grid will fit as many as possible */
+  grid-template-columns: repeat(auto-fit, minmax(0, 220px));
+  justify-content: center;
   gap: 30px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    grid-template-columns: repeat(2, 1fr);
     gap: 20px;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+  /* on very small viewports keep a single column (one card per row) */
+  @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
     grid-template-columns: 1fr;
+    gap: 16px;
   }
 `;
 
@@ -314,9 +395,21 @@ const ManagerCard = styled.div`
   background: ${({ theme }) => theme.colors.background};
   border: 1px solid ${({ theme }) => theme.colors.borderAccent};
   border-radius: 12px;
-  padding: 5px;
+  padding: 12px;
   text-align: center;
   box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  width: 100%;
+  max-width: 220px; /* never allow a card to be wider than 220px */
+  margin: 0 auto;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
+    /* on very small mobile let card span full width */
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
 `;
 
 const ManagerPhoto = styled.img`
@@ -407,30 +500,40 @@ const AboutUsPage = () => {
 
   // Timeline data
   const timeline = [
-    { 
-      year: '1981', 
-      title: t('history.item1.title', 'Powstanie firmy'), 
-      text: t('history.item1.text', 'Założenie rodzinnej firmy ROJEK. Rozpoczęcie produkcji wysokiej jakości stolarki otworowej z pasją i dbałością o każdy detal.')
+    {
+      year: 'Od 1994',
+      title: t('history.item1.title'),
+      text: t('history.item1.text')
     },
-    { 
-      year: '1998', 
-      title: t('history.item2.title', 'Rozwój i innowacje'), 
-      text: t('history.item2.text', 'Rozbudowa zakładu produkcyjnego i wprowadzenie nowoczesnych technologii. Poszerzenie oferty o nowe linie produktów.')
+    {
+      year: '2002',
+      title: t('history.item2.title'),
+      text: t('history.item2.text')
     },
-    { 
-      year: '2009', 
-      title: t('history.item3.title', 'Ekspansja międzynarodowa'), 
-      text: t('history.item3.text', 'Nawiązanie współpracy z renomowanymi partnerami zagranicznymi. Wdrożenie najwyższych standardów jakości.')
+    {
+      year: '2012',
+      title: t('history.item3.title'),
+      text: t('history.item3.text')
     },
-    { 
-      year: '2018', 
-      title: t('history.item4.title', 'Modernizacja produkcji'), 
-      text: t('history.item4.text', 'Kompleksowa modernizacja linii produkcyjnych. Wprowadzenie zaawansowanych rozwiązań technologicznych.')
+    {
+      year: '2014',
+      title: t('history.item4.title'),
+      text: t('history.item4.text')
     },
-    { 
-      year: '2023', 
-      title: t('history.item5.title', 'Nowa era'), 
-      text: t('history.item5.text', 'Wprowadzenie innowacyjnych systemów drewniano-aluminiowych i przesuwnych HS. Otwarcie na nowe możliwości.')
+    {
+      year: '2016',
+      title: t('history.item5.title'),
+      text: t('history.item5.text')
+    },
+    {
+      year: '2019',
+      title: t('history.item6.title'),
+      text: t('history.item6.text')
+    },
+    {
+      year: '2020',
+      title: t('history.item7.title'),
+      text: t('history.item7.text')
     }
   ];
 
@@ -447,10 +550,44 @@ const AboutUsPage = () => {
         <HeaderTitle>{t('pageTitle.about', 'O nas')}</HeaderTitle>
       </HeaderImageWrapper>
 
+      {/* About (O nas) Section */}
+      <Section label={t('sections.aboutUs', 'O NAS')} labelPosition="left">
+        <AboutIntro
+          data-aos="fade-up"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
+          <p>
+            {t(
+              'aboutPage.lead',
+              'Dogodna lokalizacja stolarni przy granicy administracyjnej Krakowa, nowoczesny park maszynowy oraz hala o powierzchni 1200 m² dają nam wiele możliwości, aby zrealizować każde Państwa zamówienie. Zapewniamy konkurencyjne ceny oraz doświadczenie i profesjonalizm załogi w realizacji zleceń.'
+            )}
+          </p>
+          <p>
+            {t('aboutPage.invite', 'Zapraszamy osoby prywatne oraz firmy do składania zapytań ofertowych w następujących dziedzinach:')}
+          </p>
+          <ul style={{ listStyle: 'disc', paddingLeft: '1.5rem', maxWidth: 900, margin: '1rem auto 2rem', lineHeight: 1.9 }}>
+            <li>{t('aboutPage.services.0', { defaultValue: 'Okna jednoramowe (eurookna) standardowe i stylizowane' })}</li>
+            <li>{t('aboutPage.services.1', { defaultValue: 'Okna drewniane skrzynkowe' })}</li>
+            <li>{t('aboutPage.services.2', { defaultValue: 'Rekonstrukcje i renowacje stolarki zabytkowej' })}</li>
+            <li>{t('aboutPage.services.3', { defaultValue: 'Okna drewniane ppoż. EI30, EI60' })}</li>
+            <li>{t('aboutPage.services.4', { defaultValue: 'Drzwi drewniane ppoż. stylizowane dla obiektów zabytkowych' })}</li>
+          </ul>
+
+          <p style={{ fontWeight: 600, marginTop: '1rem' }}>
+            {t('aboutPage.partnersIntro', 'Ponadto posiadamy skład fabryczny i jesteśmy bezpośrednim dystrybutorem następujących firm:')}
+          </p>
+            <p style={{ textAlign: 'left', maxWidth: 900, margin: '0 auto 2rem' }}>
+            • {t('aboutPage.partners.0', { defaultValue: 'Okna PCV firmy OKNO-POL oraz SONAROL' })}<br />
+            • {t('aboutPage.partners.1', { defaultValue: 'Drzwi wewnętrzne i wejściowe firmy CENTURION' })}
+          </p>
+        </AboutIntro>
+      </Section>
+
       {/* History Section */}
-      <HistorySection label={t('sections.history', 'HISTORIA')} labelPosition="left">
-        <SectionTitle>{t('history.title', 'Nasza Historia')}</SectionTitle>
-        
+      <HistorySection label={t('sections.history', 'HISTORIA')} labelPosition="right">
         <IntroText
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -494,7 +631,7 @@ const AboutUsPage = () => {
       </HistorySection>
 
       {/* Company Headquarters Section */}
-      <HeadquartersSection label={t('sections.headquarters', 'SIEDZIBA FIRMY')} labelPosition="right">
+      <HeadquartersSection label={t('sections.headquarters', 'SIEDZIBA FIRMY')} labelPosition="left">
         <HeadquartersContent>
           <HeadquartersInfo
             initial={{ opacity: 0, x: -30 }}
@@ -515,10 +652,7 @@ const AboutUsPage = () => {
             
             <div className="address">
               <h4>{t('contact.address', 'Adres')}</h4>
-              <p><strong>ROJEK okna i drzwi</strong></p>
-              <p>ul. Przykładowa 1</p>
-              <p>00-000 Miasto</p>
-              <p>woj. dolnośląskie</p>
+              <p>{t('headquarters.description1')}</p>
             </div>
           </HeadquartersInfo>
 
@@ -537,7 +671,7 @@ const AboutUsPage = () => {
       </HeadquartersSection>
 
       {/* Management Section */}
-      <Section label="MANAGEMENT" labelPosition="left" noPadding>
+      <Section label="ZARZĄD" labelPosition="right" noPadding>
         <ManagementGrid>
           <ManagerCard>
             <ManagerPhoto src="/images/realizations/realization2.jpg" alt="Wiesław Rojek" />

@@ -9,8 +9,10 @@ import GlobalStyles from './styles/GlobalStyles.js';
 import theme from './styles/theme.js';
 import LoadingScreen from './components/common/LoadingScreen.jsx';
 import { ResourceCollectorProvider } from './context/ResourceCollectorContext.jsx';
-// Import internationalization
+ // Import internationalization
 import './i18n.js';
+import AOS from 'aos';
+import 'aos/dist/aos.css';
 
 if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
   try {
@@ -18,6 +20,11 @@ if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
   } catch (e) {
     // ignore - defensive in some browsers
   }
+}
+
+// Initialize AOS animations
+if (typeof window !== 'undefined' && AOS && typeof AOS.init === 'function') {
+  AOS.init({ once: true, duration: 600, easing: 'ease-out-cubic', offset: 80 });
 }
 
 // Loading fallback using our LoadingScreen

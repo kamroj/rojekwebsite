@@ -84,3 +84,8 @@ export const WHY_US_ICONS = {
   SERVICE: '/images/icons/tools-icon.png',
   WARRANTY: '/images/icons/cowork-icon.png'
 };
+
+ // Company / contact data used in multiple places (footer, about page)
+export const COMPANY_ADDRESS = "Zakład produkcyjny, Kryspinów 399, przy autostradzie A4";
+
+export const MAP_SRC = `https://www.google.com/maps?q=Kryspinow+399&output=embed`;
