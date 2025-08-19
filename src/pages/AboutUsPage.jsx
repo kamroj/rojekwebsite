@@ -4,12 +4,43 @@ import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { FiCalendar, FiMapPin, FiPhone, FiMail, FiCheckCircle } from 'react-icons/fi';
 import Section from '../components/common/Section';
+import { COMPANY_ADDRESS, MAP_SRC } from '../constants';
 
 const PageWrapper = styled.div`
   width: 100%;
   padding: 0;
   position: relative;
   z-index: 2;
+
+  /* Normalize heading sizes only for About page */
+  h1 {
+    font-size: 2.2rem !important;
+  }
+
+  h2 {
+    font-size: 1.8rem !important;
+  }
+
+  h3 {
+    font-size: 1.4rem !important;
+  }
+
+  h4 {
+    font-size: 1.4rem !important;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    h1 {
+      font-size: 1.8rem !important;
+    }
+    h2 {
+      font-size: 1.6rem !important;
+    }
+    h3,
+    h4 {
+      font-size: 1.3rem !important;
+    }
+  }
 `;
 
 /* Header image section - copied from RealizationsPage */
@@ -104,6 +135,29 @@ const AboutIntro = styled(IntroText)`
 
   p {
     text-align: left;
+  }
+
+  /* Ensure list items have consistent font-size on About page (fix mobile scaling) */
+  ul {
+    font-size: 1.4rem !important;
+    line-height: 1.8 !important;
+    margin: 0 0 1.5rem 0 !important;
+  }
+
+  li {
+    font-size: 1.4rem !important;
+    margin-bottom: 0.6rem !important;
+  }
+
+  /* Also target the inline-styled ul in JSX to be safe */
+  & > ul[style] {
+    font-size: 1.4rem !important;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    ul, li, & > ul[style] {
+      font-size: 1.3rem !important;
+    }
   }
 `;
 
@@ -546,12 +600,12 @@ const AboutUsPage = () => {
   return (
     <PageWrapper>
       <HeaderImageWrapper>
-        <HeaderImage src="/images/realizations/top.jpg" alt="O nas" />
-        <HeaderTitle>{t('pageTitle.about', 'O nas')}</HeaderTitle>
+      <HeaderImage src="/images/company/company-top.jpg" alt="O Firmie" />
+        <HeaderTitle>{t('pageTitle.about', 'O Firmie')}</HeaderTitle>
       </HeaderImageWrapper>
 
       {/* About (O nas) Section */}
-      <Section label={t('sections.aboutUs', 'O NAS')} labelPosition="left">
+      <Section label={t('sections.aboutUs', 'O NAS')} labelPosition="left" noPadding>
         <AboutIntro
           data-aos="fade-up"
           initial={{ opacity: 0, y: 30 }}
@@ -646,13 +700,19 @@ const AboutUsPage = () => {
             <p>
               {t('headquarters.description1', 'Nasza siedziba znajduje się w malowniczej miejscowości w województwie dolnośląskim. To tutaj, w nowoczesnym zakładzie produkcyjnym, powstają nasze wysokiej jakości okna i drzwi.')}
             </p>
-            <p>
-              {t('headquarters.description2', 'Zapraszamy do odwiedzenia naszego showroomu, gdzie można zobaczyć pełną gamę naszych produktów oraz uzyskać fachowe doradztwo.')}
-            </p>
             
             <div className="address">
               <h4>{t('contact.address', 'Adres')}</h4>
-              <p>{t('headquarters.description1')}</p>
+              <div style={{ width: '100%', height: '280px', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
+                <iframe
+                  src={MAP_SRC}
+                  title={t('headquarters.subtitle', 'Nasza lokalizacja')}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  style={{ width: '100%', height: '100%', border: 'none' }}
+                  allowFullScreen
+                />
+              </div>
             </div>
           </HeadquartersInfo>
 
@@ -663,7 +723,7 @@ const AboutUsPage = () => {
             transition={{ duration: 0.6 }}
           >
             <img 
-              src="/images/realizations/realization1.jpg" 
+              src="/images/company/company-building.jpg" 
               alt={t('headquarters.imageAlt', 'Siedziba firmy ROJEK')} 
             />
           </HeadquartersImage>
