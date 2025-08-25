@@ -393,34 +393,77 @@ const HeadquartersInfo = styled(motion.div)`
     text-align: left;
   }
 
+  /* Simplified address/map styling:
+     - remove framed background and header "Adres" in JSX
+     - on mobile make map full-bleed
+  */
   .address {
-    background: ${({ theme }) => theme.colors.background};
-    padding: 25px;
-    border-radius: 10px;
-    border: 1px solid ${({ theme }) => theme.colors.borderAccent};
     margin-top: 30px;
     text-align: left;
 
-    h4 {
-      font-size: 1.6rem;
-      color: ${({ theme }) => theme.colors.bottleGreen};
-      margin-bottom: 15px;
+    .map-wrapper {
+      width: 100%;
+      height: 360px;
+      overflow: hidden;
+      border-radius: 10px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
 
-    p {
-      font-size: 1.4rem;
-      margin: 8px 0;
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+
+    @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+      .map-wrapper {
+        width: calc(100% + 40px);
+        margin-left: -20px;
+        border-radius: 0;
+        height: 220px;
+        box-shadow: none;
+      }
     }
   }
 `;
 
 const HeadquartersImage = styled(motion.div)`
+  position: relative;
+  overflow: visible;
+  width: 100%;
+  height: 520px;
+
   img {
     width: 100%;
-    height: 260px;
+    height: 100%;
     object-fit: cover;
-    border-radius: 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    object-position: center center;
+    border-radius: 12px;
+    box-shadow: none;
+    display: block;
+    position: relative;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    /* mobile: make image full-bleed using viewport width + translate technique */
+    width: 100%;
+    height: 320px;
+    overflow: visible;
+
+    img {
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100vw;
+      max-width: none;
+      height: 320px;
+      object-fit: cover;
+      object-position: center center;
+      border-radius: 0;
+      box-shadow: none;
+      display: block;
+    }
   }
 `;
 
@@ -693,23 +736,18 @@ const AboutUsPage = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h3>
-              <FiMapPin />
-              {t('headquarters.subtitle', 'Nasza lokalizacja')}
-            </h3>
             <p>
               {t('headquarters.description1', 'Nasza siedziba znajduje się w malowniczej miejscowości w województwie dolnośląskim. To tutaj, w nowoczesnym zakładzie produkcyjnym, powstają nasze wysokiej jakości okna i drzwi.')}
             </p>
             
             <div className="address">
-              <h4>{t('contact.address', 'Adres')}</h4>
-              <div style={{ width: '100%', height: '280px', borderRadius: '10px', overflow: 'hidden', boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}>
+              {/* header "Adres" intentionally removed per request */}
+              <div className="map-wrapper">
                 <iframe
                   src={MAP_SRC}
-                  title={t('headquarters.subtitle', 'Nasza lokalizacja')}
+                  title={t('headquarters.mapTitle', 'Mapa siedziby')}
                   loading="lazy"
                   referrerPolicy="no-referrer-when-downgrade"
-                  style={{ width: '100%', height: '100%', border: 'none' }}
                   allowFullScreen
                 />
               </div>
