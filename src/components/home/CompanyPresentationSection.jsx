@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { FiPlay } from 'react-icons/fi';
 
-// Kontener dla całej sekcji
+/* Kontener dla całej sekcji */
 const PresentationWrapper = styled.div`
   width: 100%;
   background-color: #000;

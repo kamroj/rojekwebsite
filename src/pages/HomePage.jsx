@@ -95,6 +95,7 @@ const HomePage = () => {
           }
         `}
         noPadding
+        $noInset
       >
         <RealizationsGallery 
           images={realizationData}
@@ -107,11 +108,11 @@ const HomePage = () => {
         />
       </Section>
       
-      <Section label={t('sections.whyUs')} labelPosition="left">
+      <Section $noInset label={t('sections.whyUs')} labelPosition="left">
         <WhyUsSection />
       </Section>
       
-      <Section dark label={t('sections.companyPresentation')} labelPosition="right" noPadding>
+      <Section dark label={t('sections.companyPresentation')} labelPosition="right" noPadding $noInset>
         <CompanyPresentationSection />
       </Section>
       

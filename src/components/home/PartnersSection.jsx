@@ -17,12 +17,10 @@ const PartnersContainer = styled.div`
   padding: 0 ${({ theme }) => theme.spacings.medium};
   
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    /* Pełna szerokość na mobile */
     padding: 0;
-    max-width: none;
-    width: 100vw;
-    margin-left: calc(-50vw + 50%);
-    margin-right: calc(-50vw + 50%);
+    width: 100%;
+    margin-left: auto;
+    margin-right: auto;
   }
 `;
 

@@ -152,13 +152,11 @@ const ProductDetailsWrapper = styled.div`
 
 const ProductVideoWrapper = styled.div`
   flex: 1;
-  max-width: 40%;
   min-width: 300px;
   position: relative;
   
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     flex: unset;            /* don't force flex growth on mobile */
-    max-width: 90%;
     width: 100%;
     margin-bottom: 10px;       /* remove extra gap under video on mobile */
   }
@@ -222,10 +220,8 @@ const Video = styled.video`
 const ProductDescriptionContainer = styled.div`
   flex: 1;
   text-align: left;
-  max-width: 50%;
   
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    max-width: 90%;
     width: 100%;
   }
 `;

@@ -94,12 +94,24 @@ const SectionLabel = styled.div`
   }
 `;
 
-// Content container for section content
+/* Content container for section content
+   By default keep a small inset on mobile for text-heavy sections.
+   Use transient prop $noInset to opt-out per-section (does not forward to DOM). */
 const ContentContainer = styled.div`
   width: 100%;
   max-width: ${({ theme }) => theme.layout.maxWidth};
   margin: 0 auto;
   text-align: ${({ align }) => align || 'center'};
+
+  /* apply mobile inset unless a section opts out via $noInset */
+  ${({ $noInset }) => !$noInset && css`
+    @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+      max-width: 92%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+  `}
+
   /* use transient $noPadding to avoid forwarding unknown prop */
   /* padding-top: ${({ $noPadding }) => $noPadding ? '0' : '30px'}; */
 `;
@@ -113,6 +125,7 @@ const Section = ({
   align,
   noPadding,
   customStyles,
+  $noInset,
   ...props 
 }) => {
   return (
@@ -125,7 +138,7 @@ const Section = ({
           </SectionLabel>
         </LabelContainer>
       )}
-      <ContentContainer align={align} $noPadding={noPadding}>
+      <ContentContainer align={align} $noPadding={noPadding} $noInset={$noInset}>
         {children}
       </ContentContainer>
     </SectionWrapper>
