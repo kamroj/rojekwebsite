@@ -1,8 +1,10 @@
 export const PRODUCT_TYPES = {
   WINDOWS: 'windows',
+  WOOD_ALU: 'woodAlu',
   EXTERIOR_DOORS: 'exteriorDoors',
-  INTERIOR_DOORS: 'interiorDoors',
-  SLIDING: 'sliding'
+  FIRE_DOORS: 'fireDoors',
+  SLIDING: 'sliding',
+  PSK: 'psk'
 };
 
 export const ROUTES = {
@@ -46,10 +48,12 @@ export const COUNTRY_CODES = {
 };
 
 export const VIDEO_SOURCES = {
-  WINDOWS: '/videos/window.mp4',
-  EXTERIOR_DOORS: '/videos/door.mp4',
-  INTERIOR_DOORS: '/videos/interior-door.mp4',
-  SLIDING: '/videos/hs.mp4',
+  WINDOWS: '/videos/home/products/okno_drewniane.mp4',
+  WOOD_ALU: '/videos/home/products/okno_drewalu.mp4',
+  EXTERIOR_DOORS: '/videos/home/products/drzwi_drewniane.mp4',
+  FIRE_DOORS: '/videos/home/products/drzwi_ppoz.mp4',
+  SLIDING: '/videos/home/products/hs.mp4',
+  PSK: '/videos/home/products/psk.mp4',
   BACKGROUND: '/videos/background4.mp4'
 };
 

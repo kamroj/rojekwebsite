@@ -301,7 +301,6 @@ const Grid = styled.div`
     grid-template-columns: 1fr;
     gap: 2rem;
     margin: 0 0 3rem 0;
-    padding: 0 2rem;
   }
 `;
 

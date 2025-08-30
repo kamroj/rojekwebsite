@@ -45,8 +45,8 @@
   },
   "products": {
     "windows": {
-      "name": "WINDOWS",
-      "description": "Wooden windows are an investment in the highest possible quality. An ecological solution and unique design that will give character to any interior.",
+      "name": "WOODEN WINDOWS",
+      "description": "Wooden windows are a classic solution combining natural materials, excellent insulation and an elegant look that gives interiors a distinctive character.",
       "benefits": [
         "Highest quality natural wood",
         "Environmentally friendly and healthy for residents",
@@ -54,6 +54,18 @@
         "Rich palette of colors and finishes",
         "Very long lifespan and structural durability",
         "Excellent thermal and acoustic insulation parameters"
+      ]
+    },
+    "woodAlu": {
+      "name": "WOOD–ALUMINIUM WINDOWS",
+      "description": "Wood–aluminium windows combine the warmth of natural wood on the interior with durable, weather‑resistant aluminium cladding on the exterior.",
+      "benefits": [
+        "Wood interior combined with aluminium exterior",
+        "High durability with low maintenance requirements",
+        "Excellent thermal and acoustic insulation",
+        "Wide range of external finishes and colours",
+        "Suitable for both modern and classic designs",
+        "UV and weather resistant aluminium protection"
       ]
     },
     "exteriorDoors": {
@@ -66,6 +78,18 @@
         "Wide selection of patterns, from classic to modern",
         "Possibility of using modern access control systems",
         "Individual adjustment of dimensions and accessories"
+      ]
+    },
+    "fireDoors": {
+      "name": "FIRE DOORS",
+      "description": "Fire doors are designed to provide fire resistance and protection where required by safety regulations, combining certified performance with robust construction.",
+      "benefits": [
+        "Certified fire resistance classes",
+        "Improved fire safety for the building",
+        "Robust, fire‑resistant construction",
+        "Options for anti‑burglary enhancements",
+        "Maintains insulation performance under stress",
+        "Customisable to project and regulation requirements"
       ]
     },
     "interiorDoors": {
@@ -81,15 +105,27 @@
       ]
     },
     "sliding": {
-      "name": "SLIDING WINDOWS",
-      "description": "HS sliding systems are a modern solution that allows creating impressive glazing and smooth connection of interior with terrace or garden, blurring the boundaries between home and nature.",
+      "name": "SLIDING WINDOWS (HS)",
+      "description": "HS sliding systems are a modern solution that allows creating impressive glazing and a smooth connection between interior and terrace or garden.",
       "benefits": [
         "Maximum interior lighting thanks to large glass surfaces",
         "Space saving compared to traditional balcony doors",
         "Easy and comfortable operation even of very large sashes",
         "Modern design and possibility of creating panoramic views",
         "High tightness and excellent thermal insulation parameters",
-        "Possibility of execution in low-threshold system for full comfort"
+        "Possible in low‑threshold variants for enhanced comfort"
+      ]
+    },
+    "psk": {
+      "name": "PSK",
+      "description": "The PSK system is a practical tilt‑and‑slide solution combining ventilation (tilt) with comfortable sliding operation for large glazed elements.",
+      "benefits": [
+        "Tilt and slide function in one system",
+        "Comfortable operation and safe ventilation",
+        "Good thermal performance while maintaining convenience",
+        "Suitable for large sash sizes",
+        "Aesthetically finished and adaptable to façades",
+        "Low‑threshold options available for improved access"
       ]
     }
   },

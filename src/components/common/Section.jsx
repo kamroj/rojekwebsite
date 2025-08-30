@@ -6,14 +6,18 @@ import styled, { css } from 'styled-components';
    Use transient props ($...) to avoid forwarding unknown props to the DOM
 */
 const SectionWrapper = styled.section`
-  margin-top: 8rem;
-  padding: ${({ $dark }) => $dark ? '20px 0' : '3.5rem'};
+  margin-top: 6rem;
+  padding: ${({ $dark }) => $dark ? '20px 0' : '5rem 3.5rem 1.5rem 3.5rem'};
   background-color: ${({ theme, $dark }) => $dark ? 'black' : theme.colors.background};
   border: ${({ $dark }) => $dark ? 'none' : '1px solid'};
   border-color: ${({ theme, $dark }) => $dark ? 'transparent' : theme.colors.borderAccent};
   position: relative;
   color: ${({ theme, $dark }) => $dark ? theme.colors.textLight : 'inherit'};
   ${({ $customStyles }) => $customStyles && css`${$customStyles}`}
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    padding: ${({ $dark }) => $dark ? '20px 0' : '3rem 0 1.5rem 0'};;
+  }
 `;
 
 // Container dla labela - ogranicza pozycjonowanie do szerokości contentu
@@ -97,7 +101,7 @@ const ContentContainer = styled.div`
   margin: 0 auto;
   text-align: ${({ align }) => align || 'center'};
   /* use transient $noPadding to avoid forwarding unknown prop */
-  padding-top: ${({ $noPadding }) => $noPadding ? '0' : '30px'};
+  /* padding-top: ${({ $noPadding }) => $noPadding ? '0' : '30px'}; */
 `;
 
 // Combined Section component with label and content

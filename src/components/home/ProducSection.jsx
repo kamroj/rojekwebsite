@@ -1,6 +1,7 @@
 // src/components/home/ProductSection.jsx
 import React, { useState, useEffect, useRef } from 'react';
 import styled, { css, keyframes } from 'styled-components';
+import { motion } from 'framer-motion';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import SwipeHandler from '../common/SwipeHandler';
 
@@ -37,8 +38,9 @@ const MobileButtonsContainer = styled.div`
     justify-content: center;
     width: 100%;
     position: relative;
-    margin-bottom: 3rem;
-    gap: 2rem;
+    margin-top: 2rem;     /* większe odsunięcie od góry na mobile */
+    margin-bottom: 2.5rem;/* dostosowane odsunięcie od dołu */
+    gap: 2.5rem;          /* nieco większe odstępy między przyciskami */
     padding: 0 20px;
   }
 `;
@@ -75,8 +77,8 @@ const ProductListButton = styled.button`
     border-bottom-color: ${({ theme }) => theme.colors.bottleGreenLight};
   }
   
-  ${({ active, theme }) =>
-    active &&
+  ${({ $active, theme }) =>
+    $active &&
     css`
       color: ${theme.colors.bottleGreen};
       font-weight: 700;
@@ -124,9 +126,9 @@ const NavigationButton = styled.button`
   }
   
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    width: 44px;
-    height: 44px;
-    font-size: 1.8rem;
+    width: 36px;
+    height: 36px;
+    font-size: 2.5rem;
   }
   
   @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
@@ -155,9 +157,10 @@ const ProductVideoWrapper = styled.div`
   position: relative;
   
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    flex: unset;            /* don't force flex growth on mobile */
     max-width: 90%;
     width: 100%;
-    margin-bottom: 1rem;
+    margin-bottom: 10px;       /* remove extra gap under video on mobile */
   }
 `;
 
@@ -190,7 +193,7 @@ const SpinnerWrapper = styled.div`
   align-items: center;
   z-index: 5;
   pointer-events: none;
-  opacity: ${props => props.isLoading ? 1 : 0};
+  opacity: ${props => props.$isLoading ? 1 : 0};
   transition: opacity 0.3s ease;
 `;
 
@@ -212,7 +215,7 @@ const Video = styled.video`
   object-fit: contain;
   background-color: #fff;
   display: block;
-  opacity: ${props => props.isLoading ? 0 : 1};
+  opacity: ${props => props.$isLoading ? 0 : 1};
   transition: opacity ${({ theme }) => theme.transitions.default};
 `;
 
@@ -282,11 +285,95 @@ const SwipeableContainer = styled.div`
   }
 `;
 
+/* --- Desktop side arrows and slider --- */
+const SideArrow = styled.button`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(37,68,41,0.9);
+  color: #fff;
+  font-size: 2.2rem;
+  cursor: pointer;
+  transition: background-color ${({ theme }) => theme.transitions.default}, opacity ${({ theme }) => theme.transitions.default};
+  opacity: 0.95;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.bottleGreen};
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+    display: flex;
+  }
+`;
+
+const SideArrowLeft = styled(SideArrow)`
+  left: 8px; /* keep arrow visible inside viewport */
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    display: none; /* hide on mobile */
+  }
+`;
+
+const SideArrowRight = styled(SideArrow)`
+  right: 8px; /* keep arrow visible inside viewport */
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    display: none; /* hide on mobile */
+  }
+`;
+
+/* Slider viewport and inner */
+const SlidesWrapper = styled.div`
+  position: relative;
+  width: 100%;
+  overflow: visible; /* allow arrows to sit outside the viewport */
+  padding-left: 96px;  /* reserve space so arrows remain visible */
+  padding-right: 96px; /* reserve space so arrows remain visible */
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    padding-left: 0;
+    padding-right: 0;
+  }
+`;
+
+const SlideViewport = styled.div`
+  overflow: hidden;
+  width: 100%;
+`;
+
+const SlideInner = styled(motion.div)`
+  display: flex;
+  width: 100%;
+`;
+
+const SlideItem = styled.div`
+  min-width: 100%;
+  display: flex;
+  gap: 8rem;
+  align-items: flex-start;
+  padding-top: 1.6rem;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    flex-direction: column;
+    gap: 1rem; /* reduced gap between video and description on mobile */
+    align-items: center;
+    padding-top: 0; /* ensure no extra top padding on mobile */
+  }
+`;
+
 // --- Main Component ---
 const ProductSection = ({ productData, initialProductId = Object.keys(productData)[0] }) => {
   const [selectedProductId, setSelectedProductId] = useState(initialProductId);
   const [isLoading, setIsLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 992 : false);
   const videoRef = useRef(null);
   const currentProduct = productData[selectedProductId];
   
@@ -302,6 +389,7 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
       setIsMobile(window.innerWidth <= 992); // breakpoint md
     };
     
+    // call once in case window size changed before effect ran
     checkMobile();
     window.addEventListener('resize', checkMobile);
     
@@ -358,39 +446,22 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
         threshold={80}
       >
         <ProductContentContainer>
-          {/* Desktop version - wszystkie przyciski */}
-          <ProductListContainer>
-            {Object.values(productData).map((product) => (
-              <ProductListButton
-                key={product.id}
-                onClick={() => setSelectedProductId(product.id)}
-                active={selectedProductId === product.id}
-              >
-                {product.name}
-              </ProductListButton>
-            ))}
-          </ProductListContainer>
-
-          {/* Mobile version - jeden przycisk ze strzałkami */}
           <MobileButtonsContainer>
-            <NavigationButton 
+            <NavigationButton
               onClick={goToPrevProduct}
               disabled={isFirstProduct}
               aria-label="Poprzedni produkt"
             >
               <FiChevronLeft />
             </NavigationButton>
-            
+
             <MobileSingleButton>
-              <ProductListButton
-                active={true}
-                disabled={true}
-              >
+              <ProductListButton $active={true} disabled={true}>
                 {currentProduct.name}
               </ProductListButton>
             </MobileSingleButton>
-            
-            <NavigationButton 
+
+            <NavigationButton
               onClick={goToNextProduct}
               disabled={isLastProduct}
               aria-label="Następny produkt"
@@ -398,42 +469,77 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
               <FiChevronRight />
             </NavigationButton>
           </MobileButtonsContainer>
-          
-          <ProductDetailsWrapper>
-            <ProductVideoWrapper>
-              <ProductVideoContainer>
-                {/* Opakowanie spinnera dla lepszego wyśrodkowania */}
-                <SpinnerWrapper isLoading={isLoading}>
+
+          {/* Desktop version - side arrows + sliding content */}
+          <SlidesWrapper>
+            {!isMobile && !isFirstProduct && (
+              <SideArrowLeft
+                onClick={goToPrevProduct}
+                aria-label="Poprzedni produkt"
+              >
+                <FiChevronLeft />
+              </SideArrowLeft>
+            )}
+
+            <SlideViewport>
+<SlideInner
+  animate={{ x: `-${currentIndex * 100}%` }}
+  transition={{ type: 'tween', duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+>
+                {productIds.map((id) => {
+                  const prod = productData[id];
+                  return (
+                    <SlideItem key={id}>
+                      <ProductVideoWrapper>
+                        <ProductVideoContainer>
+                <SpinnerWrapper $isLoading={isLoading && selectedProductId === id}>
                   <LoadingSpinner />
                 </SpinnerWrapper>
-                
-                <Video
-                  ref={videoRef}
-                  key={currentProduct.videoSrc}
-                  src={currentProduct.videoSrc}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                  poster={currentProduct.posterSrc}
-                  preload="metadata"
-                  isLoading={isLoading}
-                  onLoadedData={handleVideoLoaded}
-                  onPlaying={handleVideoLoaded}
-                />
-              </ProductVideoContainer>
-            </ProductVideoWrapper>
-            
-            <ProductDescriptionContainer>
-              <ProductDescriptionTitle>{currentProduct.name}</ProductDescriptionTitle>
-              <ProductDescriptionText>{currentProduct.description}</ProductDescriptionText>
-              <ProductBenefitsList>
-                {currentProduct.benefits.map((benefit, index) => (
-                  <ProductBenefitItem key={index}>{benefit}</ProductBenefitItem>
-                ))}
-              </ProductBenefitsList>
-            </ProductDescriptionContainer>
-          </ProductDetailsWrapper>
+
+                          <Video
+                            ref={selectedProductId === id ? videoRef : null}
+                            key={prod.videoSrc}
+                            src={prod.videoSrc}
+                            autoPlay={selectedProductId === id}
+                            loop
+                            muted
+                            playsInline
+                            poster={prod.posterSrc}
+                            preload="metadata"
+                            $isLoading={isLoading && selectedProductId === id}
+                            onLoadedData={selectedProductId === id ? handleVideoLoaded : undefined}
+                            onPlaying={selectedProductId === id ? handleVideoLoaded : undefined}
+                          />
+                        </ProductVideoContainer>
+                      </ProductVideoWrapper>
+
+                      <ProductDescriptionContainer>
+                        <ProductDescriptionTitle>{prod.name}</ProductDescriptionTitle>
+                        <ProductDescriptionText>{prod.description}</ProductDescriptionText>
+                        <ProductBenefitsList>
+                          {prod.benefits.map((benefit, index) => (
+                            <ProductBenefitItem key={index}>{benefit}</ProductBenefitItem>
+                          ))}
+                        </ProductBenefitsList>
+                      </ProductDescriptionContainer>
+                    </SlideItem>
+                  );
+                })}
+            </SlideInner>
+            </SlideViewport>
+
+            {!isMobile && !isLastProduct && (
+              <SideArrowRight
+                onClick={goToNextProduct}
+                aria-label="Następny produkt"
+              >
+                <FiChevronRight />
+              </SideArrowRight>
+            )}
+          </SlidesWrapper>
+
+          
+
         </ProductContentContainer>
       </SwipeHandler>
     </SwipeableContainer>

@@ -26,6 +26,14 @@ const HomePage = () => {
       description: t('products.windows.description'),
       benefits: t('products.windows.benefits', { returnObjects: true })
     },
+    [PRODUCT_TYPES.WOOD_ALU]: {
+      id: PRODUCT_TYPES.WOOD_ALU,
+      name: t('products.woodAlu.name'),
+      videoSrc: VIDEO_SOURCES.WOOD_ALU,
+      posterSrc: '/images/posters/wood_alu_poster.jpg',
+      description: t('products.woodAlu.description'),
+      benefits: t('products.woodAlu.benefits', { returnObjects: true })
+    },
     [PRODUCT_TYPES.EXTERIOR_DOORS]: {
       id: PRODUCT_TYPES.EXTERIOR_DOORS,
       name: t('products.exteriorDoors.name'),
@@ -34,13 +42,13 @@ const HomePage = () => {
       description: t('products.exteriorDoors.description'),
       benefits: t('products.exteriorDoors.benefits', { returnObjects: true })
     },
-    [PRODUCT_TYPES.INTERIOR_DOORS]: {
-      id: PRODUCT_TYPES.INTERIOR_DOORS,
-      name: t('products.interiorDoors.name'),
-      videoSrc: VIDEO_SOURCES.INTERIOR_DOORS,
-      posterSrc: '/images/posters/interior_door_poster.jpg',
-      description: t('products.interiorDoors.description'),
-      benefits: t('products.interiorDoors.benefits', { returnObjects: true })
+    [PRODUCT_TYPES.FIRE_DOORS]: {
+      id: PRODUCT_TYPES.FIRE_DOORS,
+      name: t('products.fireDoors.name'),
+      videoSrc: VIDEO_SOURCES.FIRE_DOORS,
+      posterSrc: '/images/posters/fire_door_poster.jpg',
+      description: t('products.fireDoors.description'),
+      benefits: t('products.fireDoors.benefits', { returnObjects: true })
     },
     [PRODUCT_TYPES.SLIDING]: {
       id: PRODUCT_TYPES.SLIDING,
@@ -49,6 +57,14 @@ const HomePage = () => {
       posterSrc: '/images/posters/hs_poster.jpg',
       description: t('products.sliding.description'),
       benefits: t('products.sliding.benefits', { returnObjects: true })
+    },
+    [PRODUCT_TYPES.PSK]: {
+      id: PRODUCT_TYPES.PSK,
+      name: t('products.psk.name'),
+      videoSrc: VIDEO_SOURCES.PSK,
+      posterSrc: '/images/posters/psk_poster.jpg',
+      description: t('products.psk.description'),
+      benefits: t('products.psk.benefits', { returnObjects: true })
     }
   };
 

@@ -45,8 +45,8 @@
   },
   "products": {
     "windows": {
-      "name": "FENSTER",
-      "description": "Holzfenster sind eine Investition in höchstmögliche Qualität. Eine ökologische Lösung und einzigartiges Design, das jedem Interieur Charakter verleiht.",
+      "name": "HOLZFENSTER",
+      "description": "Holzfenster sind eine klassische Lösung, die natürliche Materialien, hervorragende Dämmung und ein elegantes Erscheinungsbild verbindet und Innenräumen Charakter verleiht.",
       "benefits": [
         "Höchste Qualität von Naturholz",
         "Umweltfreundlich und gesund für Bewohner",
@@ -54,6 +54,18 @@
         "Reiche Palette von Farben und Oberflächen",
         "Sehr lange Lebensdauer und strukturelle Haltbarkeit",
         "Ausgezeichnete Wärme- und Schalldämmparameter"
+      ]
+    },
+    "woodAlu": {
+      "name": "HOLZ‑ALUMINIUM FENSTER",
+      "description": "Holz‑Aluminium‑Fenster vereinen die Wärme von Holz im Innenraum mit einer widerstandsfähigen, witterungsbeständigen Aluminiumschale an der Außenseite.",
+      "benefits": [
+        "Holz im Innenraum kombiniert mit Aluminium außen",
+        "Hohe Beständigkeit bei geringem Pflegeaufwand",
+        "Hervorragende Wärme‑ und Schalldämmeigenschaften",
+        "Breite Auswahl an äußeren Oberflächen und Farben",
+        "Geeignet für moderne und klassische Architektur",
+        "UV‑ und witterungsbeständige Aluminiumschicht"
       ]
     },
     "exteriorDoors": {
@@ -66,6 +78,18 @@
         "Große Auswahl an Mustern, von klassisch bis modern",
         "Möglichkeit der Verwendung moderner Zugangskontrollsysteme",
         "Individuelle Anpassung von Abmessungen und Zubehör"
+      ]
+    },
+    "fireDoors": {
+      "name": "BRANDSCHUTZTÜREN",
+      "description": "Brandschutztüren bieten geprüfte Feuerwiderstandsfähigkeit und Schutz in Bereichen mit erhöhten Sicherheitsanforderungen und gesetzlichen Vorgaben.",
+      "benefits": [
+        "Zertifizierte Feuerwiderstandsklassen",
+        "Erhöhte Brandsicherheit für das Gebäude",
+        "Robuste, feuerbeständige Konstruktion",
+        "Optionen für zusätzliche einbruchhemmende Maßnahmen",
+        "Erhalt der Dämmparameter unter Belastung",
+        "Anpassbar an Projekt- und Normanforderungen"
       ]
     },
     "interiorDoors": {
@@ -81,8 +105,8 @@
       ]
     },
     "sliding": {
-      "name": "SCHIEBEFENSTER",
-      "description": "HS-Schiebeanlagen sind eine moderne Lösung, die beeindruckende Verglasungen und eine nahtlose Verbindung von Innenraum mit Terrasse oder Garten ermöglicht und die Grenzen zwischen Haus und Natur verwischt.",
+      "name": "SCHIEBEFENSTER (HS)",
+      "description": "HS‑Schiebeanlagen sind eine moderne Lösung für große Verglasungen und ermöglichen eine nahtlose Verbindung von Innenraum und Terrasse oder Garten.",
       "benefits": [
         "Maximale Innenbeleuchtung dank großer Glasflächen",
         "Platzersparnis im Vergleich zu herkömmlichen Balkontüren",
@@ -90,6 +114,18 @@
         "Modernes Design und Möglichkeit panoramischer Ausblicke",
         "Hohe Dichtheit und ausgezeichnete Wärmedämmparameter",
         "Möglichkeit der Ausführung im niedrigschwelligen System für vollen Komfort"
+      ]
+    },
+    "psk": {
+      "name": "PSK",
+      "description": "Das PSK‑System ist eine praktische Kipp‑und‑Schiebe‑Lösung, die Lüftungsfunktion (Kippen) mit komfortabler Schiebebedienung für große Verglasungen vereint.",
+      "benefits": [
+        "Kipp‑ und Schiebefunktion in einem System",
+        "Komfortable Bedienung und sichere Lüftung",
+        "Gute Wärmedämmeigenschaften bei hoher Bedienfreundlichkeit",
+        "Geeignet für große Flügelgrößen",
+        "Ästhetische Ausführung und Anpassung an Fassaden",
+        "Niedrigschwellenoptionen für erleichterten Zugang"
       ]
     }
   },

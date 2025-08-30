@@ -183,9 +183,9 @@ const NavigationButton = styled.button`
   touch-action: manipulation;
   
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    width: 44px;
-    height: 44px;
-    font-size: 1.8rem;
+    width: 36px;
+    height: 36px;
+    font-size: 2.5rem;
   }
 `;
 
