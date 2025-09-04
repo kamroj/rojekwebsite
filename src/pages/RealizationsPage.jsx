@@ -421,12 +421,13 @@ const MobileFiltersButton = styled.button`
 
 const MobilePanel = styled(motion.div).attrs({ 'data-mobile-panel': 'true' })`
   position: fixed;
-  inset: 0;
-  width: 100vw;
-  height: 100vh;
+  top: 0;
   left: 0;
   right: 0;
-  top: 0;
+  width: 100vw;
+  /* Prefer dynamic viewport height; fallback to VisualViewport CSS var if present */
+  height: var(--vvh, 100dvh);
+  max-height: 100dvh;
   background: #fff;
   border: none;
   border-radius: 0;
@@ -435,7 +436,7 @@ const MobilePanel = styled(motion.div).attrs({ 'data-mobile-panel': 'true' })`
   padding: 0;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden;
+  overflow: hidden;
   touch-action: pan-y;
   overscroll-behavior-x: contain;
   box-sizing: border-box;
@@ -464,6 +465,8 @@ const MobileFooter = styled.div`
   display: flex;
   gap: 12px;
   padding: 12px;
+  /* Ensure footer actions are not obscured by bottom browser UI or iOS home indicator */
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
   border-top: 1px solid ${({ theme }) => theme?.colors?.border || '#eee'};
   background: ${({ theme }) => theme?.colors?.panelBg || '#fff'};
   justify-content: space-between;
