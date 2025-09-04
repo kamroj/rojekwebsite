@@ -14,7 +14,9 @@ const fadeIn = keyframes`
 const IntroWrapper = styled.section`
   position: relative;
   width: 100vw;
-  height: 100vh;
+  /* Use dynamic viewport height to avoid being covered by mobile browser UI */
+  height: var(--vvh, 100dvh);
+  min-height: 100dvh;
   overflow: hidden;
   margin: 0;
   padding: 0;
@@ -25,10 +27,10 @@ const VideoBackground = styled.video`
   position: absolute;
   top: 50%;
   left: 50%;
-  /* tak, viewport units aby być niezależnym od procentów kontenera */
+  /* Prefer dynamic viewport height so video covers visible area without huge overflow */
   min-width: 100vw;
-  min-height: 150vh;
-  width: auto; 
+  min-height: var(--vvh, 100dvh);
+  width: auto;
   height: auto;
   transform: translate(-50%, -50%);
   object-fit: cover;            /* zachowuje proporcje i przycina nadmiar */
@@ -60,12 +62,15 @@ const BottomOverlay = styled.div`
   justify-content: space-between;
   min-height: 56px;           /* co najmniej wysokość przycisku */
   z-index: 10;
+  /* Ensure content stays above mobile browser UI / home indicator */
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
 
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     bottom: 5%;
     min-height: 52px;
     left: 3%;
     right: 3%;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4px);
   }
 `;
 
