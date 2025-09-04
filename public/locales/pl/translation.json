@@ -231,6 +231,35 @@
     "previous": "Poprzedni",
     "next": "Następny"
   },
+  "realizationsPage": {
+    "title": "Realizacje",
+    "filters": {
+      "doors": "Drzwi",
+      "windows": "Okna",
+      "color": "Kolor", 
+      "clear": "Wyczyść",
+      "apply": "Zastosuj",
+      "filtersTitle": "Filtry",
+      "close": "Zamknij"
+    },
+    "productTypes": {
+      "interiorDoors": "Wewnętrzne",
+      "exteriorDoors": "Zewnętrzne",
+      "woodWindows": "Drewno", 
+      "woodAluWindows": "Drewno-Alu",
+      "pvcWindows": "PVC"
+    },
+    "colors": {
+      "ral9017": "RAL 9017",
+      "ral7016": "RAL 7016",
+      "ral9016": "RAL 9016"
+    },
+    "results": {
+      "found": "Znaleziono {{count}} realizacji",
+      "noResults": "Brak wyników", 
+      "noResultsMessage": "Nie znaleziono realizacji dla wybranych filtrów."
+    }
+  },
   "language": {
     "switcher": {
       "label": "Język",

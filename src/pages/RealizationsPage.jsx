@@ -2,35 +2,99 @@ import React, { useMemo, useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { FiChevronDown, FiChevronUp, FiX, FiFilter } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import RealizationCard from '../components/gallery/RealizationCard';
 import Pagination from '../components/common/Pagination';
 import PageHeader from '../components/common/PageHeader';
 
 const PAGE_SIZE = 6;
 
-// Labels / example data
-const LABELS = {
-  produkt: { drzwi: 'Drzwi', okna: 'Okna' },
-  typ: {
-    drzwi_wewnetrzne: 'Wewnętrzne',
-    drzwi_zewnetrzne: 'Zewnętrzne',
-    okna_drewno: 'Drewno',
-    okna_drewno_alu: 'Drewno-Alu',
-    okna_pvc: 'PVC',
+const PRODUCT_TYPES = {
+  DOORS: {
+    INTERIOR: 'interiorDoors',
+    EXTERIOR: 'exteriorDoors'
   },
-  kolor: { ral9017: 'RAL 9017', ral7016: 'RAL 7016', ral9016: 'RAL 9016' },
+  WINDOWS: {
+    WOOD: 'woodWindows',
+    WOOD_ALU: 'woodAluWindows',
+    PVC: 'pvcWindows'
+  }
 };
 
-const exampleRealizations = [
-  { id: 1, src: '/images/realizations/realization1.jpg', title: 'Drzwi zewnętrzne 1', tags: { produkt: 'drzwi', typ: 'drzwi_zewnetrzne', kolor: 'ral7016' } },
-  { id: 2, src: '/images/realizations/realization2.jpg', title: 'Drzwi wewnętrzne 1', tags: { produkt: 'drzwi', typ: 'drzwi_wewnetrzne', kolor: 'ral9016' } },
-  { id: 3, src: '/images/realizations/realization3.jpg', title: 'Okno drewniane 1', tags: { produkt: 'okna', typ: 'okna_drewno', kolor: 'ral9017' } },
-  { id: 4, src: '/images/realizations/realization4.jpg', title: 'Okno PVC 1', tags: { produkt: 'okna', typ: 'okna_pvc', kolor: 'ral7016' } },
-  { id: 5, src: '/images/realizations/realization5.jpg', title: 'Drzwi wewnętrzne 2', tags: { produkt: 'drzwi', typ: 'drzwi_wewnetrzne', kolor: 'ral7016' } },
-  { id: 6, src: '/images/realizations/realization6.jpg', title: 'Okno drewno-alu 1', tags: { produkt: 'okna', typ: 'okna_drewno_alu', kolor: 'ral9016' } },
+const COLORS = {
+  RAL9017: 'ral9017',
+  RAL7016: 'ral7016',
+  RAL9016: 'ral9016'
+};
+
+const FILTER_CATEGORIES = {
+  TYPE: 'type',
+  COLOR: 'color'
+};
+
+const EXAMPLE_REALIZATIONS = [
+  { 
+    id: 1, 
+    src: '/images/realizations/realization1.jpg', 
+    title: 'Exterior doors 1', 
+    tags: { 
+      product: 'doors', 
+      type: PRODUCT_TYPES.DOORS.EXTERIOR, 
+      color: COLORS.RAL7016 
+    } 
+  },
+  { 
+    id: 2, 
+    src: '/images/realizations/realization2.jpg', 
+    title: 'Interior doors 1', 
+    tags: { 
+      product: 'doors', 
+      type: PRODUCT_TYPES.DOORS.INTERIOR, 
+      color: COLORS.RAL9016 
+    } 
+  },
+  { 
+    id: 3, 
+    src: '/images/realizations/realization3.jpg', 
+    title: 'Wood windows 1', 
+    tags: { 
+      product: 'windows', 
+      type: PRODUCT_TYPES.WINDOWS.WOOD, 
+      color: COLORS.RAL9017 
+    } 
+  },
+  { 
+    id: 4, 
+    src: '/images/realizations/realization4.jpg', 
+    title: 'PVC windows 1', 
+    tags: { 
+      product: 'windows', 
+      type: PRODUCT_TYPES.WINDOWS.PVC, 
+      color: COLORS.RAL7016 
+    } 
+  },
+  { 
+    id: 5, 
+    src: '/images/realizations/realization5.jpg', 
+    title: 'Interior doors 2', 
+    tags: { 
+      product: 'doors', 
+      type: PRODUCT_TYPES.DOORS.INTERIOR, 
+      color: COLORS.RAL7016 
+    } 
+  },
+  { 
+    id: 6, 
+    src: '/images/realizations/realization6.jpg', 
+    title: 'Wood-Alu windows 1', 
+    tags: { 
+      product: 'windows', 
+      type: PRODUCT_TYPES.WINDOWS.WOOD_ALU, 
+      color: COLORS.RAL9016 
+    } 
+  },
 ];
 
-// ============ Styles ============
 const PageWrapper = styled.div`
   width: 100%;
 `;
@@ -49,13 +113,11 @@ const FiltersRow = styled.div`
   align-items: center;
   margin: 12px 0 20px;
 
-  /* hide desktop filters on small screens - mobile will use the icon + panel */
   @media (max-width: 720px) {
     display: none;
   }
 `;
 
-/* group holding the three dropdowns; will take remaining width and space items evenly */
 const DropdownsGroup = styled.div`
   display: flex;
   justify-content: space-between;
@@ -64,17 +126,13 @@ const DropdownsGroup = styled.div`
   gap: 18px;
 `;
 
-/* Search input gets larger flex so it won't be squeezed */
-
-
-const SmallFilterWrapper = styled.div`
+const FilterWrapper = styled.div.attrs({ 'data-filter-area': 'true' })`
   flex: 0 0 180px;
   max-width: 180px;
   min-width: 140px;
   position: relative;
   box-sizing: border-box;
 
-  /* On mobile panels make wrappers slightly narrower and centered */
   @media (max-width: 720px) {
     flex: 0 0 auto;
     max-width: 320px;
@@ -86,81 +144,79 @@ const SmallFilterWrapper = styled.div`
 
 const FilterControl = styled.button`
   all: unset;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  width:100%;
-  background:#fff;
-  border:1px solid ${({ theme }) => theme?.colors?.border || '#e6e6e6'};
-  border-radius:8px;
-  padding:10px 12px;
-  cursor:pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: ${({ theme }) => theme?.colors?.background || '#ffffff'};
+  border: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
   box-sizing: border-box;
-  box-shadow: 0 1px 0 rgba(0,0,0,0.02);
-  transition: all 0.2s ease;
+  box-shadow: ${({ theme }) => theme?.shadows?.small || '0 2px 4px rgba(0, 0, 0, 0.1)'};
+  transition: ${({ theme }) => theme?.transitions?.default || '0.3s ease'};
   
   &:hover {
-    border-color: ${({ theme }) => theme?.colors?.accent || '#017e54'};
-    box-shadow: 0 3px 12px rgba(1, 126, 84, 0.15);
+    border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
+    box-shadow: ${({ theme }) => theme?.shadows?.medium || '0 4px 8px rgba(0, 0, 0, 0.2)'};
+    background: ${({ theme }) => theme?.colors?.backgroundAlt || '#f9fafb'};
   }
   
   &:focus {
-    outline: 2px solid ${({ theme }) => theme?.colors?.accent || '#017e54'};
-    outline-offset: 2px;
+    outline: none;
+    border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme?.colors?.borderAccent || 'rgba(1, 126, 84, 0.25)'};
+  }
+  
+  &:active {
+    outline: none;
+    transform: translateY(1px);
   }
 `;
 
 const LabelBlock = styled.div`
-  display:flex;
-  flex-direction:column;
-  align-items:flex-start;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 `;
 
-const Heading = styled.span`
-  font-weight:600;
+const FilterHeading = styled.span`
+  font-weight: 600;
   font-size: 1.05rem;
   color: ${({ theme }) => theme?.colors?.text || '#222'};
 
-  /* slightly larger headers on small screens for readability */
   @media (max-width: 720px) {
     font-size: 1.12rem;
   }
 `;
 
-const Sub = styled.span`
-  font-size:0.82rem;
-  color: ${({ theme }) => theme?.colors?.textMuted || '#666'};
-  margin-top:1px;
-`;
-
-const DropdownPanel = styled.div`
-  position:absolute;
+const DropdownPanel = styled.div.attrs({ 'data-filter-area': 'true' })`
+  position: absolute;
   top: calc(100% + 6px);
   left: 0;
   right: 0;
   width: auto;
-  background:#fff;
-  border:1px solid ${({ theme }) => theme?.colors?.border || '#e6e6e6'};
-  border-radius:10px;
-  box-shadow:0 8px 18px rgba(0,0,0,0.07);
+  background: ${({ theme }) => theme?.colors?.background || '#ffffff'};
+  border: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
+  border-radius: 10px;
+  box-shadow: ${({ theme }) => theme?.shadows?.medium || '0 4px 8px rgba(0, 0, 0, 0.2)'};
   z-index: 10;
-  padding:6px;
+  padding: 6px;
   box-sizing: border-box;
 
-  /* On mobile we render dropdown content inline inside the mobile panel as a boxed, scrollable list */
   @media (max-width: 720px) {
-    /* Keep dropdown aligned with control on mobile - use same width calculation */
     position: absolute;
     top: calc(100% + 6px);
     left: 0;
     right: 0;
     width: 100%;
     margin: 0;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    border: 1px solid ${({ theme }) => theme?.colors?.border || '#e6e6e6'};
+    box-shadow: ${({ theme }) => theme?.shadows?.medium || '0 4px 8px rgba(0, 0, 0, 0.2)'};
+    border: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
     border-radius: 8px;
     padding: 0;
-    background: #fff;
+    background: ${({ theme }) => theme?.colors?.background || '#ffffff'};
     display: block;
     box-sizing: border-box;
     z-index: 60;
@@ -177,7 +233,6 @@ const OptionList = styled.div`
   width: 100%;
   box-sizing: border-box;
   
-  /* Custom scrollbar styling */
   &::-webkit-scrollbar {
     width: 6px;
   }
@@ -197,7 +252,6 @@ const OptionList = styled.div`
   }
 
   @media (max-width: 720px) {
-    /* compact, boxed list for mobile: limit height so it becomes scrollable */
     max-height: 200px;
     overflow-y: auto;
     overflow-x: hidden;
@@ -205,9 +259,6 @@ const OptionList = styled.div`
     width: 100%;
     box-sizing: border-box;
     gap: 0;
-
-    /* remove extra inner padding on the list so the panel border and the
-       option rows can align exactly with the control's inner content */
     border: none;
     border-radius: 0;
     padding: 0;
@@ -218,35 +269,42 @@ const OptionList = styled.div`
 `;
 
 const OptionRow = styled.label`
-  display:flex;
-  gap:10px;
-  align-items:center;
-  padding:12px 12px; /* full-bleed padding so text aligns with control edges on desktop */
-  border-radius:6px;
-  cursor:pointer;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px 12px;
+  border-radius: 6px;
+  cursor: pointer;
   width: 100%;
   box-sizing: border-box;
-  &:hover { background:#f5f7f9; }
+  transition: ${({ theme }) => theme?.transitions?.fast || '0.2s ease-in'};
+  
+  &:hover { 
+    background: ${({ theme }) => theme?.colors?.backgroundAlt || '#f9fafb'}; 
+  }
 
-  /* smaller checkboxes and consistent spacing */
   input[type="checkbox"] {
     width: 16px;
     height: 16px;
     margin: 0;
     margin-right: 10px;
     transform: none;
-    accent-color: ${({ theme }) => theme?.colors?.accent || '#017e54'};
+    accent-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
     flex-shrink: 0;
     cursor: pointer;
     
-    /* Custom checkbox styling for better browser support */
     &:checked {
-      background-color: ${({ theme }) => theme?.colors?.accent || '#017e54'};
-      border-color: ${({ theme }) => theme?.colors?.accent || '#017e54'};
+      background-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
+      border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
     }
     
     &:hover {
-      border-color: ${({ theme }) => theme?.colors?.accent || '#017e54'};
+      border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
+    }
+    
+    &:focus {
+      outline: none;
+      box-shadow: 0 0 0 2px ${({ theme }) => theme?.colors?.borderAccent || 'rgba(1, 126, 84, 0.25)'};
     }
   }
 
@@ -254,20 +312,20 @@ const OptionRow = styled.label`
     font-size: 0.95rem;
     flex: 1;
     white-space: nowrap;
+    color: ${({ theme }) => theme?.colors?.text || '#212529'};
   }
 
   @media (max-width: 720px) {
-    /* match option row padding to FilterControl inner padding so text aligns */
     padding: 12px;
     border-radius: 0;
     width: 100%;
     
     &:not(:last-child) {
-      border-bottom: 1px solid ${({ theme }) => theme?.colors?.border || '#e6e6e6'};
+      border-bottom: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
     }
 
     &:hover { 
-      background:#f5f7f9; 
+      background: ${({ theme }) => theme?.colors?.backgroundAlt || '#f9fafb'}; 
     }
   }
 
@@ -276,49 +334,46 @@ const OptionRow = styled.label`
       width: 12px;
       height: 12px;
     }
-    span { font-size: 0.95rem; }
-  }
-`;
-
-const ResultsTop = styled.div`
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin: 8px 0 16px;
-`;
-
-const ResultsCount = styled.div`
-  font-weight:600;
-`;
-
-const Grid = styled.div`
-  display:grid;
-  gap:18px;
-  grid-template-columns: repeat(3, 1fr);
-  @media (max-width: 1100px) { grid-template-columns: repeat(2, 1fr); }
-  @media (max-width: 720px) { grid-template-columns: 1fr; }
-`;
-
-const NoResults = styled.div`
-  padding:30px;
-  text-align:center;
-  background:#fff;
-  border:1px solid #eee;
-  border-radius:8px;
-  margin-top:20px;
-`;
-
-/* Small screens: stack filters vertically to avoid overlap */
-const ResponsiveHint = styled.div`
-  @media (max-width: 640px) {
-    ${FiltersRow} {
-      flex-direction: column;
-      align-items: stretch;
+    span { 
+      font-size: 0.95rem; 
     }
   }
 `;
 
-/* Mobile filter button (top-right) */
+const ResultsTop = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 8px 0 16px;
+`;
+
+const ResultsCount = styled.div`
+  font-weight: 600;
+`;
+
+const Grid = styled.div`
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(3, 1fr);
+  
+  @media (max-width: 1100px) { 
+    grid-template-columns: repeat(2, 1fr); 
+  }
+  
+  @media (max-width: 720px) { 
+    grid-template-columns: 1fr; 
+  }
+`;
+
+const NoResults = styled.div`
+  padding: 30px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-top: 20px;
+`;
+
 const MobileFiltersButton = styled.button`
   all: unset;
   display: none;
@@ -328,22 +383,43 @@ const MobileFiltersButton = styled.button`
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  background: #fff;
-  border: 1px solid ${({ theme }) => theme?.colors?.border || '#e6e6e6'};
+  background: ${({ theme }) => theme?.colors?.background || '#ffffff'};
+  border: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  box-shadow: ${({ theme }) => theme?.shadows?.small || '0 2px 4px rgba(0, 0, 0, 0.1)'};
   cursor: pointer;
-  svg { width: 18px; height: 18px; color: ${({ theme }) => theme?.colors?.text || '#222'}; }
+  transition: ${({ theme }) => theme?.transitions?.default || '0.3s ease'};
+  
+  &:hover {
+    border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
+    box-shadow: ${({ theme }) => theme?.shadows?.medium || '0 4px 8px rgba(0, 0, 0, 0.2)'};
+    background: ${({ theme }) => theme?.colors?.backgroundAlt || '#f9fafb'};
+  }
+  
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme?.colors?.borderAccent || 'rgba(1, 126, 84, 0.25)'};
+  }
+  
+  &:active {
+    outline: none;
+    transform: translateY(1px);
+  }
+  
+  svg { 
+    width: 18px; 
+    height: 18px; 
+    color: ${({ theme }) => theme?.colors?.text || '#212529'}; 
+  }
 
   @media (max-width: 720px) {
     display: flex;
   }
 `;
 
-/* Mobile panel that slides down with filters stacked */
-const MobilePanel = styled(motion.div)`
-  /* full-screen mobile overlay */
+const MobilePanel = styled(motion.div).attrs({ 'data-mobile-panel': 'true' })`
   position: fixed;
   inset: 0;
   width: 100vw;
@@ -359,17 +435,16 @@ const MobilePanel = styled(motion.div)`
   padding: 0;
   display: flex;
   flex-direction: column;
-  overflow-x: hidden; /* prevent horizontal scroll */
-  touch-action: pan-y; /* prefer vertical scrolling only */
+  overflow-x: hidden;
+  touch-action: pan-y;
   overscroll-behavior-x: contain;
   box-sizing: border-box;
 `;
 
-/* Mobile panel header with close */
 const MobileHeader = styled.div`
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 12px 14px;
   border-bottom: 1px solid ${({ theme }) => theme?.colors?.border || '#e6e6e6'};
 `;
@@ -379,15 +454,15 @@ const MobileCloseButton = styled.button`
   cursor: pointer;
   width: 36px;
   height: 36px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 8px;
 `;
 
 const MobileFooter = styled.div`
-  display:flex;
-  gap:12px;
+  display: flex;
+  gap: 12px;
   padding: 12px;
   border-top: 1px solid ${({ theme }) => theme?.colors?.border || '#eee'};
   background: ${({ theme }) => theme?.colors?.panelBg || '#fff'};
@@ -407,7 +482,6 @@ const MobileAction = styled.button`
   background: ${({ primary, theme }) => primary ? (theme?.colors?.accent || '#017e54') : 'transparent'};
 `;
 
-/* Mobile stacked filters inside panel (scrollable body) */
 const MobileFilters = styled.div`
   flex: 1;
   overflow: auto;
@@ -418,264 +492,393 @@ const MobileFilters = styled.div`
   align-items: center;
   box-sizing: border-box;
 
-  /* child wrappers control their own width and are centered */
-  ${SmallFilterWrapper} {
+  ${FilterWrapper} {
     margin: 8px 0;
   }
 `;
 
-// ================= Component =================
+const ClearButton = styled.button`
+  all: unset;
+  cursor: pointer;
+  font-weight: 600;
+  color: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+`;
+
 const RealizationsPage = () => {
-  const drzwiTypes = useMemo(() => ['drzwi_wewnetrzne', 'drzwi_zewnetrzne'], []);
-  const oknaTypes = useMemo(() => ['okna_drewno', 'okna_drewno_alu', 'okna_pvc'], []);
-  const kolorOptions = useMemo(() => [...new Set(exampleRealizations.map(r => r.tags.kolor))], []);
+  const { t } = useTranslation();
+  
+  const doorTypes = useMemo(() => [
+    PRODUCT_TYPES.DOORS.INTERIOR, 
+    PRODUCT_TYPES.DOORS.EXTERIOR
+  ], []);
+  
+  const windowTypes = useMemo(() => [
+    PRODUCT_TYPES.WINDOWS.WOOD, 
+    PRODUCT_TYPES.WINDOWS.WOOD_ALU, 
+    PRODUCT_TYPES.WINDOWS.PVC
+  ], []);
+  
+  const colorOptions = useMemo(() => [
+    ...new Set(EXAMPLE_REALIZATIONS.map(realization => realization.tags.color))
+  ], []);
 
-  const [open, setOpen] = useState({ drzwi: false, okna: false, kolor: false });
-  const [selected, setSelected] = useState({ typ: new Set(), kolor: new Set() });
+  const [dropdownsOpen, setDropdownsOpen] = useState({ 
+    doors: false, 
+    windows: false, 
+    color: false 
+  });
+  
+  const [selectedFilters, setSelectedFilters] = useState({ 
+    [FILTER_CATEGORIES.TYPE]: new Set(), 
+    [FILTER_CATEGORIES.COLOR]: new Set() 
+  });
+  
   const [currentPage, setCurrentPage] = useState(1);
+  const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false);
+  const [mobileTemporaryFilters, setMobileTemporaryFilters] = useState(null);
 
-  const drzwiRef = useRef();
-  const oknaRef = useRef();
-  const kolorRef = useRef();
-  const mobileRef = useRef();
+  const doorsRef = useRef();
+  const windowsRef = useRef();
+  const colorRef = useRef();
+  const mobileButtonRef = useRef();
   const mobilePanelRef = useRef();
-  const [mobileOpen, setMobileOpen] = useState(false);
-
-  // mobile temporary state for "Zastosuj" flow
-  const [mobileTemp, setMobileTemp] = useState(null);
 
   const openMobilePanel = () => {
-    setMobileTemp({
-      typ: new Set([...selected.typ]),
-      kolor: new Set([...selected.kolor]),
+    setMobileTemporaryFilters({
+      [FILTER_CATEGORIES.TYPE]: new Set([...selectedFilters[FILTER_CATEGORIES.TYPE]]),
+      [FILTER_CATEGORIES.COLOR]: new Set([...selectedFilters[FILTER_CATEGORIES.COLOR]]),
     });
-    setMobileOpen(true);
+    setIsMobilePanelOpen(true);
   };
 
   const closeMobilePanel = () => {
-    setMobileOpen(false);
-    setMobileTemp(null);
+    setIsMobilePanelOpen(false);
+    setMobileTemporaryFilters(null);
   };
 
-  const mobileToggleSelect = (group, value) => {
-    setMobileTemp(prev => {
+  const toggleMobileFilter = (category, value) => {
+    setMobileTemporaryFilters(prev => {
       if (!prev) return prev;
-      const next = { typ: new Set(prev.typ), kolor: new Set(prev.kolor) };
-      if (next[group].has(value)) next[group].delete(value);
-      else next[group].add(value);
-      return next;
+      const updated = { 
+        [FILTER_CATEGORIES.TYPE]: new Set(prev[FILTER_CATEGORIES.TYPE]), 
+        [FILTER_CATEGORIES.COLOR]: new Set(prev[FILTER_CATEGORIES.COLOR]) 
+      };
+      if (updated[category].has(value)) {
+        updated[category].delete(value);
+      } else {
+        updated[category].add(value);
+      }
+      return updated;
     });
   };
 
-  const mobileClear = () => {
-    setMobileTemp({ typ: new Set(), kolor: new Set() });
+  const clearMobileFilters = () => {
+    setMobileTemporaryFilters({ 
+      [FILTER_CATEGORIES.TYPE]: new Set(), 
+      [FILTER_CATEGORIES.COLOR]: new Set() 
+    });
   };
 
-  const applyMobile = () => {
-    if (mobileTemp) {
-      setSelected({ typ: new Set([...mobileTemp.typ]), kolor: new Set([...mobileTemp.kolor]) });
+  const applyMobileFilters = () => {
+    if (mobileTemporaryFilters) {
+      setSelectedFilters({ 
+        [FILTER_CATEGORIES.TYPE]: new Set([...mobileTemporaryFilters[FILTER_CATEGORIES.TYPE]]), 
+        [FILTER_CATEGORIES.COLOR]: new Set([...mobileTemporaryFilters[FILTER_CATEGORIES.COLOR]]) 
+      });
     }
     closeMobilePanel();
   };
 
-  const toggleOpen = (k) => setOpen(p => ({ ...p, [k]: !p[k] }));
-  const closeAll = () => setOpen({ drzwi: false, okna: false, kolor: false });
+  const toggleDropdown = (dropdownKey, event) => {
+    if (event) {
+      event.stopPropagation();
+    }
+    setDropdownsOpen(prev => {
+      const isCurrentlyOpen = prev[dropdownKey];
+      // Close all dropdowns first
+      const allClosed = { doors: false, windows: false, color: false };
+      // Then open the clicked one if it was closed
+      return { ...allClosed, [dropdownKey]: !isCurrentlyOpen };
+    });
+  };
 
-  const toggleSelect = (group, value) => {
-    setSelected(prev => {
-      const next = new Set(prev[group]);
-      if (next.has(value)) next.delete(value);
-      else next.add(value);
-      return { ...prev, [group]: next };
+  const closeAllDropdowns = () => {
+    setDropdownsOpen({ doors: false, windows: false, color: false });
+  };
+
+  const toggleFilter = (category, value, event) => {
+    if (event) {
+      event.stopPropagation();
+    }
+    setSelectedFilters(prev => {
+      const updated = new Set(prev[category]);
+      if (updated.has(value)) {
+        updated.delete(value);
+      } else {
+        updated.add(value);
+      }
+      return { ...prev, [category]: updated };
     });
     setCurrentPage(1);
   };
 
-  const clearAll = () => {
-    setSelected({ typ: new Set(), kolor: new Set() });
+  const clearAllFilters = () => {
+    setSelectedFilters({ 
+      [FILTER_CATEGORIES.TYPE]: new Set(), 
+      [FILTER_CATEGORIES.COLOR]: new Set() 
+    });
     setCurrentPage(1);
   };
 
-  // filter logic: title search + typ + kolor
   const filteredRealizations = useMemo(() => {
-    const hasAny = (s) => s && s.size > 0;
-    return exampleRealizations.filter(item => {
-      const { produkt, typ, kolor } = item.tags;
-      if (hasAny(selected.typ) && !selected.typ.has(typ)) return false;
-      if (hasAny(selected.kolor) && !selected.kolor.has(kolor)) return false;
+    const hasFilters = (filterSet) => filterSet && filterSet.size > 0;
+    
+    return EXAMPLE_REALIZATIONS.filter(realization => {
+      const { type, color } = realization.tags;
+      
+      if (hasFilters(selectedFilters[FILTER_CATEGORIES.TYPE]) && 
+          !selectedFilters[FILTER_CATEGORIES.TYPE].has(type)) {
+        return false;
+      }
+      
+      if (hasFilters(selectedFilters[FILTER_CATEGORIES.COLOR]) && 
+          !selectedFilters[FILTER_CATEGORIES.COLOR].has(color)) {
+        return false;
+      }
+      
       return true;
     });
-  }, [selected]);
+  }, [selectedFilters]);
 
   const totalPages = Math.ceil(filteredRealizations.length / PAGE_SIZE);
-  const currentItems = filteredRealizations.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const currentPageItems = filteredRealizations.slice(
+    (currentPage - 1) * PAGE_SIZE, 
+    currentPage * PAGE_SIZE
+  );
 
-  useEffect(() => setCurrentPage(1), [selected.typ.size, selected.kolor.size]);
-
-  // Close dropdowns when clicking outside or pressing Escape; handle mobile panel and resize
   useEffect(() => {
-    const onDoc = (e) => {
-      const targets = [drzwiRef.current, oknaRef.current, kolorRef.current, mobileRef.current, mobilePanelRef.current];
-      if (targets.every(ref => !ref || !ref.contains(e.target))) {
-        closeAll();
-        // close mobile panel if open and clicked outside
-        setMobileOpen(false);
+    setCurrentPage(1);
+  }, [selectedFilters[FILTER_CATEGORIES.TYPE].size, selectedFilters[FILTER_CATEGORIES.COLOR].size]);
+
+  useEffect(() => {
+    const handleDocumentClick = (event) => {
+      const target = event.target;
+
+      // If click is inside any filter area (wrapper or dropdown), do nothing
+      if (target.closest && target.closest('[data-filter-area="true"]')) {
+        return;
       }
+
+      // If mobile filters panel is open, handle it explicitly
+      if (isMobilePanelOpen) {
+        const insideMobile =
+          (target.closest && target.closest('[data-mobile-panel="true"]')) ||
+          (mobileButtonRef.current && mobileButtonRef.current.contains(target));
+
+        if (!insideMobile) {
+          setIsMobilePanelOpen(false);
+        }
+        return;
+      }
+
+      // Desktop: clicking outside closes all dropdowns
+      closeAllDropdowns();
     };
-    const onKey = (e) => { if (e.key === 'Escape') { closeAll(); setMobileOpen(false); } };
-    const onResize = () => {
-      // ensure desktop dropdowns closed on small screens and mobile panel closed on large screens
+
+    const handleKeyDown = (event) => { 
+      if (event.key === 'Escape') { 
+        closeAllDropdowns(); 
+        setIsMobilePanelOpen(false); 
+      } 
+    };
+
+    const handleResize = () => {
       if (window.innerWidth <= 720) {
-        closeAll();
+        closeAllDropdowns();
       } else {
-        setMobileOpen(false);
+        setIsMobilePanelOpen(false);
       }
     };
-    document.addEventListener('click', onDoc);
-    document.addEventListener('keydown', onKey);
-    window.addEventListener('resize', onResize);
+
+    // Use setTimeout to ensure this runs after the onClick handlers
+    const timeoutId = setTimeout(() => {
+      document.addEventListener('click', handleDocumentClick);
+    }, 0);
+    
+    document.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('resize', handleResize);
+
     return () => {
-      document.removeEventListener('click', onDoc);
-      document.removeEventListener('keydown', onKey);
-      window.removeEventListener('resize', onResize);
+      clearTimeout(timeoutId);
+      document.removeEventListener('click', handleDocumentClick);
+      document.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('resize', handleResize);
     };
-  }, [mobileRef]);
+  }, [isMobilePanelOpen]);
 
   useEffect(() => {
-    const prevBodyOverflow = document.body.style.overflow;
-    const prevBodyOverflowX = document.body.style.overflowX;
-    const prevHtmlOverflow = document.documentElement.style.overflow;
-    const prevHtmlOverflowX = document.documentElement.style.overflowX;
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousBodyOverflowX = document.body.style.overflowX;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+    const previousHtmlOverflowX = document.documentElement.style.overflowX;
 
-    if (mobileOpen) {
-      // lock scrolling in both axes on html/body to avoid horizontal panning
+    if (isMobilePanelOpen) {
       document.body.style.overflow = 'hidden';
       document.body.style.overflowX = 'hidden';
       document.documentElement.style.overflow = 'hidden';
       document.documentElement.style.overflowX = 'hidden';
 
-      // focus first focusable element inside panel for accessibility
       setTimeout(() => {
         mobilePanelRef.current?.querySelector('input,button,select,textarea,a')?.focus();
       }, 0);
     } else {
-      document.body.style.overflow = prevBodyOverflow;
-      document.body.style.overflowX = prevBodyOverflowX;
-      document.documentElement.style.overflow = prevHtmlOverflow;
-      document.documentElement.style.overflowX = prevHtmlOverflowX;
+      document.body.style.overflow = previousBodyOverflow;
+      document.body.style.overflowX = previousBodyOverflowX;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+      document.documentElement.style.overflowX = previousHtmlOverflowX;
     }
 
     return () => {
-      document.body.style.overflow = prevBodyOverflow;
-      document.body.style.overflowX = prevBodyOverflowX;
-      document.documentElement.style.overflow = prevHtmlOverflow;
-      document.documentElement.style.overflowX = prevHtmlOverflowX;
+      document.body.style.overflow = previousBodyOverflow;
+      document.body.style.overflowX = previousBodyOverflowX;
+      document.documentElement.style.overflow = previousHtmlOverflow;
+      document.documentElement.style.overflowX = previousHtmlOverflowX;
     };
-  }, [mobileOpen]);
+  }, [isMobilePanelOpen]);
 
-  // helper for counts
-  const countText = (set) => set.size > 0 ? `(${set.size})` : '';
+  const getTranslatedProductType = (type) => {
+    return t(`realizationsPage.productTypes.${type}`);
+  };
+
+  const getTranslatedColor = (color) => {
+    return t(`realizationsPage.colors.${color}`);
+  };
 
   return (
     <PageWrapper>
-      <PageHeader imageSrc="/images/realizations/top.jpg" id="realizations-header" title="Realizacje" />
+      <PageHeader 
+        imageSrc="/images/realizations/top.jpg" 
+        id="realizations-header" 
+        title={t('realizationsPage.title')} 
+      />
 
       <Content>
-        <MobileFiltersButton ref={mobileRef} onClick={openMobilePanel} aria-label="Filtry">
+        <MobileFiltersButton 
+          ref={mobileButtonRef} 
+          onClick={openMobilePanel} 
+          aria-label={t('realizationsPage.filters.filtersTitle')}
+        >
           <FiFilter />
         </MobileFiltersButton>
 
         <FiltersRow>
           <DropdownsGroup>
-            <SmallFilterWrapper ref={drzwiRef}>
-              <FilterControl onClick={() => toggleOpen('drzwi')} aria-expanded={open.drzwi} aria-haspopup="menu">
+            <FilterWrapper ref={doorsRef}>
+              <FilterControl 
+                onClick={(e) => toggleDropdown('doors', e)} 
+                aria-expanded={dropdownsOpen.doors} 
+                aria-haspopup="menu"
+              >
                 <LabelBlock>
-                  <Heading>Drzwi</Heading>
+                  <FilterHeading>{t('realizationsPage.filters.doors')}</FilterHeading>
                 </LabelBlock>
-                {open.drzwi ? <FiChevronUp /> : <FiChevronDown />}
+                {dropdownsOpen.doors ? <FiChevronUp /> : <FiChevronDown />}
               </FilterControl>
 
-              {open.drzwi && (
+              {dropdownsOpen.doors && (
                 <DropdownPanel role="menu">
                   <OptionList>
-                    {drzwiTypes.map(opt => (
-                      <OptionRow key={opt}>
+                    {doorTypes.map(type => (
+                      <OptionRow key={type} onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
-                          checked={selected.typ.has(opt)}
-                          onChange={() => toggleSelect('typ', opt)}
+                          checked={selectedFilters[FILTER_CATEGORIES.TYPE].has(type)}
+                          onChange={(e) => toggleFilter(FILTER_CATEGORIES.TYPE, type, e)}
                         />
-                        <span>{LABELS.typ[opt]}</span>
+                        <span>{getTranslatedProductType(type)}</span>
                       </OptionRow>
                     ))}
                   </OptionList>
                 </DropdownPanel>
               )}
-            </SmallFilterWrapper>
+            </FilterWrapper>
 
-            <SmallFilterWrapper ref={oknaRef}>
-              <FilterControl onClick={() => toggleOpen('okna')} aria-expanded={open.okna} aria-haspopup="menu">
+            <FilterWrapper ref={windowsRef}>
+              <FilterControl 
+                onClick={(e) => toggleDropdown('windows', e)} 
+                aria-expanded={dropdownsOpen.windows} 
+                aria-haspopup="menu"
+              >
                 <LabelBlock>
-                  <Heading>Okna</Heading>
+                  <FilterHeading>{t('realizationsPage.filters.windows')}</FilterHeading>
                 </LabelBlock>
-                {open.okna ? <FiChevronUp /> : <FiChevronDown />}
+                {dropdownsOpen.windows ? <FiChevronUp /> : <FiChevronDown />}
               </FilterControl>
 
-              {open.okna && (
+              {dropdownsOpen.windows && (
                 <DropdownPanel role="menu">
                   <OptionList>
-                    {oknaTypes.map(opt => (
-                      <OptionRow key={opt}>
+                    {windowTypes.map(type => (
+                      <OptionRow key={type} onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
-                          checked={selected.typ.has(opt)}
-                          onChange={() => toggleSelect('typ', opt)}
+                          checked={selectedFilters[FILTER_CATEGORIES.TYPE].has(type)}
+                          onChange={(e) => toggleFilter(FILTER_CATEGORIES.TYPE, type, e)}
                         />
-                        <span>{LABELS.typ[opt]}</span>
+                        <span>{getTranslatedProductType(type)}</span>
                       </OptionRow>
                     ))}
                   </OptionList>
                 </DropdownPanel>
               )}
-            </SmallFilterWrapper>
+            </FilterWrapper>
 
-            <SmallFilterWrapper ref={kolorRef}>
-              <FilterControl onClick={() => toggleOpen('kolor')} aria-expanded={open.kolor} aria-haspopup="menu">
+            <FilterWrapper ref={colorRef}>
+              <FilterControl 
+                onClick={(e) => toggleDropdown('color', e)} 
+                aria-expanded={dropdownsOpen.color} 
+                aria-haspopup="menu"
+              >
                 <LabelBlock>
-                  <Heading>Kolor</Heading>
+                  <FilterHeading>{t('realizationsPage.filters.color')}</FilterHeading>
                 </LabelBlock>
-                {open.kolor ? <FiChevronUp /> : <FiChevronDown />}
+                {dropdownsOpen.color ? <FiChevronUp /> : <FiChevronDown />}
               </FilterControl>
 
-              {open.kolor && (
+              {dropdownsOpen.color && (
                 <DropdownPanel role="menu">
                   <OptionList>
-                    {kolorOptions.map(opt => (
-                      <OptionRow key={opt}>
+                    {colorOptions.map(color => (
+                      <OptionRow key={color} onClick={(e) => e.stopPropagation()}>
                         <input
                           type="checkbox"
-                          checked={selected.kolor.has(opt)}
-                          onChange={() => toggleSelect('kolor', opt)}
+                          checked={selectedFilters[FILTER_CATEGORIES.COLOR].has(color)}
+                          onChange={(e) => toggleFilter(FILTER_CATEGORIES.COLOR, color, e)}
                         />
-                        <span>{LABELS.kolor[opt] || opt}</span>
+                        <span>{getTranslatedColor(color)}</span>
                       </OptionRow>
                     ))}
                   </OptionList>
                 </DropdownPanel>
               )}
-            </SmallFilterWrapper>
+            </FilterWrapper>
           </DropdownsGroup>
 
           <div style={{ marginLeft: '12px', alignSelf: 'center' }}>
-            <button onClick={clearAll} style={{ all: 'unset', cursor: 'pointer', fontWeight: 600, color: 'rgba(0,0,0,0.6)' }}>
-              <FiX style={{ transform: 'translateY(2px)', marginRight: 6 }} /> Wyczyść
-            </button>
+            <ClearButton onClick={clearAllFilters}>
+              <FiX style={{ transform: 'translateY(2px)' }} />
+              {t('realizationsPage.filters.clear')}
+            </ClearButton>
           </div>
         </FiltersRow>
 
         <AnimatePresence>
-          {mobileOpen && (
-            <MobilePanel ref={mobilePanelRef}
+          {isMobilePanelOpen && (
+            <MobilePanel 
+              ref={mobilePanelRef}
               role="dialog"
               aria-modal="true"
               aria-labelledby="mobile-filters-title"
@@ -685,97 +888,142 @@ const RealizationsPage = () => {
               transition={{ duration: 0.22 }}
             >
               <MobileHeader>
-                <Heading id="mobile-filters-title">Filtry</Heading>
-                <MobileCloseButton onClick={() => setMobileOpen(false)} aria-label="Zamknij">
+                <FilterHeading id="mobile-filters-title">
+                  {t('realizationsPage.filters.filtersTitle')}
+                </FilterHeading>
+                <MobileCloseButton 
+                  onClick={() => setIsMobilePanelOpen(false)} 
+                  aria-label={t('realizationsPage.filters.close')}
+                >
                   <FiX />
                 </MobileCloseButton>
               </MobileHeader>
+
               <MobileFilters>
-                <SmallFilterWrapper>
-                  <FilterControl onClick={() => toggleOpen('drzwi')} aria-expanded={open.drzwi}>
-                    <LabelBlock><Heading>Drzwi</Heading></LabelBlock>
-                    {open.drzwi ? <FiChevronUp /> : <FiChevronDown />}
+                <FilterWrapper>
+                  <FilterControl 
+                    onClick={(e) => toggleDropdown('doors', e)} 
+                    aria-expanded={dropdownsOpen.doors}
+                  >
+                    <LabelBlock>
+                      <FilterHeading>{t('realizationsPage.filters.doors')}</FilterHeading>
+                    </LabelBlock>
+                    {dropdownsOpen.doors ? <FiChevronUp /> : <FiChevronDown />}
                   </FilterControl>
-                  {open.drzwi && (
+                  {dropdownsOpen.doors && (
                     <DropdownPanel role="menu">
                       <OptionList>
-                        {drzwiTypes.map(opt => (
-                          <OptionRow key={opt}>
+                        {doorTypes.map(type => (
+                          <OptionRow key={type} onClick={(e) => e.stopPropagation()}>
                             <input
                               type="checkbox"
-                              checked={mobileTemp ? mobileTemp.typ.has(opt) : selected.typ.has(opt)}
-                              onChange={() => mobileTemp ? mobileToggleSelect('typ', opt) : toggleSelect('typ', opt)}
+                              checked={mobileTemporaryFilters ? 
+                                mobileTemporaryFilters[FILTER_CATEGORIES.TYPE].has(type) : 
+                                selectedFilters[FILTER_CATEGORIES.TYPE].has(type)
+                              }
+                              onChange={() => mobileTemporaryFilters ? 
+                                toggleMobileFilter(FILTER_CATEGORIES.TYPE, type) : 
+                                toggleFilter(FILTER_CATEGORIES.TYPE, type)
+                              }
                             />
-                            <span>{LABELS.typ[opt]}</span>
+                            <span>{getTranslatedProductType(type)}</span>
                           </OptionRow>
                         ))}
                       </OptionList>
                     </DropdownPanel>
                   )}
-                </SmallFilterWrapper>
+                </FilterWrapper>
 
-                <SmallFilterWrapper>
-                  <FilterControl onClick={() => toggleOpen('okna')} aria-expanded={open.okna}>
-                    <LabelBlock><Heading>Okna</Heading></LabelBlock>
-                    {open.okna ? <FiChevronUp /> : <FiChevronDown />}
+                <FilterWrapper>
+                  <FilterControl 
+                    onClick={(e) => toggleDropdown('windows', e)} 
+                    aria-expanded={dropdownsOpen.windows}
+                  >
+                    <LabelBlock>
+                      <FilterHeading>{t('realizationsPage.filters.windows')}</FilterHeading>
+                    </LabelBlock>
+                    {dropdownsOpen.windows ? <FiChevronUp /> : <FiChevronDown />}
                   </FilterControl>
-                  {open.okna && (
+                  {dropdownsOpen.windows && (
                     <DropdownPanel role="menu">
                       <OptionList>
-                        {oknaTypes.map(opt => (
-                          <OptionRow key={opt}>
+                        {windowTypes.map(type => (
+                          <OptionRow key={type} onClick={(e) => e.stopPropagation()}>
                             <input
                               type="checkbox"
-                              checked={mobileTemp ? mobileTemp.typ.has(opt) : selected.typ.has(opt)}
-                              onChange={() => mobileTemp ? mobileToggleSelect('typ', opt) : toggleSelect('typ', opt)}
+                              checked={mobileTemporaryFilters ? 
+                                mobileTemporaryFilters[FILTER_CATEGORIES.TYPE].has(type) : 
+                                selectedFilters[FILTER_CATEGORIES.TYPE].has(type)
+                              }
+                              onChange={() => mobileTemporaryFilters ? 
+                                toggleMobileFilter(FILTER_CATEGORIES.TYPE, type) : 
+                                toggleFilter(FILTER_CATEGORIES.TYPE, type)
+                              }
                             />
-                            <span>{LABELS.typ[opt]}</span>
+                            <span>{getTranslatedProductType(type)}</span>
                           </OptionRow>
                         ))}
                       </OptionList>
                     </DropdownPanel>
                   )}
-                </SmallFilterWrapper>
+                </FilterWrapper>
 
-                <SmallFilterWrapper>
-                  <FilterControl onClick={() => toggleOpen('kolor')} aria-expanded={open.kolor}>
-                    <LabelBlock><Heading>Kolor</Heading></LabelBlock>
-                    {open.kolor ? <FiChevronUp /> : <FiChevronDown />}
+                <FilterWrapper>
+                  <FilterControl 
+                    onClick={(e) => toggleDropdown('color', e)} 
+                    aria-expanded={dropdownsOpen.color}
+                  >
+                    <LabelBlock>
+                      <FilterHeading>{t('realizationsPage.filters.color')}</FilterHeading>
+                    </LabelBlock>
+                    {dropdownsOpen.color ? <FiChevronUp /> : <FiChevronDown />}
                   </FilterControl>
-                  {open.kolor && (
+                  {dropdownsOpen.color && (
                     <DropdownPanel role="menu">
                       <OptionList>
-                        {kolorOptions.map(opt => (
-                          <OptionRow key={opt}>
+                        {colorOptions.map(color => (
+                          <OptionRow key={color} onClick={(e) => e.stopPropagation()}>
                             <input
                               type="checkbox"
-                              checked={mobileTemp ? mobileTemp.kolor.has(opt) : selected.kolor.has(opt)}
-                              onChange={() => mobileTemp ? mobileToggleSelect('kolor', opt) : toggleSelect('kolor', opt)}
+                              checked={mobileTemporaryFilters ? 
+                                mobileTemporaryFilters[FILTER_CATEGORIES.COLOR].has(color) : 
+                                selectedFilters[FILTER_CATEGORIES.COLOR].has(color)
+                              }
+                              onChange={() => mobileTemporaryFilters ? 
+                                toggleMobileFilter(FILTER_CATEGORIES.COLOR, color) : 
+                                toggleFilter(FILTER_CATEGORIES.COLOR, color)
+                              }
                             />
-                            <span>{LABELS.kolor[opt] || opt}</span>
+                            <span>{getTranslatedColor(color)}</span>
                           </OptionRow>
                         ))}
                       </OptionList>
                     </DropdownPanel>
                   )}
-                </SmallFilterWrapper>
-
+                </FilterWrapper>
               </MobileFilters>
+
               <MobileFooter>
-                <MobileAction onClick={() => { mobileClear(); }} style={{ borderColor: 'transparent' }}>Wyczyść</MobileAction>
-                <MobileAction primary onClick={applyMobile}>Zastosuj</MobileAction>
+                <MobileAction onClick={clearMobileFilters}>
+                  {t('realizationsPage.filters.clear')}
+                </MobileAction>
+                <MobileAction primary onClick={applyMobileFilters}>
+                  {t('realizationsPage.filters.apply')}
+                </MobileAction>
               </MobileFooter>
             </MobilePanel>
           )}
         </AnimatePresence>
 
         <ResultsTop>
-          <ResultsCount>Znaleziono {filteredRealizations.length} realizacji</ResultsCount>
+          <ResultsCount>
+            {t('realizationsPage.results.found', { count: filteredRealizations.length })}
+          </ResultsCount>
         </ResultsTop>
 
         <div id="realizations-grid">
           <Grid>
-            {currentItems.map(({ id, src, title, tags }) => (
+            {currentPageItems.map(({ id, src, title, tags }) => (
               <div key={id}>
                 <RealizationCard id={id} src={src} title={title} tags={tags} />
               </div>
@@ -785,16 +1033,16 @@ const RealizationsPage = () => {
 
         {filteredRealizations.length === 0 && (
           <NoResults>
-            <h3>Brak wyników</h3>
-            <p>Nie znaleziono realizacji dla wybranych filtrów.</p>
+            <h3>{t('realizationsPage.results.noResults')}</h3>
+            <p>{t('realizationsPage.results.noResultsMessage')}</p>
           </NoResults>
         )}
 
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
-          onPageChange={(p) => {
-            setCurrentPage(p);
+          onPageChange={(page) => {
+            setCurrentPage(page);
             window.scrollTo({
               top: document.querySelector('#realizations-grid')?.offsetTop || 0,
               behavior: 'smooth',

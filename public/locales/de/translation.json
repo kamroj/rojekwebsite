@@ -229,6 +229,35 @@
     "previous": "Vorherige",
     "next": "Nächste"
   },
+  "realizationsPage": {
+    "title": "Realisierungen",
+    "filters": {
+      "doors": "Türen",
+      "windows": "Fenster",
+      "color": "Farbe",
+      "clear": "Löschen",
+      "apply": "Anwenden",
+      "filtersTitle": "Filter",
+      "close": "Schließen"
+    },
+    "productTypes": {
+      "interiorDoors": "Innen",
+      "exteriorDoors": "Außen",
+      "woodWindows": "Holz",
+      "woodAluWindows": "Holz-Alu",
+      "pvcWindows": "PVC"
+    },
+    "colors": {
+      "ral9017": "RAL 9017",
+      "ral7016": "RAL 7016",
+      "ral9016": "RAL 9016"
+    },
+    "results": {
+      "found": "{{count}} Realisierungen gefunden",
+      "noResults": "Keine Ergebnisse",
+      "noResultsMessage": "Keine Realisierungen für die ausgewählten Filter gefunden."
+    }
+  },
   "language": {
     "switcher": {
       "label": "Sprache",
