@@ -254,7 +254,7 @@ export default function IntroSection({ id }) {
         ref={videoRef}
         src="/videos/background4.mp4"
         type="video/mp4"
-        autoPlay muted loop playsInline webkit-playsinline="true"
+        autoPlay muted loop playsInline
         poster="/images/video_poster.jpg"
         onTimeUpdate={onTimeUpdate}
       />

@@ -1,565 +1,807 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { useTranslation } from 'react-i18next';
-import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { FiChevronDown, FiChevronUp, FiX, FiFilter } from 'react-icons/fi';
+import { motion, AnimatePresence } from 'framer-motion';
 import RealizationCard from '../components/gallery/RealizationCard';
 import Pagination from '../components/common/Pagination';
+import PageHeader from '../components/common/PageHeader';
 
 const PAGE_SIZE = 6;
 
-// Typy i kategorie
-const CATEGORIES = {
-  ALL: 'all',
-  DOORS: 'doors',
-  WINDOWS: 'windows'
+// Labels / example data
+const LABELS = {
+  produkt: { drzwi: 'Drzwi', okna: 'Okna' },
+  typ: {
+    drzwi_wewnetrzne: 'Wewnętrzne',
+    drzwi_zewnetrzne: 'Zewnętrzne',
+    okna_drewno: 'Drewno',
+    okna_drewno_alu: 'Drewno-Alu',
+    okna_pvc: 'PVC',
+  },
+  kolor: { ral9017: 'RAL 9017', ral7016: 'RAL 7016', ral9016: 'RAL 9016' },
 };
 
-const SUBCATEGORIES = {
-  DOORS_INTERIOR: 'doors_interior',
-  DOORS_EXTERIOR: 'doors_exterior',
-  WINDOWS_WOOD: 'windows_wood',
-  WINDOWS_WOOD_ALU: 'windows_wood_alu',
-  WINDOWS_PVC: 'windows_pvc'
-};
-
-// Mock data z kategoryzacją
 const exampleRealizations = [
-  // Drzwi zewnętrzne
-  { id: 1, src: '/images/realizations/realization1.jpg', title: 'Drzwi zewnętrzne 1', category: CATEGORIES.DOORS, subcategory: SUBCATEGORIES.DOORS_EXTERIOR },
-  { id: 2, src: '/images/realizations/realization2.jpg', title: 'Drzwi zewnętrzne 2', category: CATEGORIES.DOORS, subcategory: SUBCATEGORIES.DOORS_EXTERIOR },
-  { id: 3, src: '/images/realizations/realization3.jpg', title: 'Drzwi zewnętrzne 3', category: CATEGORIES.DOORS, subcategory: SUBCATEGORIES.DOORS_EXTERIOR },
-  
-  // Drzwi wewnętrzne
-  { id: 4, src: '/images/realizations/realization4.jpg', title: 'Drzwi wewnętrzne 1', category: CATEGORIES.DOORS, subcategory: SUBCATEGORIES.DOORS_INTERIOR },
-  { id: 5, src: '/images/realizations/realization5.jpg', title: 'Drzwi wewnętrzne 2', category: CATEGORIES.DOORS, subcategory: SUBCATEGORIES.DOORS_INTERIOR },
-  { id: 6, src: '/images/realizations/realization6.jpg', title: 'Drzwi wewnętrzne 3', category: CATEGORIES.DOORS, subcategory: SUBCATEGORIES.DOORS_INTERIOR },
-  
-  // Okna drewniane
-  { id: 7, src: '/images/realizations/realization7.jpg', title: 'Okna drewniane 1', category: CATEGORIES.WINDOWS, subcategory: SUBCATEGORIES.WINDOWS_WOOD },
-  { id: 8, src: '/images/realizations/realization8.jpg', title: 'Okna drewniane 2', category: CATEGORIES.WINDOWS, subcategory: SUBCATEGORIES.WINDOWS_WOOD },
-  { id: 9, src: '/images/realizations/realization1.jpg', title: 'Okna drewniane 3', category: CATEGORIES.WINDOWS, subcategory: SUBCATEGORIES.WINDOWS_WOOD },
-  
-  // Okna drewno-aluminium
-  { id: 10, src: '/images/realizations/realization2.jpg', title: 'Okna drewno-alu 1', category: CATEGORIES.WINDOWS, subcategory: SUBCATEGORIES.WINDOWS_WOOD_ALU },
-  { id: 11, src: '/images/realizations/realization3.jpg', title: 'Okna drewno-alu 2', category: CATEGORIES.WINDOWS, subcategory: SUBCATEGORIES.WINDOWS_WOOD_ALU },
-  { id: 12, src: '/images/realizations/realization4.jpg', title: 'Okna drewno-alu 3', category: CATEGORIES.WINDOWS, subcategory: SUBCATEGORIES.WINDOWS_WOOD_ALU },
-  
-  // Okna PVC
-  { id: 13, src: '/images/realizations/realization5.jpg', title: 'Okna PVC 1', category: CATEGORIES.WINDOWS, subcategory: SUBCATEGORIES.WINDOWS_PVC },
-  { id: 14, src: '/images/realizations/realization6.jpg', title: 'Okna PVC 2', category: CATEGORIES.WINDOWS, subcategory: SUBCATEGORIES.WINDOWS_PVC },
-  { id: 15, src: '/images/realizations/realization7.jpg', title: 'Okna PVC 3', category: CATEGORIES.WINDOWS, subcategory: SUBCATEGORIES.WINDOWS_PVC },
+  { id: 1, src: '/images/realizations/realization1.jpg', title: 'Drzwi zewnętrzne 1', tags: { produkt: 'drzwi', typ: 'drzwi_zewnetrzne', kolor: 'ral7016' } },
+  { id: 2, src: '/images/realizations/realization2.jpg', title: 'Drzwi wewnętrzne 1', tags: { produkt: 'drzwi', typ: 'drzwi_wewnetrzne', kolor: 'ral9016' } },
+  { id: 3, src: '/images/realizations/realization3.jpg', title: 'Okno drewniane 1', tags: { produkt: 'okna', typ: 'okna_drewno', kolor: 'ral9017' } },
+  { id: 4, src: '/images/realizations/realization4.jpg', title: 'Okno PVC 1', tags: { produkt: 'okna', typ: 'okna_pvc', kolor: 'ral7016' } },
+  { id: 5, src: '/images/realizations/realization5.jpg', title: 'Drzwi wewnętrzne 2', tags: { produkt: 'drzwi', typ: 'drzwi_wewnetrzne', kolor: 'ral7016' } },
+  { id: 6, src: '/images/realizations/realization6.jpg', title: 'Okno drewno-alu 1', tags: { produkt: 'okna', typ: 'okna_drewno_alu', kolor: 'ral9016' } },
 ];
 
+// ============ Styles ============
 const PageWrapper = styled.div`
   width: 100%;
-  padding: 0;
-  position: relative;
-  z-index: 2;
 `;
 
-const HeaderImageWrapper = styled.div`
-  position: relative;
-  width: 100vw;
-  height: 400px;
-  margin-bottom: 40px;
-  overflow: hidden;
-  border-radius: 0;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-color: rgb(0 0 0 / 65%);
-    pointer-events: none;
-    z-index: 1;
-  }
-`;
-
-const HeaderImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  position: relative;
-  z-index: 0;
-`;
-
-const HeaderTitle = styled.h1`
-  position: absolute;
-  bottom: 15px;
-  right: 20px;
-  margin: 0;
-  padding: 8px 16px;
-  background-color: ${({ theme }) => theme.colors.bottleGreen}cc;
-  color: ${({ theme }) => theme.colors.textLight};
-  font-size: 2.5rem;
-  font-weight: 100;
-  border-radius: 6px;
-  user-select: none;
-  z-index: 2;
-
-  @media (max-width: 600px) {
-    font-size: 1.8rem;
-  }
-`;
-
-const ContentWrapper = styled.div`
-  max-width: ${({ theme }) => theme.layout.maxWidth};
+const Content = styled.div`
+  max-width: ${({ theme }) => (theme?.layout?.maxWidth || '1200px')};
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 20px;
+  position: relative;
+`;
+
+const FiltersRow = styled.div`
   display: flex;
-  gap: 3rem;
-  align-items: flex-start;
+  gap: 18px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 12px 0 20px;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    flex-direction: column;
-    gap: 2rem;
+  /* hide desktop filters on small screens - mobile will use the icon + panel */
+  @media (max-width: 720px) {
+    display: none;
   }
 `;
 
-const FiltersContainer = styled.div`
-  width: 250px;
-  flex-shrink: 0;
-  background-color: ${({ theme }) => theme.colors.background};
-  border-radius: 8px;
-  padding: 2rem;
-  box-shadow: ${({ theme }) => theme.shadows.medium};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  position: sticky;
-  top: var(--header-offset, 80px);
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    width: 100%;
-    position: static;
-    order: -1;
-    padding: 1.5rem;
-  }
-`;
-
-const MobileFiltersHeader = styled.div`
-  display: none;
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
-    padding: 0.8rem 0;
-    border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-    margin-bottom: 0.8rem;
-    
-    h3 {
-      font-size: 1.6rem;
-      font-weight: 600;
-      color: ${({ theme }) => theme.colors.bottleGreen};
-      margin: 0;
-    }
-    
-    .icon {
-      font-size: 1.8rem;
-      color: ${({ theme }) => theme.colors.bottleGreen};
-      transition: transform ${({ theme }) => theme.transitions.default};
-      transform: ${({ isOpen }) => isOpen ? 'rotate(180deg)' : 'rotate(0deg)'};
-    }
-  }
-`;
-
-const MobileFiltersContent = styled.div`
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    max-height: ${({ isOpen }) => isOpen ? '1000px' : '0'};
-    overflow: hidden;
-    transition: max-height 0.3s ease-in-out;
-  }
-`;
-
-const FilterSection = styled.div`
-  margin-bottom: 2rem;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-`;
-
-const FilterTitle = styled.h3`
-  font-size: 1.6rem;
-  font-weight: 600;
-  color: ${({ theme }) => theme.colors.bottleGreen};
-  margin-bottom: 1rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
-`;
-
-const FilterButton = styled.button`
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 0.8rem 1rem;
-  margin-bottom: 0.5rem;
-  background-color: ${({ active, theme }) => 
-    active ? theme.colors.bottleGreen : 'transparent'};
-  color: ${({ active, theme }) => 
-    active ? theme.colors.textLight : theme.colors.text};
-  border: 1px solid ${({ active, theme }) => 
-    active ? theme.colors.bottleGreen : theme.colors.border};
-  border-radius: 4px;
-  font-size: 1.4rem;
-  font-weight: ${({ active }) => active ? '600' : '400'};
-  cursor: pointer;
-  transition: all ${({ theme }) => theme.transitions.default};
-
-  &:hover {
-    background-color: ${({ active, theme }) => 
-      active ? theme.colors.bottleGreen : theme.colors.bottleGreenLight};
-    color: ${({ theme }) => theme.colors.textLight};
-    border-color: ${({ theme }) => theme.colors.bottleGreenLight};
-  }
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    padding: 0.7rem 0.8rem;
-    font-size: 1.3rem;
-    margin-bottom: 0.4rem;
-  }
-`;
-
-const SubcategoryButton = styled(FilterButton)`
-  margin-left: 1rem;
-  font-size: 1.3rem;
-  padding: 0.6rem 0.8rem;
-  border-style: dashed;
-  border-width: 1px;
-  opacity: ${({ parentActive }) => parentActive ? 1 : 0.6};
-  cursor: pointer;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    margin-left: 0.8rem;
-    font-size: 1.2rem;
-    padding: 0.5rem 0.7rem;
-    margin-bottom: 0.3rem;
-  }
-`;
-
-const MainContent = styled.div`
-  flex: 1;
-  width: 100%;
-`;
-
-const ResultsHeader = styled.div`
+/* group holding the three dropdowns; will take remaining width and space items evenly */
+const DropdownsGroup = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  flex: 1;
+  gap: 18px;
+`;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
+/* Search input gets larger flex so it won't be squeezed */
+
+
+const SmallFilterWrapper = styled.div`
+  flex: 0 0 180px;
+  max-width: 180px;
+  min-width: 140px;
+  position: relative;
+  box-sizing: border-box;
+
+  /* On mobile panels make wrappers slightly narrower and centered */
+  @media (max-width: 720px) {
+    flex: 0 0 auto;
+    max-width: 320px;
+    width: min(90%, 320px);
+    margin: 6px auto;
+    position: relative;
   }
+`;
+
+const FilterControl = styled.button`
+  all: unset;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  width:100%;
+  background:#fff;
+  border:1px solid ${({ theme }) => theme?.colors?.border || '#e6e6e6'};
+  border-radius:8px;
+  padding:10px 12px;
+  cursor:pointer;
+  box-sizing: border-box;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+  transition: all 0.2s ease;
+  
+  &:hover {
+    border-color: ${({ theme }) => theme?.colors?.accent || '#017e54'};
+    box-shadow: 0 3px 12px rgba(1, 126, 84, 0.15);
+  }
+  
+  &:focus {
+    outline: 2px solid ${({ theme }) => theme?.colors?.accent || '#017e54'};
+    outline-offset: 2px;
+  }
+`;
+
+const LabelBlock = styled.div`
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+`;
+
+const Heading = styled.span`
+  font-weight:600;
+  font-size: 1.05rem;
+  color: ${({ theme }) => theme?.colors?.text || '#222'};
+
+  /* slightly larger headers on small screens for readability */
+  @media (max-width: 720px) {
+    font-size: 1.12rem;
+  }
+`;
+
+const Sub = styled.span`
+  font-size:0.82rem;
+  color: ${({ theme }) => theme?.colors?.textMuted || '#666'};
+  margin-top:1px;
+`;
+
+const DropdownPanel = styled.div`
+  position:absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  width: auto;
+  background:#fff;
+  border:1px solid ${({ theme }) => theme?.colors?.border || '#e6e6e6'};
+  border-radius:10px;
+  box-shadow:0 8px 18px rgba(0,0,0,0.07);
+  z-index: 10;
+  padding:6px;
+  box-sizing: border-box;
+
+  /* On mobile we render dropdown content inline inside the mobile panel as a boxed, scrollable list */
+  @media (max-width: 720px) {
+    /* Keep dropdown aligned with control on mobile - use same width calculation */
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin: 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    border: 1px solid ${({ theme }) => theme?.colors?.border || '#e6e6e6'};
+    border-radius: 8px;
+    padding: 0;
+    background: #fff;
+    display: block;
+    box-sizing: border-box;
+    z-index: 60;
+    overflow: hidden;
+  }
+`;
+
+const OptionList = styled.div`
+  max-height: 220px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  box-sizing: border-box;
+  
+  /* Custom scrollbar styling */
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme?.colors?.accent || '#017e54'};
+    border-radius: 3px;
+    
+    &:hover {
+      background: ${({ theme }) => theme?.colors?.accentDark || '#015a3c'};
+    }
+  }
+
+  @media (max-width: 720px) {
+    /* compact, boxed list for mobile: limit height so it becomes scrollable */
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    box-sizing: border-box;
+    gap: 0;
+
+    /* remove extra inner padding on the list so the panel border and the
+       option rows can align exactly with the control's inner content */
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+`;
+
+const OptionRow = styled.label`
+  display:flex;
+  gap:10px;
+  align-items:center;
+  padding:12px 12px; /* full-bleed padding so text aligns with control edges on desktop */
+  border-radius:6px;
+  cursor:pointer;
+  width: 100%;
+  box-sizing: border-box;
+  &:hover { background:#f5f7f9; }
+
+  /* smaller checkboxes and consistent spacing */
+  input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    margin-right: 10px;
+    transform: none;
+    accent-color: ${({ theme }) => theme?.colors?.accent || '#017e54'};
+    flex-shrink: 0;
+    cursor: pointer;
+    
+    /* Custom checkbox styling for better browser support */
+    &:checked {
+      background-color: ${({ theme }) => theme?.colors?.accent || '#017e54'};
+      border-color: ${({ theme }) => theme?.colors?.accent || '#017e54'};
+    }
+    
+    &:hover {
+      border-color: ${({ theme }) => theme?.colors?.accent || '#017e54'};
+    }
+  }
+
+  span {
+    font-size: 0.95rem;
+    flex: 1;
+    white-space: nowrap;
+  }
+
+  @media (max-width: 720px) {
+    /* match option row padding to FilterControl inner padding so text aligns */
+    padding: 12px;
+    border-radius: 0;
+    width: 100%;
+    
+    &:not(:last-child) {
+      border-bottom: 1px solid ${({ theme }) => theme?.colors?.border || '#e6e6e6'};
+    }
+
+    &:hover { 
+      background:#f5f7f9; 
+    }
+  }
+
+  @media (max-width: 420px) {
+    input[type="checkbox"] {
+      width: 12px;
+      height: 12px;
+    }
+    span { font-size: 0.95rem; }
+  }
+`;
+
+const ResultsTop = styled.div`
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin: 8px 0 16px;
 `;
 
 const ResultsCount = styled.div`
-  font-size: 1.4rem;
-  color: ${({ theme }) => theme.colors.textMuted};
-`;
-
-const ActiveFilters = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-`;
-
-const FilterTag = styled.span`
-  background-color: ${({ theme }) => theme.colors.bottleGreenLight};
-  color: ${({ theme }) => theme.colors.textLight};
-  padding: 0.3rem 0.8rem;
-  border-radius: 15px;
-  font-size: 1.2rem;
-  font-weight: 500;
+  font-weight:600;
 `;
 
 const Grid = styled.div`
-  display: grid;
+  display:grid;
+  gap:18px;
   grid-template-columns: repeat(3, 1fr);
-  gap: 3rem;
-  margin-bottom: 3rem;
-
-  @media (max-width: 1100px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 2.5rem;
-  }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    margin: 0 0 3rem 0;
-  }
-`;
-
-const FixedSizeCardWrapper = styled.div`
-  width: 100%;
-  height: 350px;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    width: 100%;
-    height: 300px;
-  }
+  @media (max-width: 1100px) { grid-template-columns: repeat(2, 1fr); }
+  @media (max-width: 720px) { grid-template-columns: 1fr; }
 `;
 
 const NoResults = styled.div`
-  text-align: center;
-  padding: 4rem 2rem;
-  color: ${({ theme }) => theme.colors.textMuted};
+  padding:30px;
+  text-align:center;
+  background:#fff;
+  border:1px solid #eee;
+  border-radius:8px;
+  margin-top:20px;
+`;
 
-  h3 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: ${({ theme }) => theme.colors.text};
-  }
-
-  p {
-    font-size: 1.6rem;
-    line-height: 1.6;
+/* Small screens: stack filters vertically to avoid overlap */
+const ResponsiveHint = styled.div`
+  @media (max-width: 640px) {
+    ${FiltersRow} {
+      flex-direction: column;
+      align-items: stretch;
+    }
   }
 `;
 
+/* Mobile filter button (top-right) */
+const MobileFiltersButton = styled.button`
+  all: unset;
+  display: none;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid ${({ theme }) => theme?.colors?.border || '#e6e6e6'};
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+  cursor: pointer;
+  svg { width: 18px; height: 18px; color: ${({ theme }) => theme?.colors?.text || '#222'}; }
+
+  @media (max-width: 720px) {
+    display: flex;
+  }
+`;
+
+/* Mobile panel that slides down with filters stacked */
+const MobilePanel = styled(motion.div)`
+  /* full-screen mobile overlay */
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  left: 0;
+  right: 0;
+  top: 0;
+  background: #fff;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  z-index: 9999;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden; /* prevent horizontal scroll */
+  touch-action: pan-y; /* prefer vertical scrolling only */
+  overscroll-behavior-x: contain;
+  box-sizing: border-box;
+`;
+
+/* Mobile panel header with close */
+const MobileHeader = styled.div`
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid ${({ theme }) => theme?.colors?.border || '#e6e6e6'};
+`;
+
+const MobileCloseButton = styled.button`
+  all: unset;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius: 8px;
+`;
+
+const MobileFooter = styled.div`
+  display:flex;
+  gap:12px;
+  padding: 12px;
+  border-top: 1px solid ${({ theme }) => theme?.colors?.border || '#eee'};
+  background: ${({ theme }) => theme?.colors?.panelBg || '#fff'};
+  justify-content: space-between;
+  box-sizing: border-box;
+`;
+
+const MobileAction = styled.button`
+  all: unset;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  text-align: center;
+  border: 1px solid ${({ primary, theme }) => primary ? (theme?.colors?.accent || '#017e54') : (theme?.colors?.border || '#e6e6e6')};
+  color: ${({ primary, theme }) => primary ? '#fff' : (theme?.colors?.text || '#222')};
+  background: ${({ primary, theme }) => primary ? (theme?.colors?.accent || '#017e54') : 'transparent'};
+`;
+
+/* Mobile stacked filters inside panel (scrollable body) */
+const MobileFilters = styled.div`
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 16px;
+  align-items: center;
+  box-sizing: border-box;
+
+  /* child wrappers control their own width and are centered */
+  ${SmallFilterWrapper} {
+    margin: 8px 0;
+  }
+`;
+
+// ================= Component =================
 const RealizationsPage = () => {
-  const { t } = useTranslation();
+  const drzwiTypes = useMemo(() => ['drzwi_wewnetrzne', 'drzwi_zewnetrzne'], []);
+  const oknaTypes = useMemo(() => ['okna_drewno', 'okna_drewno_alu', 'okna_pvc'], []);
+  const kolorOptions = useMemo(() => [...new Set(exampleRealizations.map(r => r.tags.kolor))], []);
+
+  const [open, setOpen] = useState({ drzwi: false, okna: false, kolor: false });
+  const [selected, setSelected] = useState({ typ: new Set(), kolor: new Set() });
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedCategory, setSelectedCategory] = useState(CATEGORIES.ALL);
-  const [selectedSubcategory, setSelectedSubcategory] = useState(null);
-  const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
-  // Filtrowanie realizacji
-  const filteredRealizations = useMemo(() => {
-    let filtered = exampleRealizations;
+  const drzwiRef = useRef();
+  const oknaRef = useRef();
+  const kolorRef = useRef();
+  const mobileRef = useRef();
+  const mobilePanelRef = useRef();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-    if (selectedCategory !== CATEGORIES.ALL) {
-      filtered = filtered.filter(item => item.category === selectedCategory);
+  // mobile temporary state for "Zastosuj" flow
+  const [mobileTemp, setMobileTemp] = useState(null);
+
+  const openMobilePanel = () => {
+    setMobileTemp({
+      typ: new Set([...selected.typ]),
+      kolor: new Set([...selected.kolor]),
+    });
+    setMobileOpen(true);
+  };
+
+  const closeMobilePanel = () => {
+    setMobileOpen(false);
+    setMobileTemp(null);
+  };
+
+  const mobileToggleSelect = (group, value) => {
+    setMobileTemp(prev => {
+      if (!prev) return prev;
+      const next = { typ: new Set(prev.typ), kolor: new Set(prev.kolor) };
+      if (next[group].has(value)) next[group].delete(value);
+      else next[group].add(value);
+      return next;
+    });
+  };
+
+  const mobileClear = () => {
+    setMobileTemp({ typ: new Set(), kolor: new Set() });
+  };
+
+  const applyMobile = () => {
+    if (mobileTemp) {
+      setSelected({ typ: new Set([...mobileTemp.typ]), kolor: new Set([...mobileTemp.kolor]) });
     }
+    closeMobilePanel();
+  };
 
-    if (selectedSubcategory) {
-      filtered = filtered.filter(item => item.subcategory === selectedSubcategory);
-    }
+  const toggleOpen = (k) => setOpen(p => ({ ...p, [k]: !p[k] }));
+  const closeAll = () => setOpen({ drzwi: false, okna: false, kolor: false });
 
-    return filtered;
-  }, [selectedCategory, selectedSubcategory]);
-
-  // Paginacja
-  const totalPages = Math.ceil(filteredRealizations.length / PAGE_SIZE);
-  const currentItems = filteredRealizations.slice(
-    (currentPage - 1) * PAGE_SIZE,
-    currentPage * PAGE_SIZE
-  );
-
-  // Reset strony przy zmianie filtrów
-  React.useEffect(() => {
+  const toggleSelect = (group, value) => {
+    setSelected(prev => {
+      const next = new Set(prev[group]);
+      if (next.has(value)) next.delete(value);
+      else next.add(value);
+      return { ...prev, [group]: next };
+    });
     setCurrentPage(1);
-  }, [selectedCategory, selectedSubcategory]);
-
-  const handleCategorySelect = (category) => {
-    setSelectedCategory(category);
-    setSelectedSubcategory(null);
   };
 
-  const handleSubcategorySelect = (subcategory) => {
-    setSelectedSubcategory(subcategory);
+  const clearAll = () => {
+    setSelected({ typ: new Set(), kolor: new Set() });
+    setCurrentPage(1);
   };
 
-  const toggleMobileFilters = () => {
-    setIsMobileFiltersOpen(!isMobileFiltersOpen);
-  };
+  // filter logic: title search + typ + kolor
+  const filteredRealizations = useMemo(() => {
+    const hasAny = (s) => s && s.size > 0;
+    return exampleRealizations.filter(item => {
+      const { produkt, typ, kolor } = item.tags;
+      if (hasAny(selected.typ) && !selected.typ.has(typ)) return false;
+      if (hasAny(selected.kolor) && !selected.kolor.has(kolor)) return false;
+      return true;
+    });
+  }, [selected]);
 
-  const mobileFiltersIconRotation = isMobileFiltersOpen ? 'rotate(180deg)' : 'rotate(0deg)';
+  const totalPages = Math.ceil(filteredRealizations.length / PAGE_SIZE);
+  const currentItems = filteredRealizations.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
-  const getActiveFilterName = () => {
-    if (selectedSubcategory) {
-      const subcategoryNames = {
-        [SUBCATEGORIES.DOORS_INTERIOR]: 'Drzwi wewnętrzne',
-        [SUBCATEGORIES.DOORS_EXTERIOR]: 'Drzwi zewnętrzne',
-        [SUBCATEGORIES.WINDOWS_WOOD]: 'Okna drewniane',
-        [SUBCATEGORIES.WINDOWS_WOOD_ALU]: 'Okna drewno-alu',
-        [SUBCATEGORIES.WINDOWS_PVC]: 'Okna PVC'
-      };
-      return subcategoryNames[selectedSubcategory];
+  useEffect(() => setCurrentPage(1), [selected.typ.size, selected.kolor.size]);
+
+  // Close dropdowns when clicking outside or pressing Escape; handle mobile panel and resize
+  useEffect(() => {
+    const onDoc = (e) => {
+      const targets = [drzwiRef.current, oknaRef.current, kolorRef.current, mobileRef.current, mobilePanelRef.current];
+      if (targets.every(ref => !ref || !ref.contains(e.target))) {
+        closeAll();
+        // close mobile panel if open and clicked outside
+        setMobileOpen(false);
+      }
+    };
+    const onKey = (e) => { if (e.key === 'Escape') { closeAll(); setMobileOpen(false); } };
+    const onResize = () => {
+      // ensure desktop dropdowns closed on small screens and mobile panel closed on large screens
+      if (window.innerWidth <= 720) {
+        closeAll();
+      } else {
+        setMobileOpen(false);
+      }
+    };
+    document.addEventListener('click', onDoc);
+    document.addEventListener('keydown', onKey);
+    window.addEventListener('resize', onResize);
+    return () => {
+      document.removeEventListener('click', onDoc);
+      document.removeEventListener('keydown', onKey);
+      window.removeEventListener('resize', onResize);
+    };
+  }, [mobileRef]);
+
+  useEffect(() => {
+    const prevBodyOverflow = document.body.style.overflow;
+    const prevBodyOverflowX = document.body.style.overflowX;
+    const prevHtmlOverflow = document.documentElement.style.overflow;
+    const prevHtmlOverflowX = document.documentElement.style.overflowX;
+
+    if (mobileOpen) {
+      // lock scrolling in both axes on html/body to avoid horizontal panning
+      document.body.style.overflow = 'hidden';
+      document.body.style.overflowX = 'hidden';
+      document.documentElement.style.overflow = 'hidden';
+      document.documentElement.style.overflowX = 'hidden';
+
+      // focus first focusable element inside panel for accessibility
+      setTimeout(() => {
+        mobilePanelRef.current?.querySelector('input,button,select,textarea,a')?.focus();
+      }, 0);
+    } else {
+      document.body.style.overflow = prevBodyOverflow;
+      document.body.style.overflowX = prevBodyOverflowX;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.documentElement.style.overflowX = prevHtmlOverflowX;
     }
 
-    if (selectedCategory !== CATEGORIES.ALL) {
-      const categoryNames = {
-        [CATEGORIES.DOORS]: 'Drzwi',
-        [CATEGORIES.WINDOWS]: 'Okna'
-      };
-      return categoryNames[selectedCategory];
-    }
+    return () => {
+      document.body.style.overflow = prevBodyOverflow;
+      document.body.style.overflowX = prevBodyOverflowX;
+      document.documentElement.style.overflow = prevHtmlOverflow;
+      document.documentElement.style.overflowX = prevHtmlOverflowX;
+    };
+  }, [mobileOpen]);
 
-    return null;
-  };
-
-  const handlePageChange = (page, options = {}) => {
-    // update page
-    setCurrentPage(page);
-
-    // schedule scroll in next tick to ensure consistent behavior
-    // regardless of whether caller was arrow or number button
-    setTimeout(() => {
-      // unified scroll behavior: scroll so content starts just after header image
-      const headerEl = document.querySelector('#realizations-header');
-      if (headerEl) {
-        const headerRect = headerEl.getBoundingClientRect();
-        const headerBottom = headerRect.top + window.pageYOffset + headerEl.offsetHeight;
-        const headerOffsetStr = getComputedStyle(document.documentElement).getPropertyValue('--header-offset');
-        const headerOffset = headerOffsetStr ? parseFloat(headerOffsetStr) : 80;
-        const scrollTarget = Math.max(0, headerBottom - headerOffset);
-        window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
-        return;
-      }
-
-      // Fallback: scroll to grid top if header not found
-      const gridElement = document.querySelector('#realizations-grid');
-      if (gridElement) {
-        gridElement.scrollIntoView({ behavior: 'smooth' });
-      }
-    }, 50);
-  };
+  // helper for counts
+  const countText = (set) => set.size > 0 ? `(${set.size})` : '';
 
   return (
     <PageWrapper>
-      <HeaderImageWrapper id="realizations-header">
-        <HeaderImage src="/images/realizations/top.jpg" alt="Realizations Header" />
-        <HeaderTitle>Realizacje</HeaderTitle>
-      </HeaderImageWrapper>
-      
-      <ContentWrapper>
-        <FiltersContainer>
-          <MobileFiltersHeader 
-            isOpen={isMobileFiltersOpen} 
-            onClick={toggleMobileFilters}
-          >
-            <h3>Filtry</h3>
-            <div>
-              {isMobileFiltersOpen ? <FiChevronUp /> : <FiChevronDown />}
-              {console.log(isMobileFiltersOpen)}
-            </div>
-          </MobileFiltersHeader>
-          
-          <MobileFiltersContent isOpen={isMobileFiltersOpen}>
-            <FilterSection>
-              <FilterTitle>Kategorie</FilterTitle>
-              
-              <FilterButton
-                active={selectedCategory === CATEGORIES.ALL}
-                onClick={() => handleCategorySelect(CATEGORIES.ALL)}
-              >
-                Wszystko
-              </FilterButton>
-              
-              <FilterButton
-                active={selectedCategory === CATEGORIES.DOORS}
-                onClick={() => handleCategorySelect(CATEGORIES.DOORS)}
-              >
-                Drzwi
-              </FilterButton>
-              
-              <SubcategoryButton
-                active={selectedSubcategory === SUBCATEGORIES.DOORS_INTERIOR}
-                parentActive={selectedCategory === CATEGORIES.DOORS}
-                onClick={() => { handleCategorySelect(CATEGORIES.DOORS); handleSubcategorySelect(SUBCATEGORIES.DOORS_INTERIOR); }}
-              >
-                Wewnętrzne
-              </SubcategoryButton>
-              
-              <SubcategoryButton
-                active={selectedSubcategory === SUBCATEGORIES.DOORS_EXTERIOR}
-                parentActive={selectedCategory === CATEGORIES.DOORS}
-                onClick={() => { handleCategorySelect(CATEGORIES.DOORS); handleSubcategorySelect(SUBCATEGORIES.DOORS_EXTERIOR); }}
-              >
-                Zewnętrzne
-              </SubcategoryButton>
-              
-              <FilterButton
-                active={selectedCategory === CATEGORIES.WINDOWS}
-                onClick={() => handleCategorySelect(CATEGORIES.WINDOWS)}
-              >
-                Okna
-              </FilterButton>
-              
-              <SubcategoryButton
-                active={selectedSubcategory === SUBCATEGORIES.WINDOWS_WOOD}
-                parentActive={selectedCategory === CATEGORIES.WINDOWS}
-                onClick={() => { handleCategorySelect(CATEGORIES.WINDOWS); handleSubcategorySelect(SUBCATEGORIES.WINDOWS_WOOD); }}
-              >
-                Drewno
-              </SubcategoryButton>
-              
-              <SubcategoryButton
-                active={selectedSubcategory === SUBCATEGORIES.WINDOWS_WOOD_ALU}
-                parentActive={selectedCategory === CATEGORIES.WINDOWS}
-                onClick={() => { handleCategorySelect(CATEGORIES.WINDOWS); handleSubcategorySelect(SUBCATEGORIES.WINDOWS_WOOD_ALU); }}
-              >
-                Drewno-Alu
-              </SubcategoryButton>
-              
-              <SubcategoryButton
-                active={selectedSubcategory === SUBCATEGORIES.WINDOWS_PVC}
-                parentActive={selectedCategory === CATEGORIES.WINDOWS}
-                onClick={() => { handleCategorySelect(CATEGORIES.WINDOWS); handleSubcategorySelect(SUBCATEGORIES.WINDOWS_PVC); }}
-              >
-                PVC
-              </SubcategoryButton>
-            </FilterSection>
-          </MobileFiltersContent>
-        </FiltersContainer>
+      <PageHeader imageSrc="/images/realizations/top.jpg" id="realizations-header" title="Realizacje" />
 
-        <MainContent>
-          <ResultsHeader>
-            <ResultsCount>
-              Znaleziono {filteredRealizations.length} realizacji
-            </ResultsCount>
-            
-            {getActiveFilterName() && (
-              <ActiveFilters>
-                <FilterTag>{getActiveFilterName()}</FilterTag>
-              </ActiveFilters>
-            )}
-          </ResultsHeader>
+      <Content>
+        <MobileFiltersButton ref={mobileRef} onClick={openMobilePanel} aria-label="Filtry">
+          <FiFilter />
+        </MobileFiltersButton>
 
-          {currentItems.length > 0 ? (
-            <>
-              <Grid id="realizations-grid">
-                {currentItems.map(({ id, src, title }) => (
-                  <FixedSizeCardWrapper key={id}>
-                    <RealizationCard id={id} src={src} title={title} />
-                  </FixedSizeCardWrapper>
-                ))}
-              </Grid>
-              
-              {totalPages > 1 && (
-                <Pagination
-                  currentPage={currentPage}
-                  totalPages={totalPages}
-                  onPageChange={handlePageChange}
-                />
+        <FiltersRow>
+          <DropdownsGroup>
+            <SmallFilterWrapper ref={drzwiRef}>
+              <FilterControl onClick={() => toggleOpen('drzwi')} aria-expanded={open.drzwi} aria-haspopup="menu">
+                <LabelBlock>
+                  <Heading>Drzwi</Heading>
+                </LabelBlock>
+                {open.drzwi ? <FiChevronUp /> : <FiChevronDown />}
+              </FilterControl>
+
+              {open.drzwi && (
+                <DropdownPanel role="menu">
+                  <OptionList>
+                    {drzwiTypes.map(opt => (
+                      <OptionRow key={opt}>
+                        <input
+                          type="checkbox"
+                          checked={selected.typ.has(opt)}
+                          onChange={() => toggleSelect('typ', opt)}
+                        />
+                        <span>{LABELS.typ[opt]}</span>
+                      </OptionRow>
+                    ))}
+                  </OptionList>
+                </DropdownPanel>
               )}
-            </>
-          ) : (
-            <NoResults>
-              <h3>Brak wyników</h3>
-              <p>
-                Nie znaleziono realizacji dla wybranej kategorii. 
-                Spróbuj wybrać inną kategorię lub usuń filtry.
-              </p>
-            </NoResults>
+            </SmallFilterWrapper>
+
+            <SmallFilterWrapper ref={oknaRef}>
+              <FilterControl onClick={() => toggleOpen('okna')} aria-expanded={open.okna} aria-haspopup="menu">
+                <LabelBlock>
+                  <Heading>Okna</Heading>
+                </LabelBlock>
+                {open.okna ? <FiChevronUp /> : <FiChevronDown />}
+              </FilterControl>
+
+              {open.okna && (
+                <DropdownPanel role="menu">
+                  <OptionList>
+                    {oknaTypes.map(opt => (
+                      <OptionRow key={opt}>
+                        <input
+                          type="checkbox"
+                          checked={selected.typ.has(opt)}
+                          onChange={() => toggleSelect('typ', opt)}
+                        />
+                        <span>{LABELS.typ[opt]}</span>
+                      </OptionRow>
+                    ))}
+                  </OptionList>
+                </DropdownPanel>
+              )}
+            </SmallFilterWrapper>
+
+            <SmallFilterWrapper ref={kolorRef}>
+              <FilterControl onClick={() => toggleOpen('kolor')} aria-expanded={open.kolor} aria-haspopup="menu">
+                <LabelBlock>
+                  <Heading>Kolor</Heading>
+                </LabelBlock>
+                {open.kolor ? <FiChevronUp /> : <FiChevronDown />}
+              </FilterControl>
+
+              {open.kolor && (
+                <DropdownPanel role="menu">
+                  <OptionList>
+                    {kolorOptions.map(opt => (
+                      <OptionRow key={opt}>
+                        <input
+                          type="checkbox"
+                          checked={selected.kolor.has(opt)}
+                          onChange={() => toggleSelect('kolor', opt)}
+                        />
+                        <span>{LABELS.kolor[opt] || opt}</span>
+                      </OptionRow>
+                    ))}
+                  </OptionList>
+                </DropdownPanel>
+              )}
+            </SmallFilterWrapper>
+          </DropdownsGroup>
+
+          <div style={{ marginLeft: '12px', alignSelf: 'center' }}>
+            <button onClick={clearAll} style={{ all: 'unset', cursor: 'pointer', fontWeight: 600, color: 'rgba(0,0,0,0.6)' }}>
+              <FiX style={{ transform: 'translateY(2px)', marginRight: 6 }} /> Wyczyść
+            </button>
+          </div>
+        </FiltersRow>
+
+        <AnimatePresence>
+          {mobileOpen && (
+            <MobilePanel ref={mobilePanelRef}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="mobile-filters-title"
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ duration: 0.22 }}
+            >
+              <MobileHeader>
+                <Heading id="mobile-filters-title">Filtry</Heading>
+                <MobileCloseButton onClick={() => setMobileOpen(false)} aria-label="Zamknij">
+                  <FiX />
+                </MobileCloseButton>
+              </MobileHeader>
+              <MobileFilters>
+                <SmallFilterWrapper>
+                  <FilterControl onClick={() => toggleOpen('drzwi')} aria-expanded={open.drzwi}>
+                    <LabelBlock><Heading>Drzwi</Heading></LabelBlock>
+                    {open.drzwi ? <FiChevronUp /> : <FiChevronDown />}
+                  </FilterControl>
+                  {open.drzwi && (
+                    <DropdownPanel role="menu">
+                      <OptionList>
+                        {drzwiTypes.map(opt => (
+                          <OptionRow key={opt}>
+                            <input
+                              type="checkbox"
+                              checked={mobileTemp ? mobileTemp.typ.has(opt) : selected.typ.has(opt)}
+                              onChange={() => mobileTemp ? mobileToggleSelect('typ', opt) : toggleSelect('typ', opt)}
+                            />
+                            <span>{LABELS.typ[opt]}</span>
+                          </OptionRow>
+                        ))}
+                      </OptionList>
+                    </DropdownPanel>
+                  )}
+                </SmallFilterWrapper>
+
+                <SmallFilterWrapper>
+                  <FilterControl onClick={() => toggleOpen('okna')} aria-expanded={open.okna}>
+                    <LabelBlock><Heading>Okna</Heading></LabelBlock>
+                    {open.okna ? <FiChevronUp /> : <FiChevronDown />}
+                  </FilterControl>
+                  {open.okna && (
+                    <DropdownPanel role="menu">
+                      <OptionList>
+                        {oknaTypes.map(opt => (
+                          <OptionRow key={opt}>
+                            <input
+                              type="checkbox"
+                              checked={mobileTemp ? mobileTemp.typ.has(opt) : selected.typ.has(opt)}
+                              onChange={() => mobileTemp ? mobileToggleSelect('typ', opt) : toggleSelect('typ', opt)}
+                            />
+                            <span>{LABELS.typ[opt]}</span>
+                          </OptionRow>
+                        ))}
+                      </OptionList>
+                    </DropdownPanel>
+                  )}
+                </SmallFilterWrapper>
+
+                <SmallFilterWrapper>
+                  <FilterControl onClick={() => toggleOpen('kolor')} aria-expanded={open.kolor}>
+                    <LabelBlock><Heading>Kolor</Heading></LabelBlock>
+                    {open.kolor ? <FiChevronUp /> : <FiChevronDown />}
+                  </FilterControl>
+                  {open.kolor && (
+                    <DropdownPanel role="menu">
+                      <OptionList>
+                        {kolorOptions.map(opt => (
+                          <OptionRow key={opt}>
+                            <input
+                              type="checkbox"
+                              checked={mobileTemp ? mobileTemp.kolor.has(opt) : selected.kolor.has(opt)}
+                              onChange={() => mobileTemp ? mobileToggleSelect('kolor', opt) : toggleSelect('kolor', opt)}
+                            />
+                            <span>{LABELS.kolor[opt] || opt}</span>
+                          </OptionRow>
+                        ))}
+                      </OptionList>
+                    </DropdownPanel>
+                  )}
+                </SmallFilterWrapper>
+
+              </MobileFilters>
+              <MobileFooter>
+                <MobileAction onClick={() => { mobileClear(); }} style={{ borderColor: 'transparent' }}>Wyczyść</MobileAction>
+                <MobileAction primary onClick={applyMobile}>Zastosuj</MobileAction>
+              </MobileFooter>
+            </MobilePanel>
           )}
-        </MainContent>
-      </ContentWrapper>
+        </AnimatePresence>
+
+        <ResultsTop>
+          <ResultsCount>Znaleziono {filteredRealizations.length} realizacji</ResultsCount>
+        </ResultsTop>
+
+        <div id="realizations-grid">
+          <Grid>
+            {currentItems.map(({ id, src, title, tags }) => (
+              <div key={id}>
+                <RealizationCard id={id} src={src} title={title} tags={tags} />
+              </div>
+            ))}
+          </Grid>
+        </div>
+
+        {filteredRealizations.length === 0 && (
+          <NoResults>
+            <h3>Brak wyników</h3>
+            <p>Nie znaleziono realizacji dla wybranych filtrów.</p>
+          </NoResults>
+        )}
+
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={(p) => {
+            setCurrentPage(p);
+            window.scrollTo({
+              top: document.querySelector('#realizations-grid')?.offsetTop || 0,
+              behavior: 'smooth',
+            });
+          }}
+        />
+      </Content>
     </PageWrapper>
   );
 };

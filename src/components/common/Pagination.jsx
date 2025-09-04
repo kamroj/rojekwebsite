@@ -9,8 +9,8 @@ const PaginationWrapper = styled.div`
 `;
 
 const PageButton = styled.button`
-  background-color: ${({ active, theme }) => (active ? theme.colors.bottleGreen : 'transparent')};
-  color: ${({ active, theme }) => (active ? theme.colors.textLight : theme.colors.textDark)};
+  background-color: ${({ $active, theme }) => ($active ? theme.colors.bottleGreen : 'transparent')};
+  color: ${({ $active, theme }) => ($active ? theme.colors.textLight : theme.colors.textDark)};
   border: 1px solid ${({ theme }) => theme.colors.bottleGreen};
   border-radius: 4px;
   padding: 6px 12px;
@@ -44,7 +44,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
       pages.push(
         <PageButton
           key={i}
-          active={i === currentPage}
+          $active={i === currentPage}
           onClick={() => onPageChange(i, { via: 'number' })}
           aria-current={i === currentPage ? 'page' : undefined}
         >

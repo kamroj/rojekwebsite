@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { FiCalendar, FiMapPin, FiPhone, FiMail, FiCheckCircle } from 'react-icons/fi';
 import Section from '../components/common/Section';
 import { COMPANY_ADDRESS, MAP_SRC } from '../constants';
+import PageHeader from '../components/common/PageHeader';
 
 const PageWrapper = styled.div`
   width: 100%;
@@ -43,56 +44,7 @@ const PageWrapper = styled.div`
   }
 `;
 
-/* Header image section - copied from RealizationsPage */
-const HeaderImageWrapper = styled.div`
-  position: relative;
-  width: 100vw;
-  height: 400px;
-  margin-bottom: 40px;
-  overflow: hidden;
-  border-radius: 0;
-  left: 50%;
-  right: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
 
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-color: rgb(0 0 0 / 65%);
-    pointer-events: none;
-    z-index: 1;
-  }
-`;
-
-const HeaderImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  position: relative;
-  z-index: 0;
-`;
-
-const HeaderTitle = styled.h1`
-  position: absolute;
-  bottom: 15px;
-  right: 20px;
-  margin: 0;
-  padding: 8px 16px;
-  background-color: ${({ theme }) => theme.colors.bottleGreen}cc;
-  color: ${({ theme }) => theme.colors.textLight};
-  font-size: 2.5rem;
-  font-weight: 100;
-  border-radius: 6px;
-  user-select: none;
-  z-index: 2;
-
-  @media (max-width: 600px) {
-    font-size: 1.8rem;
-  }
-`;
 
 /* History Section */
 const HistorySection = styled(Section)`
@@ -125,6 +77,14 @@ const IntroText = styled(motion.div)`
 
     @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
       font-size: 1.4rem;
+    }
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    text-align: left !important;
+
+    p {
+      text-align: left !important;
     }
   }
 `;
@@ -642,10 +602,7 @@ const AboutUsPage = () => {
 
   return (
     <PageWrapper>
-      <HeaderImageWrapper>
-      <HeaderImage src="/images/company/company-top.jpg" alt="O Firmie" />
-        <HeaderTitle>{t('pageTitle.about', 'O Firmie')}</HeaderTitle>
-      </HeaderImageWrapper>
+      <PageHeader imageSrc="/images/company/company-top.jpg" height={400} title={t('pageTitle.about', 'O Firmie')} />
 
       {/* About (O nas) Section */}
       <Section label={t('sections.aboutUs', 'O NAS')} labelPosition="left" noPadding>

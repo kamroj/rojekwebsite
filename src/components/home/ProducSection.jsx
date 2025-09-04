@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import styled, { css, keyframes } from 'styled-components';
 import { motion } from 'framer-motion';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { IoIosArrowForward } from 'react-icons/io';
 import SwipeHandler from '../common/SwipeHandler';
 
 // --- Styled Components ---
@@ -287,22 +288,36 @@ const SideArrow = styled.button`
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
+
+  /* Larger, taller clickable area (non-circular) */
+  width: 80px;
+  height: 160px;
+  border-radius: 4px;
   border: none;
   display: none;
   align-items: center;
   justify-content: center;
-  background: rgba(37,68,41,0.9);
-  color: #fff;
-  font-size: 2.2rem;
+  background: transparent;
+  color: ${({ theme }) => theme.colors.bottleGreen};
+  font-size: 3rem;
   cursor: pointer;
-  transition: background-color ${({ theme }) => theme.transitions.default}, opacity ${({ theme }) => theme.transitions.default};
-  opacity: 0.95;
+  /* no background change on hover, subtle transitions for transform only */
+  transition: transform 0.18s ease, opacity ${({ theme }) => theme.transitions.default};
+  opacity: 1;
 
+  /* Icon styling */
+  svg {
+    display: block;
+    width: 2em;
+    height: 2em;
+    color: ${({ theme }) => theme.colors.bottleGreen};
+    transition: transform 0.18s ease, color 0.18s ease;
+    transform: translateX(0);
+  }
+
+  /* No background/scale change on hover (kept transparent) */
   &:hover {
-    background: ${({ theme }) => theme.colors.bottleGreen};
+    /* intentionally empty */
   }
 
   @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
@@ -312,6 +327,16 @@ const SideArrow = styled.button`
 
 const SideArrowLeft = styled(SideArrow)`
   left: 8px; /* keep arrow visible inside viewport */
+
+  /* Rotate icon to point left */
+  svg {
+    transform: rotate(180deg) translateX(0);
+  }
+
+  /* Subtle container shift to the left on hover */
+  &:hover {
+    transform: translateY(-50%) translateX(-4px);
+  }
   
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     display: none; /* hide on mobile */
@@ -320,6 +345,16 @@ const SideArrowLeft = styled(SideArrow)`
 
 const SideArrowRight = styled(SideArrow)`
   right: 8px; /* keep arrow visible inside viewport */
+
+  /* Normal orientation */
+  svg {
+    transform: translateX(0);
+  }
+
+  /* Subtle container shift to the right on hover */
+  &:hover {
+    transform: translateY(-50%) translateX(4px);
+  }
   
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     display: none; /* hide on mobile */
@@ -473,7 +508,7 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
                 onClick={goToPrevProduct}
                 aria-label="Poprzedni produkt"
               >
-                <FiChevronLeft />
+                <IoIosArrowForward />
               </SideArrowLeft>
             )}
 
@@ -529,7 +564,7 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
                 onClick={goToNextProduct}
                 aria-label="Następny produkt"
               >
-                <FiChevronRight />
+                <IoIosArrowForward />
               </SideArrowRight>
             )}
           </SlidesWrapper>

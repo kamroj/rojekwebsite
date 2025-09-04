@@ -104,6 +104,10 @@ const IntroText = styled(motion.div)`
     color: ${({ theme }) => theme.colors.text};
     margin-bottom: 1.5rem;
   }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    text-align: left;
+  }
 `;
 
 /* Timeline section */

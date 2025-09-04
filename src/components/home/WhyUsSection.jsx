@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { IoIosArrowForward } from 'react-icons/io';
 
 // Import Swiper styles
 import 'swiper/css';
@@ -181,6 +182,24 @@ const NavigationButton = styled.button`
   pointer-events: ${({ disabled }) => disabled ? 'none' : 'auto'};
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
+
+  /* Icon animation */
+  svg {
+    display: block;
+    width: 1.2em;
+    height: 1.2em;
+    color: #fff;
+    transition: transform 0.22s ease, color 0.22s ease;
+    transform: translateX(0);
+  }
+
+  &:hover:not(:disabled) {
+    background-color: ${({ theme }) => theme.colors.bottleGreen};
+  }
+
+  &:hover svg {
+    transform: translateX(6px);
+  }
   
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     width: 36px;
@@ -189,7 +208,30 @@ const NavigationButton = styled.button`
   }
 `;
 
-// Dane dla kafelek
+/* Prev/Next variants so we can invert icon rotation for prev */
+const PrevNavigationButton = styled(NavigationButton)`
+  /* rotate forward arrow to act as left arrow */
+  svg {
+    transform: rotate(180deg) translateX(0);
+  }
+
+  &:hover svg {
+    transform: rotate(180deg) translateX(-6px);
+  }
+`;
+
+const NextNavigationButton = styled(NavigationButton)`
+  /* explicit right shift on hover */
+  svg {
+    transform: translateX(0);
+  }
+
+  &:hover svg {
+    transform: translateX(6px);
+  }
+`;
+
+/* Dane dla kafelek */
 const features = [
   {
     id: 'tradition',
@@ -327,23 +369,23 @@ const WhyUsSection = () => {
         </Swiper>
         
         <NavigationContainer>
-          <NavigationButton 
+        <PrevNavigationButton 
             ref={prevRef} 
             onClick={goToPrev}
             disabled={isBeginning}
             aria-label={t('navigation.previous', 'Poprzedni')}
           >
-            <FiChevronLeft />
-          </NavigationButton>
+            <IoIosArrowForward />
+          </PrevNavigationButton>
           
-          <NavigationButton 
+          <NextNavigationButton 
             ref={nextRef} 
             onClick={goToNext}
             disabled={isEnd}
             aria-label={t('navigation.next', 'Następny')}
           >
-            <FiChevronRight />
-          </NavigationButton>
+            <IoIosArrowForward />
+          </NextNavigationButton>
         </NavigationContainer>
       </MobileSwiperContainer>
     </WhyUsContainer>

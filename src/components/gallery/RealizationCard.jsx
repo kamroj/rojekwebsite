@@ -45,16 +45,53 @@ const Title = styled.div`
   pointer-events: none;
 `;
 
-const RealizationCard = ({ id, src, title }) => {
+const TagsWrapper = styled.div`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  display: flex;
+  gap: 8px;
+  z-index: 3;
+  pointer-events: none;
+`;
+
+const Tag = styled.span`
+  background-color: ${({ theme }) => theme.colors.bottleGreenLight};
+  color: ${({ theme }) => theme.colors.textLight};
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  text-transform: none;
+  white-space: nowrap;
+`;
+
+const RealizationCard = ({ id, src, title, tags = {} }) => {
   const navigate = useNavigate();
 
   const handleClick = () => {
     navigate(`/realizations/${id}`);
   };
 
+  // stable order for display
+  const tagOrder = ['produkt', 'typ', 'kolor'];
+  const tagValues = tagOrder.map((k) => tags[k]).filter(Boolean);
+
   return (
-    <CardWrapper onClick={handleClick} role="button" tabIndex={0} onKeyPress={(e) => { if (e.key === 'Enter') handleClick(); }}>
+    <CardWrapper
+      onClick={handleClick}
+      role="button"
+      tabIndex={0}
+      onKeyPress={(e) => { if (e.key === 'Enter') handleClick(); }}
+    >
       <Image src={src} alt={title} draggable={false} />
+      {tagValues.length > 0 && (
+        <TagsWrapper>
+          {tagValues.map((t, i) => (
+            <Tag key={i}>#{t.replace(/_/g, ' ')}</Tag>
+          ))}
+        </TagsWrapper>
+      )}
       <Title>{title}</Title>
     </CardWrapper>
   );

@@ -46,7 +46,7 @@ const VideoPlaceholder = styled.div`
   width: 100%;
   height: 100%;
   background-color: #000;
-  background-image: ${props => props.thumbnail ? `url(${props.thumbnail})` : 'none'};
+  background-image: ${props => props.$thumbnail ? `url(${props.$thumbnail})` : 'none'};
   background-size: cover;
   background-position: center;
   display: flex;
@@ -164,7 +164,7 @@ const CompanyPresentationSection = () => {
       <VideoContainer>
         {(!isInView || !showVideo) ? (
           <VideoPlaceholder 
-            thumbnail={thumbnailUrl}
+            $thumbnail={thumbnailUrl}
             onClick={handlePlayClick}
             role="button"
             aria-label={t('presentation.playVideo', 'Odtwórz film prezentacyjny')}
