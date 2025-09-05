@@ -14,9 +14,10 @@ const fadeIn = keyframes`
 const IntroWrapper = styled.section`
   position: relative;
   width: 100vw;
-  /* Use dynamic viewport height to avoid being covered by mobile browser UI */
-  height: var(--vvh, 100dvh);
-  min-height: 100dvh;
+  /* Use dynamic viewport height to avoid being covered by mobile browser UI.
+     Add 1px spare to avoid 1-2px visual gap caused by rounding in some browsers. */
+  height: calc(var(--vvh, 100dvh) + 1px);
+  min-height: calc(var(--vvh, 100dvh) + 1px);
   overflow: hidden;
   margin: 0;
   padding: 0;
@@ -25,16 +26,18 @@ const IntroWrapper = styled.section`
 /* video: zawsze co najmniej tyle, co viewport, a przy tym wycentrowane */
 const VideoBackground = styled.video`
   position: absolute;
-  top: 50%;
   left: 50%;
-  /* Prefer dynamic viewport height so video covers visible area without huge overflow */
+  top: 0;
+  bottom: 0;
+  /* Ensure the video always covers the visible area even with rounding:
+     stretch vertically and keep a small spare to avoid a 1-2px gap. */
   min-width: 100vw;
-  min-height: var(--vvh, 100dvh);
+  min-height: calc(var(--vvh, 100dvh) + 2px);
   width: auto;
   height: auto;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   object-fit: cover;            /* zachowuje proporcje i przycina nadmiar */
-  object-position: center;      /* wycentrowanie kadru */
+  object-position: center bottom;
   display: block;               /* usuwa ewentualne białe paski jako inline */
   pointer-events: none;
   z-index: 1;
@@ -190,6 +193,7 @@ const CTAButton = styled(Link)`
 export default function IntroSection({ id }) {
   const { t } = useTranslation();
   const theme = useTheme();
+  const wrapperRef = useRef(null);
   const videoRef = useRef(null);
   const [isPlaying, setIsPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
@@ -246,6 +250,37 @@ export default function IntroSection({ id }) {
     }
   };
 
+  // Ustawiamy CSS-ową zmienną --vvh na rzeczywistą wysokość widocznego viewportu,
+  // żeby sekcja nie zachodziła na dolny pasek przeglądarki / home indicator.
+  useEffect(() => {
+    const rootEl = wrapperRef.current || document.documentElement;
+
+    const setVvh = () => {
+      const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      // use ceil to avoid truncating the visible viewport height which can produce a tiny gap
+      rootEl.style.setProperty('--vvh', `${Math.ceil(h)}px`);
+    };
+
+    // inicjalne ustawienie
+    setVvh();
+
+    const onResize = () => setVvh();
+
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', onResize);
+    }
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', onResize);
+      }
+    };
+  }, []);
+
   // parametry SVG pierścienia
   const SIZE = 56;
   const STROKE = 2;
@@ -254,7 +289,7 @@ export default function IntroSection({ id }) {
   const dashOffset = C * (1 - progress);
 
   return (
-    <IntroWrapper id={id}>
+    <IntroWrapper id={id} ref={wrapperRef}>
       <VideoBackground
         ref={videoRef}
         src="/videos/background4.mp4"
