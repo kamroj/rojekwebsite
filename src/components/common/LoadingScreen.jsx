@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import styled, { keyframes } from 'styled-components';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +18,9 @@ const LoadingOverlay = styled.div`
   top: 0;
   left: 0;
   width: 100vw;
-  height: 100vh;
+  /* Use dynamic viewport height to avoid being covered by mobile browser UI. Add 1px spare to avoid 1-2px visual gap caused by rounding. */
+  height: calc(var(--vvh, 100dvh) + 1px);
+  min-height: calc(var(--vvh, 100dvh) + 1px);
   background: linear-gradient(135deg, #000000 10%, #0c0c0c 50%, #002719 100%);
   display: flex;
   flex-direction: column;
@@ -105,6 +107,37 @@ const LoadingScreen = ({
 }) => {
   const { t } = useTranslation();
 
+  // Use dynamic viewport height (vvh) based on visualViewport to keep content
+  // perfectly centered within the visible area on mobile (URL bar at bottom/top).
+  const wrapperRef = useRef(null);
+  useEffect(() => {
+    const el = wrapperRef.current || document.documentElement;
+
+    const setVvh = () => {
+      const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+      el.style.setProperty('--vvh', `${Math.ceil(h)}px`);
+    };
+
+    // initial set
+    setVvh();
+
+    const onResize = () => setVvh();
+
+    window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener('resize', onResize);
+    }
+
+    return () => {
+      window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener('resize', onResize);
+      }
+    };
+  }, []);
+
   // Block scrolling when loading screen is visible
   useEffect(() => {
     if (isVisible && !isHiding) {
@@ -134,7 +167,7 @@ const LoadingScreen = ({
   if (!isVisible && !isHiding) return null;
 
   return (
-    <LoadingOverlay $isHiding={isHiding}>
+    <LoadingOverlay ref={wrapperRef} $isHiding={isHiding}>
       <LoadingContent>
         <Logo 
           src="/images/logo.png" 
