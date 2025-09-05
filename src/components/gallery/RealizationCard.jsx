@@ -3,13 +3,14 @@ import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
 const CardWrapper = styled.div`
-  position: relative;
-  border-radius: 6px;
-  overflow: hidden;
-  cursor: pointer;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  transition: box-shadow 0.3s ease, transform 0.3s ease;
-  background-color: #000;
+    border: 1px solid #015a3c;
+    position: relative;
+    border-radius: 3px;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0px 0px 12px 2px rgb(0 0 0 / 35%);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    background-color: #000;
 
   &:hover {
     box-shadow: 0 8px 20px rgba(0,0,0,0.4);

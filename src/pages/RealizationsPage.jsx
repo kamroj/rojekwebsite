@@ -183,11 +183,11 @@ const LabelBlock = styled.div`
 
 const FilterHeading = styled.span`
   font-weight: 600;
-  font-size: 1.05rem;
+  font-size: 1.3rem;
   color: ${({ theme }) => theme?.colors?.text || '#222'};
 
   @media (max-width: 720px) {
-    font-size: 1.12rem;
+    font-size: 1.5rem;
   }
 `;
 
@@ -309,7 +309,7 @@ const OptionRow = styled.label`
   }
 
   span {
-    font-size: 0.95rem;
+    font-size: 1.3rem;
     flex: 1;
     white-space: nowrap;
     color: ${({ theme }) => theme?.colors?.text || '#212529'};
@@ -335,7 +335,7 @@ const OptionRow = styled.label`
       height: 12px;
     }
     span { 
-      font-size: 0.95rem; 
+      font-size: 1.3rem; 
     }
   }
 `;
@@ -348,12 +348,12 @@ const ResultsTop = styled.div`
 `;
 
 const ResultsCount = styled.div`
-  font-weight: 600;
+  font-weight: 400;
 `;
 
 const Grid = styled.div`
   display: grid;
-  gap: 18px;
+  gap: 32px;
   grid-template-columns: repeat(3, 1fr);
   
   @media (max-width: 1100px) { 
@@ -480,9 +480,9 @@ const MobileAction = styled.button`
   cursor: pointer;
   font-weight: 600;
   text-align: center;
-  border: 1px solid ${({ primary, theme }) => primary ? (theme?.colors?.accent || '#017e54') : (theme?.colors?.border || '#e6e6e6')};
+  border: 1px solid ${({ primary, theme }) => primary ? (theme?.colors?.primary || '#004605') : (theme?.colors?.border || '#e6e6e6')};
   color: ${({ primary, theme }) => primary ? '#fff' : (theme?.colors?.text || '#222')};
-  background: ${({ primary, theme }) => primary ? (theme?.colors?.accent || '#017e54') : 'transparent'};
+  background: ${({ primary, theme }) => primary ? (theme?.colors?.primary || '#003d29') : 'transparent'};
 `;
 
 const MobileFilters = styled.div`
@@ -579,10 +579,19 @@ const RealizationsPage = () => {
   };
 
   const clearMobileFilters = () => {
+    // Clear mobile temporary selections
     setMobileTemporaryFilters({ 
       [FILTER_CATEGORIES.TYPE]: new Set(), 
       [FILTER_CATEGORIES.COLOR]: new Set() 
     });
+    // Also apply cleared state to the actual filters so they are reset immediately
+    setSelectedFilters({ 
+      [FILTER_CATEGORIES.TYPE]: new Set(), 
+      [FILTER_CATEGORIES.COLOR]: new Set() 
+    });
+    setCurrentPage(1);
+    // Close the mobile panel after clearing
+    closeMobilePanel();
   };
 
   const applyMobileFilters = () => {
@@ -634,6 +643,8 @@ const RealizationsPage = () => {
       [FILTER_CATEGORIES.COLOR]: new Set() 
     });
     setCurrentPage(1);
+    // close any open dropdowns after clearing filters (desktop)
+    closeAllDropdowns();
   };
 
   const filteredRealizations = useMemo(() => {

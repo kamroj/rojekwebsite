@@ -1,7 +1,7 @@
 // src/styles/theme.js
 const theme = {
   colors: {
-    primary: '#007bff',         // Main primary color (blue)
+    primary: '#004605',         // Main primary color (blue)
     secondary: '#017e54',       // Secondary color (green)
     accent: '#e6c619',          // Accent color (yellow - used for hover states)
     background: '#ffffff',      // Base background color
