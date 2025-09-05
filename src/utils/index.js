@@ -54,12 +54,34 @@ export const debounce = (func, wait) => {
  * @returns {Function} - Throttled function
  */
 export const throttle = (func, limit) => {
-  let inThrottle;
-  return function executedFunction(...args) {
-    if (!inThrottle) {
-      func.apply(this, args);
-      inThrottle = true;
-      setTimeout(() => inThrottle = false, limit);
+  let lastCall = 0;
+  let timeoutId = null;
+  let lastArgs;
+  let lastThis;
+  
+  return function throttled(...args) {
+    const now = Date.now();
+    const remaining = limit - (now - lastCall);
+    lastArgs = args;
+    lastThis = this;
+  
+    // Leading call
+    if (remaining <= 0) {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
+      }
+      lastCall = now;
+      func.apply(lastThis, lastArgs);
+      lastArgs = lastThis = null;
+    } else if (!timeoutId) {
+      // Schedule trailing call to ensure the final state is applied
+      timeoutId = setTimeout(() => {
+        lastCall = Date.now();
+        timeoutId = null;
+        func.apply(lastThis, lastArgs);
+        lastArgs = lastThis = null;
+      }, remaining);
     }
   };
 };
