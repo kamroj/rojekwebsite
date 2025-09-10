@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { FiChevronDown, FiChevronUp, FiX, FiFilter } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
+import { useResponsive } from '../hooks/useResponsive';
 import RealizationCard from '../components/gallery/RealizationCard';
 import Pagination from '../components/common/Pagination';
 import PageHeader from '../components/common/PageHeader';
@@ -192,19 +193,19 @@ const FilterHeading = styled.span`
 `;
 
 const DropdownPanel = styled.div.attrs({ 'data-filter-area': 'true' })`
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  right: 0;
-  width: auto;
+  /* Desktop: keep dropdown in-flow so it pushes content down under the filters */
+  position: static;
+  margin-top: 6px;
+  width: 100%;
   background: ${({ theme }) => theme?.colors?.background || '#ffffff'};
   border: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
   border-radius: 10px;
   box-shadow: ${({ theme }) => theme?.shadows?.medium || '0 4px 8px rgba(0, 0, 0, 0.2)'};
-  z-index: 10;
+  z-index: 6000;
   padding: 6px;
   box-sizing: border-box;
 
+  /* Mobile: keep absolute positioning (overlays) for small screens */
   @media (max-width: 720px) {
     position: absolute;
     top: calc(100% + 6px);
@@ -219,7 +220,7 @@ const DropdownPanel = styled.div.attrs({ 'data-filter-area': 'true' })`
     background: ${({ theme }) => theme?.colors?.background || '#ffffff'};
     display: block;
     box-sizing: border-box;
-    z-index: 60;
+    z-index: 7000;
     overflow: hidden;
   }
 `;
@@ -342,13 +343,28 @@ const OptionRow = styled.label`
 
 const ResultsTop = styled.div`
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  gap: 12px;
   margin: 8px 0 16px;
 `;
 
 const ResultsCount = styled.div`
-  font-weight: 400;
+  flex: 1;
+  min-width: 0;
+  color: ${({ theme }) => theme?.colors?.text || '#222'};
+  font-weight: 500;
+  font-size: 1rem;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+
+  @media (min-width: 721px) {
+    font-weight: 600;
+    font-size: 1.3rem;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: ellipsis;
+  }
 `;
 
 const Grid = styled.div`
@@ -377,9 +393,8 @@ const NoResults = styled.div`
 const MobileFiltersButton = styled.button`
   all: unset;
   display: none;
-  position: absolute;
-  top: 12px;
-  right: 12px;
+  /* keep in normal flow so ControlsBar height is preserved */
+  position: static;
   width: 40px;
   height: 40px;
   border-radius: 8px;
@@ -416,6 +431,51 @@ const MobileFiltersButton = styled.button`
 
   @media (max-width: 720px) {
     display: flex;
+  }
+`;
+
+const DesktopFiltersButton = styled.button`
+  all: unset;
+  display: flex;
+  /* position in normal flow inside ControlsBar so it occupies space */
+  position: static;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: ${({ theme }) => theme?.colors?.background || '#ffffff'};
+  border: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
+  align-items: center;
+  justify-content: center;
+  box-shadow: ${({ theme }) => theme?.shadows?.small || '0 2px 4px rgba(0, 0, 0, 0.1)'};
+  cursor: pointer;
+  transition: ${({ theme }) => theme?.transitions?.default || '0.3s ease'};
+  z-index: 2000;
+
+  &:hover {
+    border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
+    box-shadow: ${({ theme }) => theme?.shadows?.medium || '0 4px 8px rgba(0, 0, 0, 0.2)'};
+    background: ${({ theme }) => theme?.colors?.backgroundAlt || '#f9fafb'};
+  }
+
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
+    box-shadow: 0 0 0 3px ${({ theme }) => theme?.colors?.borderAccent || 'rgba(1, 126, 84, 0.25)'};
+  }
+
+  &:active {
+    outline: none;
+    transform: translateY(1px);
+  }
+
+  svg { 
+    width: 18px; 
+    height: 18px; 
+    color: ${({ theme }) => theme?.colors?.text || '#212529'}; 
+  }
+
+  @media (max-width: 720px) {
+    display: none;
   }
 `;
 
@@ -510,8 +570,24 @@ const ClearButton = styled.button`
   gap: 6px;
 `;
 
+/* ControlsBar holds the filter buttons (mobile + desktop) so the filters panel
+   can slide down below the bar instead of overlapping the buttons. */
+const ControlsBar = styled.div`
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 8px 12px;
+  /* keep enough height for the buttons */
+  min-height: 56px;
+  margin-bottom: 8px;
+`;
+
 const RealizationsPage = () => {
   const { t } = useTranslation();
+  const { isMobile } = useResponsive();
   
   const doorTypes = useMemo(() => [
     PRODUCT_TYPES.DOORS.INTERIOR, 
@@ -541,12 +617,14 @@ const RealizationsPage = () => {
   
   const [currentPage, setCurrentPage] = useState(1);
   const [isMobilePanelOpen, setIsMobilePanelOpen] = useState(false);
+  const [isDesktopFiltersOpen, setIsDesktopFiltersOpen] = useState(false);
   const [mobileTemporaryFilters, setMobileTemporaryFilters] = useState(null);
 
   const doorsRef = useRef();
   const windowsRef = useRef();
   const colorRef = useRef();
   const mobileButtonRef = useRef();
+  const desktopButtonRef = useRef();
   const mobilePanelRef = useRef();
 
   const openMobilePanel = () => {
@@ -780,114 +858,6 @@ const RealizationsPage = () => {
       />
 
       <Content>
-        <MobileFiltersButton 
-          ref={mobileButtonRef} 
-          onClick={openMobilePanel} 
-          aria-label={t('realizationsPage.filters.filtersTitle')}
-        >
-          <FiFilter />
-        </MobileFiltersButton>
-
-        <FiltersRow>
-          <DropdownsGroup>
-            <FilterWrapper ref={doorsRef}>
-              <FilterControl 
-                onClick={(e) => toggleDropdown('doors', e)} 
-                aria-expanded={dropdownsOpen.doors} 
-                aria-haspopup="menu"
-              >
-                <LabelBlock>
-                  <FilterHeading>{t('realizationsPage.filters.doors')}</FilterHeading>
-                </LabelBlock>
-                {dropdownsOpen.doors ? <FiChevronUp /> : <FiChevronDown />}
-              </FilterControl>
-
-              {dropdownsOpen.doors && (
-                <DropdownPanel role="menu">
-                  <OptionList>
-                    {doorTypes.map(type => (
-                      <OptionRow key={type} onClick={(e) => e.stopPropagation()}>
-                        <input
-                          type="checkbox"
-                          checked={selectedFilters[FILTER_CATEGORIES.TYPE].has(type)}
-                          onChange={(e) => toggleFilter(FILTER_CATEGORIES.TYPE, type, e)}
-                        />
-                        <span>{getTranslatedProductType(type)}</span>
-                      </OptionRow>
-                    ))}
-                  </OptionList>
-                </DropdownPanel>
-              )}
-            </FilterWrapper>
-
-            <FilterWrapper ref={windowsRef}>
-              <FilterControl 
-                onClick={(e) => toggleDropdown('windows', e)} 
-                aria-expanded={dropdownsOpen.windows} 
-                aria-haspopup="menu"
-              >
-                <LabelBlock>
-                  <FilterHeading>{t('realizationsPage.filters.windows')}</FilterHeading>
-                </LabelBlock>
-                {dropdownsOpen.windows ? <FiChevronUp /> : <FiChevronDown />}
-              </FilterControl>
-
-              {dropdownsOpen.windows && (
-                <DropdownPanel role="menu">
-                  <OptionList>
-                    {windowTypes.map(type => (
-                      <OptionRow key={type} onClick={(e) => e.stopPropagation()}>
-                        <input
-                          type="checkbox"
-                          checked={selectedFilters[FILTER_CATEGORIES.TYPE].has(type)}
-                          onChange={(e) => toggleFilter(FILTER_CATEGORIES.TYPE, type, e)}
-                        />
-                        <span>{getTranslatedProductType(type)}</span>
-                      </OptionRow>
-                    ))}
-                  </OptionList>
-                </DropdownPanel>
-              )}
-            </FilterWrapper>
-
-            <FilterWrapper ref={colorRef}>
-              <FilterControl 
-                onClick={(e) => toggleDropdown('color', e)} 
-                aria-expanded={dropdownsOpen.color} 
-                aria-haspopup="menu"
-              >
-                <LabelBlock>
-                  <FilterHeading>{t('realizationsPage.filters.color')}</FilterHeading>
-                </LabelBlock>
-                {dropdownsOpen.color ? <FiChevronUp /> : <FiChevronDown />}
-              </FilterControl>
-
-              {dropdownsOpen.color && (
-                <DropdownPanel role="menu">
-                  <OptionList>
-                    {colorOptions.map(color => (
-                      <OptionRow key={color} onClick={(e) => e.stopPropagation()}>
-                        <input
-                          type="checkbox"
-                          checked={selectedFilters[FILTER_CATEGORIES.COLOR].has(color)}
-                          onChange={(e) => toggleFilter(FILTER_CATEGORIES.COLOR, color, e)}
-                        />
-                        <span>{getTranslatedColor(color)}</span>
-                      </OptionRow>
-                    ))}
-                  </OptionList>
-                </DropdownPanel>
-              )}
-            </FilterWrapper>
-          </DropdownsGroup>
-
-          <div style={{ marginLeft: '12px', alignSelf: 'center' }}>
-            <ClearButton onClick={clearAllFilters}>
-              <FiX style={{ transform: 'translateY(2px)' }} />
-              {t('realizationsPage.filters.clear')}
-            </ClearButton>
-          </div>
-        </FiltersRow>
 
         <AnimatePresence>
           {isMobilePanelOpen && (
@@ -1029,11 +999,160 @@ const RealizationsPage = () => {
           )}
         </AnimatePresence>
 
+        <AnimatePresence initial={false}>
+          <motion.div
+            initial={false}
+            animate={{}}
+            transition={{ duration: 0.12 }}
+            style={{ overflow: 'visible', position: 'relative', zIndex: 5000 }}
+          >
         <ResultsTop>
-          <ResultsCount>
-            {t('realizationsPage.results.found', { count: filteredRealizations.length })}
-          </ResultsCount>
-        </ResultsTop>
+
+          <ControlsBar>
+            {!isMobilePanelOpen && (
+              <ResultsCount style={{ marginRight: 'auto' }}>
+                {t('realizationsPage.results.found', { count: filteredRealizations.length })}
+              </ResultsCount>
+            )}
+            <MobileFiltersButton 
+              ref={mobileButtonRef} 
+              onClick={openMobilePanel} 
+              aria-label={t('realizationsPage.filters.filtersTitle')}
+            >
+              <FiFilter />
+            </MobileFiltersButton>
+
+                <DesktopFiltersButton
+                  ref={desktopButtonRef}
+                  onClick={() => {
+                    setIsDesktopFiltersOpen(prev => {
+                      const next = !prev;
+                      if (!next) {
+                        // When hiding desktop filters, also close any open dropdowns
+                        closeAllDropdowns();
+                      }
+                      return next;
+                    });
+                  }}
+                  aria-label={t('realizationsPage.filters.filtersTitle')}
+                >
+                  <FiFilter />
+                </DesktopFiltersButton>
+              </ControlsBar>
+            </ResultsTop>
+
+            {isDesktopFiltersOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: 'auto', opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.12 }}
+                style={{ overflow: 'visible' }}
+              >
+                <FiltersRow>
+          <DropdownsGroup>
+            <FilterWrapper ref={doorsRef}>
+              <FilterControl 
+                onClick={(e) => toggleDropdown('doors', e)} 
+                aria-expanded={dropdownsOpen.doors} 
+                aria-haspopup="menu"
+              >
+                <LabelBlock>
+                  <FilterHeading>{t('realizationsPage.filters.doors')}</FilterHeading>
+                </LabelBlock>
+                {dropdownsOpen.doors ? <FiChevronUp /> : <FiChevronDown />}
+              </FilterControl>
+
+              {dropdownsOpen.doors && (
+                <DropdownPanel role="menu">
+                  <OptionList>
+                    {doorTypes.map(type => (
+                      <OptionRow key={type} onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          checked={selectedFilters[FILTER_CATEGORIES.TYPE].has(type)}
+                          onChange={(e) => toggleFilter(FILTER_CATEGORIES.TYPE, type, e)}
+                        />
+                        <span>{getTranslatedProductType(type)}</span>
+                      </OptionRow>
+                    ))}
+                  </OptionList>
+                </DropdownPanel>
+              )}
+            </FilterWrapper>
+
+            <FilterWrapper ref={windowsRef}>
+              <FilterControl 
+                onClick={(e) => toggleDropdown('windows', e)} 
+                aria-expanded={dropdownsOpen.windows} 
+                aria-haspopup="menu"
+              >
+                <LabelBlock>
+                  <FilterHeading>{t('realizationsPage.filters.windows')}</FilterHeading>
+                </LabelBlock>
+                {dropdownsOpen.windows ? <FiChevronUp /> : <FiChevronDown />}
+              </FilterControl>
+
+              {dropdownsOpen.windows && (
+                <DropdownPanel role="menu">
+                  <OptionList>
+                    {windowTypes.map(type => (
+                      <OptionRow key={type} onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          checked={selectedFilters[FILTER_CATEGORIES.TYPE].has(type)}
+                          onChange={(e) => toggleFilter(FILTER_CATEGORIES.TYPE, type, e)}
+                        />
+                        <span>{getTranslatedProductType(type)}</span>
+                      </OptionRow>
+                    ))}
+                  </OptionList>
+                </DropdownPanel>
+              )}
+            </FilterWrapper>
+
+            <FilterWrapper ref={colorRef}>
+              <FilterControl 
+                onClick={(e) => toggleDropdown('color', e)} 
+                aria-expanded={dropdownsOpen.color} 
+                aria-haspopup="menu"
+              >
+                <LabelBlock>
+                  <FilterHeading>{t('realizationsPage.filters.color')}</FilterHeading>
+                </LabelBlock>
+                {dropdownsOpen.color ? <FiChevronUp /> : <FiChevronDown />}
+              </FilterControl>
+
+              {dropdownsOpen.color && (
+                <DropdownPanel role="menu">
+                  <OptionList>
+                    {colorOptions.map(color => (
+                      <OptionRow key={color} onClick={(e) => e.stopPropagation()}>
+                        <input
+                          type="checkbox"
+                          checked={selectedFilters[FILTER_CATEGORIES.COLOR].has(color)}
+                          onChange={(e) => toggleFilter(FILTER_CATEGORIES.COLOR, color, e)}
+                        />
+                        <span>{getTranslatedColor(color)}</span>
+                      </OptionRow>
+                    ))}
+                  </OptionList>
+                </DropdownPanel>
+              )}
+            </FilterWrapper>
+          </DropdownsGroup>
+
+          <div style={{ marginLeft: '12px', alignSelf: 'center' }}>
+            <ClearButton onClick={clearAllFilters}>
+              <FiX style={{ transform: 'translateY(2px)' }} />
+              {t('realizationsPage.filters.clear')}
+            </ClearButton>
+          </div>
+                </FiltersRow>
+              </motion.div>
+            )}
+          </motion.div>
+        </AnimatePresence>
 
         <div id="realizations-grid">
           <Grid>
