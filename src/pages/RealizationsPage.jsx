@@ -109,7 +109,7 @@ const Content = styled.div`
 
 const FiltersRow = styled.div`
   display: flex;
-  gap: 18px;
+  gap: 14px;
   flex-wrap: wrap;
   align-items: center;
   margin: 12px 0 20px;
@@ -121,15 +121,15 @@ const FiltersRow = styled.div`
 
 const DropdownsGroup = styled.div`
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   flex: 1;
-  gap: 18px;
+  gap: 12px;
 `;
 
 const FilterWrapper = styled.div.attrs({ 'data-filter-area': 'true' })`
-  flex: 0 0 180px;
-  max-width: 180px;
+  flex: 0 0 170px;
+  max-width: 170px;
   min-width: 140px;
   position: relative;
   box-sizing: border-box;
@@ -152,7 +152,7 @@ const FilterControl = styled.button`
   background: ${({ theme }) => theme?.colors?.background || '#ffffff'};
   border: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
   border-radius: 8px;
-  padding: 10px 12px;
+  padding: 8px 12px;
   cursor: pointer;
   box-sizing: border-box;
   box-shadow: ${({ theme }) => theme?.shadows?.small || '0 2px 4px rgba(0, 0, 0, 0.1)'};
@@ -192,10 +192,13 @@ const FilterHeading = styled.span`
   }
 `;
 
-const DropdownPanel = styled.div.attrs({ 'data-filter-area': 'true' })`
-  /* Desktop: keep dropdown in-flow so it pushes content down under the filters */
-  position: static;
-  margin-top: 6px;
+const DropdownPanel = styled(motion.div).attrs({ 'data-filter-area': 'true' })`
+  /* Desktop: overlay dropdown on top of content without shifting layout */
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  margin: 0;
   width: 100%;
   background: ${({ theme }) => theme?.colors?.background || '#ffffff'};
   border: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
@@ -273,7 +276,7 @@ const OptionRow = styled.label`
   display: flex;
   gap: 10px;
   align-items: center;
-  padding: 12px 12px;
+  padding: 10px 12px;
   border-radius: 6px;
   cursor: pointer;
   width: 100%;
@@ -562,12 +565,34 @@ const MobileFilters = styled.div`
 
 const ClearButton = styled.button`
   all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
   cursor: pointer;
   font-weight: 600;
-  color: rgba(0,0,0,0.6);
-  display: flex;
-  align-items: center;
-  gap: 6px;
+  color: ${({ theme }) => theme?.colors?.text || '#222'};
+  background: ${({ theme }) => theme?.colors?.background || '#ffffff'};
+  border: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
+  box-shadow: ${({ theme }) => theme?.shadows?.small || '0 2px 4px rgba(0, 0, 0, 0.1)'};
+  transition: ${({ theme }) => theme?.transitions?.default || '0.3s ease'};
+
+  &:hover {
+    border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
+    background: ${({ theme }) => theme?.colors?.backgroundAlt || '#f9fafb'};
+    color: ${({ theme }) => theme?.colors?.text || '#222'};
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  svg {
+    width: 16px;
+    height: 16px;
+    color: ${({ theme }) => theme?.colors?.text || '#212529'};
+  }
 `;
 
 /* ControlsBar holds the filter buttons (mobile + desktop) so the filters panel
@@ -626,6 +651,13 @@ const RealizationsPage = () => {
   const mobileButtonRef = useRef();
   const desktopButtonRef = useRef();
   const mobilePanelRef = useRef();
+
+  // Framer Motion animation for desktop dropdowns (subtle and fast)
+  const dropdownMotionProps = {
+    initial: { opacity: 0, y: 8 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.18, ease: 'easeOut' } },
+    exit: { opacity: 0, y: 8, transition: { duration: 0.12, ease: 'easeIn' } }
+  };
 
   const openMobilePanel = () => {
     setMobileTemporaryFilters({
@@ -894,9 +926,10 @@ const RealizationsPage = () => {
                     </LabelBlock>
                     {dropdownsOpen.doors ? <FiChevronUp /> : <FiChevronDown />}
                   </FilterControl>
-                  {dropdownsOpen.doors && (
-                    <DropdownPanel role="menu">
-                      <OptionList>
+              <AnimatePresence>
+              {dropdownsOpen.doors && (
+                <DropdownPanel role="menu" {...(!isMobile ? dropdownMotionProps : {})}>
+                  <OptionList>
                         {doorTypes.map(type => (
                           <OptionRow key={type} onClick={(e) => e.stopPropagation()}>
                             <input
@@ -913,9 +946,10 @@ const RealizationsPage = () => {
                             <span>{getTranslatedProductType(type)}</span>
                           </OptionRow>
                         ))}
-                      </OptionList>
-                    </DropdownPanel>
-                  )}
+                  </OptionList>
+                </DropdownPanel>
+              )}
+            </AnimatePresence>
                 </FilterWrapper>
 
                 <FilterWrapper>
@@ -928,9 +962,10 @@ const RealizationsPage = () => {
                     </LabelBlock>
                     {dropdownsOpen.windows ? <FiChevronUp /> : <FiChevronDown />}
                   </FilterControl>
-                  {dropdownsOpen.windows && (
-                    <DropdownPanel role="menu">
-                      <OptionList>
+              <AnimatePresence>
+              {dropdownsOpen.windows && (
+                <DropdownPanel role="menu" {...(!isMobile ? dropdownMotionProps : {})}>
+                  <OptionList>
                         {windowTypes.map(type => (
                           <OptionRow key={type} onClick={(e) => e.stopPropagation()}>
                             <input
@@ -947,9 +982,10 @@ const RealizationsPage = () => {
                             <span>{getTranslatedProductType(type)}</span>
                           </OptionRow>
                         ))}
-                      </OptionList>
-                    </DropdownPanel>
-                  )}
+                  </OptionList>
+                </DropdownPanel>
+              )}
+            </AnimatePresence>
                 </FilterWrapper>
 
                 <FilterWrapper>
@@ -962,9 +998,10 @@ const RealizationsPage = () => {
                     </LabelBlock>
                     {dropdownsOpen.color ? <FiChevronUp /> : <FiChevronDown />}
                   </FilterControl>
-                  {dropdownsOpen.color && (
-                    <DropdownPanel role="menu">
-                      <OptionList>
+              <AnimatePresence>
+              {dropdownsOpen.color && (
+                <DropdownPanel role="menu" {...(!isMobile ? dropdownMotionProps : {})}>
+                  <OptionList>
                         {colorOptions.map(color => (
                           <OptionRow key={color} onClick={(e) => e.stopPropagation()}>
                             <input
@@ -981,9 +1018,10 @@ const RealizationsPage = () => {
                             <span>{getTranslatedColor(color)}</span>
                           </OptionRow>
                         ))}
-                      </OptionList>
-                    </DropdownPanel>
-                  )}
+                  </OptionList>
+                </DropdownPanel>
+              )}
+            </AnimatePresence>
                 </FilterWrapper>
               </MobileFilters>
 
@@ -1041,13 +1079,13 @@ const RealizationsPage = () => {
               </ControlsBar>
             </ResultsTop>
 
+            <AnimatePresence initial={false}>
             {isDesktopFiltersOpen && (
               <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: 'auto', opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                transition={{ duration: 0.12 }}
-                style={{ overflow: 'visible' }}
+                initial={{ height: 0, opacity: 0, y: -8 }}
+                animate={{ height: 'auto', opacity: 1, y: 0, transition: { duration: 0.18, ease: 'easeOut' } }}
+                exit={{ height: 0, opacity: 0, y: -8, transition: { duration: 0.12, ease: 'easeIn' } }}
+                style={{ overflow: 'visible', willChange: 'opacity, transform, height' }}
               >
                 <FiltersRow>
           <DropdownsGroup>
@@ -1063,8 +1101,9 @@ const RealizationsPage = () => {
                 {dropdownsOpen.doors ? <FiChevronUp /> : <FiChevronDown />}
               </FilterControl>
 
+              <AnimatePresence>
               {dropdownsOpen.doors && (
-                <DropdownPanel role="menu">
+                <DropdownPanel role="menu" {...(!isMobile ? dropdownMotionProps : {})}>
                   <OptionList>
                     {doorTypes.map(type => (
                       <OptionRow key={type} onClick={(e) => e.stopPropagation()}>
@@ -1079,6 +1118,7 @@ const RealizationsPage = () => {
                   </OptionList>
                 </DropdownPanel>
               )}
+              </AnimatePresence>
             </FilterWrapper>
 
             <FilterWrapper ref={windowsRef}>
@@ -1093,8 +1133,9 @@ const RealizationsPage = () => {
                 {dropdownsOpen.windows ? <FiChevronUp /> : <FiChevronDown />}
               </FilterControl>
 
+              <AnimatePresence>
               {dropdownsOpen.windows && (
-                <DropdownPanel role="menu">
+                <DropdownPanel role="menu" {...(!isMobile ? dropdownMotionProps : {})}>
                   <OptionList>
                     {windowTypes.map(type => (
                       <OptionRow key={type} onClick={(e) => e.stopPropagation()}>
@@ -1109,6 +1150,7 @@ const RealizationsPage = () => {
                   </OptionList>
                 </DropdownPanel>
               )}
+              </AnimatePresence>
             </FilterWrapper>
 
             <FilterWrapper ref={colorRef}>
@@ -1123,8 +1165,9 @@ const RealizationsPage = () => {
                 {dropdownsOpen.color ? <FiChevronUp /> : <FiChevronDown />}
               </FilterControl>
 
+              <AnimatePresence>
               {dropdownsOpen.color && (
-                <DropdownPanel role="menu">
+                <DropdownPanel role="menu" {...(!isMobile ? dropdownMotionProps : {})}>
                   <OptionList>
                     {colorOptions.map(color => (
                       <OptionRow key={color} onClick={(e) => e.stopPropagation()}>
@@ -1139,6 +1182,7 @@ const RealizationsPage = () => {
                   </OptionList>
                 </DropdownPanel>
               )}
+              </AnimatePresence>
             </FilterWrapper>
           </DropdownsGroup>
 
@@ -1151,6 +1195,7 @@ const RealizationsPage = () => {
                 </FiltersRow>
               </motion.div>
             )}
+            </AnimatePresence>
           </motion.div>
         </AnimatePresence>
 

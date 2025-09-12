@@ -102,6 +102,8 @@ const AboutIntro = styled(IntroText)`
     font-size: 1.4rem !important;
     line-height: 1.8 !important;
     margin: 0 0 1.5rem 0 !important;
+    list-style-position: outside !important;
+    padding-left: 1.2rem !important;
   }
 
   li {
@@ -112,11 +114,28 @@ const AboutIntro = styled(IntroText)`
   /* Also target the inline-styled ul in JSX to be safe */
   & > ul[style] {
     font-size: 1.4rem !important;
+    list-style-position: outside !important;
+    padding-left: 1.2rem !important;
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    padding: 0 16px;
+
     ul, li, & > ul[style] {
       font-size: 1.3rem !important;
+    }
+
+    ul, & > ul[style] {
+      margin: 0 0 1.2rem 0 !important;
+      padding-left: 1rem !important;
+    }
+
+    li {
+      margin-bottom: 0.5rem !important;
+    }
+
+    p {
+      margin-bottom: 1.2rem;
     }
   }
 `;
@@ -310,24 +329,49 @@ const HeadquartersSection = styled(Section)`
   margin-top: 100px;
   margin-bottom: 80px;
   padding: 80px 0;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    margin-top: 60px;
+    margin-bottom: 60px;
+    padding: 50px 0;
+  }
 `;
 
 const HeadquartersContent = styled.div`
   max-width: ${({ theme }) => theme.layout.maxWidth};
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  grid-template-areas: "info image";
   gap: 60px;
   align-items: center;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     grid-template-columns: 1fr;
-    gap: 40px;
+    grid-template-areas:
+      "image"
+      "info";
+    gap: 24px;
+    padding: 0 1vw;
+    width: 100vw;
+    max-width: none;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    gap: 24px;
+    padding: 0 1vw;
+    width: 100vw;
+    max-width: none;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
   }
 `;
 
 const HeadquartersInfo = styled(motion.div)`
+  grid-area: info;
   text-align: left;
 
   h3 {
@@ -378,17 +422,30 @@ const HeadquartersInfo = styled(motion.div)`
 
     @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
       .map-wrapper {
-        width: calc(100% + 40px);
-        margin-left: -20px;
+        width: 100%;
+        margin: 0 auto;
         border-radius: 0;
-        height: 220px;
+        height: 240px;
         box-shadow: none;
       }
+    }
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    h3 {
+      font-size: 1.8rem;
+    }
+    p {
+      font-size: 1.35rem;
+    }
+    .address {
+      margin-top: 20px;
     }
   }
 `;
 
 const HeadquartersImage = styled(motion.div)`
+  grid-area: image;
   position: relative;
   overflow: visible;
   width: 100%;
@@ -406,23 +463,23 @@ const HeadquartersImage = styled(motion.div)`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    /* mobile: make image full-bleed using viewport width + translate technique */
     width: 100%;
     height: 320px;
     overflow: visible;
 
     img {
-      position: relative;
-      left: 50%;
-      transform: translateX(-50%);
-      width: 100vw;
-      max-width: none;
-      height: 320px;
+      position: static;
+      left: auto;
+      transform: none;
+      width: 100%;
+      max-width: 100%;
+      height: 100%;
       object-fit: cover;
       object-position: center center;
       border-radius: 0;
       box-shadow: none;
       display: block;
+      margin: 0 auto;
     }
   }
 `;
@@ -685,7 +742,7 @@ const AboutUsPage = () => {
       </HistorySection>
 
       {/* Company Headquarters Section */}
-      <HeadquartersSection label={t('sections.headquarters', 'SIEDZIBA FIRMY')} labelPosition="left">
+      <HeadquartersSection label={t('sections.headquarters', 'SIEDZIBA FIRMY')} labelPosition="left" $noInset customStyles={`border: none;`}>
         <HeadquartersContent>
           <HeadquartersInfo
             initial={{ opacity: 0, x: -30 }}
