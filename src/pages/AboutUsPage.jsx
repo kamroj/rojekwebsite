@@ -488,116 +488,178 @@ const HeadquartersImage = styled(motion.div)`
 const ManagementGrid = styled.div`
   max-width: ${({ theme }) => theme.layout.maxWidth};
   margin: 60px auto 0;
+  padding: 0 16px;
   display: grid;
-  /* create columns that are at most 220px wide; grid will fit as many as possible */
-  grid-template-columns: repeat(auto-fit, minmax(0, 220px));
-  justify-content: center;
-  gap: 30px;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  justify-items: center;
+  gap: 28px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     gap: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   }
 
-  /* on very small viewports keep a single column (one card per row) */
   @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
     grid-template-columns: 1fr;
     gap: 16px;
+    padding: 0 12px;
   }
 `;
 
 const ManagerCard = styled.div`
-  background: ${({ theme }) => theme.colors.background};
-  border: 1px solid ${({ theme }) => theme.colors.borderAccent};
-  border-radius: 12px;
-  padding: 12px;
-  text-align: center;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+  position: relative;
   width: 100%;
-  max-width: 220px; /* never allow a card to be wider than 220px */
-  margin: 0 auto;
+  background: ${({ theme }) => theme.colors.background};
+  border: 1px solid transparent;
+  background:
+    linear-gradient(${({ theme }) => theme.colors.background}, ${({ theme }) => theme.colors.background}) padding-box,
+    linear-gradient(180deg, ${({ theme }) => theme.colors.bottleGreenLight}33, transparent) border-box;
+  background-origin: padding-box, border-box;
+  background-clip: padding-box, border-box;
+  border-radius: 12px;
+  overflow: hidden;
+  padding: 0;
+  text-align: center;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+
+  &:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 34px rgba(0,0,0,0.12);
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, ${({ theme }) => theme.colors.bottleGreen} 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 2;
+  }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
-    /* on very small mobile let card span full width */
-    max-width: none;
-    width: 100%;
-    margin: 0;
-    padding-left: 12px;
-    padding-right: 12px;
+    padding: 0;
   }
 `;
 
 const ManagerPhoto = styled.img`
+  display: block;
   width: 100%;
-  height: 180px;
+  aspect-ratio: 4 / 3;
+  height: auto;
   object-fit: cover;
-  border-radius: 8px;
-  margin-bottom: 14px;
+  border-top-left-radius: 12px;
+  border-top-right-radius: 12px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin: 0;
+  box-shadow: none;
+`;
+
+const ManagerBody = styled.div`
+  padding: 16px 16px 18px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
+    padding: 14px 14px 16px;
+  }
 `;
 
 const ManagerName = styled.h4`
-  font-size: 1.6rem;
-  margin: 6px 0 4px 0;
+  font-size: 1.9rem;
+  margin: 8px 0 8px 0;
   color: ${({ theme }) => theme.colors.text};
+  font-weight: 700;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    font-size: 2.2rem;
+  }
 `;
 
 const ManagerRole = styled.p`
-  font-size: 1.4rem;
-  color: ${({ theme }) => theme.colors.textMuted};
+  display: inline-block;
   margin: 0;
+  margin-bottom: 8px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: ${({ theme }) => theme.colors.bottleGreenLight}22;
+  color: ${({ theme }) => theme.colors.bottleGreen};
+  font-size: 1.15rem;
+  font-weight: 600;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    font-size: 1.35rem;
+  }
 `;
 
 /* Contact inside manager card */
 const ContactRow = styled.div`
   display: flex;
-  gap: 32px;
+  flex-wrap: wrap;
+  gap: 28px;
   justify-content: center;
-  margin-top: 24px;
+  margin-top: 28px;
   margin-bottom: 12px;
 
+  /* Desktop: mniejsze odstępy i bardziej kompaktowo */
   @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
-    flex-direction: column;
-    gap: 2px;
-    align-items: center;
-      margin-top: 16px;
+    gap: 12px;
+    margin-top: 18px;
+    margin-bottom: 0;
   }
 `;
 
 const ContactLink = styled.a`
-  display: flex;
-  flex-direction: row;
+  display: inline-flex;
   align-items: center;
-  gap: 8px;
-  color: ${({ theme }) => theme.colors.textMuted};
+  gap: 14px;
+  color: ${({ theme }) => theme.colors.text};
   text-decoration: none;
-  font-size: 0.95rem;
+  font-size: 1.2rem;
+  padding: 14px 20px;
+  border-radius: 9999px;
+  border: 1px solid ${({ theme }) => theme.colors.border};
+  background: linear-gradient(180deg, ${({ theme }) => theme.colors.background}, ${({ theme }) => theme.colors.background});
+  transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 
-  /* On desktop show icon next to text and make non-interactive */
+  /* Desktop: bez chipów/obramowania i mniejsze odstępy/gabaryty */
   @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
-    flex-direction: row;
+    background: none;
+    border: none;
+    padding: 0;
     gap: 8px;
+    font-size: 1.05rem;
+  }
+
+  /* Zachowujemy obecną logikę: na desktop linki są nieaktywne (tylko mobile klikalny) */
+  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
     pointer-events: none;
     cursor: default;
   }
 
   &:hover {
     color: ${({ theme }) => theme.colors.bottleGreen};
+    border-color: ${({ theme }) => theme.colors.bottleGreenLight};
+    box-shadow: 0 6px 14px rgba(7,65,32,0.08);
   }
 `;
 
 const ContactIconSmall = styled.div`
-  font-size: 1.25rem;
-  color: ${({ theme }) => theme.colors.bottleGreenLight};
+  font-size: 1.6rem;
+  color: ${({ theme }) => theme.colors.bottleGreen};
   display: flex;
   align-items: center;
   justify-content: center;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    font-size: 2.5rem; /* larger icons on mobile for easier tapping */
+    font-size: 2rem;
   }
 `;
 
 const ContactInfoText = styled.span`
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: ${({ theme }) => theme.colors.textMuted};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
@@ -787,66 +849,74 @@ const AboutUsPage = () => {
         <ManagementGrid>
           <ManagerCard>
             <ManagerPhoto src="/images/realizations/realization2.jpg" alt="Wiesław Rojek" />
-            <ManagerName>Wiesław Rojek</ManagerName>
-            <ManagerRole>Właściciel</ManagerRole>
-            <ContactRow>
-              <ContactLink href="tel:+48603923011" aria-label="Zadzwoń do Wiesław">
-                <ContactIconSmall><FiPhone /></ContactIconSmall>
-                <ContactInfoText>+48 603 923 011</ContactInfoText>
-              </ContactLink>
-              <ContactLink href="mailto:wieslaw.rojek@rojekoid.pl" aria-label="Napisz do Wiesław">
-                <ContactIconSmall><FiMail /></ContactIconSmall>
-                <ContactInfoText>wieslaw.rojek@rojekoid.pl</ContactInfoText>
-              </ContactLink>
-            </ContactRow>
+            <ManagerBody>
+              <ManagerName>Wiesław Rojek</ManagerName>
+              <ManagerRole>Właściciel</ManagerRole>
+              <ContactRow>
+                <ContactLink href="tel:+48603923011" aria-label="Zadzwoń do Wiesław">
+                  <ContactIconSmall><FiPhone /></ContactIconSmall>
+                  <ContactInfoText>+48 603 923 011</ContactInfoText>
+                </ContactLink>
+                <ContactLink href="mailto:wieslaw.rojek@rojekoid.pl" aria-label="Napisz do Wiesław">
+                  <ContactIconSmall><FiMail /></ContactIconSmall>
+                  <ContactInfoText>wieslaw.rojek@rojekoid.pl</ContactInfoText>
+                </ContactLink>
+              </ContactRow>
+            </ManagerBody>
           </ManagerCard>
 
           <ManagerCard>
             <ManagerPhoto src="/images/history/przemek.jpg" alt="Przemysław Rojek" />
-            <ManagerName>Przemysław Rojek</ManagerName>
-            <ManagerRole>Właściciel</ManagerRole>
-            <ContactRow>
-              <ContactLink href="tel:+48886988561" aria-label="Zadzwoń do Przemysław">
-                <ContactIconSmall><FiPhone /></ContactIconSmall>
-                <ContactInfoText>+48 886 988 561</ContactInfoText>
-              </ContactLink>
-              <ContactLink href="mailto:przemyslaw.rojek@rojekoid.pl" aria-label="Napisz do Przemysław">
-                <ContactIconSmall><FiMail /></ContactIconSmall>
-                <ContactInfoText>przemyslaw.rojek@rojekoid.pl</ContactInfoText>
-              </ContactLink>
-            </ContactRow>
+            <ManagerBody>
+              <ManagerName>Przemysław Rojek</ManagerName>
+              <ManagerRole>Właściciel</ManagerRole>
+              <ContactRow>
+                <ContactLink href="tel:+48886988561" aria-label="Zadzwoń do Przemysław">
+                  <ContactIconSmall><FiPhone /></ContactIconSmall>
+                  <ContactInfoText>+48 886 988 561</ContactInfoText>
+                </ContactLink>
+                <ContactLink href="mailto:przemyslaw.rojek@rojekoid.pl" aria-label="Napisz do Przemysław">
+                  <ContactIconSmall><FiMail /></ContactIconSmall>
+                  <ContactInfoText>przemyslaw.rojek@rojekoid.pl</ContactInfoText>
+                </ContactLink>
+              </ContactRow>
+            </ManagerBody>
           </ManagerCard>
 
           <ManagerCard>
             <ManagerPhoto src="/images/history/tomek.jpg" alt="Tomasz Rojek" />
-            <ManagerName>Tomasz Rojek</ManagerName>
-            <ManagerRole>Właściciel</ManagerRole>
-            <ContactRow>
-              <ContactLink href="tel:+48889194388" aria-label="Zadzwoń do Tomasz">
-                <ContactIconSmall><FiPhone /></ContactIconSmall>
-                <ContactInfoText>+48 889 194 388</ContactInfoText>
-              </ContactLink>
-              <ContactLink href="mailto:tomasz.rojek@rojekoid.pl" aria-label="Napisz do Tomasz">
-                <ContactIconSmall><FiMail /></ContactIconSmall>
-                <ContactInfoText>tomasz.rojek@rojekoid.pl</ContactInfoText>
-              </ContactLink>
-            </ContactRow>
+            <ManagerBody>
+              <ManagerName>Tomasz Rojek</ManagerName>
+              <ManagerRole>Właściciel</ManagerRole>
+              <ContactRow>
+                <ContactLink href="tel:+48889194388" aria-label="Zadzwoń do Tomasz">
+                  <ContactIconSmall><FiPhone /></ContactIconSmall>
+                  <ContactInfoText>+48 889 194 388</ContactInfoText>
+                </ContactLink>
+                <ContactLink href="mailto:tomasz.rojek@rojekoid.pl" aria-label="Napisz do Tomasz">
+                  <ContactIconSmall><FiMail /></ContactIconSmall>
+                  <ContactInfoText>tomasz.rojek@rojekoid.pl</ContactInfoText>
+                </ContactLink>
+              </ContactRow>
+            </ManagerBody>
           </ManagerCard>
 
           <ManagerCard>
             <ManagerPhoto src="/images/realizations/realization5.jpg" alt="Kierownik produkcji" />
-            <ManagerName>Paweł Jakiśtam</ManagerName>
-            <ManagerRole>Kierownik produkcji</ManagerRole>
-            <ContactRow>
-              <ContactLink href="tel:+48600000000" aria-label="Zadzwoń do Paweł">
-                <ContactIconSmall><FiPhone /></ContactIconSmall>
-                <ContactInfoText>+48 600 000 000</ContactInfoText>
-              </ContactLink>
-              <ContactLink href="mailto:pawel.jakistam@rojekoid.pl" aria-label="Napisz do Anna">
-                <ContactIconSmall><FiMail /></ContactIconSmall>
-                <ContactInfoText>pawel.jakistam@rojekoid.pl</ContactInfoText>
-              </ContactLink>
-            </ContactRow>
+            <ManagerBody>
+              <ManagerName>Paweł Jakiśtam</ManagerName>
+              <ManagerRole>Kierownik produkcji</ManagerRole>
+              <ContactRow>
+                <ContactLink href="tel:+48600000000" aria-label="Zadzwoń do Paweł">
+                  <ContactIconSmall><FiPhone /></ContactIconSmall>
+                  <ContactInfoText>+48 600 000 000</ContactInfoText>
+                </ContactLink>
+                <ContactLink href="mailto:pawel.jakistam@rojekoid.pl" aria-label="Napisz do Anna">
+                  <ContactIconSmall><FiMail /></ContactIconSmall>
+                  <ContactInfoText>pawel.jakistam@rojekoid.pl</ContactInfoText>
+                </ContactLink>
+              </ContactRow>
+            </ManagerBody>
           </ManagerCard>
         </ManagementGrid>
       </Section>
