@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import PageHeader from '../components/common/PageHeader';
 import MaxWidthContainer from '../components/common/MaxWidthContainer';
 import { t } from 'i18next';
-import { Multiselect } from 'multiselect-react-dropdown';
+import Select from 'react-select';
 
 const PageWrapper = styled.div`
   width: 100%;
@@ -17,20 +17,15 @@ const FilterContainer = styled.div`
   gap: 16px;
   border-bottom: 1px solid ${({ theme }) => theme.colors.border};
 
-  .multiselect-container {
+  .react-select-container {
     min-width: 380px;
     z-index: 5;
-  }
-  .chip {
-    background: ${({ theme }) => theme.colors.primary};
-    color: #fff;
-    font-weight: 500;
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     flex-direction: column-reverse;
     align-items: stretch;
-    .multiselect-container {
+    .react-select-container {
         width: 100%;
         min-width: unset;
     }
@@ -188,6 +183,15 @@ export default function RealizationsPage2() {
         return acc;
     }, []);
 
+    const groupedOptions = useMemo(() => {
+        const groups = new Map();
+        options.forEach(opt => {
+            if (!groups.has(opt.group)) groups.set(opt.group, []);
+            groups.get(opt.group).push(opt);
+        });
+        return Array.from(groups.entries()).map(([label, opts]) => ({ label, options: opts }));
+    }, [options]);
+
     const [selected, setSelected] = useState([]);
 
     const selectedMap = useMemo(() => {
@@ -223,18 +227,21 @@ export default function RealizationsPage2() {
             <MaxWidthContainer>
                 <FilterContainer>
                     <FilterCounter>Znaleziono {filtered.length} realizacji</FilterCounter>
-                    <Multiselect
-                        options={options}
-                        selectedValues={selected}
-                        onSelect={(list) => setSelected(list)}
-                        onRemove={(list) => setSelected(list)}
-                        displayValue="label"
-                        groupBy="group"
-                        showCheckbox
-                        closeOnSelect={false}
+                    <Select
+                        isMulti
+                        options={groupedOptions}
+                        getOptionLabel={(opt) => opt.label}
+                        getOptionValue={(opt) => `${opt.group}__${opt.value}`}
+                        value={selected}
+                        onChange={(list) => setSelected(list || [])}
+                        closeMenuOnSelect={false}
                         placeholder={t('realizationsPage.filters.filtersTitle') || 'Filtry (grupy tagów)'}
-                        avoidHighlightFirstOption
-                        showArrow
+                        className="react-select-container"
+                        classNamePrefix="react-select"
+                        menuPortalTarget={document.body}
+                        styles={{
+                            menuPortal: (base) => ({ ...base, zIndex: 9999 })
+                        }}
                     />
                 </FilterContainer>
             </MaxWidthContainer>
