@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import MainLayout from '../layouts/MainLayout';
 import HomePage from '../pages/HomePage';
-import RealizationsPage from '../pages/RealizationsPage';
+import RealizationsPage2 from '../pages/RealizationsPage2';
 import AboutUsPage from '../pages/AboutUsPage';
 import ContactPage from '../pages/ContactPage';
 import { ROUTES } from '../constants';
@@ -99,7 +99,7 @@ const router = createBrowserRouter([
       },
       {
         path: ROUTES.REALIZATIONS.slice(1), // Remove leading slash for child routes
-        element: <RealizationsPage />,
+        element: <RealizationsPage2 />,
       },
       {
         path: ROUTES.ABOUT.slice(1),

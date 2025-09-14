@@ -363,7 +363,7 @@ const ResultsCount = styled.div`
 
   @media (min-width: 721px) {
     font-weight: 600;
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     white-space: nowrap;
     overflow: visible;
     text-overflow: ellipsis;
@@ -458,12 +458,6 @@ const DesktopFiltersButton = styled.button`
     border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
     box-shadow: ${({ theme }) => theme?.shadows?.medium || '0 4px 8px rgba(0, 0, 0, 0.2)'};
     background: ${({ theme }) => theme?.colors?.backgroundAlt || '#f9fafb'};
-  }
-
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
-    box-shadow: 0 0 0 3px ${({ theme }) => theme?.colors?.borderAccent || 'rgba(1, 126, 84, 0.25)'};
   }
 
   &:active {
