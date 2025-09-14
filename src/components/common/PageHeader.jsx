@@ -34,23 +34,25 @@ const Overlay = styled.div`
 `;
 
 const HeaderContent = styled.div`
-  position: absolute;
-  bottom: 18px;
-  right: 22px;
-  margin: 0;
-  padding: 12px 22px;
-  background-color: ${({ contentBg, theme }) => contentBg || `${theme.colors.bottleGreen}cc`};
-  color: ${({ contentColor, theme }) => contentColor || theme.colors.textLight};
-  border-radius: 10px;
-  display: inline-block;
-  z-index: 2;
-  white-space: nowrap; /* keep the title on a single line */
-  box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    border: 1px solid #6f6f00;
+    position: absolute;
+    bottom: 18px;
+    right: 22px;
+    margin: 0;
+    padding: 12px 22px;
+    background-color: #8b73001f;
+    backdrop-filter: blur(2px);
+    color: #f8f9fa;
+    border-radius: 10px;
+    display: inline-block;
+    z-index: 2;
+    white-space: nowrap;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
 
   h1 {
     margin: 0;
     font-weight: 300;
-    font-size: 2.6rem;
+    font-size: 2rem;
     color: inherit;
     line-height: 1;
     letter-spacing: 1px;

@@ -139,8 +139,6 @@ const StyledPaginate = styled(ReactPaginate)`
   }
 
   a {
-    /* border: 1px solid #001308;
-    border-radius: 50%; */
     text-align: center;
     border-radius: 50%;
 
@@ -346,7 +344,7 @@ export default function RealizationsPage2() {
 
   const { isLarge, isMobile } = useResponsive();
   const [currentPage, setCurrentPage] = useState(0);
-  const itemsPerPage = isLarge ? 15 : (isMobile ? 8 : 12);
+  const itemsPerPage = isLarge ? 16 : (isMobile ? 8 : 12);
 
   const selectedTagsByGroup = useMemo(() => buildSelectedTagsByGroup(selectedTags), [selectedTags]);
 
@@ -371,6 +369,7 @@ export default function RealizationsPage2() {
   const offset = currentPage * itemsPerPage;
   const currentItems = filteredRealizations.slice(offset, offset + itemsPerPage);
 
+  const listTopRef = useRef(null);
   const cardRefs = useRef([]);
   const [activeCardIndex, setActiveCardIndex] = useState(-1);
 
@@ -413,6 +412,15 @@ export default function RealizationsPage2() {
     };
   }, [currentItems, currentPage]);
 
+  const handlePageChange = ({ selected }) => {
+    setCurrentPage(selected);
+    if (listTopRef.current) {
+      const headerOffset = 90; // adjust if header height changes
+      const elementTop = listTopRef.current.getBoundingClientRect().top + window.pageYOffset;
+      window.scrollTo({ top: elementTop - headerOffset, behavior: "smooth" });
+    }
+  };
+
   return (
     <PageWrapper>
       <PageHeader
@@ -453,6 +461,7 @@ export default function RealizationsPage2() {
       </MaxWidthContainer>
 
       <MaxWidthContainer>
+        <div ref={listTopRef} aria-hidden="true" />
         <RealizationsContainer>
           {currentItems.map((item, idx) => (
             <SingleRealizationContainer
@@ -481,7 +490,7 @@ export default function RealizationsPage2() {
           <StyledPaginate
             pageCount={pageCount}
             forcePage={currentPage}
-            onPageChange={({ selected }) => setCurrentPage(selected)}
+            onPageChange={handlePageChange}
             previousLabel="<"
             nextLabel=">"
             pageRangeDisplayed={3}
