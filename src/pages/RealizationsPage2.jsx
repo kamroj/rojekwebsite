@@ -240,6 +240,15 @@ export default function RealizationsPage2() {
                         classNamePrefix="react-select"
                         menuPortalTarget={document.body}
                         styles={{
+                            control: (base, state) => ({
+                                ...base,
+                                borderColor: state.isFocused ? '#017e54' : '#012712d7',
+                                boxShadow: 'none',
+                                outline: 'none',
+                                '&:hover': {
+                                    borderColor: state.isFocused ? '#017e54' : '#012712d7'
+                                }
+                            }),
                             menuPortal: (base) => ({ ...base, zIndex: 9999 })
                         }}
                     />
