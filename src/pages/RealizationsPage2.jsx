@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import PageHeader from '../components/common/PageHeader';
 import MaxWidthContainer from '../components/common/MaxWidthContainer';
@@ -87,14 +87,13 @@ const RealizationImage = styled.img`
   height: 100%;
   object-fit: cover;
   border-radius: ${RealizationBorderRadius};
+  transition: transform 0.3s ease;
   &:hover {
     transform: scale(1.06);
-    transition: transform 0.3s ease;
     cursor: pointer;
   }
-  &:not(:hover) {
-    transition: transform 0.3s ease;
-    transform: scale(1);
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    transform: ${({ $active }) => ($active ? 'scale(1.06)' : 'scale(1)')};
   }
 `;
 
@@ -216,6 +215,48 @@ export default function RealizationsPage2() {
         });
     }, [selected, selectedMap]);
 
+    const itemRefs = useRef([]);
+    const [activeIndex, setActiveIndex] = useState(-1);
+
+    useEffect(() => {
+        const onScroll = () => {
+            const centerY = window.innerHeight / 2;
+            let bestIdx = -1;
+            let bestDist = Infinity;
+            itemRefs.current.forEach((el, i) => {
+                if (!el) return;
+                const rect = el.getBoundingClientRect();
+                if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+                const elCenter = rect.top + rect.height / 2;
+                const dist = Math.abs(elCenter - centerY);
+                if (dist < bestDist) {
+                    bestDist = dist;
+                    bestIdx = i;
+                }
+            });
+            setActiveIndex(bestIdx);
+        };
+
+        let raf = 0;
+        const handleScroll = () => {
+            if (raf) return;
+            raf = requestAnimationFrame(() => {
+                raf = 0;
+                onScroll();
+            });
+        };
+
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        window.addEventListener('resize', handleScroll);
+        onScroll();
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            window.removeEventListener('resize', handleScroll);
+            if (raf) cancelAnimationFrame(raf);
+        };
+    }, [filtered]);
+
     return (
         <PageWrapper>
             <PageHeader
@@ -258,11 +299,15 @@ export default function RealizationsPage2() {
             <MaxWidthContainer>
                 <RealizationsContainer>
                     {filtered.map((item, idx) => (
-                        <SingleRealizationContainer key={`${item.img}-${idx}`}>
+                        <SingleRealizationContainer
+                            key={`${item.img}-${idx}`}
+                            ref={(el) => (itemRefs.current[idx] = el)}
+                        >
                             <RealizationImage
                                 src={item.img}
                                 alt={`Realization ${idx + 1}`}
                                 loading="lazy"
+                                $active={idx === activeIndex}
                             />
                             <RealizationTags>
                                 {Object.entries(item.tags).flatMap(([category, values]) =>
