@@ -4,6 +4,8 @@ import PageHeader from '../components/common/PageHeader';
 import MaxWidthContainer from '../components/common/MaxWidthContainer';
 import { t } from 'i18next';
 import Select from 'react-select';
+import ReactPaginate from 'react-paginate';
+import { useResponsive } from '../hooks/useResponsive';
 
 const PageWrapper = styled.div`
   width: 100%;
@@ -66,7 +68,9 @@ const RealizationsContainer = styled.div`
   }
 `;
 
-const RealizationBorderRadius = '6px';
+const REALIZATION_BORDER_RADIUS = '6px';
+const ZOOM_SCALE = 1.06;
+const MENU_PORTAL_Z_INDEX = 9999;
 
 const SingleRealizationContainer = styled.div`
   height: 350px;
@@ -75,7 +79,7 @@ const SingleRealizationContainer = styled.div`
   background-color: ${({ theme }) => theme.colors.backgroundLight};
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   overflow: hidden;
-  border-radius: ${RealizationBorderRadius};
+  border-radius: ${REALIZATION_BORDER_RADIUS};
 
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     max-width: 100%;
@@ -86,14 +90,14 @@ const RealizationImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: ${RealizationBorderRadius};
+  border-radius: ${REALIZATION_BORDER_RADIUS};
   transition: transform 0.3s ease;
   &:hover {
-    transform: scale(1.06);
+    transform: scale(${ZOOM_SCALE});
     cursor: pointer;
   }
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    transform: ${({ $active }) => ($active ? 'scale(1.06)' : 'scale(1)')};
+    transform: ${({ $active }) => ($active ? `scale(${ZOOM_SCALE})` : 'scale(1)')};
   }
 `;
 
@@ -121,207 +125,371 @@ const Tag = styled.span`
   text-transform: capitalize;
 `;
 
-const REALIZATIONS_DATA = [
-    {
-        img: "/images/realizations/realization1.jpg",
-        tags: {
-            door: ["interior", "sliding"],
-            color: ["ral7013"]
-        }
-    },
-    {
-        img: "/images/realizations/realization2.jpg",
-        tags: {
-            door: ["exterior"],
-            color: ["ral9016", "ral9005"]
-        }
-    },
-    {
-        img: "/images/realizations/realization3.jpg",
-        tags: {
-            window: ["wooden", "double-sash"],
-            color: ["ral7024"]
-        }
-    },
-    {
-        img: "/images/realizations/realization4.jpg",
-        tags: {
-            window: ["pvc"],
-            color: ["ral7016"]
-        }
-    },
-    {
-        img: "/images/realizations/realization5.jpg",
-        tags: {
-            door: ["interior"],
-            window: ["wooden"],
-            color: ["ral6005"]
-        },
+const StyledPaginate = styled(ReactPaginate)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  list-style: none;
+  padding: 0;
+
+  li {
+    display: inline-flex;
+  }
+
+  a {
+    /* border: 1px solid #001308;
+    border-radius: 50%; */
+    text-align: center;
+    border-radius: 50%;
+
+    width: 28px;
+    height: 28px;
+    color: #212529;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-decoration: none;
+  }
+
+  li.selected a {
+    background-color: #003f1b;
+    color: ${({ theme }) => theme.colors.textLight};
+  }
+
+  li.disabled a {
+    opacity: 0.5;
+    cursor: default;
+    border-color: #1e1e1e94;
+
+    &:hover {
+      background-color: transparent;
+      color: ${({ theme }) => theme.colors.text};
     }
+  }
+
+  a:hover {
+    background-color: #003f1b;
+    color: ${({ theme }) => theme.colors.textLight};
+  }
+`;
+
+const REALIZATIONS_DATA = [
+  {
+    img: "/images/realizations/realization1.jpg",
+    tags: {
+      door: ["interior", "sliding"],
+      color: ["ral7013"]
+    }
+  },
+  {
+    img: "/images/realizations/realization2.jpg",
+    tags: {
+      door: ["exterior"],
+      color: ["ral9016", "ral9005"]
+    }
+  },
+  {
+    img: "/images/realizations/realization3.jpg",
+    tags: {
+      window: ["wooden", "double-sash"],
+      color: ["ral7024"]
+    }
+  },
+  {
+    img: "/images/realizations/realization4.jpg",
+    tags: {
+      window: ["pvc"],
+      color: ["ral7016"]
+    }
+  },
+  {
+    img: "/images/realizations/realization1.jpg",
+    tags: {
+      door: ["interior", "sliding"],
+      color: ["ral7013"]
+    }
+  },
+  {
+    img: "/images/realizations/realization2.jpg",
+    tags: {
+      door: ["exterior"],
+      color: ["ral9016", "ral9005"]
+    }
+  },
+  {
+    img: "/images/realizations/realization3.jpg",
+    tags: {
+      window: ["wooden", "double-sash"],
+      color: ["ral7024"]
+    }
+  },
+  {
+    img: "/images/realizations/realization4.jpg",
+    tags: {
+      window: ["pvc"],
+      color: ["ral7016"]
+    }
+  },
+  {
+    img: "/images/realizations/realization1.jpg",
+    tags: {
+      door: ["interior", "sliding"],
+      color: ["ral7013"]
+    }
+  },
+  {
+    img: "/images/realizations/realization2.jpg",
+    tags: {
+      door: ["exterior"],
+      color: ["ral9016", "ral9005"]
+    }
+  },
+  {
+    img: "/images/realizations/realization3.jpg",
+    tags: {
+      window: ["wooden", "double-sash"],
+      color: ["ral7024"]
+    }
+  },
+  {
+    img: "/images/realizations/realization4.jpg",
+    tags: {
+      window: ["pvc"],
+      color: ["ral7016"]
+    }
+  },
+  {
+    img: "/images/realizations/realization1.jpg",
+    tags: {
+      door: ["interior", "sliding"],
+      color: ["ral7013"]
+    }
+  },
+  {
+    img: "/images/realizations/realization2.jpg",
+    tags: {
+      door: ["exterior"],
+      color: ["ral9016", "ral9005"]
+    }
+  },
+  {
+    img: "/images/realizations/realization3.jpg",
+    tags: {
+      window: ["wooden", "double-sash"],
+      color: ["ral7024"]
+    }
+  },
+  {
+    img: "/images/realizations/realization4.jpg",
+    tags: {
+      window: ["pvc"],
+      color: ["ral7016"]
+    }
+  },
+  {
+    img: "/images/realizations/realization5.jpg",
+    tags: {
+      door: ["interior"],
+      window: ["wooden"],
+      color: ["ral6005"]
+    },
+  }
 ];
 
+// Helpers for options and selection mapping
+const collectUniqueTagOptions = (data) => {
+  const seen = new Set();
+  const uniqueOptions = [];
+  let id = 1;
+
+  data.forEach(item => {
+    Object.entries(item.tags).forEach(([group, values]) => {
+      values.forEach(val => {
+        const key = `${group}__${val}`;
+        if (!seen.has(key)) {
+          seen.add(key);
+          uniqueOptions.push({ id: id++, label: val, value: val, group });
+        }
+      });
+    });
+  });
+
+  uniqueOptions.sort((a, b) => a.group.localeCompare(b.group) || a.label.localeCompare(b.label));
+  return uniqueOptions;
+};
+
+const groupOptionsByGroup = (options) => {
+  const map = new Map();
+  options.forEach(opt => {
+    if (!map.has(opt.group)) map.set(opt.group, []);
+    map.get(opt.group).push(opt);
+  });
+  return Array.from(map.entries()).map(([label, options]) => ({ label, options }));
+};
+
+const buildSelectedTagsByGroup = (selected) => {
+  const map = new Map();
+  selected.forEach(opt => {
+    if (!map.has(opt.group)) map.set(opt.group, new Set());
+    map.get(opt.group).add(opt.value);
+  });
+  return map;
+};
+
 export default function RealizationsPage2() {
-    const options = useMemo(() => {
-        const seen = new Set();
-        const acc = [];
-        let id = 1;
+  const tagOptions = useMemo(() => collectUniqueTagOptions(REALIZATIONS_DATA), []);
 
-        REALIZATIONS_DATA.forEach(item => {
-            Object.entries(item.tags).forEach(([group, values]) => {
-                values.forEach(val => {
-                    const key = `${group}__${val}`;
-                    if (!seen.has(key)) {
-                        seen.add(key);
-                        acc.push({ id: id++, label: val, value: val, group });
-                    }
-                });
-            });
-        });
+  const groupedTagOptions = useMemo(() => groupOptionsByGroup(tagOptions), [tagOptions]);
 
-        acc.sort((a, b) => a.group.localeCompare(b.group) || a.label.localeCompare(b.label));
-        return acc;
-    }, []);
+  const [selectedTags, setSelectedTags] = useState([]);
 
-    const groupedOptions = useMemo(() => {
-        const groups = new Map();
-        options.forEach(opt => {
-            if (!groups.has(opt.group)) groups.set(opt.group, []);
-            groups.get(opt.group).push(opt);
-        });
-        return Array.from(groups.entries()).map(([label, opts]) => ({ label, options: opts }));
-    }, [options]);
+  const { isLarge, isMobile } = useResponsive();
+  const [currentPage, setCurrentPage] = useState(0);
+  const itemsPerPage = isLarge ? 15 : (isMobile ? 8 : 12);
 
-    const [selected, setSelected] = useState([]);
+  const selectedTagsByGroup = useMemo(() => buildSelectedTagsByGroup(selectedTags), [selectedTags]);
 
-    const selectedMap = useMemo(() => {
-        const m = new Map();
-        selected.forEach(opt => {
-            if (!m.has(opt.group)) m.set(opt.group, new Set());
-            m.get(opt.group).add(opt.value);
-        });
-        return m;
-    }, [selected]);
+  const filteredRealizations = useMemo(() => {
+    if (selectedTags.length === 0) return REALIZATIONS_DATA;
 
-    const filtered = useMemo(() => {
-        if (selected.length === 0) return REALIZATIONS_DATA;
+    return REALIZATIONS_DATA.filter(item => {
+      for (const [group, wantedSet] of selectedTagsByGroup.entries()) {
+        const vals = item.tags[group] || [];
+        const hasAny = vals.some(v => wantedSet.has(v));
+        if (!hasAny) return false;
+      }
+      return true;
+    });
+  }, [selectedTags, selectedTagsByGroup]);
 
-        return REALIZATIONS_DATA.filter(item => {
-            for (const [group, wantedSet] of selectedMap.entries()) {
-                const vals = item.tags[group] || [];
-                const hasAny = vals.some(v => wantedSet.has(v));
-                if (!hasAny) return false;
-            }
-            return true;
-        });
-    }, [selected, selectedMap]);
+  useEffect(() => {
+    setCurrentPage(0);
+  }, [selectedTags, itemsPerPage]);
 
-    const itemRefs = useRef([]);
-    const [activeIndex, setActiveIndex] = useState(-1);
+  const pageCount = Math.ceil(filteredRealizations.length / itemsPerPage) || 1;
+  const offset = currentPage * itemsPerPage;
+  const currentItems = filteredRealizations.slice(offset, offset + itemsPerPage);
 
-    useEffect(() => {
-        const onScroll = () => {
-            const centerY = window.innerHeight / 2;
-            let bestIdx = -1;
-            let bestDist = Infinity;
-            itemRefs.current.forEach((el, i) => {
-                if (!el) return;
-                const rect = el.getBoundingClientRect();
-                if (rect.bottom < 0 || rect.top > window.innerHeight) return;
-                const elCenter = rect.top + rect.height / 2;
-                const dist = Math.abs(elCenter - centerY);
-                if (dist < bestDist) {
-                    bestDist = dist;
-                    bestIdx = i;
+  const cardRefs = useRef([]);
+  const [activeCardIndex, setActiveCardIndex] = useState(-1);
+
+  useEffect(() => {
+    const updateActiveCardIndex = () => {
+      const viewportCenterY = window.innerHeight / 2;
+      let closestIndex = -1;
+      let closestDistance = Infinity;
+      cardRefs.current.forEach((el, index) => {
+        if (!el) return;
+        const rect = el.getBoundingClientRect();
+        if (rect.bottom < 0 || rect.top > window.innerHeight) return;
+        const cardCenterY = rect.top + rect.height / 2;
+        const distance = Math.abs(cardCenterY - viewportCenterY);
+        if (distance < closestDistance) {
+          closestDistance = distance;
+          closestIndex = index;
+        }
+      });
+      setActiveCardIndex(closestIndex);
+    };
+
+    let rafId = 0;
+    const scheduleUpdate = () => {
+      if (rafId) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = 0;
+        updateActiveCardIndex();
+      });
+    };
+
+    window.addEventListener('scroll', scheduleUpdate, { passive: true });
+    window.addEventListener('resize', scheduleUpdate);
+    updateActiveCardIndex();
+
+    return () => {
+      window.removeEventListener('scroll', scheduleUpdate);
+      window.removeEventListener('resize', scheduleUpdate);
+      if (rafId) cancelAnimationFrame(rafId);
+    };
+  }, [currentItems, currentPage]);
+
+  return (
+    <PageWrapper>
+      <PageHeader
+        imageSrc="/images/realizations/top.jpg"
+        id="realizations-header"
+        title={t('realizationsPage.title')}
+      />
+
+      <MaxWidthContainer>
+        <FilterContainer>
+          <FilterCounter>Znaleziono {filteredRealizations.length} realizacji</FilterCounter>
+          <Select
+            isMulti
+            options={groupedTagOptions}
+            getOptionLabel={(opt) => opt.label}
+            getOptionValue={(opt) => `${opt.group}__${opt.value}`}
+            value={selectedTags}
+            onChange={(list) => setSelectedTags(list || [])}
+            closeMenuOnSelect={false}
+            placeholder={t('realizationsPage.filters.filtersTitle') || 'Filtry (grupy tagów)'}
+            className="react-select-container"
+            classNamePrefix="react-select"
+            menuPortalTarget={document.body}
+            styles={{
+              control: (base, state) => ({
+                ...base,
+                borderColor: state.isFocused ? '#017e54' : '#012712d7',
+                boxShadow: 'none',
+                outline: 'none',
+                '&:hover': {
+                  borderColor: state.isFocused ? '#017e54' : '#012712d7'
                 }
-            });
-            setActiveIndex(bestIdx);
-        };
+              }),
+              menuPortal: (base) => ({ ...base, zIndex: MENU_PORTAL_Z_INDEX })
+            }}
+          />
+        </FilterContainer>
+      </MaxWidthContainer>
 
-        let raf = 0;
-        const handleScroll = () => {
-            if (raf) return;
-            raf = requestAnimationFrame(() => {
-                raf = 0;
-                onScroll();
-            });
-        };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        window.addEventListener('resize', handleScroll);
-        onScroll();
-
-        return () => {
-            window.removeEventListener('scroll', handleScroll);
-            window.removeEventListener('resize', handleScroll);
-            if (raf) cancelAnimationFrame(raf);
-        };
-    }, [filtered]);
-
-    return (
-        <PageWrapper>
-            <PageHeader
-                imageSrc="/images/realizations/top.jpg"
-                id="realizations-header"
-                title={t('realizationsPage.title')}
-            />
-
-            <MaxWidthContainer>
-                <FilterContainer>
-                    <FilterCounter>Znaleziono {filtered.length} realizacji</FilterCounter>
-                    <Select
-                        isMulti
-                        options={groupedOptions}
-                        getOptionLabel={(opt) => opt.label}
-                        getOptionValue={(opt) => `${opt.group}__${opt.value}`}
-                        value={selected}
-                        onChange={(list) => setSelected(list || [])}
-                        closeMenuOnSelect={false}
-                        placeholder={t('realizationsPage.filters.filtersTitle') || 'Filtry (grupy tagów)'}
-                        className="react-select-container"
-                        classNamePrefix="react-select"
-                        menuPortalTarget={document.body}
-                        styles={{
-                            control: (base, state) => ({
-                                ...base,
-                                borderColor: state.isFocused ? '#017e54' : '#012712d7',
-                                boxShadow: 'none',
-                                outline: 'none',
-                                '&:hover': {
-                                    borderColor: state.isFocused ? '#017e54' : '#012712d7'
-                                }
-                            }),
-                            menuPortal: (base) => ({ ...base, zIndex: 9999 })
-                        }}
-                    />
-                </FilterContainer>
-            </MaxWidthContainer>
-
-            <MaxWidthContainer>
-                <RealizationsContainer>
-                    {filtered.map((item, idx) => (
-                        <SingleRealizationContainer
-                            key={`${item.img}-${idx}`}
-                            ref={(el) => (itemRefs.current[idx] = el)}
-                        >
-                            <RealizationImage
-                                src={item.img}
-                                alt={`Realization ${idx + 1}`}
-                                loading="lazy"
-                                $active={idx === activeIndex}
-                            />
-                            <RealizationTags>
-                                {Object.entries(item.tags).flatMap(([category, values]) =>
-                                    values.map((val, i) => (
-                                        <Tag key={`${idx}-${category}-${val}-${i}`}>
-                                            {category}: {val}
-                                        </Tag>
-                                    ))
-                                )}
-                            </RealizationTags>
-                        </SingleRealizationContainer>
-                    ))}
-                </RealizationsContainer>
-            </MaxWidthContainer>
-        </PageWrapper>
-    );
+      <MaxWidthContainer>
+        <RealizationsContainer>
+          {currentItems.map((item, idx) => (
+            <SingleRealizationContainer
+              key={`${item.img}-${idx}`}
+              ref={(el) => (cardRefs.current[idx] = el)}
+            >
+              <RealizationImage
+                src={item.img}
+                alt={`Realization ${idx + 1}`}
+                loading="lazy"
+                $active={idx === activeCardIndex}
+              />
+              <RealizationTags>
+                {Object.entries(item.tags).flatMap(([category, values]) =>
+                  values.map((val, i) => (
+                    <Tag key={`${idx}-${category}-${val}-${i}`}>
+                      {category}: {val}
+                    </Tag>
+                  ))
+                )}
+              </RealizationTags>
+            </SingleRealizationContainer>
+          ))}
+        </RealizationsContainer>
+        {pageCount > 1 && (
+          <StyledPaginate
+            pageCount={pageCount}
+            forcePage={currentPage}
+            onPageChange={({ selected }) => setCurrentPage(selected)}
+            previousLabel="<"
+            nextLabel=">"
+            pageRangeDisplayed={3}
+            marginPagesDisplayed={1}
+            renderOnZeroPageCount={null}
+          />
+        )}
+      </MaxWidthContainer>
+    </PageWrapper>
+  );
 }
