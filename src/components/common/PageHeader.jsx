@@ -39,7 +39,7 @@ const HeaderContent = styled.div`
     bottom: 18px;
     right: 22px;
     margin: 0;
-    padding: 12px 22px;
+    padding: 10px;
     background-color: #8b73001f;
     backdrop-filter: blur(2px);
     color: #f8f9fa;
@@ -52,7 +52,7 @@ const HeaderContent = styled.div`
   h1 {
     margin: 0;
     font-weight: 300;
-    font-size: 2rem;
+    font-size: 1.8rem;
     color: inherit;
     line-height: 1;
     letter-spacing: 1px;
@@ -61,14 +61,11 @@ const HeaderContent = styled.div`
 
 
   @media (max-width: 900px) {
-    min-width: 180px;
-    padding: 10px 16px;
-    h1 { font-size: 2.2rem; }
+    h1 { font-size: 1.8rem; }
   }
 
   @media (max-width: 600px) {
-    h1 { font-size: 1.8rem; }
-    min-width: 140px;
+    h1 { font-size: 1.6rem; }
   }
 `;
 
@@ -77,7 +74,6 @@ const PageHeader = ({ imageSrc, title, height = 300, id, overlayColor, contentBg
     <HeaderWrapper id={id}>
       <HeaderImageWrapper height={height}>
         <HeaderImage src={imageSrc} alt={title || ''} />
-        {/* overlay to match About page look */}
         <Overlay overlayColor={overlayColor} />
         {(title || children) && (
           <HeaderContent contentBg={contentBg} contentColor={contentColor}>

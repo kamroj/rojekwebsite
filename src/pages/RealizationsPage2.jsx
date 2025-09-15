@@ -415,7 +415,7 @@ export default function RealizationsPage2() {
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
     if (listTopRef.current) {
-      const headerOffset = 90; // adjust if header height changes
+      const headerOffset = 90; 
       const elementTop = listTopRef.current.getBoundingClientRect().top + window.pageYOffset;
       window.scrollTo({ top: elementTop - headerOffset, behavior: "smooth" });
     }
