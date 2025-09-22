@@ -7,7 +7,7 @@ import styled, { css } from 'styled-components';
 */
 const SectionWrapper = styled.section`
   margin-top: 6rem;
-  padding: ${({ $dark }) => $dark ? '20px 0' : '5rem 3.5rem 1.5rem 3.5rem'};
+  /* padding: ${({ $dark }) => $dark ? '20px 0' : '5rem 3.5rem 1.5rem 3.5rem'}; */
   background-color: ${({ theme, $dark }) => $dark ? 'black' : theme.colors.background};
   border: ${({ $dark }) => $dark ? 'none' : '1px solid'};
   border-color: ${({ theme, $dark }) => $dark ? 'transparent' : theme.colors.borderAccent};
@@ -16,7 +16,7 @@ const SectionWrapper = styled.section`
   ${({ $customStyles }) => $customStyles && css`${$customStyles}`}
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    padding: ${({ $dark }) => $dark ? '20px 0' : '3rem 0 1.5rem 0'};;
+    /* padding: ${({ $dark }) => $dark ? '20px 0' : '3rem 0 1.5rem 0'};; */
   }
 `;
 

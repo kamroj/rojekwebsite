@@ -3,12 +3,19 @@ import React, { useState, useRef, useEffect } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { FiPlay } from 'react-icons/fi';
+import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../pages/HomePage';
+import MaxWidthContainer from '../common/MaxWidthContainer';
+
+const PresentationContainer = styled.div`
+  width: 100%;
+  background-color: #000;
+  padding-bottom: 60px;
+`;
 
 /* Kontener dla całej sekcji */
 const PresentationWrapper = styled.div`
   width: 100%;
   background-color: #000;
-  padding: 0;
   position: relative;
 `;
 
@@ -19,7 +26,7 @@ const VideoContainer = styled.div`
   height: 0;
   padding-bottom: 56.25%; /* 16:9 aspect ratio */
   background-color: #000;
-  overflow: hidden;
+  overflow: hidden;$
   
   /* Większa wysokość na dużych ekranach */
   @media (min-width: ${({ theme }) => theme.breakpoints.lg}) {
@@ -126,11 +133,11 @@ const CompanyPresentationSection = () => {
   const [showVideo, setShowVideo] = useState(false);
   const [isInView, setIsInView] = useState(false);
   const sectionRef = useRef(null);
-  
+
   // YouTube video ID z podanego URL
   const videoId = 'XhAN4U4bngs';
   const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-  
+
   // Intersection Observer dla lazy loading
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -142,51 +149,61 @@ const CompanyPresentationSection = () => {
           }
         });
       },
-      { 
+      {
         threshold: 0.1,
         rootMargin: '100px'
       }
     );
-    
+
     if (sectionRef.current) {
       observer.observe(sectionRef.current);
     }
-    
+
     return () => observer.disconnect();
   }, []);
-  
+
   const handlePlayClick = () => {
     setShowVideo(true);
   };
-  
+
   return (
-    <PresentationWrapper ref={sectionRef}>
-      <VideoContainer>
-        {(!isInView || !showVideo) ? (
-          <VideoPlaceholder 
-            $thumbnail={thumbnailUrl}
-            onClick={handlePlayClick}
-            role="button"
-            aria-label={t('presentation.playVideo', 'Odtwórz film prezentacyjny')}
-            tabIndex={0}
-          >
-            <PlayButtonContainer>
-              <PlayButton type="button" aria-hidden="true">
-                <FiPlay />
-              </PlayButton>
-            </PlayButtonContainer>
-          </VideoPlaceholder>
-        ) : (
-          <VideoFrame
-            src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&showinfo=0`}
-            title={t('presentation.title', 'Prezentacja firmy ROJEK')}
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowFullScreen
-            loading="lazy"
-          />
-        )}
-      </VideoContainer>
-    </PresentationWrapper>
+    <PresentationContainer>
+      <HeaderWrap $reversed >
+        <ProductHeader $bg="#e6c61942">
+          NASZA FIRMA
+        </ProductHeader>
+        <ProductHeaderSubtitle $bg="#706a0026;" $reversed>Poznaj nas od środka</ProductHeaderSubtitle>
+      </HeaderWrap>
+      <MaxWidthContainer>
+        <PresentationWrapper ref={sectionRef}>
+          <VideoContainer>
+            {(!isInView || !showVideo) ? (
+              <VideoPlaceholder
+                $thumbnail={thumbnailUrl}
+                onClick={handlePlayClick}
+                role="button"
+                aria-label={t('presentation.playVideo', 'Odtwórz film prezentacyjny')}
+                tabIndex={0}
+              >
+                <PlayButtonContainer>
+                  <PlayButton type="button" aria-hidden="true">
+                    <FiPlay />
+                  </PlayButton>
+                </PlayButtonContainer>
+              </VideoPlaceholder>
+            ) : (
+              <VideoFrame
+                src={`https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&showinfo=0`}
+                title={t('presentation.title', 'Prezentacja firmy ROJEK')}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                loading="lazy"
+              />
+            )}
+          </VideoContainer>
+        </PresentationWrapper>
+      </MaxWidthContainer>
+    </PresentationContainer>
   );
 };
 

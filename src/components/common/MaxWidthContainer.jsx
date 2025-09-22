@@ -5,6 +5,12 @@ const MaxWidthContainer = styled.div`
   max-width: ${({ theme }) => theme.layout.maxWidth};
   margin-left: auto;
   margin-right: auto;
+  padding: 0 15px;
+
+  & > .full-width {
+    margin-left: -15px;
+    margin-right: -15px;
+  }
 `;
 
 export default MaxWidthContainer;

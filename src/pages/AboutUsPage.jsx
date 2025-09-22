@@ -723,7 +723,6 @@ const AboutUsPage = () => {
     <PageWrapper>
       <PageHeader imageSrc="/images/company/company-top.jpg" height={400} title={t('pageTitle.about', 'O Firmie')} />
 
-      {/* About (O nas) Section */}
       <Section label={t('sections.aboutUs', 'O NAS')} labelPosition="left" noPadding>
         <AboutIntro
           data-aos="fade-up"

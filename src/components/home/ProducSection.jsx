@@ -5,6 +5,8 @@ import { motion } from 'framer-motion';
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { IoIosArrowForward } from 'react-icons/io';
 import SwipeHandler from '../common/SwipeHandler';
+import MaxWidthContainer from '../common/MaxWidthContainer';
+import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../pages/HomePage';
 
 // --- Styled Components ---
 const ProductContentContainer = styled.div`
@@ -232,7 +234,7 @@ const ProductDescriptionTitle = styled.h3`
   margin-bottom: 1.5rem;
   color: ${({ theme }) => theme.colors.bottleGreen};
   font-weight: 600;
-  border-bottom: 1px solid ${({ theme }) => theme.colors.bottleGreen};
+  border-bottom: 1px solid #794f00;
   padding-bottom: 0.5rem;
 `;
 
@@ -262,7 +264,7 @@ const ProductBenefitItem = styled.li`
     position: absolute;
     left: 0;
     top: 1px;
-    color: ${({ theme }) => theme.colors.bottleGreen};
+    color: #794f00;
     font-weight: bold;
     font-size: 1.8rem;
   }
@@ -407,7 +409,7 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
   const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' ? window.innerWidth <= 992 : false);
   const videoRef = useRef(null);
   const currentProduct = productData[selectedProductId];
-  
+
   // Dla mobile navigation
   const productIds = Object.keys(productData);
   const currentIndex = productIds.indexOf(selectedProductId);
@@ -419,11 +421,11 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 992); // breakpoint md
     };
-    
+
     // call once in case window size changed before effect ran
     checkMobile();
     window.addEventListener('resize', checkMobile);
-    
+
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
@@ -469,111 +471,122 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
   };
 
   return (
-    <SwipeableContainer>
-      <SwipeHandler 
-        onSwipeLeft={handleSwipeLeft} 
-        onSwipeRight={handleSwipeRight}
-        enabled={isMobile}
-        threshold={80}
-      >
-        <ProductContentContainer>
-          <MobileButtonsContainer>
-            <NavigationButton
-              onClick={goToPrevProduct}
-              disabled={isFirstProduct}
-              aria-label="Poprzedni produkt"
-            >
-              <FiChevronLeft />
-            </NavigationButton>
+    <>
 
-            <MobileSingleButton>
-              <ProductListButton $active={true} disabled={true}>
-                {currentProduct.name}
-              </ProductListButton>
-            </MobileSingleButton>
+      <MaxWidthContainer>
+        <HeaderWrap className='full-width'>
+          <ProductHeader>
+            NASZE PRODUKTY
+          </ProductHeader>
+          <ProductHeaderSubtitle>Nowoczesność, styl, ekologia</ProductHeaderSubtitle>
+        </HeaderWrap>
+        <SwipeableContainer>
+          <SwipeHandler
+            onSwipeLeft={handleSwipeLeft}
+            onSwipeRight={handleSwipeRight}
+            enabled={isMobile}
+            threshold={80}
+          >
+            <ProductContentContainer>
+              <MobileButtonsContainer>
+                <NavigationButton
+                  onClick={goToPrevProduct}
+                  disabled={isFirstProduct}
+                  aria-label="Poprzedni produkt"
+                >
+                  <FiChevronLeft />
+                </NavigationButton>
 
-            <NavigationButton
-              onClick={goToNextProduct}
-              disabled={isLastProduct}
-              aria-label="Następny produkt"
-            >
-              <FiChevronRight />
-            </NavigationButton>
-          </MobileButtonsContainer>
+                <MobileSingleButton>
+                  <ProductListButton $active={true} disabled={true}>
+                    {currentProduct.name}
+                  </ProductListButton>
+                </MobileSingleButton>
 
-          {/* Desktop version - side arrows + sliding content */}
-          <SlidesWrapper>
-            {!isMobile && !isFirstProduct && (
-              <SideArrowLeft
-                onClick={goToPrevProduct}
-                aria-label="Poprzedni produkt"
-              >
-                <IoIosArrowForward />
-              </SideArrowLeft>
-            )}
+                <NavigationButton
+                  onClick={goToNextProduct}
+                  disabled={isLastProduct}
+                  aria-label="Następny produkt"
+                >
+                  <FiChevronRight />
+                </NavigationButton>
+              </MobileButtonsContainer>
 
-            <SlideViewport>
-<SlideInner
-  animate={{ x: `-${currentIndex * 100}%` }}
-  transition={{ type: 'tween', duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
->
-                {productIds.map((id) => {
-                  const prod = productData[id];
-                  return (
-                    <SlideItem key={id}>
-                      <ProductVideoWrapper>
-                        <ProductVideoContainer>
-                <SpinnerWrapper $isLoading={isLoading && selectedProductId === id}>
-                  <LoadingSpinner />
-                </SpinnerWrapper>
+              {/* Desktop version - side arrows + sliding content */}
+              <SlidesWrapper>
+                {!isMobile && !isFirstProduct && (
+                  <SideArrowLeft
+                    onClick={goToPrevProduct}
+                    aria-label="Poprzedni produkt"
+                  >
+                    <IoIosArrowForward />
+                  </SideArrowLeft>
+                )}
 
-                          <Video
-                            ref={selectedProductId === id ? videoRef : null}
-                            key={prod.videoSrc}
-                            src={prod.videoSrc}
-                            autoPlay={selectedProductId === id}
-                            loop
-                            muted
-                            playsInline
-                            poster={prod.posterSrc}
-                            preload="metadata"
-                            $isLoading={isLoading && selectedProductId === id}
-                            onLoadedData={selectedProductId === id ? handleVideoLoaded : undefined}
-                            onPlaying={selectedProductId === id ? handleVideoLoaded : undefined}
-                          />
-                        </ProductVideoContainer>
-                      </ProductVideoWrapper>
+                <SlideViewport>
+                  <SlideInner
+                    animate={{ x: `-${currentIndex * 100}%` }}
+                    transition={{ type: 'tween', duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+                  >
+                    {productIds.map((id) => {
+                      const prod = productData[id];
+                      return (
+                        <SlideItem key={id}>
+                          <ProductVideoWrapper>
+                            <ProductVideoContainer>
+                              <SpinnerWrapper $isLoading={isLoading && selectedProductId === id}>
+                                <LoadingSpinner />
+                              </SpinnerWrapper>
 
-                      <ProductDescriptionContainer>
-                        <ProductDescriptionTitle>{prod.name}</ProductDescriptionTitle>
-                        <ProductDescriptionText>{prod.description}</ProductDescriptionText>
-                        <ProductBenefitsList>
-                          {prod.benefits.map((benefit, index) => (
-                            <ProductBenefitItem key={index}>{benefit}</ProductBenefitItem>
-                          ))}
-                        </ProductBenefitsList>
-                      </ProductDescriptionContainer>
-                    </SlideItem>
-                  );
-                })}
-            </SlideInner>
-            </SlideViewport>
+                              <Video
+                                ref={selectedProductId === id ? videoRef : null}
+                                key={prod.videoSrc}
+                                src={prod.videoSrc}
+                                autoPlay={selectedProductId === id}
+                                loop
+                                muted
+                                playsInline
+                                poster={prod.posterSrc}
+                                preload="metadata"
+                                $isLoading={isLoading && selectedProductId === id}
+                                onLoadedData={selectedProductId === id ? handleVideoLoaded : undefined}
+                                onPlaying={selectedProductId === id ? handleVideoLoaded : undefined}
+                              />
+                            </ProductVideoContainer>
+                          </ProductVideoWrapper>
 
-            {!isMobile && !isLastProduct && (
-              <SideArrowRight
-                onClick={goToNextProduct}
-                aria-label="Następny produkt"
-              >
-                <IoIosArrowForward />
-              </SideArrowRight>
-            )}
-          </SlidesWrapper>
+                          <ProductDescriptionContainer>
+                            <ProductDescriptionTitle>{prod.name}</ProductDescriptionTitle>
+                            <ProductDescriptionText>{prod.description}</ProductDescriptionText>
+                            <ProductBenefitsList>
+                              {prod.benefits.map((benefit, index) => (
+                                <ProductBenefitItem key={index}>{benefit}</ProductBenefitItem>
+                              ))}
+                            </ProductBenefitsList>
+                          </ProductDescriptionContainer>
+                        </SlideItem>
+                      );
+                    })}
+                  </SlideInner>
+                </SlideViewport>
 
-          
+                {!isMobile && !isLastProduct && (
+                  <SideArrowRight
+                    onClick={goToNextProduct}
+                    aria-label="Następny produkt"
+                  >
+                    <IoIosArrowForward />
+                  </SideArrowRight>
+                )}
+              </SlidesWrapper>
 
-        </ProductContentContainer>
-      </SwipeHandler>
-    </SwipeableContainer>
+
+
+            </ProductContentContainer>
+          </SwipeHandler>
+        </SwipeableContainer>
+      </MaxWidthContainer>
+    </>
   );
 };
 

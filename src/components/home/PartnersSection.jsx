@@ -8,6 +8,8 @@ import { Autoplay } from 'swiper/modules';
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/autoplay';
+import MaxWidthContainer from '../common/MaxWidthContainer';
+import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../pages/HomePage';
 
 // Kontener główny dla sekcji partnerów
 const PartnersContainer = styled.div`
@@ -15,9 +17,10 @@ const PartnersContainer = styled.div`
   max-width: ${({ theme }) => theme.layout.maxWidth};
   margin: 0 auto;
   padding: 0 ${({ theme }) => theme.spacings.medium};
+  padding-bottom: ${({ theme }) => theme.spacings.xlarge};
   
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    padding: 0;
+    padding-bottom: ${({ theme }) => theme.spacings.large};
     width: 100%;
     margin-left: auto;
     margin-right: auto;
@@ -31,6 +34,8 @@ const PartnersGrid = styled.div`
   gap: ${({ theme }) => theme.spacings.large};
   align-items: center;
   justify-items: center;
+  margin-bottom: ${({ theme }) => theme.spacings.xlarge};
+  margin-top: ${({ theme }) => theme.spacings.large};
   
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     display: none;
@@ -235,52 +240,59 @@ const PartnersSection = () => {
 
   return (
     <PartnersContainer>
-      {/* Desktop version - static grid */}
-      <PartnersGrid>
-        {partnersData.map(renderDesktopPartner)}
-      </PartnersGrid>
+      <MaxWidthContainer>
+        <HeaderWrap>
+          <ProductHeader>
+            PARTNERZY
+          </ProductHeader>
+          <ProductHeaderSubtitle>Firmy, z którymi współpracujemy</ProductHeaderSubtitle>
+        </HeaderWrap>
+        <PartnersGrid>
+          {partnersData.map(renderDesktopPartner)}
+        </PartnersGrid>
 
-      {/* Mobile version - Swiper carousel */}
-      <MobileSwiperContainer>
-        <Swiper
-          modules={[Autoplay]}
-          spaceBetween={10}
-          slidesPerView="auto"
-          centeredSlides={true}
-          loop={true}
-          autoplay={{
-            delay: 0.5,
-            disableOnInteraction: false,
-            pauseOnMouseEnter: true,
-            reverseDirection: false,
-          }}
-          speed={5000}
-          allowTouchMove={true}
-          grabCursor={true}
-          freeMode={false}
-          loopAdditionalSlides={2}
-          className="partners-swiper"
-        >
-          {/* Renderujemy partnerów w Swiper slides */}
-          {partnersData.map((partner) => (
-            <SwiperSlide key={partner.id}>
-              {renderMobilePartner(partner)}
-            </SwiperSlide>
-          ))}
-          {/* Duplikujemy dla lepszej pętli */}
-          {partnersData.map((partner) => (
-            <SwiperSlide key={`duplicate-${partner.id}`}>
-              {renderMobilePartner(partner)}
-            </SwiperSlide>
-          ))}
-          {/* Dodatkowa duplikacja dla super płynnej pętli */}
-          {partnersData.map((partner) => (
-            <SwiperSlide key={`duplicate2-${partner.id}`}>
-              {renderMobilePartner(partner)}
-            </SwiperSlide>
-          ))}
-        </Swiper>
-      </MobileSwiperContainer>
+        {/* Mobile version - Swiper carousel */}
+        <MobileSwiperContainer>
+          <Swiper
+            modules={[Autoplay]}
+            spaceBetween={10}
+            slidesPerView="auto"
+            centeredSlides={true}
+            loop={true}
+            autoplay={{
+              delay: 0.5,
+              disableOnInteraction: false,
+              pauseOnMouseEnter: true,
+              reverseDirection: false,
+            }}
+            speed={5000}
+            allowTouchMove={true}
+            grabCursor={true}
+            freeMode={false}
+            loopAdditionalSlides={2}
+            className="partners-swiper"
+          >
+            {/* Renderujemy partnerów w Swiper slides */}
+            {partnersData.map((partner) => (
+              <SwiperSlide key={partner.id}>
+                {renderMobilePartner(partner)}
+              </SwiperSlide>
+            ))}
+            {/* Duplikujemy dla lepszej pętli */}
+            {partnersData.map((partner) => (
+              <SwiperSlide key={`duplicate-${partner.id}`}>
+                {renderMobilePartner(partner)}
+              </SwiperSlide>
+            ))}
+            {/* Dodatkowa duplikacja dla super płynnej pętli */}
+            {partnersData.map((partner) => (
+              <SwiperSlide key={`duplicate2-${partner.id}`}>
+                {renderMobilePartner(partner)}
+              </SwiperSlide>
+            ))}
+          </Swiper>
+        </MobileSwiperContainer>
+      </MaxWidthContainer>
     </PartnersContainer>
   );
 };

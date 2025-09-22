@@ -10,6 +10,8 @@ import { IoIosArrowForward } from 'react-icons/io';
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
+import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../pages/HomePage';
+import MaxWidthContainer from '../common/MaxWidthContainer';
 
 // Kontener dla całej sekcji
 const WhyUsContainer = styled.div`
@@ -17,6 +19,7 @@ const WhyUsContainer = styled.div`
   max-width: ${({ theme }) => theme.layout.maxWidth};
   margin: 0 auto;
   position: relative;
+  padding-bottom: 30px;
 `;
 
 // Desktop Grid (pokazuje się tylko na największych ekranach)
@@ -314,8 +317,8 @@ const WhyUsSection = () => {
   const renderFeatureCard = (feature) => (
     <FeatureCard key={feature.id}>
       <IconWrapper>
-        <Icon 
-          src={feature.icon} 
+        <Icon
+          src={feature.icon}
           alt={t(feature.titleKey, feature.defaultTitle)}
           loading="lazy"
         />
@@ -331,6 +334,13 @@ const WhyUsSection = () => {
 
   return (
     <WhyUsContainer>
+      <MaxWidthContainer>
+      <HeaderWrap className='full-width'>
+        <ProductHeader>
+          DLACZEGO MY
+        </ProductHeader>
+        <ProductHeaderSubtitle>Co odróznia nas od innych</ProductHeaderSubtitle>
+      </HeaderWrap>
       {/* Desktop Grid - tylko na bardzo dużych ekranach */}
       <DesktopGrid>
         {features.map(renderFeatureCard)}
@@ -367,19 +377,19 @@ const WhyUsSection = () => {
             </SwiperSlide>
           ))}
         </Swiper>
-        
+
         <NavigationContainer>
-        <PrevNavigationButton 
-            ref={prevRef} 
+          <PrevNavigationButton
+            ref={prevRef}
             onClick={goToPrev}
             disabled={isBeginning}
             aria-label={t('navigation.previous', 'Poprzedni')}
           >
             <IoIosArrowForward />
           </PrevNavigationButton>
-          
-          <NextNavigationButton 
-            ref={nextRef} 
+
+          <NextNavigationButton
+            ref={nextRef}
             onClick={goToNext}
             disabled={isEnd}
             aria-label={t('navigation.next', 'Następny')}
@@ -388,6 +398,7 @@ const WhyUsSection = () => {
           </NextNavigationButton>
         </NavigationContainer>
       </MobileSwiperContainer>
+      </MaxWidthContainer>
     </WhyUsContainer>
   );
 };

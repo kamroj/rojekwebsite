@@ -34,7 +34,7 @@ const Overlay = styled.div`
 `;
 
 const HeaderContent = styled.div`
-    border: 1px solid #6f6f00;
+    border: 1px solid #794f00;
     position: absolute;
     bottom: 18px;
     right: 22px;
