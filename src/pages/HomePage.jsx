@@ -77,11 +77,17 @@ export const ProductHeaderSubtitle = styled.div`
       width: 380px;
     }
   
-    @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
-      margin-left: ${({ $reversed }) => ($reversed ? '0' : '40px')};
-      margin-right: ${({ $reversed }) => ($reversed ? '40px' : '0')};
-      width: ${({ $reversed }) => ($reversed ? 'calc(100% - 40px)' : 'calc(100% + 40px)')};
+    @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+      /* Mobile/tablet: dociągnięcie do krawędzi MaxWidthContainer (padding 0 15px) po właściwej stronie */
+      align-self: ${({ $reversed }) => ($reversed ? 'flex-start' : 'flex-end')};
+      width: auto;
+      max-width: 100%;
+      margin-left: ${({ $reversed }) => ($reversed ? '-15px' : '0')};
+      margin-right: ${({ $reversed }) => ($reversed ? '0' : '-15px')};
+      left: auto;
+      right: auto;
     }
+  
   `;
 
 const HomePage = () => {

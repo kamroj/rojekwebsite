@@ -241,7 +241,7 @@ const PartnersSection = () => {
   return (
     <PartnersContainer>
       <MaxWidthContainer>
-        <HeaderWrap>
+        <HeaderWrap className='full-width'>
           <ProductHeader>
             PARTNERZY
           </ProductHeader>

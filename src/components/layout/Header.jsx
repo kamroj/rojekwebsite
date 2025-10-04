@@ -9,7 +9,8 @@ import SwipeHandler from '../common/SwipeHandler';
 import { useScrollPosition, useResponsive } from '../../hooks';
 import { ROUTES, IMAGE_PATHS } from '../../constants';
 import { handleKeyboardNavigation } from '../../utils';
-import logoSrc from '/images/logo.png';
+import logoWhite from '/images/logo.png';
+import logoBlack from '/images/logo-black.png';
 import { fadeIn, fadeOut, slideInRight, slideOutRight, hamburgerToX } from '../../styles/animations.js';
 
 const activeLinkHighlight = keyframes`
@@ -34,7 +35,7 @@ const HeaderWrapper = styled.header`
               color 0.1s linear;
 
   background-color: ${({ $isPastThreshold, $isVisible, theme }) =>
-    $isPastThreshold && $isVisible ? "#f8f9fa" : '#017e5414'};
+    $isPastThreshold && $isVisible ? "#fffefe" : '#017e5414'};
 
   border-bottom-width: 1px;
   border-bottom-style: solid;
@@ -58,7 +59,7 @@ const HeaderWrapper = styled.header`
   
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     background-color: ${({ $isPastThreshold, $isVisible, theme }) =>
-      $isPastThreshold && $isVisible ? "rgba(248, 249, 250, 0.9)" : '#017e5414'};
+      $isPastThreshold && $isVisible ? "#fffefe" : '#017e5414'};
     color: ${({ $isPastThreshold, theme }) =>
       $isPastThreshold ? theme.colors.text : theme.colors.textLight};
   }
@@ -74,9 +75,6 @@ const LogoLink = styled(Link)`
     height: 100%;
     width: auto;
     display: block;
-    filter: ${({ $isPastThreshold }) =>
-      $isPastThreshold ? 'brightness(0.3)' : 'brightness(1)'};
-    transition: filter 0.3s linear;
   }
 
 `;
@@ -379,8 +377,8 @@ const Header = () => {
       $isPastThreshold={isPastThreshold} 
       $isVisible={isVisible}
     >
-      <LogoLink to={ROUTES.HOME} $isPastThreshold={isPastThreshold}>
-        <img src={logoSrc} alt={t('nav.logoAlt', 'ROJEK okna i drzwi Logo')} />
+      <LogoLink to={ROUTES.HOME}>
+        <img src={isPastThreshold ? logoBlack : logoWhite} alt={t('nav.logoAlt', 'ROJEK okna i drzwi Logo')} />
       </LogoLink>
 
       <DesktopNav>
@@ -407,7 +405,7 @@ const Header = () => {
       <MobileMenuContainer $isOpen={isMobileMenuOpen}>
         <SwipeHandler onSwipeRight={closeMobileMenu} enabled={isMobileMenuOpen}>
           <MobileMenuLogo>
-            <img src={logoSrc} alt={t('nav.logoAlt', 'ROJEK okna i drzwi Logo')} />
+            <img src={logoWhite} alt={t('nav.logoAlt', 'ROJEK okna i drzwi Logo')} />
           </MobileMenuLogo>
 
           <MobileNavigation role="navigation" aria-label={t('nav.mobileNavigation', 'Mobile navigation')}>
