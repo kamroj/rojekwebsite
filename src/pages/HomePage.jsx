@@ -21,8 +21,12 @@ export const HeaderWrap = styled.div`
     display: inline-flex;
     width: 100%;
     flex-direction: column;
-    margin: 20px 0;
+    margin: 20px 0 40px 0;
     align-items: ${({ $reversed }) => ($reversed ? 'flex-end' : 'flex-start')};
+
+    @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+      margin: 10px 0 20px 0;
+    }
   `;
 
 export const ProductHeader = styled.div`
@@ -31,7 +35,6 @@ export const ProductHeader = styled.div`
     backdrop-filter: blur(2px);
 
     display: flex;
-    min-width: 300px;
     padding: 10px 20px;
     background-color: ${({ $bg = '#002a12d9' }) => $bg};
     color: #ffffff;
@@ -39,18 +42,18 @@ export const ProductHeader = styled.div`
     margin-top: 15px;
     font-size: 2rem;
     justify-content: center;
+    padding: ${({ $reversed }) => ($reversed ? "6px 50px 10px 20px" : "6px 20px 10px 50px")};
   
     &::after {
       content: "";
       position: absolute;
       inset: 0;
-      box-shadow: 5px 4px 10px 0px #0000004d;
       z-index: -1;
     }
   
     @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
       max-width: 200px;
-      padding: 10px 20px 10px 50px;
+      padding: ${({ $reversed }) => ($reversed ? "6px 50px 10px 20px" : "6px 20px 10px 50px")};
       font-size: 1.4rem;
     }
   `;
@@ -58,32 +61,27 @@ export const ProductHeader = styled.div`
 export const ProductHeaderSubtitle = styled.div`
     position: relative;
     z-index: 1;
-    margin-top: -50px;
+    margin-top: -40px;
     text-align: ${({ $reversed }) => ($reversed ? 'left' : 'right')};
     margin-left: ${({ $reversed }) => ($reversed ? '0' : '80px')};
     margin-right: ${({ $reversed }) => ($reversed ? '80px' : '0')};
     color: #ffffffde;
-    background-color: ${({ $bg = '#000000' }) => $bg};
-    padding: 20px 20px 10px 10px;
-    width: 400px;
+    background-color: ${({ $bg = '#0f0f0f' }) => $bg};
+    padding: 10px 20px 6px 10px;
     max-width: 100%;
-    box-shadow: 5px 4px 10px 0px #0000004d;
     font-size: 1.4rem;
     box-sizing: border-box;
   
     @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
       margin-left: ${({ $reversed }) => ($reversed ? '0' : '40px')};
       margin-right: ${({ $reversed }) => ($reversed ? '40px' : '0')};
-      width: 380px;
     }
   
     @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-      /* Mobile/tablet: dociągnięcie do krawędzi MaxWidthContainer (padding 0 15px) po właściwej stronie */
-      align-self: ${({ $reversed }) => ($reversed ? 'flex-start' : 'flex-end')};
       width: auto;
       max-width: 100%;
-      margin-left: ${({ $reversed }) => ($reversed ? '-15px' : '0')};
-      margin-right: ${({ $reversed }) => ($reversed ? '0' : '-15px')};
+      /* margin-left: ${({ $reversed }) => ($reversed ? '-15px' : '0')}; */
+      /* margin-right: ${({ $reversed }) => ($reversed ? '0' : '-15px')}; */
       left: auto;
       right: auto;
     }
@@ -169,7 +167,7 @@ const HomePage = () => {
         $noInset
       >
         <HeaderWrap className='full-width' $reversed>
-          <ProductHeader $bg="#e6c61942">
+          <ProductHeader $bg="#e6c61942" $reversed>
             REALIZACJE
           </ProductHeader>
           <ProductHeaderSubtitle $bg="#706a0026;" $reversed>Zobacz nasze realizacje</ProductHeaderSubtitle>

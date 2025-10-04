@@ -170,7 +170,7 @@ const CompanyPresentationSection = () => {
     <PresentationContainer>
       <MaxWidthContainer>
         <HeaderWrap $reversed className='full-width'>
-          <ProductHeader $bg="#e6c61942">
+          <ProductHeader $reversed $bg="#e6c61942">
             NASZA FIRMA
           </ProductHeader>
           <ProductHeaderSubtitle $bg="#706a0026;" $reversed>Poznaj nas od środka</ProductHeaderSubtitle>
