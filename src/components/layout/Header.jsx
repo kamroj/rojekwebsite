@@ -39,7 +39,7 @@ const HeaderWrapper = styled.header`
 
   border-bottom-width: 1px;
   border-bottom-style: solid;
-  border-bottom-color: #059c4e68;
+  border-bottom-color:  ${({ $isPastThreshold }) => ($isPastThreshold ? "#004a2468" : "#059c4e68")};
 
   opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
   pointer-events: ${({ $isVisible }) => ($isVisible ? 'auto' : 'none')};
