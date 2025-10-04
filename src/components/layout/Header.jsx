@@ -200,6 +200,7 @@ const MobileMenuLogo = styled.div`
   justify-content: space-between;
   align-items: center;
   margin-bottom: ${({ theme }) => theme.spacings.large};
+  margin-top: 2rem;
   
   img {
     height: 40px;
@@ -235,7 +236,7 @@ const MobileNavItem = styled(Link)`
   
   @media (min-height: 700px) {
     padding: ${({ theme }) => theme.spacings.medium} 0;
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
   
   &:hover {
@@ -405,7 +406,7 @@ const Header = () => {
       <MobileMenuContainer $isOpen={isMobileMenuOpen}>
         <SwipeHandler onSwipeRight={closeMobileMenu} enabled={isMobileMenuOpen}>
           <MobileMenuLogo>
-            <img src={logoWhite} alt={t('nav.logoAlt', 'ROJEK okna i drzwi Logo')} />
+            <img src={logoBlack} alt={t('nav.logoAlt', 'ROJEK okna i drzwi Logo')} />
           </MobileMenuLogo>
 
           <MobileNavigation role="navigation" aria-label={t('nav.mobileNavigation', 'Mobile navigation')}>
