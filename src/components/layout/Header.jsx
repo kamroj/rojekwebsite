@@ -12,6 +12,7 @@ import { handleKeyboardNavigation } from '../../utils';
 import logoWhite from '/images/logo.png';
 import logoBlack from '/images/logo-black.png';
 import { fadeIn, fadeOut, slideInRight, slideOutRight, hamburgerToX } from '../../styles/animations.js';
+import MaxWidthContainer from '../common/MaxWidthContainer.jsx';
 
 const activeLinkHighlight = keyframes`
   0% { transform: translateX(-10px) scaleY(0.5); opacity: 0; }
@@ -26,7 +27,7 @@ const HeaderWrapper = styled.header`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0 ${({ theme }) => theme.spacings.medium};
+  padding: 0;
   height: ${({ theme }) => theme.layout.headerHeight};
   z-index: 1000;
   transition: opacity ${({ theme }) => theme.transitions.default}, 
@@ -62,6 +63,14 @@ const HeaderWrapper = styled.header`
     color: ${({ $isPastThreshold, theme }) =>
       $isPastThreshold ? theme.colors.text : theme.colors.textLight};
   }
+`;
+
+const HeaderInner = styled(MaxWidthContainer)`
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
 `;
 
 const LogoLink = styled(Link)`
@@ -371,6 +380,7 @@ const Header = () => {
       $isPastThreshold={isPastThreshold} 
       $isVisible={isVisible}
     >
+      <HeaderInner>
       <LogoLink to={ROUTES.HOME}>
         <img src={isPastThreshold ? logoBlack : logoWhite} alt={t('nav.logoAlt', 'ROJEK okna i drzwi Logo')} />
       </LogoLink>
@@ -393,6 +403,8 @@ const Header = () => {
       >
         {isMobileMenuOpen ? <FiX /> : <FiMenu />}
       </MobileMenuButton>
+
+      </HeaderInner>
 
       <MobileMenuOverlay $isOpen={isMobileMenuOpen} onClick={closeMobileMenu} />
 

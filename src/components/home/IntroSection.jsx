@@ -4,6 +4,7 @@ import styled, { keyframes, useTheme } from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { FiPlay, FiPause } from 'react-icons/fi';
+import MaxWidthContainer from '../common/MaxWidthContainer.jsx';
 
 // Animacja tekstu przy wczytywaniu
 const fadeIn = keyframes`
@@ -56,22 +57,26 @@ const VideoOverlay = styled.div`
 const BottomOverlay = styled.div`
   position: absolute;
   bottom: 0;
-  left: 5%;
-  right: 5%;
-  display: flex;
-  align-items: flex-end;      /* elementy oparte o dół */
-  justify-content: space-between;
-  min-height: 56px;           /* co najmniej wysokość przycisku */
+  left: 0;
+  right: 0;
   z-index: 10;
 
   /* Odstęp od dołu + bezpieczna strefa dla pasków na dole (iOS/Android) */
   padding-bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(16px, 2vh, 28px));
 
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    left: 3%;
-    right: 3%;
-    min-height: 52px;
     padding-bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(14px, 2vh, 24px));
+  }
+`;
+
+const BottomInner = styled(MaxWidthContainer)`
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  min-height: 56px;           /* co najmniej wysokość przycisku */
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    min-height: 52px;
   }
 `;
 
@@ -299,7 +304,8 @@ export default function IntroSection({ id }) {
       <VideoOverlay />
 
       <BottomOverlay>
-        <ProgressContainer>
+        <BottomInner>
+          <ProgressContainer>
           <svg
             viewBox={`0 0 ${SIZE} ${SIZE}`}
             style={{
@@ -346,6 +352,7 @@ export default function IntroSection({ id }) {
             {t('buttons.see','Zobacz')}
           </CTAButton>
         </RightBottomContentWrapper>
+        </BottomInner>
       </BottomOverlay>
     </IntroWrapper>
   );
