@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FiPhone, FiMail } from 'react-icons/fi';
 import Section from '../components/common/Section';
 import { COMPANY_ADDRESS, MAP_SRC } from '../constants';
+import Page from '../components/common/Page';
 
 const ContactContent = styled.div`
   padding: 3rem 0;
@@ -94,13 +95,13 @@ const ContactPage = () => {
   const { t } = useTranslation();
 
   return (
-    <Section
-      customStyles={`
-        background-color: #e9ecef;
-      `}
-    >
+    <Page imageSrc="/images/company/company-top.jpg" title={t('pageTitle.contact', 'Kontakt')}>
+      <Section
+        customStyles={`
+          background-color: #e9ecef;
+        `}
+      >
       <ContactContent>
-        <h2>{t('pageTitle.contact', 'Kontakt')}</h2>
 
         <ContactGrid>
           <ContactDetails>
@@ -142,6 +143,7 @@ const ContactPage = () => {
         </ContactGrid>
       </ContactContent>
     </Section>
+    </Page>
   );
 };
 

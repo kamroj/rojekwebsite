@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useResponsive } from '../hooks/useResponsive';
 import RealizationCard from '../components/gallery/RealizationCard';
 import Pagination from '../components/common/Pagination';
-import PageHeader from '../components/common/PageHeader';
+import Page from '../components/common/Page';
 
 const PAGE_SIZE = 6;
 
@@ -876,12 +876,7 @@ const RealizationsPage = () => {
   };
 
   return (
-    <PageWrapper>
-      <PageHeader 
-        imageSrc="/images/realizations/top.jpg" 
-        id="realizations-header" 
-        title={t('realizationsPage.title')} 
-      />
+    <Page imageSrc="/images/realizations/top.jpg" title={t('realizationsPage.title')}>
 
       <Content>
 
@@ -1222,7 +1217,7 @@ const RealizationsPage = () => {
           }}
         />
       </Content>
-    </PageWrapper>
+    </Page>
   );
 };
 

@@ -5,47 +5,11 @@ import { motion } from 'framer-motion';
 import { FiCalendar, FiMapPin, FiPhone, FiMail, FiCheckCircle } from 'react-icons/fi';
 import Section from '../components/common/Section';
 import { COMPANY_ADDRESS, MAP_SRC } from '../constants';
-import PageHeader from '../components/common/PageHeader';
-
-const PageWrapper = styled.div`
-  width: 100%;
-  padding: 0;
-  position: relative;
-  z-index: 2;
-
-  h1 {
-    font-size: 2.2rem !important;
-  }
-
-  h2 {
-    font-size: 1.8rem !important;
-  }
-
-  h3 {
-    font-size: 1.4rem !important;
-  }
-
-  h4 {
-    font-size: 1.4rem !important;
-  }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    h1 {
-      font-size: 1.8rem !important;
-    }
-    h2 {
-      font-size: 1.6rem !important;
-    }
-    h3,
-    h4 {
-      font-size: 1.3rem !important;
-    }
-  }
-`;
+import Page from '../components/common/Page';
+import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomePage';
 
 
 
-/* History Section */
 const HistorySection = styled(Section)`
   margin-top: 80px;
   margin-bottom: 80px;
@@ -719,46 +683,48 @@ const AboutUsPage = () => {
   };
 
   return (
-    <PageWrapper>
-      <PageHeader imageSrc="/images/company/company-top.jpg" height={400} title={t('pageTitle.about', 'O Firmie')} />
+    <Page imageSrc="/images/company/company-top.jpg" height={500} title={t('pageTitle.about', 'O Firmie')}>
+      <Section>
+        <HeaderWrap className='full-width'>
+          <ProductHeader>
+            DLACZEGO MY
+          </ProductHeader>
+          <ProductHeaderSubtitle>Co odróznia nas od innych</ProductHeaderSubtitle>
+        </HeaderWrap>
+        <p>
+          {t(
+            'aboutPage.lead',
+            'Dogodna lokalizacja stolarni przy granicy administracyjnej Krakowa, nowoczesny park maszynowy oraz hala o powierzchni 1200 m² dają nam wiele możliwości, aby zrealizować każde Państwa zamówienie. Zapewniamy konkurencyjne ceny oraz doświadczenie i profesjonalizm załogi w realizacji zleceń.'
+          )}
+        </p>
+        <p>
+          {t('aboutPage.invite', 'Zapraszamy osoby prywatne oraz firmy do składania zapytań ofertowych w następujących dziedzinach:')}
+        </p>
+        <ul style={{ listStyle: 'disc', paddingLeft: '1.5rem', margin: '1rem auto 2rem', lineHeight: 1.9 }}>
+          <li>{t('aboutPage.services.0', { defaultValue: 'Okna jednoramowe (eurookna) standardowe i stylizowane' })}</li>
+          <li>{t('aboutPage.services.1', { defaultValue: 'Okna drewniane skrzynkowe' })}</li>
+          <li>{t('aboutPage.services.2', { defaultValue: 'Rekonstrukcje i renowacje stolarki zabytkowej' })}</li>
+          <li>{t('aboutPage.services.3', { defaultValue: 'Okna drewniane ppoż. EI30, EI60' })}</li>
+          <li>{t('aboutPage.services.4', { defaultValue: 'Drzwi drewniane ppoż. stylizowane dla obiektów zabytkowych' })}</li>
+        </ul>
 
-      <Section label={t('sections.aboutUs', 'O NAS')} labelPosition="left" noPadding>
-        <AboutIntro
-          data-aos="fade-up"
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <p>
-            {t(
-              'aboutPage.lead',
-              'Dogodna lokalizacja stolarni przy granicy administracyjnej Krakowa, nowoczesny park maszynowy oraz hala o powierzchni 1200 m² dają nam wiele możliwości, aby zrealizować każde Państwa zamówienie. Zapewniamy konkurencyjne ceny oraz doświadczenie i profesjonalizm załogi w realizacji zleceń.'
-            )}
-          </p>
-          <p>
-            {t('aboutPage.invite', 'Zapraszamy osoby prywatne oraz firmy do składania zapytań ofertowych w następujących dziedzinach:')}
-          </p>
-          <ul style={{ listStyle: 'disc', paddingLeft: '1.5rem', maxWidth: 900, margin: '1rem auto 2rem', lineHeight: 1.9 }}>
-            <li>{t('aboutPage.services.0', { defaultValue: 'Okna jednoramowe (eurookna) standardowe i stylizowane' })}</li>
-            <li>{t('aboutPage.services.1', { defaultValue: 'Okna drewniane skrzynkowe' })}</li>
-            <li>{t('aboutPage.services.2', { defaultValue: 'Rekonstrukcje i renowacje stolarki zabytkowej' })}</li>
-            <li>{t('aboutPage.services.3', { defaultValue: 'Okna drewniane ppoż. EI30, EI60' })}</li>
-            <li>{t('aboutPage.services.4', { defaultValue: 'Drzwi drewniane ppoż. stylizowane dla obiektów zabytkowych' })}</li>
-          </ul>
-
-          <p style={{ fontWeight: 600, marginTop: '1rem' }}>
-            {t('aboutPage.partnersIntro', 'Ponadto posiadamy skład fabryczny i jesteśmy bezpośrednim dystrybutorem następujących firm:')}
-          </p>
-            <p style={{ textAlign: 'left', maxWidth: 900, margin: '0 auto 2rem' }}>
-            • {t('aboutPage.partners.0', { defaultValue: 'Okna PCV firmy OKNO-POL oraz SONAROL' })}<br />
-            • {t('aboutPage.partners.1', { defaultValue: 'Drzwi wewnętrzne i wejściowe firmy CENTURION' })}
-          </p>
-        </AboutIntro>
+        <p style={{ listStyle: 'disc', paddingLeft: '1.5rem', margin: '1rem auto 2rem', lineHeight: 1.9 }}>
+          {t('aboutPage.partnersIntro', 'Ponadto posiadamy skład fabryczny i jesteśmy bezpośrednim dystrybutorem następujących firm:')}
+        </p>
+        <p style={{ listStyle: 'disc', paddingLeft: '1.5rem', margin: '1rem auto 2rem', lineHeight: 1.9 }}>
+          • {t('aboutPage.partners.0', { defaultValue: 'Okna PCV firmy OKNO-POL oraz SONAROL' })}<br />
+          • {t('aboutPage.partners.1', { defaultValue: 'Drzwi wewnętrzne i wejściowe firmy CENTURION' })}
+        </p>
       </Section>
 
       {/* History Section */}
-      <HistorySection label={t('sections.history', 'HISTORIA')} labelPosition="right">
+      <HistorySection>
+        <HeaderWrap $reversed>
+          <ProductHeader $reversed>
+            Nasza Historia
+          </ProductHeader>
+          <ProductHeaderSubtitle $reversed>Jak zmienialiśmy się przez lata</ProductHeaderSubtitle>
+        </HeaderWrap>
         <IntroText
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -813,7 +779,7 @@ const AboutUsPage = () => {
             <p>
               {t('headquarters.description1', 'Nasza siedziba znajduje się w malowniczej miejscowości w województwie dolnośląskim. To tutaj, w nowoczesnym zakładzie produkcyjnym, powstają nasze wysokiej jakości okna i drzwi.')}
             </p>
-            
+
             <div className="address">
               {/* header "Adres" intentionally removed per request */}
               <div className="map-wrapper">
@@ -834,9 +800,9 @@ const AboutUsPage = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <img 
-              src="/images/company/company-building.jpg" 
-              alt={t('headquarters.imageAlt', 'Siedziba firmy ROJEK')} 
+            <img
+              src="/images/company/company-building.jpg"
+              alt={t('headquarters.imageAlt', 'Siedziba firmy ROJEK')}
             />
           </HeadquartersImage>
         </HeadquartersContent>
@@ -918,7 +884,7 @@ const AboutUsPage = () => {
           </ManagerCard>
         </ManagementGrid>
       </Section>
-    </PageWrapper>
+    </Page>
   );
 };
 

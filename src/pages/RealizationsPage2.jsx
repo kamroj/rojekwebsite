@@ -6,6 +6,7 @@ import { t } from 'i18next';
 import Select from 'react-select';
 import ReactPaginate from 'react-paginate';
 import { useResponsive } from '../hooks/useResponsive';
+import Page from '../components/common/Page';
 
 const PageWrapper = styled.div`
   width: 100%;
@@ -415,90 +416,79 @@ export default function RealizationsPage2() {
   const handlePageChange = ({ selected }) => {
     setCurrentPage(selected);
     if (listTopRef.current) {
-      const headerOffset = 90; 
+      const headerOffset = 90;
       const elementTop = listTopRef.current.getBoundingClientRect().top + window.pageYOffset;
       window.scrollTo({ top: elementTop - headerOffset, behavior: "smooth" });
     }
   };
 
   return (
-    <PageWrapper>
-      <PageHeader
-        imageSrc="/images/realizations/top.jpg"
-        id="realizations-header"
-        title={t('realizationsPage.title')}
-      />
-
-      <MaxWidthContainer>
-        <FilterContainer>
-          <FilterCounter>Znaleziono {filteredRealizations.length} realizacji</FilterCounter>
-          <Select
-            isMulti
-            options={groupedTagOptions}
-            getOptionLabel={(opt) => opt.label}
-            getOptionValue={(opt) => `${opt.group}__${opt.value}`}
-            value={selectedTags}
-            onChange={(list) => setSelectedTags(list || [])}
-            closeMenuOnSelect={false}
-            placeholder={t('realizationsPage.filters.filtersTitle') || 'Filtry (grupy tagów)'}
-            className="react-select-container"
-            classNamePrefix="react-select"
-            menuPortalTarget={document.body}
-            styles={{
-              control: (base, state) => ({
-                ...base,
-                borderColor: state.isFocused ? '#017e54' : '#012712d7',
-                boxShadow: 'none',
-                outline: 'none',
-                '&:hover': {
-                  borderColor: state.isFocused ? '#017e54' : '#012712d7'
-                }
-              }),
-              menuPortal: (base) => ({ ...base, zIndex: MENU_PORTAL_Z_INDEX })
-            }}
-          />
-        </FilterContainer>
-      </MaxWidthContainer>
-
-      <MaxWidthContainer>
-        <div ref={listTopRef} aria-hidden="true" />
-        <RealizationsContainer>
-          {currentItems.map((item, idx) => (
-            <SingleRealizationContainer
-              key={`${item.img}-${idx}`}
-              ref={(el) => (cardRefs.current[idx] = el)}
-            >
-              <RealizationImage
-                src={item.img}
-                alt={`Realization ${idx + 1}`}
-                loading="lazy"
-                $active={idx === activeCardIndex}
-              />
-              <RealizationTags>
-                {Object.entries(item.tags).flatMap(([category, values]) =>
-                  values.map((val, i) => (
-                    <Tag key={`${idx}-${category}-${val}-${i}`}>
-                      {category}: {val}
-                    </Tag>
-                  ))
-                )}
-              </RealizationTags>
-            </SingleRealizationContainer>
-          ))}
-        </RealizationsContainer>
-        {pageCount > 1 && (
-          <StyledPaginate
-            pageCount={pageCount}
-            forcePage={currentPage}
-            onPageChange={handlePageChange}
-            previousLabel="<"
-            nextLabel=">"
-            pageRangeDisplayed={3}
-            marginPagesDisplayed={1}
-            renderOnZeroPageCount={null}
-          />
-        )}
-      </MaxWidthContainer>
-    </PageWrapper>
+    <Page imageSrc="/images/realizations/top.jpg" height={500} title={t('realizationsPage.title')}>
+      <FilterContainer>
+        <FilterCounter>Znaleziono {filteredRealizations.length} realizacji</FilterCounter>
+        <Select
+          isMulti
+          options={groupedTagOptions}
+          getOptionLabel={(opt) => opt.label}
+          getOptionValue={(opt) => `${opt.group}__${opt.value}`}
+          value={selectedTags}
+          onChange={(list) => setSelectedTags(list || [])}
+          closeMenuOnSelect={false}
+          placeholder={t('realizationsPage.filters.filtersTitle') || 'Filtry (grupy tagów)'}
+          className="react-select-container"
+          classNamePrefix="react-select"
+          menuPortalTarget={document.body}
+          styles={{
+            control: (base, state) => ({
+              ...base,
+              borderColor: state.isFocused ? '#017e54' : '#012712d7',
+              boxShadow: 'none',
+              outline: 'none',
+              '&:hover': {
+                borderColor: state.isFocused ? '#017e54' : '#012712d7'
+              }
+            }),
+            menuPortal: (base) => ({ ...base, zIndex: MENU_PORTAL_Z_INDEX })
+          }}
+        />
+      </FilterContainer>
+      <div ref={listTopRef} aria-hidden="true" />
+      <RealizationsContainer>
+        {currentItems.map((item, idx) => (
+          <SingleRealizationContainer
+            key={`${item.img}-${idx}`}
+            ref={(el) => (cardRefs.current[idx] = el)}
+          >
+            <RealizationImage
+              src={item.img}
+              alt={`Realization ${idx + 1}`}
+              loading="lazy"
+              $active={idx === activeCardIndex}
+            />
+            <RealizationTags>
+              {Object.entries(item.tags).flatMap(([category, values]) =>
+                values.map((val, i) => (
+                  <Tag key={`${idx}-${category}-${val}-${i}`}>
+                    {category}: {val}
+                  </Tag>
+                ))
+              )}
+            </RealizationTags>
+          </SingleRealizationContainer>
+        ))}
+      </RealizationsContainer>
+      {pageCount > 1 && (
+        <StyledPaginate
+          pageCount={pageCount}
+          forcePage={currentPage}
+          onPageChange={handlePageChange}
+          previousLabel="<"
+          nextLabel=">"
+          pageRangeDisplayed={3}
+          marginPagesDisplayed={1}
+          renderOnZeroPageCount={null}
+        />
+      )}
+    </Page>
   );
 }

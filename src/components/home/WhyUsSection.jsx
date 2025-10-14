@@ -320,8 +320,6 @@ const features = [
 
 const WhyUsSection = () => {
   const { t } = useTranslation();
-  const prevRef = useRef(null);
-  const nextRef = useRef(null);
   const swiperRef = useRef(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
