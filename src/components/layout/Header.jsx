@@ -52,9 +52,8 @@ const HeaderWrapper = styled.header`
     transition: color ${({ theme }) => theme.transitions.default};
 
     &:hover {
-      color: #e6c619;
+      color: ${({ $isPastThreshold }) => ($isPastThreshold ? "#039b10" : "#e6c619")};
     }
-
   }
   
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
@@ -282,13 +281,11 @@ const MobileLangSwitcher = styled.div`
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
-  const lastScrollY = useRef(0);
   const ticking = useRef(false);
   
   const { t } = useTranslation();
   const location = useLocation();
   const { isPastThreshold, scrollY, isScrollingUp, isScrollingDown } = useScrollPosition(5);
-  const { isMobile } = useResponsive();
   const theme = useTheme();
 
   useEffect(() => {
@@ -379,7 +376,7 @@ const Header = () => {
       </LogoLink>
 
       <DesktopNav>
-        <Navigation variant="header" />
+        <Navigation variant="header" isPastThreshold={isPastThreshold} />
       </DesktopNav>
       
       <DesktopLangContainer>

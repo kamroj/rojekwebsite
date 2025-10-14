@@ -14,7 +14,7 @@ const BaseNavContainer = styled.nav`
 const BaseNavItem = styled(Link)`
   text-decoration: none;
   font-size: 1.3rem;
-  font-weight: 400;
+  font-weight: ${({ $isPastThreshold }) => ($isPastThreshold ? "600" : "400")};;
   text-transform: uppercase;
   letter-spacing: 1px;
   cursor: pointer;
@@ -28,7 +28,7 @@ const BaseNavItem = styled(Link)`
 
 
   &.active {
-    font-weight: 600;
+    font-weight: ${({ $isPastThreshold }) => ($isPastThreshold ? "800" : "600")};
     &::after {
       content: '';
       position: absolute;
@@ -38,7 +38,8 @@ const BaseNavItem = styled(Link)`
       right: 0;
       height: 1px;
       width: 110%;
-      background-color: #e6c71983;
+      background-color: ${({ $isPastThreshold }) => ($isPastThreshold ? "#009247" : "#e6c71983")};\
+      transition: background-color 1s ease;
     }
   }
 `;
@@ -73,7 +74,7 @@ export const IntroNavItem = styled(BaseNavItem)`
   }
 `;
 
-const Navigation = ({ variant = 'header' }) => {
+const Navigation = ({ variant = 'header', isPastThreshold }) => {
   const { t } = useTranslation();
   const location = useLocation();
   
@@ -114,6 +115,7 @@ const Navigation = ({ variant = 'header' }) => {
     <NavContainer role="navigation" aria-label={t('nav.mainNavigation', 'Main navigation')}>
       {navItems.map(item => (
         <NavItem 
+          $isPastThreshold={isPastThreshold} 
           to={item.path} 
           key={item.key}
           className={isActive(item.path) ? 'active' : ''}
