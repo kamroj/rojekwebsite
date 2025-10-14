@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { FiPlay } from 'react-icons/fi';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../pages/HomePage';
 import MaxWidthContainer from '../common/MaxWidthContainer';
+import Section from '../common/Section';
 
 const PresentationContainer = styled.div`
   width: 100%;
@@ -17,6 +18,7 @@ const PresentationWrapper = styled.div`
   width: 100%;
   background-color: #000;
   position: relative;
+  margin-bottom: 20px;
 `;
 
 // Kontener dla filmu YouTube - responsywny stosunek 16:9
@@ -26,11 +28,11 @@ const VideoContainer = styled.div`
   height: 0;
   padding-bottom: 56.25%; /* 16:9 aspect ratio */
   background-color: #000;
-  overflow: hidden;$
+  overflow: hidden;
   
   /* Większa wysokość na dużych ekranach */
   @media (min-width: ${({ theme }) => theme.breakpoints.lg}) {
-    padding-bottom: 50%; /* Nieco mniejszy aspect ratio dla większych ekranów */
+    padding-bottom: 50%;
     max-height: 70vh;
   }
 `;
@@ -167,8 +169,14 @@ const CompanyPresentationSection = () => {
   };
 
   return (
-    <PresentationContainer>
-      <MaxWidthContainer>
+      <Section
+        dark
+        customStyles={`
+          background: black);
+        `}
+        noPadding
+        $noInset
+      >
         <HeaderWrap $reversed className='full-width'>
           <ProductHeader $reversed $bg="#e6c61942">
             NASZA FIRMA
@@ -202,8 +210,7 @@ const CompanyPresentationSection = () => {
             )}
           </VideoContainer>
         </PresentationWrapper>
-      </MaxWidthContainer>
-    </PresentationContainer>
+      </Section>
   );
 };
 

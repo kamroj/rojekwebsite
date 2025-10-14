@@ -234,7 +234,7 @@ const ProductDescriptionTitle = styled.h3`
   margin-bottom: 1.5rem;
   color: ${({ theme }) => theme.colors.bottleGreen};
   font-weight: 600;
-  border-bottom: 1px solid #794f00;
+  border-bottom: 1px solid #015508;
   padding-bottom: 0.5rem;
 `;
 
@@ -264,18 +264,16 @@ const ProductBenefitItem = styled.li`
     position: absolute;
     left: 0;
     top: 1px;
-    color: #794f00;
+    color: #015508;
     font-weight: bold;
     font-size: 1.8rem;
   }
 `;
 
-// Wrapper dla obsługi gestów - tylko na mobile
 const SwipeableContainer = styled.div`
   width: 100%;
   
   @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
-    /* Na desktop wyłącz gesty */
     pointer-events: none;
     
     * {
@@ -402,7 +400,6 @@ const SlideItem = styled.div`
   }
 `;
 
-// --- Main Component ---
 const ProductSection = ({ productData, initialProductId = Object.keys(productData)[0] }) => {
   const [selectedProductId, setSelectedProductId] = useState(initialProductId);
   const [isLoading, setIsLoading] = useState(true);
@@ -410,26 +407,22 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
   const videoRef = useRef(null);
   const currentProduct = productData[selectedProductId];
 
-  // Dla mobile navigation
   const productIds = Object.keys(productData);
   const currentIndex = productIds.indexOf(selectedProductId);
   const isFirstProduct = currentIndex === 0;
   const isLastProduct = currentIndex === productIds.length - 1;
 
-  // Sprawdź czy to mobile
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 992); // breakpoint md
     };
 
-    // call once in case window size changed before effect ran
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Reset loading state when product changes
   useEffect(() => {
     setIsLoading(true);
     if (videoRef.current) {
@@ -437,12 +430,10 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
     }
   }, [currentProduct?.videoSrc]);
 
-  // Handle video loaded event
   const handleVideoLoaded = () => {
     setIsLoading(false);
   };
 
-  // Mobile navigation functions
   const goToPrevProduct = () => {
     if (!isFirstProduct) {
       const prevIndex = currentIndex - 1;
@@ -457,7 +448,6 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
     }
   };
 
-  // Obsługa gestów swipe - tylko na mobile
   const handleSwipeLeft = () => {
     if (isMobile && !isLastProduct) {
       goToNextProduct();

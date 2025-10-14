@@ -151,13 +151,10 @@ const HomePage = () => {
     <>
       <IntroSection />
 
-      {/* <Section label={t('sections.products')} labelPosition="left"> */}
       <ProductSection
         productData={productData}
         initialProductId={PRODUCT_TYPES.WINDOWS}
       />
-      {/* </Section> */}
-
       <Section
         dark
         customStyles={`

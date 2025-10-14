@@ -11,23 +11,6 @@ import 'swiper/css/autoplay';
 import MaxWidthContainer from '../common/MaxWidthContainer';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../pages/HomePage';
 
-// Kontener główny dla sekcji partnerów
-const PartnersContainer = styled.div`
-  width: 100%;
-  max-width: ${({ theme }) => theme.layout.maxWidth};
-  margin: 0 auto;
-  padding: 0 ${({ theme }) => theme.spacings.medium};
-  padding-bottom: ${({ theme }) => theme.spacings.xlarge};
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    padding-bottom: ${({ theme }) => theme.spacings.large};
-    width: 100%;
-    margin-left: auto;
-    margin-right: auto;
-  }
-`;
-
-// Siatka partnerów - tylko na desktop
 const PartnersGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -175,7 +158,6 @@ const partnersData = [
 const PartnersSection = () => {
   const { t } = useTranslation();
 
-  // Funkcja renderująca partnera dla desktop
   const renderDesktopPartner = (partner) => (
     <PartnerItem
       key={partner.id}
@@ -189,7 +171,6 @@ const PartnersSection = () => {
         alt={partner.alt}
         loading="lazy"
         onError={(e) => {
-          // Fallback w przypadku błędu ładowania obrazka
           e.target.style.display = 'none';
           e.target.parentElement.innerHTML = `<div style="
             display: flex;
@@ -239,7 +220,6 @@ const PartnersSection = () => {
   );
 
   return (
-    <PartnersContainer>
       <MaxWidthContainer>
         <HeaderWrap className='full-width'>
           <ProductHeader>
@@ -293,7 +273,6 @@ const PartnersSection = () => {
           </Swiper>
         </MobileSwiperContainer>
       </MaxWidthContainer>
-    </PartnersContainer>
   );
 };
 

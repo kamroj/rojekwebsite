@@ -13,8 +13,8 @@ const BaseNavContainer = styled.nav`
 
 const BaseNavItem = styled(Link)`
   text-decoration: none;
-  font-size: 1.4rem;
-  font-weight: 500;
+  font-size: 1.3rem;
+  font-weight: 400;
   text-transform: uppercase;
   letter-spacing: 1px;
   cursor: pointer;
@@ -28,15 +28,17 @@ const BaseNavItem = styled(Link)`
 
 
   &.active {
-    font-weight: 700;
+    font-weight: 600;
     &::after {
       content: '';
       position: absolute;
+      transform: translateX(-5%);
       bottom: 0;
       left: 0;
       right: 0;
-      height: 2px;
-      background-color: ${({ theme }) => theme.colors.secondary};
+      height: 1px;
+      width: 110%;
+      background-color: #e6c71983;
     }
   }
 `;

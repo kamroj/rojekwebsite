@@ -52,7 +52,7 @@ const HeaderWrapper = styled.header`
     transition: color ${({ theme }) => theme.transitions.default};
 
     &:hover {
-      color: #0ae875;
+      color: #e6c619;
     }
 
   }
@@ -76,7 +76,6 @@ const LogoLink = styled(Link)`
     width: auto;
     display: block;
   }
-
 `;
 
 const DesktopNav = styled.div`
@@ -292,14 +291,11 @@ const Header = () => {
   const { isMobile } = useResponsive();
   const theme = useTheme();
 
-  // Expose dynamic header height to CSS as a variable for sticky elements offsets
   useEffect(() => {
-    const gap = theme.spacings.small; // small space below visible header
-    // When header is hidden, keep a small top gap so filters are not flush to the very top
+    const gap = theme.spacings.small;
     const offset = isVisible ? `calc(${theme.layout.headerHeight} + ${gap})` : gap;
     document.documentElement.style.setProperty('--header-offset', offset);
     return () => {
-      // keep a sane default on unmount
       document.documentElement.style.setProperty('--header-offset', `calc(${theme.layout.headerHeight} + ${gap})`);
     };
   }, [isVisible, theme.layout.headerHeight, theme.spacings.small]);
