@@ -6,8 +6,6 @@ import styled, { css } from 'styled-components';
    Use transient props ($...) to avoid forwarding unknown props to the DOM
 */
 const SectionWrapper = styled.section`
-  margin-top: 6rem;
-  /* padding: ${({ $dark }) => $dark ? '20px 0' : '5rem 3.5rem 1.5rem 3.5rem'}; */
   background-color: ${({ theme, $dark }) => $dark ? 'black' : theme.colors.background};
   border: ${({ $dark }) => $dark ? 'none' : '1px solid'};
   border-color: ${({ theme, $dark }) => $dark ? 'transparent' : theme.colors.borderAccent};

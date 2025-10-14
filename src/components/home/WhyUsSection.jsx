@@ -149,25 +149,24 @@ const FeatureDescription = styled.p`
 const NavigationButton = styled.button`
   appearance: none;
   margin: 0;
-  padding: 0;
-  
-  width: 48px;
-  height: 48px;
-  border: none;
-  border-radius: 50%;
-  background-color: #254429;
+  padding: 8px 14px;
+  border: 1px solid ${({ theme }) => theme.colors.bottleGreenLight};
+  border-radius: 8px;
+  background-color: transparent;
   
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   
-  color: #fff;
-  font-size: 2rem;
-  cursor: pointer;
+  color: #015123;
+  font-size: 1.8rem;
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
   outline: none;
   transition: opacity ${({ theme }) => theme.transitions.default},
-              background-color ${({ theme }) => theme.transitions.default};
-  opacity: ${({ disabled }) => disabled ? 0.3 : 1};
+              background-color ${({ theme }) => theme.transitions.default},
+              border-color ${({ theme }) => theme.transitions.default};
+  opacity: ${({ disabled }) => disabled ? 0.5 : 1};
   
   pointer-events: ${({ disabled }) => disabled ? 'none' : 'auto'};
   -webkit-tap-highlight-color: transparent;
@@ -177,23 +176,23 @@ const NavigationButton = styled.button`
     display: block;
     width: 1.2em;
     height: 1.2em;
-    color: #fff;
+    color: #015123;
     transition: transform 0.22s ease, color 0.22s ease;
     transform: translateX(0);
   }
 
   &:hover:not(:disabled) {
-    background-color: ${({ theme }) => theme.colors.bottleGreen};
+    background-color: rgba(1, 85, 8, 0.08);
+    border-color: ${({ theme }) => theme.colors.bottleGreen};
   }
 
-  &:hover svg {
+  &:hover:not(:disabled) svg {
     transform: translateX(6px);
   }
   
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    width: 36px;
-    height: 36px;
-    font-size: 2.5rem;
+    padding: 6px 12px;
+    font-size: 2.2rem;
   }
 `;
 
@@ -202,7 +201,7 @@ const PrevNavigationButton = styled(NavigationButton)`
     transform: rotate(180deg) translateX(0);
   }
 
-  &:hover svg {
+  &:hover:not(:disabled) svg {
     transform: rotate(180deg) translateX(-6px);
   }
 `;
@@ -212,9 +211,60 @@ const NextNavigationButton = styled(NavigationButton)`
     transform: translateX(0);
   }
 
-  &:hover svg {
+  &:hover:not(:disabled) svg {
     transform: translateX(6px);
   }
+`;
+
+const MobileSideArrow = styled.button`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 44px;
+  height: 64px;
+  border: none;
+  background: transparent;
+  color: #015123;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+  opacity: ${({ disabled }) => disabled ? 0.35 : 1};
+  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
+  transition: transform 0.18s ease, opacity ${({ theme }) => theme.transitions.default};
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  svg {
+    width: 2.2rem;
+    height: 2.2rem;
+    color: #015123;
+    transform: translateX(0);
+    transition: transform 0.18s ease;
+  }
+
+  &:hover:not(:disabled) svg {
+    transform: translateX(4px);
+  }
+
+  @media (min-width: 1400px) {
+    display: none;
+  }
+`;
+
+const MobileSideArrowLeft = styled(MobileSideArrow)`
+  left: 8px;
+  svg {
+    transform: rotate(180deg) translateX(0);
+  }
+  &:hover:not(:disabled) svg {
+    transform: rotate(180deg) translateX(-4px);
+  }
+`;
+
+const MobileSideArrowRight = styled(MobileSideArrow)`
+  right: 8px;
 `;
 
 const features = [
@@ -355,25 +405,20 @@ const WhyUsSection = () => {
             ))}
           </Swiper>
 
-          <NavigationContainer>
-            <PrevNavigationButton
-              ref={prevRef}
-              onClick={goToPrev}
-              disabled={isBeginning}
-              aria-label={t('navigation.previous', 'Poprzedni')}
-            >
-              <IoIosArrowForward />
-            </PrevNavigationButton>
-
-            <NextNavigationButton
-              ref={nextRef}
-              onClick={goToNext}
-              disabled={isEnd}
-              aria-label={t('navigation.next', 'Następny')}
-            >
-              <IoIosArrowForward />
-            </NextNavigationButton>
-          </NavigationContainer>
+          <MobileSideArrowLeft
+            onClick={goToPrev}
+            disabled={isBeginning}
+            aria-label={t('navigation.previous', 'Poprzedni')}
+          >
+            <IoIosArrowForward />
+          </MobileSideArrowLeft>
+          <MobileSideArrowRight
+            onClick={goToNext}
+            disabled={isEnd}
+            aria-label={t('navigation.next', 'Następny')}
+          >
+            <IoIosArrowForward />
+          </MobileSideArrowRight>
         </MobileSwiperContainer>
       </MaxWidthContainer>
     </WhyUsContainer>

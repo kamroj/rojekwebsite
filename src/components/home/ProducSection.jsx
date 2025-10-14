@@ -14,6 +14,7 @@ const ProductContentContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-bottom: 4rem;
 `;
 
 // Kontener dla Swiper na mobile - teraz z obsługą gestów
@@ -60,7 +61,7 @@ const ProductListButton = styled.button`
   flex-shrink: 0;
   
   &:hover {
-    color: ${({ theme }) => theme.colors.bottleGreen};
+  color: #015123;
     border-bottom-color: ${({ theme }) => theme.colors.bottleGreenLight};
   }
   
@@ -83,39 +84,47 @@ const ProductListButton = styled.button`
 const NavigationButton = styled.button`
   appearance: none;
   margin: 0;
-  padding: 0;
-  
-  width: 48px;
-  height: 48px;
-  border: none;
-  border-radius: 50%;
-  background-color: #254429;
+  padding: 8px 14px;
+  border: 1px solid ${({ theme }) => theme.colors.bottleGreenLight};
+  border-radius: 8px;
+  background-color: transparent;
   
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 6px;
   
-  color: #fff;
-  font-size: 2rem;
-  cursor: pointer;
+  color: #015123;
+  font-size: 1.8rem;
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
   outline: none;
   transition: opacity ${({ theme }) => theme.transitions.default},
-              background-color ${({ theme }) => theme.transitions.default};
-  opacity: ${({ disabled }) => disabled ? 0.3 : 1};
+              background-color ${({ theme }) => theme.transitions.default},
+              border-color ${({ theme }) => theme.transitions.default};
+  opacity: ${({ disabled }) => disabled ? 0.5 : 1};
   
   pointer-events: ${({ disabled }) => disabled ? 'none' : 'auto'};
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
   flex-shrink: 0;
+
+  svg {
+    display: block;
+    width: 1.2em;
+    height: 1.2em;
+    color: inherit;
+    transition: transform 0.22s ease, color 0.22s ease;
+    transform: translateX(0);
+  }
   
   &:hover:not(:disabled) {
-    background-color: ${({ theme }) => theme.colors.bottleGreen};
+    background-color: rgba(1, 85, 8, 0.08);
+    border-color: ${({ theme }) => theme.colors.bottleGreen};
   }
   
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    width: 36px;
-    height: 36px;
-    font-size: 2.5rem;
+    padding: 6px 12px;
+    font-size: 2.2rem;
   }
   
   @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
@@ -264,8 +273,8 @@ const SideArrow = styled.button`
   z-index: 10;
 
   /* Larger, taller clickable area (non-circular) */
-  width: 80px;
-  height: 160px;
+  width: 56px;
+  height: 112px;
   border-radius: 4px;
   border: none;
   display: none;
@@ -273,18 +282,19 @@ const SideArrow = styled.button`
   justify-content: center;
   background: transparent;
   color: ${({ theme }) => theme.colors.bottleGreen};
-  font-size: 3rem;
-  cursor: pointer;
+  font-size: 2.6rem;
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
   /* no background change on hover, subtle transitions for transform only */
   transition: transform 0.18s ease, opacity ${({ theme }) => theme.transitions.default};
-  opacity: 1;
+  opacity: ${({ disabled }) => (disabled ? 0.35 : 1)};
+  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
 
   /* Icon styling */
   svg {
     display: block;
-    width: 2em;
-    height: 2em;
-    color: ${({ theme }) => theme.colors.bottleGreen};
+    width: 2.6rem;
+    height: 2.6rem;
+    color: #015123;
     transition: transform 0.18s ease, color 0.18s ease;
     transform: translateX(0);
   }
@@ -308,7 +318,7 @@ const SideArrowLeft = styled(SideArrow)`
   }
 
   /* Subtle container shift to the left on hover */
-  &:hover {
+  &:not(:disabled):hover {
     transform: translateY(-50%) translateX(-4px);
   }
   
@@ -326,7 +336,7 @@ const SideArrowRight = styled(SideArrow)`
   }
 
   /* Subtle container shift to the right on hover */
-  &:hover {
+  &:not(:disabled):hover {
     transform: translateY(-50%) translateX(4px);
   }
   
@@ -335,13 +345,128 @@ const SideArrowRight = styled(SideArrow)`
   }
 `;
 
+/* Mobile overlay arrows and header (mobile only) */
+const MobileHeaderRow = styled.div`
+  display: none;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin: 1rem 0 1.5rem;
+    width: 100%;
+  }
+`;
+
+const MobileCurrentTitle = styled.div`
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: ${({ theme }) => theme.colors.bottleGreen};
+`;
+
+const MobileHeaderIconButton = styled.button`
+  appearance: none;
+  border: none;
+  background: transparent;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  color: #015123;
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+  opacity: ${({ disabled }) => (disabled ? 0.35 : 1)};
+  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
+  transition: opacity ${({ theme }) => theme.transitions.default}, transform 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  svg {
+    width: 2.2rem;
+    height: 2.2rem;
+    color: currentColor;
+    transform: translateX(0);
+    transition: transform 0.18s ease;
+  }
+
+  &:hover:not(:disabled) svg {
+    transform: translateX(2px);
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+    display: none;
+  }
+`;
+
+const MobileHeaderIconButtonPrev = styled(MobileHeaderIconButton)`
+  svg {
+    transform: rotate(180deg) translateX(0);
+  }
+  &:hover:not(:disabled) svg {
+    transform: rotate(180deg) translateX(-2px);
+  }
+`;
+
+const MobileHeaderIconButtonNext = styled(MobileHeaderIconButton)``;
+
+const MobileSideArrow = styled.button`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 44px;
+  height: 64px;
+  border: none;
+  background: transparent;
+  color: ${({ theme }) => theme.colors.bottleGreen};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: ${({ disabled }) => disabled ? 0.35 : 1};
+  transition: transform 0.18s ease, opacity ${({ theme }) => theme.transitions.default};
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  svg {
+    width: 2.2rem;
+    height: 2.2rem;
+    color: ${({ theme }) => theme.colors.bottleGreen};
+    transform: translateX(0);
+    transition: transform 0.18s ease;
+  }
+
+  &:hover:not(:disabled) svg {
+    transform: translateX(4px);
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+    display: none; /* hide on desktop/tablet */
+  }
+`;
+
+const MobileSideArrowLeft = styled(MobileSideArrow)`
+  left: 8px;
+  svg {
+    transform: rotate(180deg) translateX(0);
+  }
+  &:hover:not(:disabled) svg {
+    transform: rotate(180deg) translateX(-4px);
+  }
+`;
+
+const MobileSideArrowRight = styled(MobileSideArrow)`
+  right: 8px;
+`;
+
 /* Slider viewport and inner */
 const SlidesWrapper = styled.div`
   position: relative;
   width: 100%;
   overflow: visible; /* allow arrows to sit outside the viewport */
-  padding-left: 96px;  /* reserve space so arrows remain visible */
-  padding-right: 96px; /* reserve space so arrows remain visible */
+  padding-left: 64px;  /* reserve space so arrows remain visible */
+  padding-right: 64px; /* reserve space so arrows remain visible */
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     padding-left: 0;
@@ -452,34 +577,29 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
             threshold={80}
           >
             <ProductContentContainer>
-              <MobileButtonsContainer>
-                <NavigationButton
+              <MobileHeaderRow>
+                <MobileHeaderIconButtonPrev
                   onClick={goToPrevProduct}
                   disabled={isFirstProduct}
                   aria-label="Poprzedni produkt"
                 >
-                  <FiChevronLeft />
-                </NavigationButton>
-
-                <MobileSingleButton>
-                  <ProductListButton $active={true} disabled={true}>
-                    {currentProduct.name}
-                  </ProductListButton>
-                </MobileSingleButton>
-
-                <NavigationButton
+                  <IoIosArrowForward />
+                </MobileHeaderIconButtonPrev>
+                <MobileCurrentTitle>{currentProduct.name}</MobileCurrentTitle>
+                <MobileHeaderIconButtonNext
                   onClick={goToNextProduct}
                   disabled={isLastProduct}
                   aria-label="Następny produkt"
                 >
-                  <FiChevronRight />
-                </NavigationButton>
-              </MobileButtonsContainer>
+                  <IoIosArrowForward />
+                </MobileHeaderIconButtonNext>
+              </MobileHeaderRow>
 
               <SlidesWrapper>
-                {!isMobile && !isFirstProduct && (
+                {!isMobile && (
                   <SideArrowLeft
                     onClick={goToPrevProduct}
+                    disabled={isFirstProduct}
                     aria-label="Poprzedni produkt"
                   >
                     <IoIosArrowForward />
@@ -533,9 +653,10 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
                   </SlideInner>
                 </SlideViewport>
 
-                {!isMobile && !isLastProduct && (
+                {!isMobile && (
                   <SideArrowRight
                     onClick={goToNextProduct}
+                    disabled={isLastProduct}
                     aria-label="Następny produkt"
                   >
                     <IoIosArrowForward />
