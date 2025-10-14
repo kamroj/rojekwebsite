@@ -16,8 +16,8 @@ const IntroWrapper = styled.section`
   width: 100vw;
   /* Use dynamic viewport height to avoid being covered by mobile browser UI.
      Add 1px spare to avoid 1-2px visual gap caused by rounding in some browsers. */
-  height: calc(var(--vvh, 100dvh) + 1px);
-  min-height: calc(var(--vvh, 100dvh) + 1px);
+  height: var(--vvh, 100dvh);
+  min-height: var(--vvh, 100dvh);
   overflow: hidden;
   margin: 0;
   padding: 0;
@@ -26,19 +26,17 @@ const IntroWrapper = styled.section`
 /* video: zawsze co najmniej tyle, co viewport, a przy tym wycentrowane */
 const VideoBackground = styled.video`
   position: absolute;
-  left: 50%;
-  top: 0;
-  bottom: 0;
-  /* Ensure the video always covers the visible area even with rounding:
-     stretch vertically and keep a small spare to avoid a 1-2px gap. */
-  min-width: 100vw;
-  min-height: calc(var(--vvh, 100dvh) + 2px);
-  width: auto;
-  height: auto;
-  transform: translateX(-50%);
-  object-fit: cover;            /* zachowuje proporcje i przycina nadmiar */
-  object-position: center bottom;
-  display: block;               /* usuwa ewentualne białe paski jako inline */
+  /* Bleed by 1px to avoid hairline gaps from subpixel rounding */
+  top: -1px;
+  right: -1px;
+  bottom: -1px;
+  left: -1px;
+
+  width: calc(100% + 2px);
+  height: calc(125% + 2px);
+  object-fit: cover;           /* zachowuje proporcje i przycina nadmiar */
+  object-position: center bottom;     /* stabilne kadrowanie */
+  display: block;              /* usuwa ewentualne białe paski jako inline */
   pointer-events: none;
   z-index: 1;
 `;
@@ -57,23 +55,23 @@ const VideoOverlay = styled.div`
 // Nowy wrapper flexowy trzymający play/pause i tekst+CTA
 const BottomOverlay = styled.div`
   position: absolute;
-  bottom: 8%;
+  bottom: 0;
   left: 5%;
   right: 5%;
   display: flex;
-  align-items: flex-end;      /* przyklejamy elementy do dołu kontenera */
+  align-items: flex-end;      /* elementy oparte o dół */
   justify-content: space-between;
   min-height: 56px;           /* co najmniej wysokość przycisku */
   z-index: 10;
-  /* Ensure content stays above mobile browser UI / home indicator */
-  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 6px);
+
+  /* Odstęp od dołu + bezpieczna strefa dla pasków na dole (iOS/Android) */
+  padding-bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(16px, 2vh, 28px));
 
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    bottom: 5%;
-    min-height: 52px;
     left: 3%;
     right: 3%;
-    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4px);
+    min-height: 52px;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + clamp(14px, 2vh, 24px));
   }
 `;
 
