@@ -167,20 +167,20 @@ const CompanyPresentationSection = () => {
   };
 
   return (
-      <Section
-        dark
-        customStyles={`
+    <Section
+      dark
+      customStyles={`
           background: black);
         `}
-        noPadding
-        $noInset
-      >
-        <MaxWidthContainer>
+      noPadding
+      $noInset
+    >
+      <MaxWidthContainer>
         <HeaderWrap $reversed className='full-width'>
-          <ProductHeader $reversed $bg="#e6c61942">
+          <ProductHeader $reversed>
             NASZA FIRMA
           </ProductHeader>
-          <ProductHeaderSubtitle $bg="#706a0026;" $reversed>Poznaj nas od środka</ProductHeaderSubtitle>
+          <ProductHeaderSubtitle $blackBackground>Poznaj nas od środka</ProductHeaderSubtitle>
         </HeaderWrap>
         <PresentationWrapper ref={sectionRef}>
           <VideoContainer>
@@ -209,8 +209,8 @@ const CompanyPresentationSection = () => {
             )}
           </VideoContainer>
         </PresentationWrapper>
-        </MaxWidthContainer>
-      </Section>
+      </MaxWidthContainer>
+    </Section>
   );
 };
 

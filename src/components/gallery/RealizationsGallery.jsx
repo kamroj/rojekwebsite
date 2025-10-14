@@ -276,7 +276,7 @@ const RealizationsGallery = ({ images, options = {} }) => {
         <ProductHeader $bg="#e6c61942" $reversed>
           REALIZACJE
         </ProductHeader>
-        <ProductHeaderSubtitle $bg="#706a0026;" $reversed>Zobacz nasze realizacje</ProductHeaderSubtitle>
+        <ProductHeaderSubtitle $bg="#706a0026;" $blackBackground>Zobacz nasze realizacje</ProductHeaderSubtitle>
       </HeaderWrap>
       <StyledSwiperContainer>
         <Swiper

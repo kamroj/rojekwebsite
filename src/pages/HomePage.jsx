@@ -31,7 +31,7 @@ export const HeaderWrap = styled.div`
 
 export const ProductHeader = styled.div`
   font-size: 3rem;
-  font-weight: 600;
+  font-weight: 300;
   line-height: 1.2;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
@@ -43,7 +43,7 @@ export const ProductHeaderSubtitle = styled.div`
   font-size: 1.5rem;
   font-weight: 500;
   line-height: 1.6;
-  color: ${({ $reversed }) => ($reversed ? "#e6c619c7" : '#012506')};
+  color: ${({ $blackBackground }) => ($blackBackground ? "#e6c619c7" : '#012506')};
 
     @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
     font-size: 1.4rem;

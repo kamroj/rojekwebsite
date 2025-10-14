@@ -10,10 +10,15 @@ import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomePage';
 
 
 
-const HistorySection = styled(Section)`
+const HistorySection = styled.div`
   margin-top: 80px;
   margin-bottom: 80px;
+  min-height: 400px;
+
+  /* poprawny skład */
+
 `;
+
 
 const SectionTitle = styled.h2`
   font-size: 2.8rem;
@@ -52,133 +57,12 @@ const IntroText = styled(motion.div)`
   }
 `;
 
-/* About-specific variants and styled list for services */
-const AboutIntro = styled(IntroText)`
-  text-align: left;
-
-  p {
-    text-align: left;
-  }
-
-  /* Ensure list items have consistent font-size on About page (fix mobile scaling) */
-  ul {
-    font-size: 1.4rem !important;
-    line-height: 1.8 !important;
-    margin: 0 0 1.5rem 0 !important;
-    list-style-position: outside !important;
-    padding-left: 1.2rem !important;
-  }
-
-  li {
-    font-size: 1.4rem !important;
-    margin-bottom: 0.6rem !important;
-  }
-
-  /* Also target the inline-styled ul in JSX to be safe */
-  & > ul[style] {
-    font-size: 1.4rem !important;
-    list-style-position: outside !important;
-    padding-left: 1.2rem !important;
-  }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    padding: 0 16px;
-
-    ul, li, & > ul[style] {
-      font-size: 1.3rem !important;
-    }
-
-    ul, & > ul[style] {
-      margin: 0 0 1.2rem 0 !important;
-      padding-left: 1rem !important;
-    }
-
-    li {
-      margin-bottom: 0.5rem !important;
-    }
-
-    p {
-      margin-bottom: 1.2rem;
-    }
-  }
-`;
-
-const ServicesList = styled(motion.ul)`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: grid;
-  gap: 18px;
-  max-width: 900px;
-  grid-template-columns: repeat(2, 1fr);
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    grid-template-columns: 1fr;
-  }
-`;
-
-const ServiceItem = styled(motion.li)`
-  display: flex;
-  align-items: center;
-  gap: 18px;
-  background: ${({ theme }) => theme.colors.background};
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  padding: 18px 20px;
-  border-radius: 12px;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.04);
-  color: ${({ theme }) => theme.colors.text};
-
-  &:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 14px 30px rgba(0,0,0,0.08);
-  }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    padding: 14px;
-  }
-`;
-
-const ServiceIcon = styled.div`
-  width: 52px;
-  height: 52px;
-  min-width: 52px;
-  border-radius: 12px;
-  background: linear-gradient(180deg, ${({ theme }) => theme.colors.bottleGreenLight}22, transparent);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ theme }) => theme.colors.bottleGreen};
-  font-size: 1.4rem;
-  box-shadow: 0 6px 14px rgba(7,65,32,0.06);
-`;
-
-const ServiceContent = styled.div`
-  flex: 1;
-
-  h4 {
-    margin: 0 0 6px 0;
-    font-size: 1.05rem;
-    color: ${({ theme }) => theme.colors.primary};
-    font-weight: 600;
-  }
-
-  p {
-    margin: 0;
-    color: ${({ theme }) => theme.colors.text};
-    font-size: 0.98rem;
-    line-height: 1.5;
-    opacity: 0.95;
-  }
-`;
-
 /* Timeline */
 const TimelineContainer = styled.div`
   position: relative;
-  padding: 30px 0;
-  max-width: 900px;
   margin: 0 auto;
-  
+  padding: 30px 0;
+
   &::before {
     content: '';
     position: absolute;
@@ -194,12 +78,12 @@ const TimelineContainer = styled.div`
       transparent
     );
     transform: translateX(-50%);
-
     @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
       left: 20px;
     }
   }
 `;
+
 
 const TimelineItem = styled(motion.div)`
   display: flex;
@@ -360,10 +244,6 @@ const HeadquartersInfo = styled(motion.div)`
     text-align: left;
   }
 
-  /* Simplified address/map styling:
-     - remove framed background and header "Adres" in JSX
-     - on mobile make map full-bleed
-  */
   .address {
     margin-top: 30px;
     text-align: left;
@@ -412,6 +292,7 @@ const HeadquartersImage = styled(motion.div)`
   position: relative;
   overflow: visible;
   width: 100%;
+  min-width: 550px;
   height: 520px;
 
   img {
@@ -429,6 +310,7 @@ const HeadquartersImage = styled(motion.div)`
     width: 100%;
     height: 320px;
     overflow: visible;
+    min-width: auto;
 
     img {
       position: static;
@@ -682,6 +564,19 @@ const AboutUsPage = () => {
     visible: { opacity: 1, y: 0 }
   };
 
+  const WhyUsContainer = styled.div`
+    display: flex;
+
+    @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+      flex-direction: column;
+      gap: 30px;
+    }
+  `;
+
+  const WhyUsContentContainer = styled.div`
+    color: ${({ theme }) => theme.colors.text};
+    `;
+
   return (
     <Page imageSrc="/images/company/company-top.jpg" height={500} title={t('pageTitle.about', 'O Firmie')}>
       <Section>
@@ -691,30 +586,45 @@ const AboutUsPage = () => {
           </ProductHeader>
           <ProductHeaderSubtitle>Co odróznia nas od innych</ProductHeaderSubtitle>
         </HeaderWrap>
-        <p>
-          {t(
-            'aboutPage.lead',
-            'Dogodna lokalizacja stolarni przy granicy administracyjnej Krakowa, nowoczesny park maszynowy oraz hala o powierzchni 1200 m² dają nam wiele możliwości, aby zrealizować każde Państwa zamówienie. Zapewniamy konkurencyjne ceny oraz doświadczenie i profesjonalizm załogi w realizacji zleceń.'
-          )}
-        </p>
-        <p>
-          {t('aboutPage.invite', 'Zapraszamy osoby prywatne oraz firmy do składania zapytań ofertowych w następujących dziedzinach:')}
-        </p>
-        <ul style={{ listStyle: 'disc', paddingLeft: '1.5rem', margin: '1rem auto 2rem', lineHeight: 1.9 }}>
-          <li>{t('aboutPage.services.0', { defaultValue: 'Okna jednoramowe (eurookna) standardowe i stylizowane' })}</li>
-          <li>{t('aboutPage.services.1', { defaultValue: 'Okna drewniane skrzynkowe' })}</li>
-          <li>{t('aboutPage.services.2', { defaultValue: 'Rekonstrukcje i renowacje stolarki zabytkowej' })}</li>
-          <li>{t('aboutPage.services.3', { defaultValue: 'Okna drewniane ppoż. EI30, EI60' })}</li>
-          <li>{t('aboutPage.services.4', { defaultValue: 'Drzwi drewniane ppoż. stylizowane dla obiektów zabytkowych' })}</li>
-        </ul>
+        <WhyUsContainer>
+          <WhyUsContentContainer>
+            <p>
+              {t(
+                'aboutPage.lead',
+                'Dogodna lokalizacja stolarni przy granicy administracyjnej Krakowa, nowoczesny park maszynowy oraz hala o powierzchni 1200 m² dają nam wiele możliwości, aby zrealizować każde Państwa zamówienie. Zapewniamy konkurencyjne ceny oraz doświadczenie i profesjonalizm załogi w realizacji zleceń.'
+              )}
+            </p>
+            <p>
+              {t('aboutPage.invite', 'Zapraszamy osoby prywatne oraz firmy do składania zapytań ofertowych w następujących dziedzinach:')}
+            </p>
+            <ul style={{ listStyle: 'disc', paddingLeft: '1.5rem', margin: '1rem auto 2rem', lineHeight: 1.9 }}>
+              <li>{t('aboutPage.services.0', { defaultValue: 'Okna jednoramowe (eurookna) standardowe i stylizowane' })}</li>
+              <li>{t('aboutPage.services.1', { defaultValue: 'Okna drewniane skrzynkowe' })}</li>
+              <li>{t('aboutPage.services.2', { defaultValue: 'Rekonstrukcje i renowacje stolarki zabytkowej' })}</li>
+              <li>{t('aboutPage.services.3', { defaultValue: 'Okna drewniane ppoż. EI30, EI60' })}</li>
+              <li>{t('aboutPage.services.4', { defaultValue: 'Drzwi drewniane ppoż. stylizowane dla obiektów zabytkowych' })}</li>
+            </ul>
 
-        <p style={{ listStyle: 'disc', paddingLeft: '1.5rem', margin: '1rem auto 2rem', lineHeight: 1.9 }}>
-          {t('aboutPage.partnersIntro', 'Ponadto posiadamy skład fabryczny i jesteśmy bezpośrednim dystrybutorem następujących firm:')}
-        </p>
-        <p style={{ listStyle: 'disc', paddingLeft: '1.5rem', margin: '1rem auto 2rem', lineHeight: 1.9 }}>
-          • {t('aboutPage.partners.0', { defaultValue: 'Okna PCV firmy OKNO-POL oraz SONAROL' })}<br />
-          • {t('aboutPage.partners.1', { defaultValue: 'Drzwi wewnętrzne i wejściowe firmy CENTURION' })}
-        </p>
+            <p style={{ listStyle: 'disc', paddingLeft: '1.5rem', margin: '1rem auto 2rem', lineHeight: 1.9 }}>
+              {t('aboutPage.partnersIntro', 'Ponadto posiadamy skład fabryczny i jesteśmy bezpośrednim dystrybutorem następujących firm:')}
+            </p>
+            <p style={{ listStyle: 'disc', paddingLeft: '1.5rem', margin: '1rem auto 2rem', lineHeight: 1.9 }}>
+              • {t('aboutPage.partners.0', { defaultValue: 'Okna PCV firmy OKNO-POL oraz SONAROL' })}<br />
+              • {t('aboutPage.partners.1', { defaultValue: 'Drzwi wewnętrzne i wejściowe firmy CENTURION' })}
+            </p>
+          </WhyUsContentContainer>
+          <HeadquartersImage
+            initial={{ opacity: 0, x: 30 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <img
+              src="/images/company/company-building.jpg"
+              alt={t('headquarters.imageAlt', 'Siedziba firmy ROJEK')}
+            />
+          </HeadquartersImage>
+        </WhyUsContainer>
       </Section>
 
       {/* History Section */}
@@ -723,7 +633,7 @@ const AboutUsPage = () => {
           <ProductHeader $reversed>
             Nasza Historia
           </ProductHeader>
-          <ProductHeaderSubtitle $reversed>Jak zmienialiśmy się przez lata</ProductHeaderSubtitle>
+          <ProductHeaderSubtitle>Jak zmienialiśmy się przez lata</ProductHeaderSubtitle>
         </HeaderWrap>
         <IntroText
           initial={{ opacity: 0, y: 30 }}
@@ -794,17 +704,7 @@ const AboutUsPage = () => {
             </div>
           </HeadquartersInfo>
 
-          <HeadquartersImage
-            initial={{ opacity: 0, x: 30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <img
-              src="/images/company/company-building.jpg"
-              alt={t('headquarters.imageAlt', 'Siedziba firmy ROJEK')}
-            />
-          </HeadquartersImage>
+
         </HeadquartersContent>
       </HeadquartersSection>
 

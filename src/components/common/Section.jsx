@@ -6,6 +6,7 @@ const SectionWrapper = styled.section`
   position: relative;
   color: ${({ theme, $dark }) => $dark ? theme.colors.textLight : 'inherit'};
   ${({ $customStyles }) => $customStyles && css`${$customStyles}`}
+  background-color: ${({ $dark, theme }) => $dark ? "black" : 'inherit'};
 `;
 
 const ContentContainer = styled.div`
@@ -14,16 +15,16 @@ const ContentContainer = styled.div`
 `;
 
 // Combined Section component with label and content
-const Section = ({ 
-  children, 
-  label, 
-  labelPosition = 'right', 
+const Section = ({
+  children,
+  label,
+  labelPosition = 'right',
   dark = false,
   align,
   noPadding,
   customStyles,
   $noInset,
-  ...props 
+  ...props
 }) => {
   return (
     <SectionWrapper $dark={dark} $customStyles={customStyles}>
