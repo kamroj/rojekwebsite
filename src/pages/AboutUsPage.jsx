@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
@@ -7,6 +7,11 @@ import Section from '../components/common/Section';
 import { COMPANY_ADDRESS, MAP_SRC } from '../constants';
 import Page from '../components/common/Page';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomePage';
+import { IoIosArrowForward } from 'react-icons/io';
+import { Navigation } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/css';
+import 'swiper/css/navigation';
 
 
 
@@ -339,15 +344,9 @@ const ManagementGrid = styled.div`
   justify-items: center;
   gap: 28px;
 
+  /* Ukryj siatkę na mobile - tam pokażemy slider */
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    gap: 20px;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-  }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
-    grid-template-columns: 1fr;
-    gap: 16px;
-    padding: 0 12px;
+    display: none;
   }
 `;
 
@@ -439,6 +438,165 @@ const ManagerRole = styled.p`
   }
 `;
 
+/* Mobile slider (na wzór WhyUs) */
+const MobileSwiperContainer = styled.div`
+  display: block;
+  position: relative;
+  width: 100%;
+  margin: 0 auto;
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+    display: none;
+  }
+
+  .swiper {
+    width: 100%;
+    padding: 20px 0 20px;
+    overflow: visible;
+    cursor: grab;
+  }
+
+  .swiper-slide {
+    height: auto;
+    display: flex;
+    justify-content: center;
+    padding: 0 4px;
+  }
+`;
+
+const MobileSideArrow = styled.button`
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 44px;
+  height: 64px;
+  border: none;
+  background: transparent;
+  color: #015123;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+  opacity: ${({ disabled }) => disabled ? 0.35 : 1};
+  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
+  transition: transform 0.18s ease, opacity ${({ theme }) => theme.transitions.default};
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  svg {
+    width: 2.2rem;
+    height: 2.2rem;
+    color: #015123;
+    transform: translateX(0);
+    transition: transform 0.18s ease;
+  }
+
+  &:hover:not(:disabled) svg {
+    transform: translateX(4px);
+  }
+
+  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+    display: none;
+  }
+`;
+
+const MobileSideArrowLeft = styled(MobileSideArrow)`
+  left: 8px;
+  svg {
+    transform: rotate(180deg) translateX(0);
+  }
+  &:hover:not(:disabled) svg {
+    transform: rotate(180deg) translateX(-4px);
+  }
+`;
+
+const MobileSideArrowRight = styled(MobileSideArrow)`
+  right: 8px;
+`;
+
+/* Dolna nawigacja pod sliderem (na wzór WhyUs) */
+const NavigationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 40px;
+  
+  @media (min-width: 1400px) {
+    display: none;
+  }
+`;
+
+const NavigationButton = styled.button`
+  appearance: none;
+  margin: 0;
+  padding: 8px 14px;
+  border-radius: 8px;
+  background-color: transparent;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  
+  color: #015123;
+  font-size: 1.8rem;
+  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
+  outline: none;
+  transition: opacity ${({ theme }) => theme.transitions.default},
+              background-color ${({ theme }) => theme.transitions.default},
+              border-color ${({ theme }) => theme.transitions.default};
+  opacity: ${({ disabled }) => disabled ? 0.5 : 1};
+  
+  pointer-events: ${({ disabled }) => disabled ? 'none' : 'auto'};
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+
+  svg {
+    display: block;
+    width: 1.2em;
+    height: 1.2em;
+    color: #015123;
+    transition: transform 0.22s ease, color 0.22s ease;
+    transform: translateX(0);
+  }
+
+  &:hover:not(:disabled) {
+    background-color: rgba(1, 85, 8, 0.08);
+    border-color: ${({ theme }) => theme.colors.bottleGreen};
+  }
+
+  &:hover:not(:disabled) svg {
+    transform: translateX(6px);
+  }
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    padding: 6px 12px;
+    font-size: 2.2rem;
+  }
+`;
+
+const PrevNavigationButton = styled(NavigationButton)`
+  svg {
+    transform: rotate(180deg) translateX(0);
+  }
+
+  &:hover:not(:disabled) svg {
+    transform: rotate(180deg) translateX(-6px);
+  }
+`;
+
+const NextNavigationButton = styled(NavigationButton)`
+  svg {
+    transform: translateX(0);
+  }
+
+  &:hover:not(:disabled) svg {
+    transform: translateX(6px);
+  }
+`;
+
 /* Contact inside manager card */
 const ContactRow = styled.div`
   display: flex;
@@ -518,6 +676,28 @@ const ContactInfoText = styled.span`
 
 const AboutUsPage = () => {
   const { t } = useTranslation();
+
+  // Slider state for mobile management carousel
+  const swiperRef = useRef(null);
+  const [isBeginning, setIsBeginning] = useState(true);
+  const [isEnd, setIsEnd] = useState(false);
+
+  const handleSlideChange = (swiper) => {
+    setIsBeginning(swiper.isBeginning);
+    setIsEnd(swiper.isEnd);
+  };
+
+  const goToPrev = () => {
+    if (swiperRef.current && swiperRef.current.swiper) {
+      swiperRef.current.swiper.slidePrev();
+    }
+  };
+
+  const goToNext = () => {
+    if (swiperRef.current && swiperRef.current.swiper) {
+      swiperRef.current.swiper.slideNext();
+    }
+  };
 
   // Timeline data
   const timeline = [
@@ -710,6 +890,131 @@ const AboutUsPage = () => {
 
       {/* Management Section */}
       <Section label="ZARZĄD" labelPosition="right" noPadding>
+        {/* Mobile: slider na wzór WhyUs */}
+        <MobileSwiperContainer>
+          <Swiper
+            ref={swiperRef}
+            modules={[Navigation]}
+            spaceBetween={20}
+            slidesPerView={1}
+            centeredSlides={true}
+            onSlideChange={handleSlideChange}
+            onSwiper={handleSlideChange}
+            breakpoints={{
+              480: {
+                slidesPerView: 1.2,
+                centeredSlides: false,
+                spaceBetween: 24,
+              },
+              768: {
+                slidesPerView: 2,
+                centeredSlides: false,
+                spaceBetween: 28,
+              },
+            }}
+            speed={400}
+            className="managers-swiper"
+          >
+            <SwiperSlide>
+              <ManagerCard>
+                <ManagerPhoto src="/images/realizations/realization2.jpg" alt="Wiesław Rojek" />
+                <ManagerBody>
+                  <ManagerName>Wiesław Rojek</ManagerName>
+                  <ManagerRole>Właściciel</ManagerRole>
+                  <ContactRow>
+                    <ContactLink href="tel:+48603923011" aria-label="Zadzwoń do Wiesław">
+                      <ContactIconSmall><FiPhone /></ContactIconSmall>
+                      <ContactInfoText>+48 603 923 011</ContactInfoText>
+                    </ContactLink>
+                    <ContactLink href="mailto:wieslaw.rojek@rojekoid.pl" aria-label="Napisz do Wiesław">
+                      <ContactIconSmall><FiMail /></ContactIconSmall>
+                      <ContactInfoText>wieslaw.rojek@rojekoid.pl</ContactInfoText>
+                    </ContactLink>
+                  </ContactRow>
+                </ManagerBody>
+              </ManagerCard>
+            </SwiperSlide>
+
+            <SwiperSlide>
+              <ManagerCard>
+                <ManagerPhoto src="/images/history/przemek.jpg" alt="Przemysław Rojek" />
+                <ManagerBody>
+                  <ManagerName>Przemysław Rojek</ManagerName>
+                  <ManagerRole>Właściciel</ManagerRole>
+                  <ContactRow>
+                    <ContactLink href="tel:+48886988561" aria-label="Zadzwoń do Przemysław">
+                      <ContactIconSmall><FiPhone /></ContactIconSmall>
+                      <ContactInfoText>+48 886 988 561</ContactInfoText>
+                    </ContactLink>
+                    <ContactLink href="mailto:przemyslaw.rojek@rojekoid.pl" aria-label="Napisz do Przemysław">
+                      <ContactIconSmall><FiMail /></ContactIconSmall>
+                      <ContactInfoText>przemyslaw.rojek@rojekoid.pl</ContactInfoText>
+                    </ContactLink>
+                  </ContactRow>
+                </ManagerBody>
+              </ManagerCard>
+            </SwiperSlide>
+
+            <SwiperSlide>
+              <ManagerCard>
+                <ManagerPhoto src="/images/history/tomek.jpg" alt="Tomasz Rojek" />
+                <ManagerBody>
+                  <ManagerName>Tomasz Rojek</ManagerName>
+                  <ManagerRole>Właściciel</ManagerRole>
+                  <ContactRow>
+                    <ContactLink href="tel:+48889194388" aria-label="Zadzwoń do Tomasz">
+                      <ContactIconSmall><FiPhone /></ContactIconSmall>
+                      <ContactInfoText>+48 889 194 388</ContactInfoText>
+                    </ContactLink>
+                    <ContactLink href="mailto:tomasz.rojek@rojekoid.pl" aria-label="Napisz do Tomasz">
+                      <ContactIconSmall><FiMail /></ContactIconSmall>
+                      <ContactInfoText>tomasz.rojek@rojekoid.pl</ContactInfoText>
+                    </ContactLink>
+                  </ContactRow>
+                </ManagerBody>
+              </ManagerCard>
+            </SwiperSlide>
+
+            <SwiperSlide>
+              <ManagerCard>
+                <ManagerPhoto src="/images/realizations/realization5.jpg" alt="Kierownik produkcji" />
+                <ManagerBody>
+                  <ManagerName>Paweł Jakiśtam</ManagerName>
+                  <ManagerRole>Kierownik produkcji</ManagerRole>
+                  <ContactRow>
+                    <ContactLink href="tel:+48600000000" aria-label="Zadzwoń do Paweł">
+                      <ContactIconSmall><FiPhone /></ContactIconSmall>
+                      <ContactInfoText>+48 600 000 000</ContactInfoText>
+                    </ContactLink>
+                    <ContactLink href="mailto:pawel.jakistam@rojekoid.pl" aria-label="Napisz do Anna">
+                      <ContactIconSmall><FiMail /></ContactIconSmall>
+                      <ContactInfoText>pawel.jakistam@rojekoid.pl</ContactInfoText>
+                    </ContactLink>
+                  </ContactRow>
+                </ManagerBody>
+              </ManagerCard>
+            </SwiperSlide>
+          </Swiper>
+
+          <NavigationContainer>
+            <PrevNavigationButton
+              onClick={goToPrev}
+              disabled={isBeginning}
+              aria-label={t('navigation.previous', 'Poprzedni')}
+            >
+              <IoIosArrowForward />
+            </PrevNavigationButton>
+            <NextNavigationButton
+              onClick={goToNext}
+              disabled={isEnd}
+              aria-label={t('navigation.next', 'Następny')}
+            >
+              <IoIosArrowForward />
+            </NextNavigationButton>
+          </NavigationContainer>
+        </MobileSwiperContainer>
+
+        {/* Desktop: siatka kart */}
         <ManagementGrid>
           <ManagerCard>
             <ManagerPhoto src="/images/realizations/realization2.jpg" alt="Wiesław Rojek" />
