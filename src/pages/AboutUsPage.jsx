@@ -13,7 +13,6 @@ const PageWrapper = styled.div`
   position: relative;
   z-index: 2;
 
-  /* Normalize heading sizes only for About page */
   h1 {
     font-size: 2.2rem !important;
   }

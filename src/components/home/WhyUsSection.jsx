@@ -1,19 +1,15 @@
-// src/components/home/WhyUsSection.jsx
-import React, { useRef, useEffect, useState } from 'react';
-import styled from 'styled-components';
+import { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Navigation } from 'swiper/modules';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import { IoIosArrowForward } from 'react-icons/io';
+import styled from 'styled-components';
+import { Navigation } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/react';
 
-// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../pages/HomePage';
 import MaxWidthContainer from '../common/MaxWidthContainer';
 
-// Kontener dla całej sekcji
 const WhyUsContainer = styled.div`
   width: 100%;
   max-width: ${({ theme }) => theme.layout.maxWidth};
@@ -22,7 +18,6 @@ const WhyUsContainer = styled.div`
   padding-bottom: 30px;
 `;
 
-// Desktop Grid (pokazuje się tylko na największych ekranach)
 const DesktopGrid = styled.div`
   display: none;
   
@@ -33,7 +28,6 @@ const DesktopGrid = styled.div`
   }
 `;
 
-// Mobile/Tablet Swiper Container
 const MobileSwiperContainer = styled.div`
   display: block;
   position: relative;
@@ -59,7 +53,6 @@ const MobileSwiperContainer = styled.div`
   }
 `;
 
-// Kontener dla przycisków nawigacji na dole
 const NavigationContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -71,7 +64,6 @@ const NavigationContainer = styled.div`
   }
 `;
 
-// Pojedynczy kafelek
 const FeatureCard = styled.div`
   display: flex;
   flex-direction: column;
@@ -85,7 +77,6 @@ const FeatureCard = styled.div`
   max-width: 350px;
 `;
 
-// Kontener na ikonę z obramowaniem
 const IconWrapper = styled.div`
   box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.35);
   width: 150px;
@@ -119,7 +110,6 @@ const IconWrapper = styled.div`
   }
 `;
 
-// Ikona
 const Icon = styled.img`
   width: 100%;
   height: 100%;
@@ -128,7 +118,6 @@ const Icon = styled.img`
   position: relative;
 `;
 
-// Tytuł kafelka
 const FeatureTitle = styled.h3`
   font-size: 1.8rem;
   font-weight: 600;
@@ -146,11 +135,10 @@ const FeatureTitle = styled.h3`
   }
 `;
 
-// Opis kafelka
 const FeatureDescription = styled.p`
   font-size: 1.4rem;
   line-height: 1.6;
-  color: ${({ theme }) => theme.colors.textMuted};
+  color: ${({ theme }) => theme.colors.text};
   margin: 0;
   
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
@@ -158,7 +146,6 @@ const FeatureDescription = styled.p`
   }
 `;
 
-// Przycisk nawigacji - styl jak w video
 const NavigationButton = styled.button`
   appearance: none;
   margin: 0;
@@ -186,7 +173,6 @@ const NavigationButton = styled.button`
   -webkit-tap-highlight-color: transparent;
   touch-action: manipulation;
 
-  /* Icon animation */
   svg {
     display: block;
     width: 1.2em;
@@ -211,9 +197,7 @@ const NavigationButton = styled.button`
   }
 `;
 
-/* Prev/Next variants so we can invert icon rotation for prev */
 const PrevNavigationButton = styled(NavigationButton)`
-  /* rotate forward arrow to act as left arrow */
   svg {
     transform: rotate(180deg) translateX(0);
   }
@@ -224,7 +208,6 @@ const PrevNavigationButton = styled(NavigationButton)`
 `;
 
 const NextNavigationButton = styled(NavigationButton)`
-  /* explicit right shift on hover */
   svg {
     transform: translateX(0);
   }
@@ -234,7 +217,6 @@ const NextNavigationButton = styled(NavigationButton)`
   }
 `;
 
-/* Dane dla kafelek */
 const features = [
   {
     id: 'tradition',
@@ -294,13 +276,11 @@ const WhyUsSection = () => {
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
 
-  // Update navigation state
   const handleSlideChange = (swiper) => {
     setIsBeginning(swiper.isBeginning);
     setIsEnd(swiper.isEnd);
   };
 
-  // Custom navigation handlers
   const goToPrev = () => {
     if (swiperRef.current && swiperRef.current.swiper) {
       swiperRef.current.swiper.slidePrev();
@@ -313,7 +293,6 @@ const WhyUsSection = () => {
     }
   };
 
-  // Render feature card
   const renderFeatureCard = (feature) => (
     <FeatureCard key={feature.id}>
       <IconWrapper>
@@ -335,69 +314,67 @@ const WhyUsSection = () => {
   return (
     <WhyUsContainer>
       <MaxWidthContainer>
-      <HeaderWrap className='full-width'>
-        <ProductHeader>
-          DLACZEGO MY
-        </ProductHeader>
-        <ProductHeaderSubtitle>Co odróznia nas od innych</ProductHeaderSubtitle>
-      </HeaderWrap>
-      {/* Desktop Grid - tylko na bardzo dużych ekranach */}
-      <DesktopGrid>
-        {features.map(renderFeatureCard)}
-      </DesktopGrid>
+        <HeaderWrap className='full-width'>
+          <ProductHeader>
+            DLACZEGO MY
+          </ProductHeader>
+          <ProductHeaderSubtitle>Co odróznia nas od innych</ProductHeaderSubtitle>
+        </HeaderWrap>
+        <DesktopGrid>
+          {features.map(renderFeatureCard)}
+        </DesktopGrid>
 
-      {/* Mobile/Tablet Swiper */}
-      <MobileSwiperContainer>
-        <Swiper
-          ref={swiperRef}
-          modules={[Navigation]}
-          spaceBetween={20}
-          slidesPerView={1}
-          centeredSlides={true}
-          onSlideChange={handleSlideChange}
-          onSwiper={handleSlideChange}
-          breakpoints={{
-            576: {
-              slidesPerView: 2,
-              centeredSlides: false,
-              spaceBetween: 30,
-            },
-            992: {
-              slidesPerView: 3,
-              centeredSlides: false,
-              spaceBetween: 40,
-            },
-          }}
-          speed={400}
-          className="why-us-swiper"
-        >
-          {features.map((feature) => (
-            <SwiperSlide key={feature.id}>
-              {renderFeatureCard(feature)}
-            </SwiperSlide>
-          ))}
-        </Swiper>
-
-        <NavigationContainer>
-          <PrevNavigationButton
-            ref={prevRef}
-            onClick={goToPrev}
-            disabled={isBeginning}
-            aria-label={t('navigation.previous', 'Poprzedni')}
+        <MobileSwiperContainer>
+          <Swiper
+            ref={swiperRef}
+            modules={[Navigation]}
+            spaceBetween={20}
+            slidesPerView={1}
+            centeredSlides={true}
+            onSlideChange={handleSlideChange}
+            onSwiper={handleSlideChange}
+            breakpoints={{
+              576: {
+                slidesPerView: 2,
+                centeredSlides: false,
+                spaceBetween: 30,
+              },
+              992: {
+                slidesPerView: 3,
+                centeredSlides: false,
+                spaceBetween: 40,
+              },
+            }}
+            speed={400}
+            className="why-us-swiper"
           >
-            <IoIosArrowForward />
-          </PrevNavigationButton>
+            {features.map((feature) => (
+              <SwiperSlide key={feature.id}>
+                {renderFeatureCard(feature)}
+              </SwiperSlide>
+            ))}
+          </Swiper>
 
-          <NextNavigationButton
-            ref={nextRef}
-            onClick={goToNext}
-            disabled={isEnd}
-            aria-label={t('navigation.next', 'Następny')}
-          >
-            <IoIosArrowForward />
-          </NextNavigationButton>
-        </NavigationContainer>
-      </MobileSwiperContainer>
+          <NavigationContainer>
+            <PrevNavigationButton
+              ref={prevRef}
+              onClick={goToPrev}
+              disabled={isBeginning}
+              aria-label={t('navigation.previous', 'Poprzedni')}
+            >
+              <IoIosArrowForward />
+            </PrevNavigationButton>
+
+            <NextNavigationButton
+              ref={nextRef}
+              onClick={goToNext}
+              disabled={isEnd}
+              aria-label={t('navigation.next', 'Następny')}
+            >
+              <IoIosArrowForward />
+            </NextNavigationButton>
+          </NavigationContainer>
+        </MobileSwiperContainer>
       </MaxWidthContainer>
     </WhyUsContainer>
   );

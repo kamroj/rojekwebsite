@@ -7,6 +7,8 @@ import { Autoplay } from 'swiper/modules';
 // Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/autoplay';
+import MaxWidthContainer from '../common/MaxWidthContainer';
+import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../pages/HomePage';
 
 // --- Styled Components ---
 const StyledSwiperContainer = styled.div`
@@ -137,7 +139,7 @@ const GalleryImageTitle = styled.div`
   position: absolute;
   bottom: 10px;
   right: 10px;
-  background-color: ${({ theme }) => theme.colors.bottleGreen}dd;
+  background-color: #012904;
   color: ${({ theme }) => theme.colors.textLight};
   padding: 5px 12px;
   border-radius: 3px;
@@ -151,12 +153,10 @@ const GalleryImageTitle = styled.div`
   text-overflow: ellipsis;
 `;
 
-// --- Main Gallery Component ---
 const RealizationsGallery = ({ images, options = {} }) => {
   const totalImages = images?.length || 0;
   const swiperRef = useRef(null);
-  
-  // Default configuration
+
   const defaultConfig = {
     slidesPerViewMobile: 1,
     slidesPerViewTablet: 2,
@@ -167,10 +167,10 @@ const RealizationsGallery = ({ images, options = {} }) => {
     centeredSlides: true,
     speed: 600,
   };
-  
+
   // Merge defaults with provided options
   const config = { ...defaultConfig, ...options };
-  
+
   // Autoplay settings
   const autoplayOptions = {
     delay: config.delay,
@@ -181,32 +181,32 @@ const RealizationsGallery = ({ images, options = {} }) => {
   // Fallback for too few images
   if (!images || totalImages < config.slidesPerViewDesktop) {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        gap: '15px', 
-        flexWrap: 'wrap', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '15px',
+        flexWrap: 'wrap',
         marginTop: '20px',
         padding: '0 20px'
       }}>
         {images?.map((imgData, i) => (
-          <div 
-            key={imgData.id || i} 
-            style={{ 
-              borderRadius: '4px', 
-              overflow: 'hidden', 
-              boxShadow: '0 4px 8px rgba(0,0,0,0.3)' 
+          <div
+            key={imgData.id || i}
+            style={{
+              borderRadius: '4px',
+              overflow: 'hidden',
+              boxShadow: '0 4px 8px rgba(0,0,0,0.3)'
             }}
           >
-            <img 
-              src={imgData.src} 
-              alt={imgData.title || `Realizacja ${i + 1}`} 
-              style={{ 
-                display: 'block', 
-                height: '250px', 
-                width: 'auto', 
-                maxWidth: '300px' 
-              }} 
+            <img
+              src={imgData.src}
+              alt={imgData.title || `Realizacja ${i + 1}`}
+              style={{
+                display: 'block',
+                height: '250px',
+                width: 'auto',
+                maxWidth: '300px'
+              }}
             />
           </div>
         ))}
@@ -217,7 +217,7 @@ const RealizationsGallery = ({ images, options = {} }) => {
   // Handle drag interactions for proper styling
   const handleDragStart = (swiper, event) => {
     if (!swiper || !event) return;
-    
+
     const slideEl = event.target.closest('.swiper-slide');
     if (slideEl && swiper.slides) {
       // Clear class from all slides first
@@ -232,7 +232,7 @@ const RealizationsGallery = ({ images, options = {} }) => {
   const handleDragEnd = (swiper) => {
     // Fix: Check if swiper and swiper.slides exist before calling forEach
     if (!swiper || !swiper.slides || !swiper.slides.length) return;
-    
+
     // Use Array.from to ensure we have an array we can iterate over
     Array.from(swiper.slides).forEach(slide => {
       slide.classList.remove('swiper-slide-grabbed');
@@ -243,7 +243,7 @@ const RealizationsGallery = ({ images, options = {} }) => {
   useEffect(() => {
     // Safety check
     if (!swiperRef.current) return;
-    
+
     const swiperInstance = swiperRef.current.swiper;
     if (!swiperInstance) return;
 
@@ -252,7 +252,7 @@ const RealizationsGallery = ({ images, options = {} }) => {
     const touchEndHandler = () => handleDragEnd(swiperInstance);
     const mouseDownHandler = (event) => handleDragStart(swiperInstance, event);
     const mouseUpHandler = () => handleDragEnd(swiperInstance);
-    
+
     swiperInstance.on('touchStart', touchStartHandler);
     swiperInstance.on('touchEnd', touchEndHandler);
     swiperInstance.on('mousedown', mouseDownHandler);
@@ -271,44 +271,53 @@ const RealizationsGallery = ({ images, options = {} }) => {
   }, []);
 
   return (
-    <StyledSwiperContainer>
-      <Swiper
-        ref={swiperRef}
-        modules={[Autoplay]}
-        loop={config.loop}
-        slidesPerView={config.slidesPerViewMobile}
-        spaceBetween={config.spaceBetween}
-        autoplay={autoplayOptions}
-        grabCursor={true}
-        centeredSlides={config.centeredSlides}
-        speed={config.speed}
-        watchSlidesProgress={true}
-        breakpoints={{
-          577: { 
-            slidesPerView: config.slidesPerViewTablet, 
-            spaceBetween: config.spaceBetween,
-          },
-          993: { 
-            slidesPerView: config.slidesPerViewDesktop, 
-            spaceBetween: config.spaceBetween + 5,
-          },
-        }}
-        className="my-interactive-swiper"
-      >
-        {images.map((item) => (
-          <SwiperSlide key={item.id}>
-            <div className="slide-content-wrapper">
-              <GalleryImage 
-                src={item.src} 
-                alt={item.title} 
-                draggable="false" 
-              />
-              <GalleryImageTitle>{item.title}</GalleryImageTitle>
-            </div>
-          </SwiperSlide>
-        ))}
-      </Swiper>
-    </StyledSwiperContainer>
+    <MaxWidthContainer>
+      <HeaderWrap className='full-width' $reversed>
+        <ProductHeader $bg="#e6c61942" $reversed>
+          REALIZACJE
+        </ProductHeader>
+        <ProductHeaderSubtitle $bg="#706a0026;" $reversed>Zobacz nasze realizacje</ProductHeaderSubtitle>
+      </HeaderWrap>
+      <StyledSwiperContainer>
+        <Swiper
+          ref={swiperRef}
+          modules={[Autoplay]}
+          loop={config.loop}
+          slidesPerView={config.slidesPerViewMobile}
+          spaceBetween={config.spaceBetween}
+          autoplay={autoplayOptions}
+          grabCursor={true}
+          centeredSlides={config.centeredSlides}
+          speed={config.speed}
+          watchSlidesProgress={true}
+          breakpoints={{
+            577: {
+              slidesPerView: config.slidesPerViewTablet,
+              spaceBetween: config.spaceBetween,
+            },
+            993: {
+              slidesPerView: config.slidesPerViewDesktop,
+              spaceBetween: config.spaceBetween + 5,
+            },
+          }}
+          className="my-interactive-swiper"
+        >
+          {images.map((item) => (
+            <SwiperSlide key={item.id}>
+              <div className="slide-content-wrapper">
+                <GalleryImage
+                  src={item.src}
+                  alt={item.title}
+                  draggable="false"
+                />
+                <GalleryImageTitle>{item.title}</GalleryImageTitle>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </StyledSwiperContainer>
+    </MaxWidthContainer>
+
   );
 };
 

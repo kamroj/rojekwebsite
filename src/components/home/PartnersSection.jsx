@@ -28,6 +28,7 @@ const PartnersGrid = styled.div`
 // Kontener dla Swiper na mobile
 const MobileSwiperContainer = styled.div`
   display: none;
+  margin-bottom: ${({ theme }) => theme.spacings.large};
   
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     display: block;

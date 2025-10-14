@@ -25,67 +25,29 @@ export const HeaderWrap = styled.div`
     align-items: ${({ $reversed }) => ($reversed ? 'flex-end' : 'flex-start')};
 
     @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-      margin: 10px 0 20px 0;
+      margin: 20px 0;
     }
   `;
 
 export const ProductHeader = styled.div`
-    position: relative;
-    z-index: 2;
-    backdrop-filter: blur(2px);
+  font-size: 3rem;
+  font-weight: 600;
+  line-height: 1.2;
 
-    display: flex;
-    padding: 10px 20px;
-    background-color: ${({ $bg = '#002a12d9' }) => $bg};
-    color: #ffffff;
-    margin-bottom: 30px;
-    margin-top: 15px;
-    font-size: 2rem;
-    justify-content: center;
-    padding: ${({ $reversed }) => ($reversed ? "6px 50px 10px 20px" : "6px 20px 10px 50px")};
-  
-    &::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: -1;
-    }
-  
-    @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-      max-width: 200px;
-      padding: ${({ $reversed }) => ($reversed ? "6px 50px 10px 20px" : "6px 20px 10px 50px")};
-      font-size: 1.4rem;
-    }
+  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
+    font-size: 1.8rem;
+  }
   `;
 
 export const ProductHeaderSubtitle = styled.div`
-    position: relative;
-    z-index: 1;
-    margin-top: -40px;
-    text-align: ${({ $reversed }) => ($reversed ? 'left' : 'right')};
-    margin-left: ${({ $reversed }) => ($reversed ? '0' : '80px')};
-    margin-right: ${({ $reversed }) => ($reversed ? '80px' : '0')};
-    color: #ffffffde;
-    background-color: ${({ $bg = '#0f0f0f' }) => $bg};
-    padding: 10px 20px 6px 10px;
-    max-width: 100%;
-    font-size: 1.4rem;
-    box-sizing: border-box;
-  
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.6;
+  color: ${({ $reversed }) => ($reversed ? "#e6c619c7" : '#012506')};
+
     @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-      margin-left: ${({ $reversed }) => ($reversed ? '0' : '40px')};
-      margin-right: ${({ $reversed }) => ($reversed ? '40px' : '0')};
-    }
-  
-    @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-      width: auto;
-      max-width: 100%;
-      /* margin-left: ${({ $reversed }) => ($reversed ? '-15px' : '0')}; */
-      /* margin-right: ${({ $reversed }) => ($reversed ? '0' : '-15px')}; */
-      left: auto;
-      right: auto;
-    }
-  
+    font-size: 1.4rem;
+  }
   `;
 
 const HomePage = () => {
@@ -163,12 +125,6 @@ const HomePage = () => {
         noPadding
         $noInset
       >
-        <HeaderWrap className='full-width' $reversed>
-          <ProductHeader $bg="#e6c61942" $reversed>
-            REALIZACJE
-          </ProductHeader>
-          <ProductHeaderSubtitle $bg="#706a0026;" $reversed>Zobacz nasze realizacje</ProductHeaderSubtitle>
-        </HeaderWrap>
         <RealizationsGallery
           images={realizationData}
           options={{

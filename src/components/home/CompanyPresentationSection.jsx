@@ -136,11 +136,9 @@ const CompanyPresentationSection = () => {
   const [isInView, setIsInView] = useState(false);
   const sectionRef = useRef(null);
 
-  // YouTube video ID z podanego URL
   const videoId = 'XhAN4U4bngs';
   const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
 
-  // Intersection Observer dla lazy loading
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -177,6 +175,7 @@ const CompanyPresentationSection = () => {
         noPadding
         $noInset
       >
+        <MaxWidthContainer>
         <HeaderWrap $reversed className='full-width'>
           <ProductHeader $reversed $bg="#e6c61942">
             NASZA FIRMA
@@ -210,6 +209,7 @@ const CompanyPresentationSection = () => {
             )}
           </VideoContainer>
         </PresentationWrapper>
+        </MaxWidthContainer>
       </Section>
   );
 };

@@ -38,7 +38,7 @@ const BaseNavItem = styled(Link)`
       right: 0;
       height: 1px;
       width: 110%;
-      background-color: ${({ $isPastThreshold }) => ($isPastThreshold ? "#009247" : "#e6c71983")};\
+      background-color: ${({ $isPastThreshold }) => ($isPastThreshold ? "#009247" : "#e6c71983")};
       transition: background-color 1s ease;
     }
   }

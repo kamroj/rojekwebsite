@@ -16,21 +16,6 @@ const ProductContentContainer = styled.div`
   align-items: center;
 `;
 
-const ProductListContainer = styled.div`
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 3rem;
-  flex-wrap: wrap;
-  position: relative;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    display: none; /* Ukryj na mobile */
-  }
-`;
-
 // Kontener dla Swiper na mobile - teraz z obsługą gestów
 const MobileButtonsContainer = styled.div`
   display: none;
@@ -64,7 +49,6 @@ const ProductListButton = styled.button`
   font-size: 1.6rem;
   padding: 8px 18px;
   border: none;
-  border-bottom: 2px solid transparent;
   background-color: transparent;
   color: ${({ theme }) => theme.colors.text};
   cursor: pointer;
@@ -136,20 +120,6 @@ const NavigationButton = styled.button`
   
   @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
     display: none; /* Ukryj na desktop */
-  }
-`;
-
-const ProductDetailsWrapper = styled.div`
-  display: flex;
-  width: 100%;
-  gap: 8rem;
-  align-items: flex-start;
-  margin-top: 1.6rem;
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
   }
 `;
 
@@ -236,13 +206,17 @@ const ProductDescriptionTitle = styled.h3`
   font-weight: 600;
   border-bottom: 1px solid #015508;
   padding-bottom: 0.5rem;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: 2rem;
+  }
 `;
 
 const ProductDescriptionText = styled.p`
   font-size: 1.6rem;
   line-height: 1.7;
   margin-bottom: 2rem;
-  color: ${({ theme }) => theme.colors.textMuted};
+  color: ${({ theme }) => theme.colors.text};
 `;
 
 const ProductBenefitsList = styled.ul`
@@ -502,7 +476,6 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
                 </NavigationButton>
               </MobileButtonsContainer>
 
-              {/* Desktop version - side arrows + sliding content */}
               <SlidesWrapper>
                 {!isMobile && !isFirstProduct && (
                   <SideArrowLeft

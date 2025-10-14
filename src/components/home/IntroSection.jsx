@@ -134,7 +134,7 @@ const RightBottomContentWrapper = styled.div`
   gap: ${({ theme }) => theme.spacings.medium};
   text-align: right;
   flex: 1;
-  min-width: 0; /* pozwala tekstowi zawijać się zamiast wypychać przycisk */
+  min-width: 0; 
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     gap: ${({ theme }) => theme.spacings.small};
@@ -168,7 +168,7 @@ const DynamicText = styled.p`
 const CTAButton = styled(Link)`
   display: inline-block;
   background: transparent;
-  border: 1px solid ${({ theme }) => theme.colors.borderAccent};
+  border: 1px solid #e6c7197d;
   color: ${({ theme }) => theme.colors.textLight};
   padding: 1rem 2.5rem;
   font-size: clamp(1.2rem, 2vw, 1.4rem);
@@ -180,8 +180,8 @@ const CTAButton = styled(Link)`
               border-color ${({ theme }) => theme.transitions.default};
 
   &:hover {
-    background-color: #017e543f;
-    border-color: ${({ theme }) => theme.colors.secondary};
+    background-color: #e6c71939;
+    border-color: #e6c719a6;
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {

@@ -6,7 +6,7 @@ const theme = {
     accent: '#e6c619',          // Accent color (yellow - used for hover states)
     background: '#ffffff',      // Base background color
     backgroundAlt: '#f9fafb',   // Alternative background for sections
-    text: '#212529',            // Main text color
+    text: '#000000ff',            // Main text color
     textLight: '#f8f9fa',       // Light text (for dark backgrounds)
     textMuted: '#555',          // Muted/secondary text color
     border: '#dee2e6',          // Border color
