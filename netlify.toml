@@ -1,0 +1,11 @@
+[build]
+  command = "npm run build"
+  publish = "dist"
+  functions = "netlify/functions"
+
+# Note:
+# - SPA routing is already handled by public/_redirects.
+# - Set environment variables in Netlify dashboard:
+#   RECAPTCHA_SECRET = "<your-secret-key>"
+#   ALLOWED_ORIGIN   = "https://your-domain.com"   # optional, defaults to "*"
+#   VITE_RECAPTCHA_SITE_KEY = "<your-site-key>"    # frontend build var

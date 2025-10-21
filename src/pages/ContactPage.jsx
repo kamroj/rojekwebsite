@@ -5,6 +5,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import Page from '../components/common/Page';
 import Section from '../components/common/Section';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomePage';
+import { verifyRecaptcha } from '../services/recaptcha';
 
 const ContactContainer = styled.div`
   display: flex;
@@ -287,6 +288,15 @@ const ContactPage = () => {
     e.preventDefault();
     setSent(false);
     if (!validate()) return;
+
+    // Server-side verify reCAPTCHA before submitting
+    const v = await verifyRecaptcha(recaptchaToken);
+    if (!v.ok) {
+      setErrors((p) => ({ ...p, recaptcha: t('contactPage.errors.recaptchaInvalid', 'Weryfikacja reCAPTCHA nie powiodła się') }));
+      if (recaptchaRef.current) recaptchaRef.current.reset();
+      setRecaptchaToken(null);
+      return;
+    }
 
     setSubmitting(true);
     try {
