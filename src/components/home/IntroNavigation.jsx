@@ -25,7 +25,7 @@ const IntroNavigation = () => {
 
   return (
     <NavContainer>
-      <NavItem href="/realizations">oferta</NavItem>
+      <NavItem href="/realizations">{t('nav.realizations')}</NavItem>
       <NavItem href="/realizations">{t('nav.realizations')}</NavItem>
       <NavItem href="/about">{t('nav.about')}</NavItem>
       <NavItem href="/contact">{t('nav.contact')}</NavItem>

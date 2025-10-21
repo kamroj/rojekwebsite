@@ -119,7 +119,7 @@ const FormInfo = styled.p`
 
 const DirectCard = styled.div`
   position: relative;
-  isolation: isolate; /* ensure pseudo-element can layer behind content */
+  isolation: isolate;
   overflow: hidden;
   flex: 1;
   background: #fcfcfc;
@@ -129,7 +129,6 @@ const DirectCard = styled.div`
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
   height: fit-content;
 
-  /* Put a semi-transparent phone image in the bottom-right corner */
   &::after {
     content: '';
     position: absolute;
@@ -138,12 +137,11 @@ const DirectCard = styled.div`
     width: 180px;
     height: 180px;
     background: url('/images/phone.png') no-repeat center / contain;
-    opacity: 0.5; /* half transparent */
+    opacity: 0.5;
     pointer-events: none;
-    z-index: 0; /* under content */
+    z-index: 0;
   }
 
-  /* Ensure the card content stays above the decorative image */
   > * {
     position: relative;
     z-index: 1;
@@ -209,7 +207,6 @@ const ContactText = styled.span`
   color: #111827;
 `;
 
-/* Icons */
 const MailIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <rect x="3" y="5" width="18" height="14" rx="2"></rect>
@@ -266,21 +263,21 @@ const ContactPage = () => {
     const next = { email: '', message: '', recaptcha: '' };
     // Email required
     if (!email.trim()) {
-      next.email = 'Adres email jest wymagany.';
+      next.email = t('contactPage.errors.emailRequired');
     } else {
       // Prosta walidacja formatu email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email.trim())) {
-        next.email = 'Podaj poprawny adres email.';
+        next.email = t('contactPage.errors.emailInvalid');
       }
     }
     // Message required
     if (!message.trim()) {
-      next.message = 'Wiadomość jest wymagana.';
+      next.message = t('contactPage.errors.messageRequired');
     }
     // reCAPTCHA required (v2 checkbox)
     if (!recaptchaToken) {
-      next.recaptcha = 'Potwierdź reCAPTCHA.';
+      next.recaptcha = t('contactPage.errors.recaptchaRequired');
     }
     setErrors(next);
     return !next.email && !next.message && !next.recaptcha;
@@ -315,24 +312,24 @@ const ContactPage = () => {
     <Page imageSrc="/images/company/company-top.jpg" title={t('pageTitle.contact', 'Kontakt')}>
       <Section>
         <HeaderWrap>
-          <ProductHeader>INFORMACJE KONTAKTOWE</ProductHeader>
+          <ProductHeader>{t('contactPage.header.title')}</ProductHeader>
           <ProductHeaderSubtitle>
-            Masz jakieś pytania? Jesteśmy do twojej dyspozycji!
+            {t('contactPage.header.subtitle')}
           </ProductHeaderSubtitle>
         </HeaderWrap>
 
         <ContactContainer>
           <FormWrap>
-            <p>Skorzystaj z naszego formularza</p>
+            <p>{t('contactPage.form.useForm')}</p>
 
             <Form onSubmit={onSubmit} noValidate>
               <Field>
-                <Label htmlFor="name">Imię</Label>
+                <Label htmlFor="name">{t('contactPage.form.nameLabel')}</Label>
                 <Input
                   id="name"
                   name="name"
                   type="text"
-                  placeholder="Jan"
+                  placeholder={t('contactPage.form.namePlaceholder')}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   autoComplete="name"
@@ -340,12 +337,12 @@ const ContactPage = () => {
               </Field>
 
               <Field>
-                <Label htmlFor="email">Email *</Label>
+                <Label htmlFor="email">{t('contactPage.form.emailLabel')} *</Label>
                 <Input
                   id="email"
                   name="email"
                   type="email"
-                  placeholder="jan.kowalski@example.com"
+                  placeholder={t('contactPage.form.emailPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   autoComplete="email"
@@ -356,12 +353,12 @@ const ContactPage = () => {
               </Field>
 
               <Field>
-                <Label htmlFor="phone">Telefon</Label>
+                <Label htmlFor="phone">{t('contactPage.form.phoneLabel')}</Label>
                 <Input
                   id="phone"
                   name="phone"
                   type="tel"
-                  placeholder="+48601234567"
+                  placeholder={t('contactPage.form.phonePlaceholder')}
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}
                   autoComplete="tel"
@@ -370,11 +367,11 @@ const ContactPage = () => {
               </Field>
 
               <Field>
-                <Label htmlFor="message">Wiadomość *</Label>
+                <Label htmlFor="message">{t('contactPage.form.messageLabel')} *</Label>
                 <Textarea
                   id="message"
                   name="message"
-                  placeholder="Treść wiadomości..."
+                  placeholder={t('contactPage.form.messagePlaceholder')}
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   required
@@ -397,61 +394,58 @@ const ContactPage = () => {
 
               <SubmitRow>
                 <Button type="submit" disabled={submitting}>
-                  {submitting ? 'Wysyłanie...' : 'Wyślij'}
+                  {submitting ? t('contactPage.actions.sending') : t('contactPage.actions.send')}
                 </Button>
-                {sent && <SuccessBox>Dziękujemy! Wiadomość została wysłana.</SuccessBox>}
+                {sent && <SuccessBox>{t('contactPage.success')}</SuccessBox>}
               </SubmitRow>
             </Form>
 
             <FormInfo>
-              Administratorem Państwa danych osobowych jest ROJEK Okna i Drzwi Sp. z o.o. z siedzibą w Krakowie (Kryspinów 399, 32-060 Kryspinów).
-              Dane osobowe będą przetwarzane w celu udzielenia odpowiedzi na przesłane zapytanie oraz zapewnienia najwyższych standardów obsługi.
-              Przesłanie formularza oznacza dobrowolne wyrażenie zgody na kontakt drogą e-mailową lub telefoniczną w celu obsługi zapytania.
-              Zgodę można w każdej chwili wycofać, wysyłając wiadomość na adres biuro@rojekoid.pl
+              {t('contactPage.gdpr.notice')}
             </FormInfo>
           </FormWrap>
           <DirectCard style={{ marginTop: 24 }}>
-            <p>Skontaktuj się z nami bezpośrednio</p>
+            <p>{t('contactPage.direct.header')}</p>
 
             <ContactList>
               <ContactItem>
                 <IconWrap aria-hidden="true"><MailIcon /></IconWrap>
                 <ContactDetails>
-                  <ContactLabel>Email</ContactLabel>
-                  <ContactLink href="mailto:biuro@rojekoid.pl">biuro@rojekoid.pl</ContactLink>
+                  <ContactLabel>{t('contact.email')}</ContactLabel>
+                  <ContactLink href={`mailto:${t('contactPage.direct.values.email')}`}>{t('contactPage.direct.values.email')}</ContactLink>
                 </ContactDetails>
               </ContactItem>
 
               <ContactItem>
                 <IconWrap aria-hidden="true"><PhoneIcon /></IconWrap>
                 <ContactDetails>
-                  <ContactLabel>Telefon</ContactLabel>
-                  <ContactLink href="tel:+48601789888">+48 601 789 888</ContactLink>
+                  <ContactLabel>{t('contact.phone')}</ContactLabel>
+                  <ContactLink href={`tel:${t('contactPage.direct.values.phone').replace(/\s/g, '')}`}>{t('contactPage.direct.values.phone')}</ContactLink>
                 </ContactDetails>
               </ContactItem>
 
               <ContactItem>
                 <IconWrap aria-hidden="true"><LocationIcon /></IconWrap>
                 <ContactDetails>
-                  <ContactLabel>Adres</ContactLabel>
-                  <ContactText>Kryspinów 399, 32-060 Kryspinów</ContactText>
+                  <ContactLabel>{t('contact.address')}</ContactLabel>
+                  <ContactText>{t('contactPage.direct.values.address')}</ContactText>
                 </ContactDetails>
               </ContactItem>
 
               <ContactItem>
                 <IconWrap aria-hidden="true"><IdIcon /></IconWrap>
                 <ContactDetails>
-                  <ContactLabel>Dane rejestrowe</ContactLabel>
-                  <ContactText>NIP: 679-104-25-29</ContactText>
-                  <ContactText>REGON: 356780524</ContactText>
+                  <ContactLabel>{t('contactPage.direct.labels.registrationData')}</ContactLabel>
+                  <ContactText>{t('contactPage.direct.values.nip')}</ContactText>
+                  <ContactText>{t('contactPage.direct.values.regon')}</ContactText>
                 </ContactDetails>
               </ContactItem>
 
               <ContactItem>
                 <IconWrap aria-hidden="true"><ClockIcon /></IconWrap>
                 <ContactDetails>
-                  <ContactLabel>Godziny otwarcia</ContactLabel>
-                  <ContactText>Pon–Pt: 8:00–16:00</ContactText>
+                  <ContactLabel>{t('contact.hours')}</ContactLabel>
+                  <ContactText>{t('contactPage.direct.values.hours')}</ContactText>
                 </ContactDetails>
               </ContactItem>
             </ContactList>

@@ -309,5 +309,61 @@
     "ctaTitle": "Lernen Sie uns besser kennen",
     "ctaText": "Kontaktieren Sie uns und erfahren Sie mehr über unsere Produkte und Dienstleistungen",
     "ctaButton": "Kontaktieren Sie uns"
+  },
+  "management": {
+    "label": "VORSTAND",
+    "title": "Management",
+    "subtitle": "Lernen Sie unser Team kennen"
+  },
+  "aboutPage": {
+    "headers": {
+      "whyUsSubtitle": "Was uns auszeichnet",
+      "historySubtitle": "Wie wir uns im Laufe der Jahre verändert haben"
+    }
+  },
+  "contactPage": {
+    "header": {
+      "title": "Kontaktinformationen",
+      "subtitle": "Haben Sie Fragen? Wir sind für Sie da!"
+    },
+    "form": {
+      "useForm": "Nutzen Sie unser Formular",
+      "nameLabel": "Name",
+      "namePlaceholder": "Max",
+      "emailLabel": "E‑Mail",
+      "emailPlaceholder": "max.mustermann@example.com",
+      "phoneLabel": "Telefon",
+      "phonePlaceholder": "+48 601 234 567",
+      "messageLabel": "Nachricht",
+      "messagePlaceholder": "Nachrichteninhalt..."
+    },
+    "actions": {
+      "sending": "Senden...",
+      "send": "Senden"
+    },
+    "success": "Vielen Dank! Ihre Nachricht wurde gesendet.",
+    "errors": {
+      "emailRequired": "E‑Mail‑Adresse ist erforderlich.",
+      "emailInvalid": "Bitte geben Sie eine gültige E‑Mail‑Adresse ein.",
+      "messageRequired": "Nachricht ist erforderlich.",
+      "recaptchaRequired": "Bitte bestätigen Sie reCAPTCHA."
+    },
+    "direct": {
+      "header": "Kontaktieren Sie uns direkt",
+      "labels": {
+        "registrationData": "Registrierungsdaten"
+      },
+      "values": {
+        "email": "biuro@rojekoid.pl",
+        "phone": "+48 601 789 888",
+        "address": "Kryspinów 399, 32-060 Kryspinów",
+        "nip": "NIP: 679-104-25-29",
+        "regon": "REGON: 356780524",
+        "hours": "Mo–Fr: 8:00–16:00"
+      }
+    },
+    "gdpr": {
+      "notice": "Verantwortlicher für Ihre personenbezogenen Daten ist ROJEK Okna i Drzwi Sp. z o.o. mit Sitz in Kraków (Kryspinów 399, 32-060 Kryspinów). Die personenbezogenen Daten werden verarbeitet, um Ihre Anfrage zu beantworten und den höchsten Servicestandard zu gewährleisten. Das Absenden des Formulars stellt eine freiwillige Einwilligung dar, per E‑Mail oder Telefon zum Zweck der Bearbeitung der Anfrage kontaktiert zu werden. Die Einwilligung kann jederzeit widerrufen werden, indem eine Nachricht an biuro@rojekoid.pl gesendet wird."
+    }
   }
 }

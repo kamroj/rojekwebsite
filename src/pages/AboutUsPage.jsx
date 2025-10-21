@@ -517,7 +517,6 @@ const NextNavigationButton = styled(NavigationButton)`
   }
 `;
 
-/* Contact inside manager card */
 const ContactRow = styled.div`
   display: flex;
   flex-wrap: wrap;
@@ -546,13 +545,11 @@ const ContactLink = styled.a`
     opacity: 0.9;
   }
 
-  /* Desktop: nieklikalne (zachowujemy dotychczasową logikę) */
   @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
     pointer-events: none;
     cursor: default;
   }
 
-  /* Mobile: chipy */
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     padding: 10px 14px;
     border: 1px solid rgba(4, 121, 0, 0.575);
@@ -586,7 +583,6 @@ const ContactInfoText = styled.span`
   }
 `;
 
-/* Services list with custom arrow bullets */
 const ServicesList = styled.ul`
   list-style: none;
   margin: auto auto 2rem 2rem;
@@ -637,7 +633,6 @@ const AboutUsPage = () => {
     }
   };
 
-  // Timeline data
   const timeline = [
     {
       year: 'Od 1994',
@@ -676,7 +671,6 @@ const AboutUsPage = () => {
     }
   ];
 
-  // Managers data
   const managers = [
     {
       name: 'Wiesław Rojek',
@@ -744,7 +738,6 @@ const AboutUsPage = () => {
     </ManagerCard>
   );
 
-  // Animation variants
   const fadeInUp = {
     hidden: { opacity: 0, y: 30 },
     visible: { opacity: 1, y: 0 }
@@ -773,9 +766,9 @@ const AboutUsPage = () => {
       <Section>
         <HeaderWrap>
           <ProductHeader>
-            DLACZEGO MY
+            {t('sections.whyUs')}
           </ProductHeader>
-          <ProductHeaderSubtitle>Co odróznia nas od innych</ProductHeaderSubtitle>
+          <ProductHeaderSubtitle>{t('aboutPage.headers.whyUsSubtitle', 'Co odróżnia nas od innych')}</ProductHeaderSubtitle>
         </HeaderWrap>
         <WhyUsContainer>
           <WhyUsContentContainer>
@@ -820,9 +813,9 @@ const AboutUsPage = () => {
       <Section>
         <HeaderWrap $reversed>
           <ProductHeader $reversed>
-            NASZA HISTORIA
+            {t('history.title', 'Nasza Historia')}
           </ProductHeader>
-          <ProductHeaderSubtitle>Jak zmienialiśmy się przez lata</ProductHeaderSubtitle>
+          <ProductHeaderSubtitle>{t('aboutPage.headers.historySubtitle', 'Jak zmienialiśmy się przez lata')}</ProductHeaderSubtitle>
         </HeaderWrap>
         <IntroText
           initial={{ opacity: 0, y: 30 }}
@@ -865,12 +858,12 @@ const AboutUsPage = () => {
           ))}
         </TimelineContainer>
       </Section>
-      <Section label="ZARZĄD" labelPosition="right" noPadding>
+      <Section label={t('management.label', 'ZARZĄD')} labelPosition="right" noPadding>
         <HeaderWrap>
           <ProductHeader>
-            MANAGEMENT
+            {t('management.title', 'MANAGEMENT')}
           </ProductHeader>
-          <ProductHeaderSubtitle>Poznaj nasz zespół</ProductHeaderSubtitle>
+          <ProductHeaderSubtitle>{t('management.subtitle', 'Poznaj nasz zespół')}</ProductHeaderSubtitle>
         </HeaderWrap>
         <MobileSwiperContainer>
           <Swiper

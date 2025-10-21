@@ -233,7 +233,7 @@
     "title": "Realizations",
     "filters": {
       "doors": "Doors",
-      "windows": "Windows", 
+      "windows": "Windows",
       "color": "Color",
       "clear": "Clear",
       "apply": "Apply",
@@ -242,14 +242,14 @@
     },
     "productTypes": {
       "interiorDoors": "Interior",
-      "exteriorDoors": "Exterior", 
+      "exteriorDoors": "Exterior",
       "woodWindows": "Wood",
       "woodAluWindows": "Wood-Alu",
       "pvcWindows": "PVC"
     },
     "colors": {
       "ral9017": "RAL 9017",
-      "ral7016": "RAL 7016", 
+      "ral7016": "RAL 7016",
       "ral9016": "RAL 9016"
     },
     "results": {
@@ -309,5 +309,50 @@
     "ctaTitle": "Get to know us better",
     "ctaText": "Contact us and learn more about our products and services",
     "ctaButton": "Contact us"
+  },
+  "contactPage": {
+    "header": {
+      "title": "Contact information",
+      "subtitle": "Have any questions? We’re here to help!"
+    },
+    "form": {
+      "useForm": "Use our form",
+      "nameLabel": "Name",
+      "namePlaceholder": "John",
+      "emailLabel": "Email",
+      "emailPlaceholder": "john.doe@example.com",
+      "phoneLabel": "Phone",
+      "phonePlaceholder": "+48 601 234 567",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Message content..."
+    },
+    "actions": {
+      "sending": "Sending...",
+      "send": "Send"
+    },
+    "success": "Thank you! Your message has been sent.",
+    "errors": {
+      "emailRequired": "Email address is required.",
+      "emailInvalid": "Please enter a valid email address.",
+      "messageRequired": "Message is required.",
+      "recaptchaRequired": "Please confirm reCAPTCHA."
+    },
+    "direct": {
+      "header": "Contact us directly",
+      "labels": {
+        "registrationData": "Registration details"
+      },
+      "values": {
+        "email": "biuro@rojekoid.pl",
+        "phone": "+48 601 789 888",
+        "address": "Kryspinów 399, 32-060 Kryspinów",
+        "nip": "NIP: 679-104-25-29",
+        "regon": "REGON: 356780524",
+        "hours": "Mon–Fri: 8:00–16:00"
+      }
+    },
+    "gdpr": {
+      "notice": "The controller of your personal data is ROJEK Okna i Drzwi Sp. z o.o. with its registered office in Kraków (Kryspinów 399, 32-060 Kryspinów). Personal data will be processed in order to respond to your inquiry and to ensure the highest service standards. Submitting the form constitutes voluntary consent to be contacted by email or phone for the purpose of handling the inquiry. Consent may be withdrawn at any time by sending a message to biuro@rojekoid.pl."
+    }
   }
 }

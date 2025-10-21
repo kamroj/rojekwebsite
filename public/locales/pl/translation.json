@@ -236,7 +236,7 @@
     "filters": {
       "doors": "Drzwi",
       "windows": "Okna",
-      "color": "Kolor", 
+      "color": "Kolor",
       "clear": "Wyczyść",
       "apply": "Zastosuj",
       "filtersTitle": "Filtry",
@@ -245,7 +245,7 @@
     "productTypes": {
       "interiorDoors": "Wewnętrzne",
       "exteriorDoors": "Zewnętrzne",
-      "woodWindows": "Drewno", 
+      "woodWindows": "Drewno",
       "woodAluWindows": "Drewno-Alu",
       "pvcWindows": "PVC"
     },
@@ -256,7 +256,7 @@
     },
     "results": {
       "found": "Znaleziono {{count}} realizacji",
-      "noResults": "Brak wyników", 
+      "noResults": "Brak wyników",
       "noResultsMessage": "Nie znaleziono realizacji dla wybranych filtrów."
     }
   },
@@ -340,5 +340,50 @@
         "role": "Kierownik produkcji"
       }
     ]
+  },
+  "contactPage": {
+    "header": {
+      "title": "Informacje kontaktowe",
+      "subtitle": "Masz jakieś pytania? Jesteśmy do Twojej dyspozycji!"
+    },
+    "form": {
+      "useForm": "Skorzystaj z naszego formularza",
+      "nameLabel": "Imię",
+      "namePlaceholder": "Jan",
+      "emailLabel": "Email",
+      "emailPlaceholder": "jan.kowalski@example.com",
+      "phoneLabel": "Telefon",
+      "phonePlaceholder": "+48 601 234 567",
+      "messageLabel": "Wiadomość",
+      "messagePlaceholder": "Treść wiadomości..."
+    },
+    "actions": {
+      "sending": "Wysyłanie...",
+      "send": "Wyślij"
+    },
+    "success": "Dziękujemy! Wiadomość została wysłana.",
+    "errors": {
+      "emailRequired": "Adres email jest wymagany.",
+      "emailInvalid": "Podaj poprawny adres email.",
+      "messageRequired": "Wiadomość jest wymagana.",
+      "recaptchaRequired": "Potwierdź reCAPTCHA."
+    },
+    "direct": {
+      "header": "Skontaktuj się z nami bezpośrednio",
+      "labels": {
+        "registrationData": "Dane rejestrowe"
+      },
+      "values": {
+        "email": "biuro@rojekoid.pl",
+        "phone": "+48 601 789 888",
+        "address": "Kryspinów 399, 32-060 Kryspinów",
+        "nip": "NIP: 679-104-25-29",
+        "regon": "REGON: 356780524",
+        "hours": "Pon–Pt: 8:00–16:00"
+      }
+    },
+    "gdpr": {
+      "notice": "Administratorem Państwa danych osobowych jest ROJEK Okna i Drzwi Sp. z o.o. z siedzibą w Krakowie (Kryspinów 399, 32-060 Kryspinów). Dane osobowe będą przetwarzane w celu udzielenia odpowiedzi na przesłane zapytanie oraz zapewnienia najwyższych standardów obsługi. Przesłanie formularza oznacza dobrowolne wyrażenie zgody na kontakt drogą e-mailową lub telefoniczną w celu obsługi zapytania. Zgodę można w każdej chwili wycofać, wysyłając wiadomość na adres biuro@rojekoid.pl"
+    }
   }
 }
