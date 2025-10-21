@@ -58,6 +58,9 @@ export const collectRealizationsPageResources = () => {
     resources.push(image.src);
   });
 
+  // Obraz nagłówka strony
+  resources.push('/images/realizations/top.jpg');
+
   return resources;
 };
 
@@ -68,8 +71,20 @@ export const collectAboutPageResources = () => {
   // Logo w LoadingScreen
   resources.push('/images/logo.png');
 
-  // Tutaj można dodać specyficzne zasoby dla AboutPage
-  // np. zdjęcia zespołu, certyfikaty itp.
+  // Obrazy nagłówka i sekcji siedziby
+  resources.push('/images/company/company-top.jpg');
+  resources.push('/images/company/company-building.jpg');
+
+  // Zdjęcia zespołu/management (AboutUsPage)
+  resources.push('/images/history/przemek.jpg');
+  resources.push('/images/history/tomek.jpg');
+
+  // Dodatkowe zdjęcia użyte jako placeholdery w kartach
+  resources.push('/images/realizations/realization2.jpg');
+  resources.push('/images/realizations/realization5.jpg');
+
+  // Ikona listy usług
+  resources.push('/images/arrow.png');
 
   return resources;
 };
@@ -81,8 +96,8 @@ export const collectContactPageResources = () => {
   // Logo w LoadingScreen
   resources.push('/images/logo.png');
 
-  // Tutaj można dodać specyficzne zasoby dla ContactPage
-  // np. mapa, zdjęcia biura itp.
+  // Obraz nagłówka strony kontakt
+  resources.push('/images/contactus/top.jpg');
 
   return resources;
 };

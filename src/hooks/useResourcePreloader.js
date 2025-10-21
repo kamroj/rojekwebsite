@@ -33,61 +33,116 @@ const loadResource = (url, type) => {
     switch (type) {
       case RESOURCE_TYPES.IMAGE: {
         const img = new Image();
-        img.onload = () => resolve({ url, type, loaded: true });
-        img.onerror = () => reject({ url, type, error: 'Failed to load image' });
+        img.decoding = 'async';
+        let timeoutId;
+
+        const handleLoad = () => {
+          cleanup();
+          resolve({ url, type, loaded: true });
+        };
+
+        const handleError = () => {
+          cleanup();
+          reject({ url, type, error: 'Failed to load image' });
+        };
+
+        const cleanup = () => {
+          img.onload = null;
+          img.onerror = null;
+          if (timeoutId) clearTimeout(timeoutId);
+        };
+
+        img.onload = handleLoad;
+        img.onerror = handleError;
+
+        // Timeout fallback to prevent getting stuck if 'load' never fires
+        timeoutId = setTimeout(() => {
+          cleanup();
+          resolve({ url, type, loaded: true, timedOut: true });
+        }, 8000);
+
         img.src = url;
         break;
       }
       
       case RESOURCE_TYPES.VIDEO: {
         const video = document.createElement('video');
-        video.preload = 'metadata';
-        
-        const handleCanPlay = () => {
+        // Use 'auto' so 'loadeddata' reliably fires across browsers
+        video.preload = 'auto';
+
+        let timeoutId;
+
+        const handleLoaded = () => {
           cleanup();
           resolve({ url, type, loaded: true });
         };
-        
+
         const handleError = () => {
           cleanup();
           reject({ url, type, error: 'Failed to load video' });
         };
-        
+
         const cleanup = () => {
-          video.removeEventListener('canplaythrough', handleCanPlay);
+          video.removeEventListener('loadeddata', handleLoaded);
+          video.removeEventListener('canplay', handleLoaded);
           video.removeEventListener('error', handleError);
+          if (timeoutId) clearTimeout(timeoutId);
           video.src = '';
+          video.load();
         };
-        
-        video.addEventListener('canplaythrough', handleCanPlay);
+
+        video.addEventListener('loadeddata', handleLoaded);
+        video.addEventListener('canplay', handleLoaded);
         video.addEventListener('error', handleError);
+
+        // Timeout fallback to avoid stuck loader on some platforms
+        timeoutId = setTimeout(() => {
+          cleanup();
+          resolve({ url, type, loaded: true, timedOut: true });
+        }, 12000);
+
         video.src = url;
+        video.load();
         break;
       }
       
       case RESOURCE_TYPES.AUDIO: {
         const audio = new Audio();
-        audio.preload = 'metadata';
-        
-        const handleCanPlay = () => {
+        audio.preload = 'auto';
+
+        let timeoutId;
+
+        const handleLoaded = () => {
           cleanup();
           resolve({ url, type, loaded: true });
         };
-        
+
         const handleError = () => {
           cleanup();
           reject({ url, type, error: 'Failed to load audio' });
         };
-        
+
         const cleanup = () => {
-          audio.removeEventListener('canplaythrough', handleCanPlay);
+          audio.removeEventListener('loadeddata', handleLoaded);
+          audio.removeEventListener('canplay', handleLoaded);
           audio.removeEventListener('error', handleError);
+          if (timeoutId) clearTimeout(timeoutId);
           audio.src = '';
+          audio.load();
         };
-        
-        audio.addEventListener('canplaythrough', handleCanPlay);
+
+        audio.addEventListener('loadeddata', handleLoaded);
+        audio.addEventListener('canplay', handleLoaded);
         audio.addEventListener('error', handleError);
+
+        // Timeout fallback to avoid stuck loader on some platforms
+        timeoutId = setTimeout(() => {
+          cleanup();
+          resolve({ url, type, loaded: true, timedOut: true });
+        }, 12000);
+
         audio.src = url;
+        audio.load();
         break;
       }
       

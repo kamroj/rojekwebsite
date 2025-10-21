@@ -33,41 +33,84 @@ const loadResource = (url, type) => {
     switch (type) {
       case RESOURCE_TYPES.IMAGE: {
         const img = new window.Image();
-        img.onload = () => resolve({ url, type, loaded: true });
-        img.onerror = () => reject({ url, type, error: 'Failed to load image' });
-        img.src = url;
-        break;
-      }
-      case RESOURCE_TYPES.VIDEO: {
-        const video = document.createElement('video');
-        video.preload = 'metadata';
+        img.decoding = 'async';
+        let timeoutId;
 
-        const handleCanPlay = () => {
+        const handleLoad = () => {
           cleanup();
           resolve({ url, type, loaded: true });
         };
 
         const handleError = () => {
           cleanup();
+          reject({ url, type, error: 'Failed to load image' });
+        };
+
+        const cleanup = () => {
+          img.onload = null;
+          img.onerror = null;
+          if (timeoutId) clearTimeout(timeoutId);
+        };
+
+        img.onload = handleLoad;
+        img.onerror = handleError;
+        timeoutId = setTimeout(() => {
+          // Avoid blocking the whole loading cycle if the event never fires
+          cleanup();
+          resolve({ url, type, loaded: true, timedOut: true });
+        }, 8000);
+
+        img.src = url;
+        break;
+      }
+      case RESOURCE_TYPES.VIDEO: {
+        const video = document.createElement('video');
+        // Use 'auto' so 'loadeddata' reliably fires across browsers
+        video.preload = 'auto';
+
+        let timeoutId;
+
+        const handleLoaded = () => {
+          cleanup();
+          resolve({ url, type, loaded: true });
+        };
+
+        const handleError = () => {
+          cleanup();
+          // Count as completed via reject path (will be tracked in failedResources)
           reject({ url, type, error: 'Failed to load video' });
         };
 
         const cleanup = () => {
-          video.removeEventListener('canplaythrough', handleCanPlay);
+          video.removeEventListener('loadeddata', handleLoaded);
+          video.removeEventListener('canplay', handleLoaded);
           video.removeEventListener('error', handleError);
+          if (timeoutId) clearTimeout(timeoutId);
           video.src = '';
+          video.load();
         };
 
-        video.addEventListener('canplaythrough', handleCanPlay);
+        video.addEventListener('loadeddata', handleLoaded);
+        video.addEventListener('canplay', handleLoaded);
         video.addEventListener('error', handleError);
+
+        // Timeout fallback to avoid stuck loader on some platforms
+        timeoutId = setTimeout(() => {
+          cleanup();
+          resolve({ url, type, loaded: true, timedOut: true });
+        }, 12000);
+
         video.src = url;
+        video.load();
         break;
       }
       case RESOURCE_TYPES.AUDIO: {
         const audio = new window.Audio();
-        audio.preload = 'metadata';
+        audio.preload = 'auto';
 
-        const handleCanPlay = () => {
+        let timeoutId;
+
+        const handleLoaded = () => {
           cleanup();
           resolve({ url, type, loaded: true });
         };
@@ -78,14 +121,25 @@ const loadResource = (url, type) => {
         };
 
         const cleanup = () => {
-          audio.removeEventListener('canplaythrough', handleCanPlay);
+          audio.removeEventListener('loadeddata', handleLoaded);
+          audio.removeEventListener('canplay', handleLoaded);
           audio.removeEventListener('error', handleError);
+          if (timeoutId) clearTimeout(timeoutId);
           audio.src = '';
+          audio.load();
         };
 
-        audio.addEventListener('canplaythrough', handleCanPlay);
+        audio.addEventListener('loadeddata', handleLoaded);
+        audio.addEventListener('canplay', handleLoaded);
         audio.addEventListener('error', handleError);
+
+        timeoutId = setTimeout(() => {
+          cleanup();
+          resolve({ url, type, loaded: true, timedOut: true });
+        }, 12000);
+
         audio.src = url;
+        audio.load();
         break;
       }
       default:
@@ -109,18 +163,26 @@ export const ResourceCollectorProvider = ({ children }) => {
   const addResources = useCallback((newResources) => {
     setResources(prev => {
       const urls = new Set(prev.map(r => r.url));
-      const toAdd = newResources
-        .map(resource => {
-          if (typeof resource === 'string') {
-            return { url: resource, type: getResourceType(resource) };
-          }
-          return {
-            url: resource.url,
-            type: resource.type || getResourceType(resource.url)
-          };
-        })
-        .filter(r => r.url && !urls.has(r.url));
-      return [...prev, ...toAdd];
+      
+      // Normalize and deduplicate both against previous and within this batch
+      const normalized = (newResources || []).map(resource => {
+        if (typeof resource === 'string') {
+          return { url: resource, type: getResourceType(resource) };
+        }
+        return {
+          url: resource?.url,
+          type: resource?.type || (resource?.url ? getResourceType(resource.url) : undefined)
+        };
+      });
+      
+      const uniqueToAdd = [];
+      for (const r of normalized) {
+        if (r && r.url && !urls.has(r.url)) {
+          urls.add(r.url);
+          uniqueToAdd.push(r);
+        }
+      }
+      return [...prev, ...uniqueToAdd];
     });
   }, []);
 
