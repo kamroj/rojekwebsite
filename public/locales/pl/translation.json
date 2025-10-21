@@ -10,10 +10,10 @@
     "logoAlt": "ROJEK okna i drzwi Logo"
   },
   "pageTitle": {
-    "home": "ROJEK - Strona Główna",
-    "realizations": "ROJEK - Realizacje",
+    "home": "Strona Główna",
+    "realizations": "Realizacje",
     "about": "O Firmie",
-    "contact": "ROJEK - Kontakt"
+    "contact": "Kontakt"
   },
   "footer": {
     "copy": "© {{year}} ROJEK okna i drzwi. Wszelkie prawa zastrzeżone."

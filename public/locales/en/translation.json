@@ -10,10 +10,10 @@
     "logoAlt": "ROJEK windows & doors Logo"
   },
   "pageTitle": {
-    "home": "ROJEK - Home Page",
-    "realizations": "ROJEK - Realizations",
-    "about": "ROJEK - About Us",
-    "contact": "ROJEK - Contact"
+    "home": "Home Page",
+    "realizations": "Realizations",
+    "about": "About Us",
+    "contact": "Contact"
   },
   "footer": {
     "copy": "© {{year}} ROJEK windows & doors. All rights reserved."

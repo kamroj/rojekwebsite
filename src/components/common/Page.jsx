@@ -27,7 +27,7 @@ const PageWrapper = styled.div`
 const Page = ({
     imageSrc,
     title,
-    height = 300,
+    height = 500,
     id,
     overlayColor,
     contentBg,

@@ -676,6 +676,74 @@ const AboutUsPage = () => {
     }
   ];
 
+  // Managers data
+  const managers = [
+    {
+      name: 'Wiesław Rojek',
+      role: 'Właściciel',
+      photo: '/images/realizations/realization2.jpg',
+      alt: 'Wiesław Rojek',
+      phone: '+48 603 923 011',
+      phoneHref: 'tel:+48603923011',
+      email: 'wieslaw.rojek@rojekoid.pl',
+      emailHref: 'mailto:wieslaw.rojek@rojekoid.pl',
+    },
+    {
+      name: 'Przemysław Rojek',
+      role: 'Właściciel',
+      photo: '/images/history/przemek.jpg',
+      alt: 'Przemysław Rojek',
+      phone: '+48 886 988 561',
+      phoneHref: 'tel:+48886988561',
+      email: 'przemyslaw.rojek@rojekoid.pl',
+      emailHref: 'mailto:przemyslaw.rojek@rojekoid.pl',
+    },
+    {
+      name: 'Tomasz Rojek',
+      role: 'Właściciel',
+      photo: '/images/history/tomek.jpg',
+      alt: 'Tomasz Rojek',
+      phone: '+48 889 194 388',
+      phoneHref: 'tel:+48889194388',
+      email: 'tomasz.rojek@rojekoid.pl',
+      emailHref: 'mailto:tomasz.rojek@rojekoid.pl',
+    },
+    {
+      name: 'Paweł Jakiśtam',
+      role: 'Kierownik produkcji',
+      photo: '/images/realizations/realization5.jpg',
+      alt: 'Kierownik produkcji',
+      phone: '+48 600 000 000',
+      phoneHref: 'tel:+48600000000',
+      email: 'pawel.jakistam@rojekoid.pl',
+      emailHref: 'mailto:pawel.jakistam@rojekoid.pl',
+    },
+  ];
+
+  const ManagerItem = ({ manager }) => (
+    <ManagerCard>
+      <ManagerImageWrapper>
+        <ManagerPhoto src={manager.photo} alt={manager.alt} />
+      </ManagerImageWrapper>
+      <ManagerBody>
+        <ManagerTopRow>
+          <ManagerName>{manager.name}</ManagerName>
+        </ManagerTopRow>
+        <ManagerRole>{manager.role}</ManagerRole>
+        <ContactRow>
+          <ContactLink href={manager.phoneHref} aria-label={'Zadzwoń do ' + manager.name.split(' ')[0]}>
+            <ContactIconSmall><FiPhone /></ContactIconSmall>
+            <ContactInfoText>{manager.phone}</ContactInfoText>
+          </ContactLink>
+          <ContactLink href={manager.emailHref} aria-label={'Napisz do ' + manager.name.split(' ')[0]}>
+            <ContactIconSmall><FiMail /></ContactIconSmall>
+            <ContactInfoText>{manager.email}</ContactInfoText>
+          </ContactLink>
+        </ContactRow>
+      </ManagerBody>
+    </ManagerCard>
+  );
+
   // Animation variants
   const fadeInUp = {
     hidden: { opacity: 0, y: 30 },
@@ -701,7 +769,7 @@ const AboutUsPage = () => {
     `;
 
   return (
-    <Page imageSrc="/images/company/company-top.jpg" height={500} title={t('pageTitle.about', 'O Firmie')}>
+    <Page imageSrc="/images/company/company-top.jpg" title={t('pageTitle.about', 'O Firmie')}>
       <Section>
         <HeaderWrap>
           <ProductHeader>
@@ -828,101 +896,11 @@ const AboutUsPage = () => {
             speed={400}
             className="managers-swiper"
           >
-            <SwiperSlide>
-              <ManagerCard>
-                <ManagerImageWrapper>
-                  <ManagerPhoto src="/images/realizations/realization2.jpg" alt="Wiesław Rojek" />
-                </ManagerImageWrapper>
-                <ManagerBody>
-                  <ManagerTopRow>
-                    <ManagerName>Wiesław Rojek</ManagerName>
-                  </ManagerTopRow>
-                  <ManagerRole>Właściciel</ManagerRole>
-                  <ContactRow>
-                    <ContactLink href="tel:+48603923011" aria-label="Zadzwoń do Wiesław">
-                      <ContactIconSmall><FiPhone /></ContactIconSmall>
-                      <ContactInfoText>+48 603 923 011</ContactInfoText>
-                    </ContactLink>
-                    <ContactLink href="mailto:wieslaw.rojek@rojekoid.pl" aria-label="Napisz do Wiesław">
-                      <ContactIconSmall><FiMail /></ContactIconSmall>
-                      <ContactInfoText>wieslaw.rojek@rojekoid.pl</ContactInfoText>
-                    </ContactLink>
-                  </ContactRow>
-                </ManagerBody>
-              </ManagerCard>
-            </SwiperSlide>
-
-            <SwiperSlide>
-              <ManagerCard>
-                <ManagerImageWrapper>
-                  <ManagerPhoto src="/images/history/przemek.jpg" alt="Przemysław Rojek" />
-                </ManagerImageWrapper>
-                <ManagerBody>
-                  <ManagerTopRow>
-                    <ManagerName>Przemysław Rojek</ManagerName>
-                  </ManagerTopRow>
-                  <ManagerRole>Właściciel</ManagerRole>
-                  <ContactRow>
-                    <ContactLink href="tel:+48886988561" aria-label="Zadzwoń do Przemysław">
-                      <ContactIconSmall><FiPhone /></ContactIconSmall>
-                      <ContactInfoText>+48 886 988 561</ContactInfoText>
-                    </ContactLink>
-                    <ContactLink href="mailto:przemyslaw.rojek@rojekoid.pl" aria-label="Napisz do Przemysław">
-                      <ContactIconSmall><FiMail /></ContactIconSmall>
-                      <ContactInfoText>przemyslaw.rojek@rojekoid.pl</ContactInfoText>
-                    </ContactLink>
-                  </ContactRow>
-                </ManagerBody>
-              </ManagerCard>
-            </SwiperSlide>
-
-            <SwiperSlide>
-              <ManagerCard>
-                <ManagerImageWrapper>
-                  <ManagerPhoto src="/images/history/tomek.jpg" alt="Tomasz Rojek" />
-                </ManagerImageWrapper>
-                <ManagerBody>
-                  <ManagerTopRow>
-                    <ManagerName>Tomasz Rojek</ManagerName>
-                  </ManagerTopRow>
-                  <ManagerRole>Właściciel</ManagerRole>
-                  <ContactRow>
-                    <ContactLink href="tel:+48889194388" aria-label="Zadzwoń do Tomasz">
-                      <ContactIconSmall><FiPhone /></ContactIconSmall>
-                      <ContactInfoText>+48 889 194 388</ContactInfoText>
-                    </ContactLink>
-                    <ContactLink href="mailto:tomasz.rojek@rojekoid.pl" aria-label="Napisz do Tomasz">
-                      <ContactIconSmall><FiMail /></ContactIconSmall>
-                      <ContactInfoText>tomasz.rojek@rojekoid.pl</ContactInfoText>
-                    </ContactLink>
-                  </ContactRow>
-                </ManagerBody>
-              </ManagerCard>
-            </SwiperSlide>
-
-            <SwiperSlide>
-              <ManagerCard>
-                <ManagerImageWrapper>
-                  <ManagerPhoto src="/images/realizations/realization5.jpg" alt="Kierownik produkcji" />
-                </ManagerImageWrapper>
-                <ManagerBody>
-                  <ManagerTopRow>
-                    <ManagerName>Paweł Jakiśtam</ManagerName>
-                  </ManagerTopRow>
-                  <ManagerRole>Kierownik produkcji</ManagerRole>
-                  <ContactRow>
-                    <ContactLink href="tel:+48600000000" aria-label="Zadzwoń do Paweł">
-                      <ContactIconSmall><FiPhone /></ContactIconSmall>
-                      <ContactInfoText>+48 600 000 000</ContactInfoText>
-                    </ContactLink>
-                    <ContactLink href="mailto:pawel.jakistam@rojekoid.pl" aria-label="Napisz do Anna">
-                      <ContactIconSmall><FiMail /></ContactIconSmall>
-                      <ContactInfoText>pawel.jakistam@rojekoid.pl</ContactInfoText>
-                    </ContactLink>
-                  </ContactRow>
-                </ManagerBody>
-              </ManagerCard>
-            </SwiperSlide>
+            {managers.map((m) => (
+              <SwiperSlide key={m.name}>
+                <ManagerItem manager={m} />
+              </SwiperSlide>
+            ))}
           </Swiper>
 
           <NavigationContainer>
@@ -944,93 +922,9 @@ const AboutUsPage = () => {
         </MobileSwiperContainer>
 
         <ManagementGrid>
-          <ManagerCard>
-            <ManagerImageWrapper>
-              <ManagerPhoto src="/images/realizations/realization2.jpg" alt="Wiesław Rojek" />
-            </ManagerImageWrapper>
-            <ManagerBody>
-              <ManagerTopRow>
-                <ManagerName>Wiesław Rojek</ManagerName>
-              </ManagerTopRow>
-              <ManagerRole>Właściciel</ManagerRole>
-              <ContactRow>
-                <ContactLink href="tel:+48603923011" aria-label="Zadzwoń do Wiesław">
-                  <ContactIconSmall><FiPhone /></ContactIconSmall>
-                  <ContactInfoText>+48 603 923 011</ContactInfoText>
-                </ContactLink>
-                <ContactLink href="mailto:wieslaw.rojek@rojekoid.pl" aria-label="Napisz do Wiesław">
-                  <ContactIconSmall><FiMail /></ContactIconSmall>
-                  <ContactInfoText>wieslaw.rojek@rojekoid.pl</ContactInfoText>
-                </ContactLink>
-              </ContactRow>
-            </ManagerBody>
-          </ManagerCard>
-
-          <ManagerCard>
-            <ManagerImageWrapper>
-              <ManagerPhoto src="/images/history/przemek.jpg" alt="Przemysław Rojek" />
-            </ManagerImageWrapper>
-            <ManagerBody>
-              <ManagerTopRow>
-                <ManagerName>Przemysław Rojek</ManagerName>
-              </ManagerTopRow>
-              <ManagerRole>Właściciel</ManagerRole>
-              <ContactRow>
-                <ContactLink href="tel:+48886988561" aria-label="Zadzwoń do Przemysław">
-                  <ContactIconSmall><FiPhone /></ContactIconSmall>
-                  <ContactInfoText>+48 886 988 561</ContactInfoText>
-                </ContactLink>
-                <ContactLink href="mailto:przemyslaw.rojek@rojekoid.pl" aria-label="Napisz do Przemysław">
-                  <ContactIconSmall><FiMail /></ContactIconSmall>
-                  <ContactInfoText>przemyslaw.rojek@rojekoid.pl</ContactInfoText>
-                </ContactLink>
-              </ContactRow>
-            </ManagerBody>
-          </ManagerCard>
-
-          <ManagerCard>
-            <ManagerImageWrapper>
-              <ManagerPhoto src="/images/history/tomek.jpg" alt="Tomasz Rojek" />
-            </ManagerImageWrapper>
-            <ManagerBody>
-              <ManagerTopRow>
-                <ManagerName>Tomasz Rojek</ManagerName>
-              </ManagerTopRow>
-              <ManagerRole>Właściciel</ManagerRole>
-              <ContactRow>
-                <ContactLink href="tel:+48889194388" aria-label="Zadzwoń do Tomasz">
-                  <ContactIconSmall><FiPhone /></ContactIconSmall>
-                  <ContactInfoText>+48 889 194 388</ContactInfoText>
-                </ContactLink>
-                <ContactLink href="mailto:tomasz.rojek@rojekoid.pl" aria-label="Napisz do Tomasz">
-                  <ContactIconSmall><FiMail /></ContactIconSmall>
-                  <ContactInfoText>tomasz.rojek@rojekoid.pl</ContactInfoText>
-                </ContactLink>
-              </ContactRow>
-            </ManagerBody>
-          </ManagerCard>
-
-          <ManagerCard>
-            <ManagerImageWrapper>
-              <ManagerPhoto src="/images/realizations/realization5.jpg" alt="Kierownik produkcji" />
-            </ManagerImageWrapper>
-            <ManagerBody>
-              <ManagerTopRow>
-                <ManagerName>Paweł Jakiśtam</ManagerName>
-              </ManagerTopRow>
-              <ManagerRole>Kierownik produkcji</ManagerRole>
-              <ContactRow>
-                <ContactLink href="tel:+48600000000" aria-label="Zadzwoń do Paweł">
-                  <ContactIconSmall><FiPhone /></ContactIconSmall>
-                  <ContactInfoText>+48 600 000 000</ContactInfoText>
-                </ContactLink>
-                <ContactLink href="mailto:pawel.jakistam@rojekoid.pl" aria-label="Napisz do Anna">
-                  <ContactIconSmall><FiMail /></ContactIconSmall>
-                  <ContactInfoText>pawel.jakistam@rojekoid.pl</ContactInfoText>
-                </ContactLink>
-              </ContactRow>
-            </ManagerBody>
-          </ManagerCard>
+          {managers.map((m) => (
+            <ManagerItem key={m.name} manager={m} />
+          ))}
         </ManagementGrid>
       </Section>
     </Page>
