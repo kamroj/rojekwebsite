@@ -224,9 +224,9 @@ const PartnersSection = () => {
       <MaxWidthContainer>
         <HeaderWrap className='full-width'>
           <ProductHeader>
-            PARTNERZY
+            {t('sections.partners')}
           </ProductHeader>
-          <ProductHeaderSubtitle>Firmy, z którymi współpracujemy</ProductHeaderSubtitle>
+          <ProductHeaderSubtitle>{t('partners.subtitle', 'Firmy, z którymi współpracujemy')}</ProductHeaderSubtitle>
         </HeaderWrap>
         <PartnersGrid>
           {partnersData.map(renderDesktopPartner)}

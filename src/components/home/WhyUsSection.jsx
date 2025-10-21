@@ -364,9 +364,9 @@ const WhyUsSection = () => {
       <MaxWidthContainer>
         <HeaderWrap className='full-width'>
           <ProductHeader>
-            DLACZEGO MY
+            {t('sections.whyUs')}
           </ProductHeader>
-          <ProductHeaderSubtitle>Co odróznia nas od innych</ProductHeaderSubtitle>
+          <ProductHeaderSubtitle>{t('aboutPage.headers.whyUsSubtitle', 'Co odróżnia nas od innych')}</ProductHeaderSubtitle>
         </HeaderWrap>
         <DesktopGrid>
           {features.map(renderFeatureCard)}

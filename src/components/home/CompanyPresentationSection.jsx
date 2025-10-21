@@ -179,9 +179,9 @@ const CompanyPresentationSection = () => {
       <MaxWidthContainer>
         <HeaderWrap $reversed className='full-width'>
           <ProductHeader $reversed>
-            NASZA FIRMA
+            {t('company.title')}
           </ProductHeader>
-          <ProductHeaderSubtitle $blackBackground>Poznaj nas od środka</ProductHeaderSubtitle>
+          <ProductHeaderSubtitle $blackBackground>{t('company.subtitle', 'Poznaj nas od środka')}</ProductHeaderSubtitle>
         </HeaderWrap>
         <PresentationWrapper ref={sectionRef}>
           <VideoContainer>

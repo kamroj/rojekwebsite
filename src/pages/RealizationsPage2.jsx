@@ -425,7 +425,7 @@ export default function RealizationsPage2() {
   return (
     <Page imageSrc="/images/realizations/top.jpg" height={500} title={t('realizationsPage.title')}>
       <FilterContainer>
-        <FilterCounter>Znaleziono {filteredRealizations.length} realizacji</FilterCounter>
+        <FilterCounter>{t('realizationsPage.results.found', { count: filteredRealizations.length })}</FilterCounter>
         <Select
           isMulti
           options={groupedTagOptions}
@@ -469,7 +469,7 @@ export default function RealizationsPage2() {
               {Object.entries(item.tags).flatMap(([category, values]) =>
                 values.map((val, i) => (
                   <Tag key={`${idx}-${category}-${val}-${i}`}>
-                    {category}: {val}
+                    {t(`tags.categories.${category}`, category)}: {val}
                   </Tag>
                 ))
               )}

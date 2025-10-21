@@ -36,6 +36,7 @@
   },
   "sections": {
     "products": "PRODUCTS",
+    "productsSubtitle": "Modernity, style, ecology",
     "realizations": "REALIZATIONS",
     "whyUs": "WHY US?",
     "companyPresentation": "COMPANY PRESENTATION",
@@ -130,6 +131,7 @@
     }
   },
   "realizations": {
+    "subtitle": "See our realizations",
     "description": "Below we present selected projects that we have implemented for our clients. Each order is a new challenge for us, which we face with passion and professionalism.",
     "items": [
       { "title": "Single-family house, Wrocław" },
@@ -189,6 +191,7 @@
   },
   "company": {
     "title": "About our company",
+    "subtitle": "Get to know us from the inside",
     "description": "ROJEK is a family company with many years of experience in the production of windows and doors. We specialize in wooden and wood-aluminum solutions of the highest quality."
   },
   "presentation": {
@@ -196,7 +199,21 @@
     "title": "ROJEK company presentation"
   },
   "partners": {
-    "title": "We cooperate with the best"
+    "title": "We cooperate with the best",
+    "subtitle": "Companies we work with"
+  },
+  "aboutPage": {
+    "headers": {
+      "whyUsSubtitle": "What sets us apart",
+      "historySubtitle": "How we've changed over the years"
+    }
+  },
+  "tags": {
+    "categories": {
+      "door": "Door",
+      "window": "Window",
+      "color": "Color"
+    }
   },
   "contact": {
     "title": "Contact us",

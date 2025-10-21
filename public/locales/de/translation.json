@@ -36,6 +36,7 @@
   },
   "sections": {
     "products": "PRODUKTE",
+    "productsSubtitle": "Modernität, Stil, Ökologie",
     "realizations": "PROJEKTE",
     "whyUs": "WARUM WIR?",
     "companyPresentation": "FIRMENPRÄSENTATION",
@@ -130,6 +131,7 @@
     }
   },
   "realizations": {
+    "subtitle": "Sehen Sie unsere Projekte",
     "description": "Unten präsentieren wir ausgewählte Projekte, die wir für unsere Kunden realisiert haben. Jeder Auftrag ist für uns eine neue Herausforderung, der wir mit Leidenschaft und Professionalität begegnen.",
     "items": [
       { "title": "Einfamilienhaus, Wrocław" },
@@ -189,6 +191,7 @@
   },
   "company": {
     "title": "Über unser Unternehmen",
+    "subtitle": "Lernen Sie uns von innen kennen",
     "description": "ROJEK ist ein Familienunternehmen mit langjähriger Erfahrung in der Herstellung von Fenstern und Türen. Wir spezialisieren uns auf Holz- und Holz-Aluminium-Lösungen höchster Qualität."
   },
   "presentation": {
@@ -196,7 +199,21 @@
     "title": "ROJEK Firmenpräsentation"
   },
   "partners": {
-    "title": "Wir arbeiten mit den Besten zusammen"
+    "title": "Wir arbeiten mit den Besten zusammen",
+    "subtitle": "Firmen, mit denen wir zusammenarbeiten"
+  },
+  "aboutPage": {
+    "headers": {
+      "whyUsSubtitle": "Was uns auszeichnet",
+      "historySubtitle": "Wie wir uns im Laufe der Jahre verändert haben"
+    }
+  },
+  "tags": {
+    "categories": {
+      "door": "Tür",
+      "window": "Fenster",
+      "color": "Farbe"
+    }
   },
   "contact": {
     "title": "Kontaktieren Sie uns",

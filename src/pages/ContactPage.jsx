@@ -262,21 +262,17 @@ const ContactPage = () => {
 
   const validate = () => {
     const next = { email: '', message: '', recaptcha: '' };
-    // Email required
     if (!email.trim()) {
       next.email = t('contactPage.errors.emailRequired');
     } else {
-      // Prosta walidacja formatu email
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(email.trim())) {
         next.email = t('contactPage.errors.emailInvalid');
       }
     }
-    // Message required
     if (!message.trim()) {
       next.message = t('contactPage.errors.messageRequired');
     }
-    // reCAPTCHA required (v2 checkbox)
     if (!recaptchaToken) {
       next.recaptcha = t('contactPage.errors.recaptchaRequired');
     }
@@ -289,7 +285,6 @@ const ContactPage = () => {
     setSent(false);
     if (!validate()) return;
 
-    // Server-side verify reCAPTCHA before submitting
     const v = await verifyRecaptcha(recaptchaToken);
     if (!v.ok) {
       setErrors((p) => ({ ...p, recaptcha: t('contactPage.errors.recaptchaInvalid', 'Weryfikacja reCAPTCHA nie powiodła się') }));
@@ -319,7 +314,7 @@ const ContactPage = () => {
   };
 
   return (
-    <Page imageSrc="/images/company/company-top.jpg" title={t('pageTitle.contact', 'Kontakt')}>
+    <Page imageSrc="/images/contactus/top.jpg" title={t('pageTitle.contact', 'Kontakt')}>
       <Section>
         <HeaderWrap>
           <ProductHeader>{t('contactPage.header.title')}</ProductHeader>

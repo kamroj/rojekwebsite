@@ -9,6 +9,7 @@ import 'swiper/css';
 import 'swiper/css/autoplay';
 import MaxWidthContainer from '../common/MaxWidthContainer';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../pages/HomePage';
+import { t } from 'i18next';
 
 // --- Styled Components ---
 const StyledSwiperContainer = styled.div`
@@ -274,9 +275,9 @@ const RealizationsGallery = ({ images, options = {} }) => {
     <MaxWidthContainer>
       <HeaderWrap className='full-width' $reversed>
         <ProductHeader $bg="#e6c61942" $reversed>
-          REALIZACJE
+          {t('sections.realizations')}
         </ProductHeader>
-        <ProductHeaderSubtitle $bg="#706a0026;" $blackBackground>Zobacz nasze realizacje</ProductHeaderSubtitle>
+        <ProductHeaderSubtitle $bg="#706a0026;" $blackBackground>{t('realizations.subtitle', 'Zobacz nasze realizacje')}</ProductHeaderSubtitle>
       </HeaderWrap>
       <StyledSwiperContainer>
         <Swiper

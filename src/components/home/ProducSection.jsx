@@ -7,6 +7,7 @@ import { IoIosArrowForward } from 'react-icons/io';
 import SwipeHandler from '../common/SwipeHandler';
 import MaxWidthContainer from '../common/MaxWidthContainer';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../pages/HomePage';
+import { t } from 'i18next';
 
 // --- Styled Components ---
 const ProductContentContainer = styled.div`
@@ -565,9 +566,9 @@ const ProductSection = ({ productData, initialProductId = Object.keys(productDat
       <MaxWidthContainer>
         <HeaderWrap className='full-width'>
           <ProductHeader>
-            NASZE PRODUKTY
+            {t('sections.products')}
           </ProductHeader>
-          <ProductHeaderSubtitle>Nowoczesność, styl, ekologia</ProductHeaderSubtitle>
+          <ProductHeaderSubtitle>{t('sections.productsSubtitle', 'Nowoczesność, styl, ekologia')}</ProductHeaderSubtitle>
         </HeaderWrap>
         <SwipeableContainer>
           <SwipeHandler

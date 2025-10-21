@@ -36,6 +36,7 @@
   },
   "sections": {
     "products": "PRODUKTY",
+    "productsSubtitle": "Nowoczesność, styl, ekologia",
     "realizations": "REALIZACJE",
     "whyUs": "DLACZEGO MY?",
     "companyPresentation": "PREZENTACJA FIRMY",
@@ -132,6 +133,7 @@
     }
   },
   "realizations": {
+    "subtitle": "Zobacz nasze realizacje",
     "description": "Poniżej prezentujemy wybrane projekty, które realizowaliśmy dla naszych klientów. Każde zlecenie to dla nas nowe wyzwanie, któremu stawiamy czoła z pasją i profesjonalizmem.",
     "items": [
       { "title": "Dom jednorodzinny, Wrocław" },
@@ -191,6 +193,7 @@
   },
   "company": {
     "title": "O naszej firmie",
+    "subtitle": "Poznaj nas od środka",
     "description": "ROJEK to rodzinna firma z wieloletnim doświadczeniem w produkcji okien i drzwi. Specjalizujemy się w rozwiązaniach drewnianych i drewniano-aluminiowych najwyższej jakości."
   },
   "presentation": {
@@ -198,7 +201,21 @@
     "title": "Prezentacja firmy ROJEK"
   },
   "partners": {
-    "title": "Współpracujemy z najlepszymi"
+    "title": "Współpracujemy z najlepszymi",
+    "subtitle": "Firmy, z którymi współpracujemy"
+  },
+  "aboutPage": {
+    "headers": {
+      "whyUsSubtitle": "Co odróżnia nas od innych",
+      "historySubtitle": "Jak zmienialiśmy się przez lata"
+    }
+  },
+  "tags": {
+    "categories": {
+      "door": "Drzwi",
+      "window": "Okno",
+      "color": "Kolor"
+    }
   },
   "contact": {
     "title": "Skontaktuj się z nami",
