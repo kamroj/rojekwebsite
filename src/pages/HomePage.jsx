@@ -34,8 +34,8 @@ export const ProductHeader = styled.div`
   font-weight: 300;
   line-height: 1.2;
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    font-size: 1.8rem;
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: 2rem;
   }
   `;
 
@@ -117,13 +117,13 @@ const HomePage = () => {
         productData={productData}
         initialProductId={PRODUCT_TYPES.WINDOWS}
       />
-      <Section
+      <Section 
+        noMarginBottom
         dark
         customStyles={`
           background: rgb(15 15 15 / var(--tw-bg-opacity, 1));
         `}
         noPadding
-        $noInset
       >
         <RealizationsGallery
           images={realizationData}

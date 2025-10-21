@@ -169,6 +169,7 @@ const CompanyPresentationSection = () => {
   return (
     <Section
       dark
+      noMarginBottom
       customStyles={`
           background: black);
         `}

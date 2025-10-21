@@ -14,32 +14,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 
 
-
-const HistorySection = styled.div`
-  margin-top: 80px;
-  margin-bottom: 80px;
-  min-height: 400px;
-
-  /* poprawny skład */
-
-`;
-
-
-const SectionTitle = styled.h2`
-  font-size: 2.8rem;
-  color: ${({ theme }) => theme.colors.bottleGreen};
-  text-align: center;
-  margin-bottom: 3rem;
-  font-weight: 300;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    font-size: 2.2rem;
-  }
-`;
-
 const IntroText = styled(motion.div)`
-  text-align: center;
-  max-width: 900px;
   margin: 0 auto 60px;
 
   p {
@@ -62,7 +37,6 @@ const IntroText = styled(motion.div)`
   }
 `;
 
-/* Timeline */
 const TimelineContainer = styled.div`
   position: relative;
   margin: 0 auto;
@@ -305,7 +279,7 @@ const HeadquartersImage = styled(motion.div)`
     height: 100%;
     object-fit: cover;
     object-position: center center;
-    border-radius: 12px;
+    border-radius: 4px;
     box-shadow: none;
     display: block;
     position: relative;
@@ -337,7 +311,6 @@ const HeadquartersImage = styled(motion.div)`
 /* Management (team) styles */
 const ManagementGrid = styled.div`
   max-width: ${({ theme }) => theme.layout.maxWidth};
-  margin: 60px auto 0;
   padding: 0 16px;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -515,7 +488,6 @@ const MobileSideArrowRight = styled(MobileSideArrow)`
   right: 8px;
 `;
 
-/* Dolna nawigacja pod sliderem (na wzór WhyUs) */
 const NavigationContainer = styled.div`
   display: flex;
   justify-content: center;
@@ -674,10 +646,36 @@ const ContactInfoText = styled.span`
   }
 `;
 
+/* Services list with custom arrow bullets */
+const ServicesList = styled.ul`
+  list-style: none;
+  margin: auto auto 2rem 2rem;
+  padding: 0;
+`;
+
+const ServiceItem = styled.li`
+  position: relative;
+  padding-left: 28px;
+  line-height: 1.9;
+  margin: 0.2rem 0;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.45em;
+    width: 16px;
+    height: 16px;
+    background-image: url('/images/arrow.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+  }
+`;
+
 const AboutUsPage = () => {
   const { t } = useTranslation();
 
-  // Slider state for mobile management carousel
   const swiperRef = useRef(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
@@ -755,12 +753,17 @@ const AboutUsPage = () => {
 
   const WhyUsContentContainer = styled.div`
     color: ${({ theme }) => theme.colors.text};
+    
+
+    @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
+      padding-right: 3rem;
+    }
     `;
 
   return (
     <Page imageSrc="/images/company/company-top.jpg" height={500} title={t('pageTitle.about', 'O Firmie')}>
       <Section>
-        <HeaderWrap className='full-width'>
+        <HeaderWrap>
           <ProductHeader>
             DLACZEGO MY
           </ProductHeader>
@@ -777,21 +780,20 @@ const AboutUsPage = () => {
             <p>
               {t('aboutPage.invite', 'Zapraszamy osoby prywatne oraz firmy do składania zapytań ofertowych w następujących dziedzinach:')}
             </p>
-            <ul style={{ listStyle: 'disc', paddingLeft: '1.5rem', margin: '1rem auto 2rem', lineHeight: 1.9 }}>
-              <li>{t('aboutPage.services.0', { defaultValue: 'Okna jednoramowe (eurookna) standardowe i stylizowane' })}</li>
-              <li>{t('aboutPage.services.1', { defaultValue: 'Okna drewniane skrzynkowe' })}</li>
-              <li>{t('aboutPage.services.2', { defaultValue: 'Rekonstrukcje i renowacje stolarki zabytkowej' })}</li>
-              <li>{t('aboutPage.services.3', { defaultValue: 'Okna drewniane ppoż. EI30, EI60' })}</li>
-              <li>{t('aboutPage.services.4', { defaultValue: 'Drzwi drewniane ppoż. stylizowane dla obiektów zabytkowych' })}</li>
-            </ul>
-
-            <p style={{ listStyle: 'disc', paddingLeft: '1.5rem', margin: '1rem auto 2rem', lineHeight: 1.9 }}>
+            <ServicesList>
+              <ServiceItem>{t('aboutPage.services.0', { defaultValue: 'Okna jednoramowe (eurookna) standardowe i stylizowane' })}</ServiceItem>
+              <ServiceItem>{t('aboutPage.services.1', { defaultValue: 'Okna drewniane skrzynkowe' })}</ServiceItem>
+              <ServiceItem>{t('aboutPage.services.2', { defaultValue: 'Rekonstrukcje i renowacje stolarki zabytkowej' })}</ServiceItem>
+              <ServiceItem>{t('aboutPage.services.3', { defaultValue: 'Okna drewniane ppoż. EI30, EI60' })}</ServiceItem>
+              <ServiceItem>{t('aboutPage.services.4', { defaultValue: 'Drzwi drewniane ppoż. stylizowane dla obiektów zabytkowych' })}</ServiceItem>
+            </ServicesList>
+            <p>
               {t('aboutPage.partnersIntro', 'Ponadto posiadamy skład fabryczny i jesteśmy bezpośrednim dystrybutorem następujących firm:')}
             </p>
-            <p style={{ listStyle: 'disc', paddingLeft: '1.5rem', margin: '1rem auto 2rem', lineHeight: 1.9 }}>
-              • {t('aboutPage.partners.0', { defaultValue: 'Okna PCV firmy OKNO-POL oraz SONAROL' })}<br />
-              • {t('aboutPage.partners.1', { defaultValue: 'Drzwi wewnętrzne i wejściowe firmy CENTURION' })}
-            </p>
+            <ServicesList>
+              <ServiceItem>{t('aboutPage.partners.0', { defaultValue: 'Okna PCV firmy OKNO-POL oraz SONAROL' })}<br /></ServiceItem>
+              <ServiceItem>{t('aboutPage.partners.1', { defaultValue: 'Drzwi wewnętrzne i wejściowe firmy CENTURION' })}</ServiceItem>
+            </ServicesList>
           </WhyUsContentContainer>
           <HeadquartersImage
             initial={{ opacity: 0, x: 30 }}
@@ -807,11 +809,10 @@ const AboutUsPage = () => {
         </WhyUsContainer>
       </Section>
 
-      {/* History Section */}
-      <HistorySection>
+      <Section>
         <HeaderWrap $reversed>
           <ProductHeader $reversed>
-            Nasza Historia
+            NASZA HISTORIA
           </ProductHeader>
           <ProductHeaderSubtitle>Jak zmienialiśmy się przez lata</ProductHeaderSubtitle>
         </HeaderWrap>
@@ -855,10 +856,17 @@ const AboutUsPage = () => {
             </TimelineItem>
           ))}
         </TimelineContainer>
-      </HistorySection>
+      </Section>
 
       {/* Company Headquarters Section */}
-      <HeadquartersSection label={t('sections.headquarters', 'SIEDZIBA FIRMY')} labelPosition="left" $noInset customStyles={`border: none;`}>
+
+      {/* <Section>
+        <HeaderWrap>
+          <ProductHeader>
+            LOKALIZACJA
+          </ProductHeader>
+          <ProductHeaderSubtitle>Sprawdź jak do nasz dojechać</ProductHeaderSubtitle>
+        </HeaderWrap>
         <HeadquartersContent>
           <HeadquartersInfo
             initial={{ opacity: 0, x: -30 }}
@@ -871,7 +879,6 @@ const AboutUsPage = () => {
             </p>
 
             <div className="address">
-              {/* header "Adres" intentionally removed per request */}
               <div className="map-wrapper">
                 <iframe
                   src={MAP_SRC}
@@ -883,14 +890,17 @@ const AboutUsPage = () => {
               </div>
             </div>
           </HeadquartersInfo>
-
-
         </HeadquartersContent>
-      </HeadquartersSection>
+      </Section> */}
 
       {/* Management Section */}
       <Section label="ZARZĄD" labelPosition="right" noPadding>
-        {/* Mobile: slider na wzór WhyUs */}
+        <HeaderWrap $reversed>
+          <ProductHeader $reversed>
+            MANAGEMENT
+          </ProductHeader>
+          <ProductHeaderSubtitle>Poznaj nasz zespół</ProductHeaderSubtitle>
+        </HeaderWrap>
         <MobileSwiperContainer>
           <Swiper
             ref={swiperRef}
@@ -1014,7 +1024,6 @@ const AboutUsPage = () => {
           </NavigationContainer>
         </MobileSwiperContainer>
 
-        {/* Desktop: siatka kart */}
         <ManagementGrid>
           <ManagerCard>
             <ManagerPhoto src="/images/realizations/realization2.jpg" alt="Wiesław Rojek" />

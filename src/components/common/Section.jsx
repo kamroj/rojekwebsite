@@ -7,6 +7,7 @@ const SectionWrapper = styled.section`
   color: ${({ theme, $dark }) => $dark ? theme.colors.textLight : 'inherit'};
   ${({ $customStyles }) => $customStyles && css`${$customStyles}`}
   background-color: ${({ $dark, theme }) => $dark ? "black" : 'inherit'};
+  margin-bottom: ${({$noMarginBottom}) => $noMarginBottom ? "none" : "4rem"};
 `;
 
 const ContentContainer = styled.div`
@@ -24,11 +25,12 @@ const Section = ({
   noPadding,
   customStyles,
   $noInset,
+  noMarginBottom = false,
   ...props
 }) => {
   return (
-    <SectionWrapper $dark={dark} $customStyles={customStyles}>
-      <ContentContainer align={align} $noPadding={noPadding} $noInset={$noInset}>
+    <SectionWrapper $dark={dark} $customStyles={customStyles} $noMarginBottom={noMarginBottom}>
+      <ContentContainer align={align} $noPadding={noPadding}>
         {children}
       </ContentContainer>
     </SectionWrapper>
