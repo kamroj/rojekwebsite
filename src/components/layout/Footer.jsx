@@ -5,7 +5,7 @@ import { FiPhone, FiMail } from 'react-icons/fi';
 import { COMPANY_ADDRESS, MAP_SRC } from '../../constants';
 
 const FooterWrapper = styled.footer`
-  background: linear-gradient(127deg, #000000 50%, #003d29);
+  background: linear-gradient(127deg, #0f0f0f 50%, #112c03);
   color: ${({ theme }) => theme.colors.textLight};
   padding: ${({ theme }) => theme.spacings.large} ${({ theme }) => theme.spacings.medium};
 `;

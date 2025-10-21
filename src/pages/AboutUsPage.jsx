@@ -313,9 +313,9 @@ const ManagementGrid = styled.div`
   max-width: ${({ theme }) => theme.layout.maxWidth};
   padding: 0 16px;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
   justify-items: center;
-  gap: 28px;
+  gap: 10px;
 
   /* Ukryj siatkę na mobile - tam pokażemy slider */
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
@@ -326,69 +326,65 @@ const ManagementGrid = styled.div`
 const ManagerCard = styled.div`
   position: relative;
   width: 100%;
-  background: ${({ theme }) => theme.colors.background};
-  border: 1px solid transparent;
-  background:
-    linear-gradient(${({ theme }) => theme.colors.background}, ${({ theme }) => theme.colors.background}) padding-box,
-    linear-gradient(180deg, ${({ theme }) => theme.colors.bottleGreenLight}33, transparent) border-box;
-  background-origin: padding-box, border-box;
-  background-clip: padding-box, border-box;
-  border-radius: 12px;
+  min-height: 310px;
+  display: flex;
+  flex-direction: column;
+  height: 460px;
+  padding: 6px;
+  border-radius: 10px;
+  background-color: #fffefe;
+  border: 1px solid rgba(0, 0, 0, 0.55);
   overflow: hidden;
-  padding: 0;
-  text-align: center;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+  text-align: left;
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 
   &:hover {
     transform: translateY(-6px);
-    box-shadow: 0 16px 34px rgba(0,0,0,0.12);
+    box-shadow: 0 15px 15px rgba(0,0,0,0.35);
   }
 
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 4px;
-    background: linear-gradient(90deg, ${({ theme }) => theme.colors.bottleGreen} 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 2;
-  }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
-    padding: 0;
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    height: 420px;
   }
 `;
 
 const ManagerPhoto = styled.img`
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
-  height: auto;
+  height: 100%;
   object-fit: cover;
-  border-top-left-radius: 12px;
-  border-top-right-radius: 12px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
   margin: 0;
   box-shadow: none;
 `;
 
-const ManagerBody = styled.div`
-  padding: 16px 16px 18px;
+const ManagerImageWrapper = styled.div`
+  position: relative;
+  height: 74%;
+  width: 100%;
+  border-radius: 10px 10px 0px 0px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.25);
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.xs}) {
-    padding: 14px 14px 16px;
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    height: 72%;
   }
+`;
+
+const ManagerBody = styled.div`
+  position: static;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 16px 6px 6px;
+  color: rgb(0, 0, 0);
 `;
 
 const ManagerName = styled.h4`
   font-size: 1.9rem;
-  margin: 8px 0 8px 0;
-  color: ${({ theme }) => theme.colors.text};
-  font-weight: 700;
+  margin: 0 0 6px 0;
+  color: rgb(0, 0, 0);
+  font-weight: 400;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     font-size: 2.2rem;
@@ -396,22 +392,24 @@ const ManagerName = styled.h4`
 `;
 
 const ManagerRole = styled.p`
-  display: inline-block;
   margin: 0;
-  margin-bottom: 8px;
-  padding: 9px 16px;
-  border-radius: 999px;
-  background: ${({ theme }) => theme.colors.bottleGreenLight}22;
-  color: ${({ theme }) => theme.colors.bottleGreen};
+  color: rgb(0, 0, 0);
   font-size: 1.15rem;
-  font-weight: 600;
+  font-weight: 400;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     font-size: 1.35rem;
   }
 `;
 
-/* Mobile slider (na wzór WhyUs) */
+const ManagerTopRow = styled.div`
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 0;
+`;
+
+
 const MobileSwiperContainer = styled.div`
   display: block;
   position: relative;
@@ -437,56 +435,6 @@ const MobileSwiperContainer = styled.div`
   }
 `;
 
-const MobileSideArrow = styled.button`
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 5;
-  width: 44px;
-  height: 64px;
-  border: none;
-  background: transparent;
-  color: #015123;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: ${({ disabled }) => (disabled ? 'default' : 'pointer')};
-  opacity: ${({ disabled }) => disabled ? 0.35 : 1};
-  pointer-events: ${({ disabled }) => (disabled ? 'none' : 'auto')};
-  transition: transform 0.18s ease, opacity ${({ theme }) => theme.transitions.default};
-  -webkit-tap-highlight-color: transparent;
-  touch-action: manipulation;
-
-  svg {
-    width: 2.2rem;
-    height: 2.2rem;
-    color: #015123;
-    transform: translateX(0);
-    transition: transform 0.18s ease;
-  }
-
-  &:hover:not(:disabled) svg {
-    transform: translateX(4px);
-  }
-
-  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
-    display: none;
-  }
-`;
-
-const MobileSideArrowLeft = styled(MobileSideArrow)`
-  left: 8px;
-  svg {
-    transform: rotate(180deg) translateX(0);
-  }
-  &:hover:not(:disabled) svg {
-    transform: rotate(180deg) translateX(-4px);
-  }
-`;
-
-const MobileSideArrowRight = styled(MobileSideArrow)`
-  right: 8px;
-`;
 
 const NavigationContainer = styled.div`
   display: flex;
@@ -573,69 +521,61 @@ const NextNavigationButton = styled(NavigationButton)`
 const ContactRow = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 28px;
+  gap: 10px 16px;
+  align-items: center;
   justify-content: center;
-  margin-top: 28px;
-  margin-bottom: 12px;
-
-  /* Desktop: mniejsze odstępy i bardziej kompaktowo */
-  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
-    gap: 12px;
-    margin-top: 18px;
-    margin-bottom: 0;
-  }
+  margin-top: 12px;
+  margin-bottom: 0;
 `;
 
 const ContactLink = styled.a`
   display: inline-flex;
   align-items: center;
-  gap: 14px;
-  color: ${({ theme }) => theme.colors.text};
+  gap: 8px;
+  color: black;
   text-decoration: none;
-  font-size: 1.2rem;
-  padding: 14px 20px;
+  font-size: 1.1rem;
+  padding: 6px 0;
   border-radius: 9999px;
-  border: 1px solid ${({ theme }) => theme.colors.border};
-  background: linear-gradient(180deg, ${({ theme }) => theme.colors.background}, ${({ theme }) => theme.colors.background});
-  transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  border: none;
+  background: transparent;
+  transition: opacity 0.2s ease, color 0.2s ease;
 
-  /* Desktop: bez chipów/obramowania i mniejsze odstępy/gabaryty */
-  @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
-    background: none;
-    border: none;
-    padding: 0;
-    gap: 8px;
-    font-size: 1.05rem;
+  &:hover {
+    color: black;
+    opacity: 0.9;
   }
 
-  /* Zachowujemy obecną logikę: na desktop linki są nieaktywne (tylko mobile klikalny) */
+  /* Desktop: nieklikalne (zachowujemy dotychczasową logikę) */
   @media (min-width: ${({ theme }) => theme.breakpoints.md}) {
     pointer-events: none;
     cursor: default;
   }
 
-  &:hover {
-    color: ${({ theme }) => theme.colors.bottleGreen};
-    border-color: ${({ theme }) => theme.colors.bottleGreenLight};
-    box-shadow: 0 6px 14px rgba(7,65,32,0.08);
+  /* Mobile: chipy */
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    padding: 10px 14px;
+    border: 1px solid rgba(4, 121, 0, 0.575);
+    background: rgb(40 79 41);
   }
 `;
 
 const ContactIconSmall = styled.div`
   font-size: 1.6rem;
-  color: ${({ theme }) => theme.colors.bottleGreen};
+  color: #024600;
   display: flex;
   align-items: center;
   justify-content: center;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     font-size: 2rem;
+    color: #e2e2e2;
   }
 `;
 
 const ContactInfoText = styled.span`
   font-size: 1.05rem;
-  color: ${({ theme }) => theme.colors.textMuted};
+  color: black;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     display: none;
@@ -857,46 +797,9 @@ const AboutUsPage = () => {
           ))}
         </TimelineContainer>
       </Section>
-
-      {/* Company Headquarters Section */}
-
-      {/* <Section>
+      <Section label="ZARZĄD" labelPosition="right" noPadding>
         <HeaderWrap>
           <ProductHeader>
-            LOKALIZACJA
-          </ProductHeader>
-          <ProductHeaderSubtitle>Sprawdź jak do nasz dojechać</ProductHeaderSubtitle>
-        </HeaderWrap>
-        <HeadquartersContent>
-          <HeadquartersInfo
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-          >
-            <p>
-              {t('headquarters.description1', 'Nasza siedziba znajduje się w malowniczej miejscowości w województwie dolnośląskim. To tutaj, w nowoczesnym zakładzie produkcyjnym, powstają nasze wysokiej jakości okna i drzwi.')}
-            </p>
-
-            <div className="address">
-              <div className="map-wrapper">
-                <iframe
-                  src={MAP_SRC}
-                  title={t('headquarters.mapTitle', 'Mapa siedziby')}
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  allowFullScreen
-                />
-              </div>
-            </div>
-          </HeadquartersInfo>
-        </HeadquartersContent>
-      </Section> */}
-
-      {/* Management Section */}
-      <Section label="ZARZĄD" labelPosition="right" noPadding>
-        <HeaderWrap $reversed>
-          <ProductHeader $reversed>
             MANAGEMENT
           </ProductHeader>
           <ProductHeaderSubtitle>Poznaj nasz zespół</ProductHeaderSubtitle>
@@ -927,9 +830,13 @@ const AboutUsPage = () => {
           >
             <SwiperSlide>
               <ManagerCard>
-                <ManagerPhoto src="/images/realizations/realization2.jpg" alt="Wiesław Rojek" />
+                <ManagerImageWrapper>
+                  <ManagerPhoto src="/images/realizations/realization2.jpg" alt="Wiesław Rojek" />
+                </ManagerImageWrapper>
                 <ManagerBody>
-                  <ManagerName>Wiesław Rojek</ManagerName>
+                  <ManagerTopRow>
+                    <ManagerName>Wiesław Rojek</ManagerName>
+                  </ManagerTopRow>
                   <ManagerRole>Właściciel</ManagerRole>
                   <ContactRow>
                     <ContactLink href="tel:+48603923011" aria-label="Zadzwoń do Wiesław">
@@ -947,9 +854,13 @@ const AboutUsPage = () => {
 
             <SwiperSlide>
               <ManagerCard>
-                <ManagerPhoto src="/images/history/przemek.jpg" alt="Przemysław Rojek" />
+                <ManagerImageWrapper>
+                  <ManagerPhoto src="/images/history/przemek.jpg" alt="Przemysław Rojek" />
+                </ManagerImageWrapper>
                 <ManagerBody>
-                  <ManagerName>Przemysław Rojek</ManagerName>
+                  <ManagerTopRow>
+                    <ManagerName>Przemysław Rojek</ManagerName>
+                  </ManagerTopRow>
                   <ManagerRole>Właściciel</ManagerRole>
                   <ContactRow>
                     <ContactLink href="tel:+48886988561" aria-label="Zadzwoń do Przemysław">
@@ -967,9 +878,13 @@ const AboutUsPage = () => {
 
             <SwiperSlide>
               <ManagerCard>
-                <ManagerPhoto src="/images/history/tomek.jpg" alt="Tomasz Rojek" />
+                <ManagerImageWrapper>
+                  <ManagerPhoto src="/images/history/tomek.jpg" alt="Tomasz Rojek" />
+                </ManagerImageWrapper>
                 <ManagerBody>
-                  <ManagerName>Tomasz Rojek</ManagerName>
+                  <ManagerTopRow>
+                    <ManagerName>Tomasz Rojek</ManagerName>
+                  </ManagerTopRow>
                   <ManagerRole>Właściciel</ManagerRole>
                   <ContactRow>
                     <ContactLink href="tel:+48889194388" aria-label="Zadzwoń do Tomasz">
@@ -987,9 +902,13 @@ const AboutUsPage = () => {
 
             <SwiperSlide>
               <ManagerCard>
-                <ManagerPhoto src="/images/realizations/realization5.jpg" alt="Kierownik produkcji" />
+                <ManagerImageWrapper>
+                  <ManagerPhoto src="/images/realizations/realization5.jpg" alt="Kierownik produkcji" />
+                </ManagerImageWrapper>
                 <ManagerBody>
-                  <ManagerName>Paweł Jakiśtam</ManagerName>
+                  <ManagerTopRow>
+                    <ManagerName>Paweł Jakiśtam</ManagerName>
+                  </ManagerTopRow>
                   <ManagerRole>Kierownik produkcji</ManagerRole>
                   <ContactRow>
                     <ContactLink href="tel:+48600000000" aria-label="Zadzwoń do Paweł">
@@ -1026,9 +945,13 @@ const AboutUsPage = () => {
 
         <ManagementGrid>
           <ManagerCard>
-            <ManagerPhoto src="/images/realizations/realization2.jpg" alt="Wiesław Rojek" />
+            <ManagerImageWrapper>
+              <ManagerPhoto src="/images/realizations/realization2.jpg" alt="Wiesław Rojek" />
+            </ManagerImageWrapper>
             <ManagerBody>
-              <ManagerName>Wiesław Rojek</ManagerName>
+              <ManagerTopRow>
+                <ManagerName>Wiesław Rojek</ManagerName>
+              </ManagerTopRow>
               <ManagerRole>Właściciel</ManagerRole>
               <ContactRow>
                 <ContactLink href="tel:+48603923011" aria-label="Zadzwoń do Wiesław">
@@ -1044,9 +967,13 @@ const AboutUsPage = () => {
           </ManagerCard>
 
           <ManagerCard>
-            <ManagerPhoto src="/images/history/przemek.jpg" alt="Przemysław Rojek" />
+            <ManagerImageWrapper>
+              <ManagerPhoto src="/images/history/przemek.jpg" alt="Przemysław Rojek" />
+            </ManagerImageWrapper>
             <ManagerBody>
-              <ManagerName>Przemysław Rojek</ManagerName>
+              <ManagerTopRow>
+                <ManagerName>Przemysław Rojek</ManagerName>
+              </ManagerTopRow>
               <ManagerRole>Właściciel</ManagerRole>
               <ContactRow>
                 <ContactLink href="tel:+48886988561" aria-label="Zadzwoń do Przemysław">
@@ -1062,9 +989,13 @@ const AboutUsPage = () => {
           </ManagerCard>
 
           <ManagerCard>
-            <ManagerPhoto src="/images/history/tomek.jpg" alt="Tomasz Rojek" />
+            <ManagerImageWrapper>
+              <ManagerPhoto src="/images/history/tomek.jpg" alt="Tomasz Rojek" />
+            </ManagerImageWrapper>
             <ManagerBody>
-              <ManagerName>Tomasz Rojek</ManagerName>
+              <ManagerTopRow>
+                <ManagerName>Tomasz Rojek</ManagerName>
+              </ManagerTopRow>
               <ManagerRole>Właściciel</ManagerRole>
               <ContactRow>
                 <ContactLink href="tel:+48889194388" aria-label="Zadzwoń do Tomasz">
@@ -1080,9 +1011,13 @@ const AboutUsPage = () => {
           </ManagerCard>
 
           <ManagerCard>
-            <ManagerPhoto src="/images/realizations/realization5.jpg" alt="Kierownik produkcji" />
+            <ManagerImageWrapper>
+              <ManagerPhoto src="/images/realizations/realization5.jpg" alt="Kierownik produkcji" />
+            </ManagerImageWrapper>
             <ManagerBody>
-              <ManagerName>Paweł Jakiśtam</ManagerName>
+              <ManagerTopRow>
+                <ManagerName>Paweł Jakiśtam</ManagerName>
+              </ManagerTopRow>
               <ManagerRole>Kierownik produkcji</ManagerRole>
               <ContactRow>
                 <ContactLink href="tel:+48600000000" aria-label="Zadzwoń do Paweł">
