@@ -11,7 +11,8 @@ export const ROUTES = {
   HOME: '/',
   REALIZATIONS: '/realizations',
   ABOUT: '/about',
-  CONTACT: '/contact'
+  CONTACT: '/contact',
+  HS_CONFIGURATOR: '/konfigurator-hs'
 };
 
 export const BREAKPOINTS = {

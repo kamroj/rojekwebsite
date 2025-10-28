@@ -7,13 +7,17 @@
     "mainNavigation": "Główna nawigacja",
     "mobileNavigation": "Nawigacja mobilna",
     "toggleMenu": "Przełącz menu",
-    "logoAlt": "ROJEK okna i drzwi Logo"
+    "logoAlt": "ROJEK okna i drzwi Logo",
+    "hsConfigurator": "Konfigurator HS"
   },
   "pageTitle": {
     "home": "Strona Główna",
     "realizations": "Realizacje",
     "about": "O Firmie",
-    "contact": "Kontakt"
+  "contact": "Kontakt"
+  },
+  "hsConfigurator": {
+    "title": "Konfigurator HS"
   },
   "footer": {
     "copy": "© {{year}} ROJEK okna i drzwi. Wszelkie prawa zastrzeżone."
@@ -22,7 +26,8 @@
     "text1": "Zobacz nasze realizacje",
     "text2": "Odkryj okna drewniano-aluminiowe",
     "text3": "Drzwi zewnętrzne dla Twojego domu",
-    "text4": "Nowoczesne systemy przesuwne"
+    "text4": "Nowoczesne systemy przesuwne",
+    "text5": "Konfigurator HS"
   },
   "buttons": {
     "details": "Zobacz szczegóły",

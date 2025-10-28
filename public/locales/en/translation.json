@@ -7,13 +7,17 @@
     "mainNavigation": "Main navigation",
     "mobileNavigation": "Mobile navigation",
     "toggleMenu": "Toggle menu",
-    "logoAlt": "ROJEK windows & doors Logo"
+    "logoAlt": "ROJEK windows & doors Logo",
+    "hsConfigurator": "HS Configurator"
   },
   "pageTitle": {
     "home": "Home Page",
     "realizations": "Realizations",
     "about": "About Us",
     "contact": "Contact"
+  },
+  "hsConfigurator": {
+    "title": "HS Configurator"
   },
   "footer": {
     "copy": "© {{year}} ROJEK windows & doors. All rights reserved."
@@ -22,7 +26,8 @@
     "text1": "See our realizations",
     "text2": "Discover wood-aluminum windows",
     "text3": "Exterior doors for your home",
-    "text4": "Modern sliding systems"
+    "text4": "Modern sliding systems",
+    "text5": "HS Configurator"
   },
   "buttons": {
     "details": "See details",

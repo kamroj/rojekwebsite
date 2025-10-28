@@ -7,6 +7,7 @@ import HomePage from '../pages/HomePage';
 import RealizationsPage2 from '../pages/RealizationsPage2';
 import AboutUsPage from '../pages/AboutUsPage';
 import ContactPage from '../pages/ContactPage';
+import HsConfiguratorPage from '../pages/HsConfiguratorPage';
 import { ROUTES } from '../constants';
 
 const NotFoundContainer = styled.div`
@@ -108,6 +109,10 @@ const router = createBrowserRouter([
       {
         path: ROUTES.CONTACT.slice(1),
         element: <ContactPage />,
+      },
+      {
+        path: ROUTES.HS_CONFIGURATOR.slice(1),
+        element: <HsConfiguratorPage />,
       },
       { 
         path: '*', 

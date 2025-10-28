@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { FiPlay, FiPause } from 'react-icons/fi';
 import MaxWidthContainer from '../common/MaxWidthContainer.jsx';
+import { ROUTES } from '../../constants';
 
 // Animacja tekstu przy wczytywaniu
 const fadeIn = keyframes`
@@ -204,10 +205,11 @@ export default function IntroSection({ id }) {
   const prevProgress = useRef(0);
 
   const introLinks = {
-    'intro.text1': '/realizations',
-    'intro.text2': '/about',
-    'intro.text3': '/contact',
-    'intro.text4': '/realizations',
+    'intro.text1': ROUTES.REALIZATIONS,
+    'intro.text2': ROUTES.ABOUT,
+    'intro.text3': ROUTES.CONTACT,
+    'intro.text4': ROUTES.REALIZATIONS,
+    'intro.text5': ROUTES.HS_CONFIGURATOR,
   };
   const keys = Object.keys(introLinks);
   const [idx, setIdx] = useState(0);

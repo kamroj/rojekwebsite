@@ -98,6 +98,11 @@ const Navigation = ({ variant = 'header', isPastThreshold }) => {
       label: 'nav.about'
     },
     { 
+      key: 'hs', 
+      path: ROUTES.HS_CONFIGURATOR, 
+      label: 'nav.hsConfigurator'
+    },
+    { 
       key: 'contact', 
       path: ROUTES.CONTACT, 
       label: 'nav.contact'

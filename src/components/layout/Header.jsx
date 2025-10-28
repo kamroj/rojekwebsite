@@ -365,6 +365,7 @@ const Header = () => {
     { key: 'home', path: ROUTES.HOME, label: 'nav.home' },
     { key: 'realizations', path: ROUTES.REALIZATIONS, label: 'nav.realizations' },
     { key: 'about', path: ROUTES.ABOUT, label: 'nav.about' },
+    { key: 'hs', path: ROUTES.HS_CONFIGURATOR, label: 'nav.hsConfigurator' },
     { key: 'contact', path: ROUTES.CONTACT, label: 'nav.contact' }
   ];
   

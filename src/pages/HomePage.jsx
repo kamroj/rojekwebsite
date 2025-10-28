@@ -112,7 +112,6 @@ const HomePage = () => {
   return (
     <>
       <IntroSection />
-
       <ProductSection
         productData={productData}
         initialProductId={PRODUCT_TYPES.WINDOWS}

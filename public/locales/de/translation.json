@@ -7,13 +7,17 @@
     "mainNavigation": "Hauptnavigation",
     "mobileNavigation": "Mobile Navigation",
     "toggleMenu": "Menü umschalten",
-    "logoAlt": "ROJEK Fenster & Türen Logo"
+    "logoAlt": "ROJEK Fenster & Türen Logo",
+    "hsConfigurator": "HS‑Konfigurator"
   },
   "pageTitle": {
     "home": "Startseite",
     "realizations": "Projekte",
     "about": "Über uns",
     "contact": "Kontakt"
+  },
+  "hsConfigurator": {
+    "title": "HS‑Konfigurator"
   },
   "footer": {
     "copy": "© {{year}} ROJEK Fenster & Türen. Alle Rechte vorbehalten."
@@ -22,7 +26,8 @@
     "text1": "Sehen Sie unsere Projekte",
     "text2": "Entdecken Sie Holz-Aluminium-Fenster",
     "text3": "Außentüren für Ihr Zuhause",
-    "text4": "Moderne Schiebeanlagen"
+    "text4": "Moderne Schiebeanlagen",
+    "text5": "HS‑Konfigurator"
   },
   "buttons": {
     "details": "Details ansehen",

@@ -761,6 +761,7 @@ const AboutUsPage = () => {
     }
     `;
 
+
   return (
     <Page imageSrc="/images/company/company-top.jpg" title={t('pageTitle.about', 'O Firmie')}>
       <Section>
