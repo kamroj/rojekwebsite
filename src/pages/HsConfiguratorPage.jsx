@@ -10,7 +10,6 @@ const ConfiguratorContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  padding: 20px;
 `;
 
 const ControlPanel = styled.div`
@@ -79,11 +78,20 @@ const ViewerWrap = styled.div`
   border-radius: 8px;
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    height: 60vh; 
+  }
 `;
 
 const TEXTURES = [
   { value: '/models/remmers-natur.jpg', label: 'Natur' },
   { value: '/models/remmers-miodowa-sosna.jpg', label: 'Miodowa Sosna' },
+];
+
+const HANDLE_TEXTURES = [
+  { value: '/models/textures/handle/hang-silver.jpg', label: 'Srebrna' },
+  { value: '/models/textures/handle/hang-gold.jpg', label: 'Złota' },
 ];
 
 // Bazowe wymiary okna
@@ -209,9 +217,10 @@ function updateDimensions(scene, width, height) {
   });
 }
 
-function HsModel({ texturePath, width, height, onReady, ...props }) {
+function HsModel({ texturePath, handleTexturePath, width, height, onReady, ...props }) {
   const { scene } = useGLTF('/models/example.glb');
   const texture = useTexture(texturePath);
+  const handleTexture = useTexture(handleTexturePath);
 
   const textures = useMemo(() => {
     const base = texture;
@@ -228,8 +237,16 @@ function HsModel({ texturePath, width, height, onReady, ...props }) {
     textureH.rotation = Math.PI / 2;
     textureH.repeat.set(6, 3);
 
-    return { textureV, textureH };
-  }, [texture]);
+    // Przygotowanie tekstury klamki
+    const handleTex = handleTexture;
+    handleTex.wrapS = RepeatWrapping;
+    handleTex.wrapT = RepeatWrapping;
+    handleTex.colorSpace = SRGBColorSpace;
+    handleTex.anisotropy = 8;
+    handleTex.repeat.set(1, 1);
+
+    return { textureV, textureH, handleTex };
+  }, [texture, handleTexture]);
 
   const processed = useMemo(() => {
     const root = scene.clone(true);
@@ -238,7 +255,21 @@ function HsModel({ texturePath, width, height, onReady, ...props }) {
     root.traverse((obj) => {
       if (obj.isMesh) {
         const n = (obj.name || '').toLowerCase();
-        if (n.includes('frame')) {
+        
+        // Tekstura klamki
+        if (n.includes('cube')) {
+          obj.material = obj.material.clone();
+          obj.material.map = textures.handleTex;
+          obj.material.color?.set?.('#ffffff');
+          obj.material.roughness = 0.3; // Klamka bardziej błyszcząca
+          obj.material.metalness = 0.8; // Metaliczny wygląd
+          obj.material.needsUpdate = true;
+          
+          obj.castShadow = true;
+          obj.receiveShadow = true;
+        }
+        // Tekstura ramy
+        else if (n.includes('frame')) {
           obj.material = obj.material.clone();
           const isVertical = n.includes('left') || n.includes('right');
           const isHorizontal = n.includes('top') || n.includes('bottom');
@@ -315,13 +346,16 @@ function FrontFit({ modelRef }) {
   return null;
 }
 
+// Preload wszystkich tekstur
 useGLTF.preload('/models/example.glb');
 TEXTURES.forEach(tex => useTexture.preload(tex.value));
+HANDLE_TEXTURES.forEach(tex => useTexture.preload(tex.value));
 
 const HsConfiguratorPage = () => {
   const { t } = useTranslation();
   const modelRef = useRef();
   const [selectedTexture, setSelectedTexture] = useState(TEXTURES[0].value);
+  const [selectedHandleTexture, setSelectedHandleTexture] = useState(HANDLE_TEXTURES[0].value);
   const [width, setWidth] = useState(BASE_WIDTH);
   const [height, setHeight] = useState(BASE_HEIGHT);
 
@@ -339,6 +373,20 @@ const HsConfiguratorPage = () => {
               onChange={(e) => setSelectedTexture(e.target.value)}
             >
               {TEXTURES.map((tex) => (
+                <option key={tex.value} value={tex.value}>
+                  {tex.label}
+                </option>
+              ))}
+            </Select>
+          </ControlGroup>
+
+          <ControlGroup>
+            <Label>Kolor klamki:</Label>
+            <Select 
+              value={selectedHandleTexture} 
+              onChange={(e) => setSelectedHandleTexture(e.target.value)}
+            >
+              {HANDLE_TEXTURES.map((tex) => (
                 <option key={tex.value} value={tex.value}>
                   {tex.label}
                 </option>
@@ -388,7 +436,8 @@ const HsConfiguratorPage = () => {
               <Center>
                 <group ref={modelRef}>
                   <HsModel 
-                    texturePath={selectedTexture} 
+                    texturePath={selectedTexture}
+                    handleTexturePath={selectedHandleTexture}
                     width={width}
                     height={height}
                     onReady={() => {}} 
