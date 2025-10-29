@@ -102,15 +102,15 @@ const BASE_HEIGHT = 2040; // mm
 function updateDimensions(scene, width, height) {
   const widthDiff = width - BASE_WIDTH; // różnica w mm
   const heightDiff = height - BASE_HEIGHT;
-  
+
   // Model jest w skali 1:1 (1 jednostka = 1mm)
   const halfWidthDiff = widthDiff / 2; // każde skrzydło zmienia się o połowę
-  
+
   scene.traverse((obj) => {
     if (!obj.isMesh) return;
-    
+
     const name = obj.name.toLowerCase();
-    
+
     // Zapisz oryginalne wartości przy pierwszym wywołaniu
     if (!obj.userData.originalPosition) {
       obj.userData.originalPosition = obj.position.clone();
@@ -119,35 +119,42 @@ function updateDimensions(scene, width, height) {
       obj.geometry.computeBoundingBox();
       obj.geometry.boundingBox.getSize(obj.userData.originalSize);
     }
-    
+
     const origPos = obj.userData.originalPosition;
     const origScale = obj.userData.originalScale;
     const origSize = obj.userData.originalSize;
-    
+
     // === SZEROKOŚĆ ===
-    
+
     // LEWE SKRZYDŁO (sash-front)
     if (name.includes('sash-front')) {
       if (name.includes('frame-bottom') || name.includes('frame-top')) {
         // Elementy poziome - zwiększamy szerokość i przesuwamy
-        // Nowa szerokość = oryginalna szerokość + połowa różnicy
         const originalWidth = origSize.x * origScale.x;
         const newWidth = originalWidth + halfWidthDiff;
         const newScale = newWidth / originalWidth;
         obj.scale.x = origScale.x * newScale;
-        
+
         // Przesuń element tak, aby rozszerzał się tylko w lewo
-        // Pivot jest zazwyczaj na środku, więc przesuwamy o połowę zmiany
         obj.position.x = origPos.x - halfWidthDiff / 2;
       } else if (name.includes('frame-left')) {
-        // Lewa krawędź - przesuwa się w lewo/prawo o pełną wartość
+        // Lewa krawędź - przesuwa się w lewo
         obj.position.x = origPos.x - halfWidthDiff;
       } else if (name.includes('frame-right')) {
         // Prawa krawędź (środek okna) - pozostaje na miejscu
         obj.position.x = origPos.x;
+      } else if (name.includes('glass')) {
+        // SZYBA w lewym skrzydle - skaluje się i przesuwa
+        const originalWidth = origSize.x * origScale.x;
+        const newWidth = originalWidth + halfWidthDiff;
+        const newScale = newWidth / originalWidth;
+        obj.scale.x = origScale.x * newScale;
+
+        // Przesuń szybę tak, aby rozszerzała się tylko w lewo
+        obj.position.x = origPos.x - halfWidthDiff / 2;
       }
     }
-    
+
     // PRAWE SKRZYDŁO (sash-back)
     else if (name.includes('sash-back')) {
       if (name.includes('frame-bottom') || name.includes('frame-top')) {
@@ -156,31 +163,40 @@ function updateDimensions(scene, width, height) {
         const newWidth = originalWidth + halfWidthDiff;
         const newScale = newWidth / originalWidth;
         obj.scale.x = origScale.x * newScale;
-        
+
         // Przesuń element tak, aby rozszerzał się tylko w prawo
         obj.position.x = origPos.x + halfWidthDiff / 2;
       } else if (name.includes('frame-left')) {
         // Lewa krawędź (środek okna) - pozostaje na miejscu
         obj.position.x = origPos.x;
       } else if (name.includes('frame-right')) {
-        // Prawa krawędź - przesuwa się w prawo/lewo o pełną wartość
+        // Prawa krawędź - przesuwa się w prawo
         obj.position.x = origPos.x + halfWidthDiff;
+      } else if (name.includes('glass')) {
+        // SZYBA w prawym skrzydle - skaluje się i przesuwa
+        const originalWidth = origSize.x * origScale.x;
+        const newWidth = originalWidth + halfWidthDiff;
+        const newScale = newWidth / originalWidth;
+        obj.scale.x = origScale.x * newScale;
+
+        // Przesuń szybę tak, aby rozszerzała się tylko w prawo
+        obj.position.x = origPos.x + halfWidthDiff / 2;
       }
     }
-    
+
     // KLAMKI (na lewym skrzydle)
-    else if (name.includes('cube')) {
+    else if (name.includes('handle')) {
       // Klamka przesuwa się razem z lewym skrzydłem
       obj.position.x = origPos.x - halfWidthDiff;
     }
-    
+
     // ZEWNĘTRZNA RAMA
     else if (name.includes('frame') && !name.includes('sash')) {
       if (name.includes('left')) {
-        // Lewa rama - przesuwa się w lewo/prawo
+        // Lewa rama - przesuwa się w lewo
         obj.position.x = origPos.x - halfWidthDiff;
       } else if (name.includes('right')) {
-        // Prawa rama - przesuwa się w prawo/lewo
+        // Prawa rama - przesuwa się w prawo
         obj.position.x = origPos.x + halfWidthDiff;
       } else if (name.includes('top') || name.includes('bottom')) {
         // Górna i dolna rama - skalują się symetrycznie
@@ -192,10 +208,21 @@ function updateDimensions(scene, width, height) {
         obj.position.x = origPos.x;
       }
     }
-    
+
     // === WYSOKOŚĆ ===
-    
-    if (name.includes('frame')) {
+
+    // Szyby - skalują się w wysokości
+    if (name.includes('glass')) {
+      const originalHeight = origSize.y * origScale.y;
+      const newHeight = originalHeight + heightDiff;
+      const newScale = newHeight / originalHeight;
+      obj.scale.y = origScale.y * newScale;
+
+      // Przesuwają się do góry o połowę różnicy (rozciąganie symetryczne)
+      obj.position.y = origPos.y + heightDiff / 2;
+    }
+    // Elementy ramowe
+    else if (name.includes('frame')) {
       // Elementy dolne (bottom) - pozostają na miejscu
       if (name.includes('bottom')) {
         obj.position.y = origPos.y;
@@ -210,7 +237,7 @@ function updateDimensions(scene, width, height) {
         const newHeight = originalHeight + heightDiff;
         const newScale = newHeight / originalHeight;
         obj.scale.y = origScale.y * newScale;
-        // Przesuwają się o pełną wartość (rozciąganie do góry)
+        // Przesuwają się o połowę różnicy (rozciąganie do góry)
         obj.position.y = origPos.y + heightDiff / 2;
       }
     }
@@ -250,21 +277,36 @@ function HsModel({ texturePath, handleTexturePath, width, height, onReady, ...pr
 
   const processed = useMemo(() => {
     const root = scene.clone(true);
-    
+
     // Aplikuj tekstury
     root.traverse((obj) => {
       if (obj.isMesh) {
         const n = (obj.name || '').toLowerCase();
-        
+
+        // Tekstura szyby
+        if (n.includes('glass')) {
+          obj.material = obj.material.clone();
+          // Szkło - przezroczyste z lekkim odblaskiem
+          obj.material.transparent = true;
+          obj.material.opacity = 0.3;
+          obj.material.color?.set?.('#e8f4f8');
+          obj.material.roughness = 0.1;
+          obj.material.metalness = 0.9;
+          obj.material.envMapIntensity = 1.5;
+          obj.material.needsUpdate = true;
+
+          obj.castShadow = false; // Szkło nie rzuca cienia
+          obj.receiveShadow = false;
+        }
         // Tekstura klamki
-        if (n.includes('cube')) {
+        else if (n.includes('handle')) {
           obj.material = obj.material.clone();
           obj.material.map = textures.handleTex;
           obj.material.color?.set?.('#ffffff');
-          obj.material.roughness = 0.3; // Klamka bardziej błyszcząca
-          obj.material.metalness = 0.8; // Metaliczny wygląd
+          obj.material.roughness = 0.6; // Zwiększone z 0.3 na 0.6 - bardziej matowa
+          obj.material.metalness = 0.6; // Zmniejszone z 0.8 na 0.4 - mniej metaliczny połysk
           obj.material.needsUpdate = true;
-          
+
           obj.castShadow = true;
           obj.receiveShadow = true;
         }
@@ -285,10 +327,10 @@ function HsModel({ texturePath, handleTexturePath, width, height, onReady, ...pr
         }
       }
     });
-    
+
     // Aplikuj wymiary
     updateDimensions(root, width, height);
-    
+
     return root;
   }, [scene, textures, width, height]);
 
@@ -368,8 +410,8 @@ const HsConfiguratorPage = () => {
         <ControlPanel>
           <ControlGroup>
             <Label>Materiał ramy:</Label>
-            <Select 
-              value={selectedTexture} 
+            <Select
+              value={selectedTexture}
               onChange={(e) => setSelectedTexture(e.target.value)}
             >
               {TEXTURES.map((tex) => (
@@ -382,8 +424,8 @@ const HsConfiguratorPage = () => {
 
           <ControlGroup>
             <Label>Kolor klamki:</Label>
-            <Select 
-              value={selectedHandleTexture} 
+            <Select
+              value={selectedHandleTexture}
               onChange={(e) => setSelectedHandleTexture(e.target.value)}
             >
               {HANDLE_TEXTURES.map((tex) => (
@@ -435,12 +477,12 @@ const HsConfiguratorPage = () => {
               <OrbitControls makeDefault enablePan enableZoom enableRotate />
               <Center>
                 <group ref={modelRef}>
-                  <HsModel 
+                  <HsModel
                     texturePath={selectedTexture}
                     handleTexturePath={selectedHandleTexture}
                     width={width}
                     height={height}
-                    onReady={() => {}} 
+                    onReady={() => { }}
                   />
                 </group>
               </Center>
