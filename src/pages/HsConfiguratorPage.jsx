@@ -72,6 +72,7 @@ const RangeValue = styled.span`
 `;
 
 const ViewerWrap = styled.div`
+  position: relative;
   width: 100%;
   height: 90vh;
   background: #fffefe;
@@ -81,6 +82,31 @@ const ViewerWrap = styled.div`
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     height: 60vh; 
+  }
+`;
+
+const PreviewLabel = styled.div`
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: ${({ contentColor }) => contentColor || '#f8f9fa'};
+  background-color: ${({ contentBg }) => contentBg || '#66590f5e'};
+  border: 1px solid #e6c7197d;
+  padding: 6px 12px;
+  border-radius: 4px;
+  backdrop-filter: blur(3px);
+  pointer-events: none;
+  user-select: none;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: 12px;
+    padding: 4px 10px;
+    top: 15px;
+    left: 15px;
   }
 `;
 
@@ -468,6 +494,7 @@ const HsConfiguratorPage = () => {
         </ControlPanel>
 
         <ViewerWrap>
+          <PreviewLabel>PODGLĄD</PreviewLabel>
           <Canvas camera={{ position: [3, 2, 4], fov: 45 }}>
             <Suspense fallback={null}>
               <color attach="background" args={['#fffefe']} />
