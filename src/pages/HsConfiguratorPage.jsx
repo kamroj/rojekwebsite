@@ -5,16 +5,15 @@ import { Canvas, useThree } from '@react-three/fiber';
 import { Center, Environment, OrbitControls, useGLTF, useTexture, ContactShadows } from '@react-three/drei';
 import { RepeatWrapping, SRGBColorSpace, Box3, Vector3, Sphere } from 'three';
 import Page from '../components/common/Page';
+import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomePage';
 
 const ConfiguratorContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
-  margin-top: 40px;
 `;
 
 const ControlPanel = styled.div`
-  background: linear-gradient(to bottom, #ffffff, #fafafa);
   border: 1px solid #e0e0e0;
   border-radius: 12px;
   overflow: hidden;
@@ -108,21 +107,49 @@ const RangeInput = styled.input`
   }
   
   &::-webkit-slider-thumb {
-    background: #015508;
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #013a06;
     border: 2px solid white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  &::-moz-range-track {
-    background: #e0e0e0;
-    height: 4px;
-    border-radius: 2px;
+    cursor: pointer;
+    
+    &:hover {
+      transform: scale(1.1);
+      background: #230106; /* Ciemniejszy kolor przy hover */
+    }
+    
+    &:active {
+      transform: scale(0.95); /* Lekkie zmniejszenie przy kliknięciu */
+    }
   }
   
   &::-moz-range-thumb {
-    background: #011e55;
+    -moz-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #013a06;
     border: 2px solid white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    
+    &:hover {
+      transform: scale(1.1);
+      background: #230101; /* Ciemniejszy kolor przy hover */
+    }
+    
+    &:active {
+      transform: scale(0.95); /* Lekkie zmniejszenie przy kliknięciu */
+    }
+  }
+  
+  &:focus {
+    outline: none;
   }
 `;
 
@@ -141,6 +168,7 @@ const ViewerWrap = styled.div`
   border-radius: 12px;
   overflow: hidden;
   border: 1px solid #e0e0e0;
+  margin-bottom: 40px;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     height: 60vh; 
@@ -504,6 +532,12 @@ const HsConfiguratorPage = () => {
       imageSrc="/images/hs/top.jpg"
       title={t('hsConfigurator.title', 'Konfigurator HS')}
     >
+      <HeaderWrap>
+          <ProductHeader>
+            {t('hsConfigurator.header', 'Konfigurator HS')}
+          </ProductHeader>
+          <ProductHeaderSubtitle>{t('hsConfigurator.subtitle', 'Stwórz swoje wymarzone okno przesuwne')}</ProductHeaderSubtitle>
+        </HeaderWrap>
       <ConfiguratorContainer>
         <ControlPanel>
           <ControlSection>
@@ -567,7 +601,6 @@ const HsConfiguratorPage = () => {
 
           <ControlSection>
             <SectionHeader>Wymiary</SectionHeader>
-            
             <ControlGroup>
               <Label>Szerokość okna:</Label>
               <RangeContainer>
