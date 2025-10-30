@@ -403,7 +403,7 @@ const HsConfiguratorPage = () => {
 
   return (
     <Page
-      imageSrc="/images/company/company-top.jpg"
+      imageSrc="/images/hs/top.jpg"
       title={t('hsConfigurator.title', 'Konfigurator HS')}
     >
       <ConfiguratorContainer>
