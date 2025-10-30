@@ -97,59 +97,125 @@ const RangeContainer = styled.div`
 const RangeInput = styled.input`
   flex: 1;
   cursor: pointer;
-  accent-color: #015508;
-  height: 4px;
-
-  &::-webkit-slider-track {
-    background: #e0e0e0;
+  height: 6px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  outline: none;
+  
+  /* Track - podstawowy styl dla wszystkich przeglądarek */
+  &::-webkit-slider-runnable-track {
+    width: 100%;
     height: 4px;
+    background: #e0e0e0;
+    border-radius: 2px;
+    border: none;
+  }
+  
+  &::-moz-range-track {
+    width: 100%;
+    height: 4px;
+    background: #e0e0e0;
+    border-radius: 2px;
+    border: none;
+  }
+  
+  &::-ms-track {
+    width: 100%;
+    height: 4px;
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+  }
+  
+  &::-ms-fill-lower {
+    background: #e0e0e0;
     border-radius: 2px;
   }
   
+  &::-ms-fill-upper {
+    background: #e0e0e0;
+    border-radius: 2px;
+  }
+  
+  /* Thumb - uchwyt slidera */
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: #013a06;
     border: 2px solid white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     cursor: pointer;
+    margin-top: -8px; /* Centrowanie względem tracka */
+    transition: all 0.15s ease-in-out;
     
     &:hover {
       transform: scale(1.1);
-      background: #230106; /* Ciemniejszy kolor przy hover */
+      background: #015508;
     }
     
     &:active {
-      transform: scale(0.95); /* Lekkie zmniejszenie przy kliknięciu */
+      transform: scale(0.95);
     }
   }
   
   &::-moz-range-thumb {
     -moz-appearance: none;
     appearance: none;
-    width: 16px;
-    height: 16px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     background: #013a06;
     border: 2px solid white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     cursor: pointer;
+    transition: all 0.15s ease-in-out;
     
     &:hover {
       transform: scale(1.1);
-      background: #230101; /* Ciemniejszy kolor przy hover */
+      background: #015508;
     }
     
     &:active {
-      transform: scale(0.95); /* Lekkie zmniejszenie przy kliknięciu */
+      transform: scale(0.95);
     }
   }
   
-  &:focus {
-    outline: none;
+  &::-ms-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #013a06;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    margin-top: 0;
+    transition: all 0.15s ease-in-out;
+    
+    &:hover {
+      transform: scale(1.1);
+      background: #015508;
+    }
+    
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+  
+  /* Dodatkowe wsparcie dla starszych wersji Webkit */
+  &:focus::-webkit-slider-runnable-track {
+    background: #e0e0e0;
+  }
+  
+  /* Fallback dla przeglądarek nie wspierających pseudo-elementów */
+  @supports not ((-webkit-appearance: none) or (-moz-appearance: none)) {
+    height: 20px;
+    background: #e0e0e0;
+    border-radius: 10px;
   }
 `;
 
