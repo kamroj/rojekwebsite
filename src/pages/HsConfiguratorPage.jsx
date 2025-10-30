@@ -10,46 +10,82 @@ const ConfiguratorContainer = styled.div`
   display: flex;
   flex-direction: column;
   gap: 20px;
+  margin-top: 40px;
 `;
 
 const ControlPanel = styled.div`
-  background: rgba(255, 255, 255, 0.95);
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  max-width: 400px;
+  background: linear-gradient(to bottom, #ffffff, #fafafa);
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  gap: 0;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    flex-direction: column;
+  }
+`;
+
+const ControlSection = styled.div`
+  flex: 1;
+  padding: 24px;
+  
+  &:first-child {
+    border-right: 1px solid #e0e0e0;
+    
+    @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+      border-right: none;
+      border-bottom: 1px solid #e0e0e0;
+    }
+  }
+`;
+
+const SectionHeader = styled.h3`
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #0041074e;
+  letter-spacing: 0.5px;
 `;
 
 const ControlGroup = styled.div`
   margin-bottom: 20px;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
 `;
 
 const Label = styled.label`
   display: block;
-  font-size: 14px;
-  font-weight: 600;
-  color: #333;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
   margin-bottom: 8px;
 `;
 
 const Select = styled.select`
   width: 100%;
-  padding: 8px 12px;
+  padding: 10px 12px;
   font-size: 14px;
   border: 1px solid #ddd;
-  border-radius: 4px;
+  border-radius: 6px;
   background: white;
   color: #333;
   cursor: pointer;
-  transition: border-color 0.2s;
+  transition: all 0.2s;
 
   &:hover {
-    border-color: #999;
+    border-color: #015508;
+    background: #fafafa;
   }
 
   &:focus {
     outline: none;
-    border-color: #666;
+    border-color: #015508;
+    box-shadow: 0 0 0 3px rgba(1, 85, 8, 0.1);
   }
 `;
 
@@ -62,13 +98,39 @@ const RangeContainer = styled.div`
 const RangeInput = styled.input`
   flex: 1;
   cursor: pointer;
+  accent-color: #015508;
+  height: 4px;
+
+  &::-webkit-slider-track {
+    background: #e0e0e0;
+    height: 4px;
+    border-radius: 2px;
+  }
+  
+  &::-webkit-slider-thumb {
+    background: #015508;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  &::-moz-range-track {
+    background: #e0e0e0;
+    height: 4px;
+    border-radius: 2px;
+  }
+  
+  &::-moz-range-thumb {
+    background: #011e55;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
 `;
 
 const RangeValue = styled.span`
   min-width: 60px;
   text-align: right;
   font-size: 14px;
-  color: #666;
+  font-weight: 500;
 `;
 
 const ViewerWrap = styled.div`
@@ -76,9 +138,9 @@ const ViewerWrap = styled.div`
   width: 100%;
   height: 90vh;
   background: #fffefe;
-  border-radius: 8px;
+  border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     height: 60vh; 
@@ -118,6 +180,14 @@ const TEXTURES = [
 const HANDLE_TEXTURES = [
   { value: '/models/textures/handle/hang-silver.jpg', label: 'Srebrna' },
   { value: '/models/textures/handle/hang-gold.jpg', label: 'Złota' },
+];
+
+const TYPES = [
+  { value: 'a', label: 'A' },
+];
+
+const THRESHOLDS = [
+  { value: 'silver', label: 'Srebrny' },
 ];
 
 // Bazowe wymiary okna
@@ -424,6 +494,8 @@ const HsConfiguratorPage = () => {
   const modelRef = useRef();
   const [selectedTexture, setSelectedTexture] = useState(TEXTURES[0].value);
   const [selectedHandleTexture, setSelectedHandleTexture] = useState(HANDLE_TEXTURES[0].value);
+  const [selectedType, setSelectedType] = useState(TYPES[0].value);
+  const [selectedThreshold, setSelectedThreshold] = useState(THRESHOLDS[0].value);
   const [width, setWidth] = useState(BASE_WIDTH);
   const [height, setHeight] = useState(BASE_HEIGHT);
 
@@ -434,63 +506,98 @@ const HsConfiguratorPage = () => {
     >
       <ConfiguratorContainer>
         <ControlPanel>
-          <ControlGroup>
-            <Label>Materiał ramy:</Label>
-            <Select
-              value={selectedTexture}
-              onChange={(e) => setSelectedTexture(e.target.value)}
-            >
-              {TEXTURES.map((tex) => (
-                <option key={tex.value} value={tex.value}>
-                  {tex.label}
-                </option>
-              ))}
-            </Select>
-          </ControlGroup>
+          <ControlSection>
+            <SectionHeader>Elementy</SectionHeader>
+            <ControlGroup>
+              <Label>Materiał ramy:</Label>
+              <Select
+                value={selectedTexture}
+                onChange={(e) => setSelectedTexture(e.target.value)}
+              >
+                {TEXTURES.map((tex) => (
+                  <option key={tex.value} value={tex.value}>
+                    {tex.label}
+                  </option>
+                ))}
+              </Select>
+            </ControlGroup>
 
-          <ControlGroup>
-            <Label>Kolor klamki:</Label>
-            <Select
-              value={selectedHandleTexture}
-              onChange={(e) => setSelectedHandleTexture(e.target.value)}
-            >
-              {HANDLE_TEXTURES.map((tex) => (
-                <option key={tex.value} value={tex.value}>
-                  {tex.label}
-                </option>
-              ))}
-            </Select>
-          </ControlGroup>
+            <ControlGroup>
+              <Label>Kolor klamki:</Label>
+              <Select
+                value={selectedHandleTexture}
+                onChange={(e) => setSelectedHandleTexture(e.target.value)}
+              >
+                {HANDLE_TEXTURES.map((tex) => (
+                  <option key={tex.value} value={tex.value}>
+                    {tex.label}
+                  </option>
+                ))}
+              </Select>
+            </ControlGroup>
 
-          <ControlGroup>
-            <Label>Szerokość okna:</Label>
-            <RangeContainer>
-              <RangeInput
-                type="range"
-                min="2000"
-                max="4000"
-                step="10"
-                value={width}
-                onChange={(e) => setWidth(Number(e.target.value))}
-              />
-              <RangeValue>{width} mm</RangeValue>
-            </RangeContainer>
-          </ControlGroup>
+            <ControlGroup>
+              <Label>Typ:</Label>
+              <Select
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+              >
+                {TYPES.map((type) => (
+                  <option key={type.value} value={type.value}>
+                    {type.label}
+                  </option>
+                ))}
+              </Select>
+            </ControlGroup>
 
-          <ControlGroup>
-            <Label>Wysokość okna:</Label>
-            <RangeContainer>
-              <RangeInput
-                type="range"
-                min="2000"
-                max="3000"
-                step="10"
-                value={height}
-                onChange={(e) => setHeight(Number(e.target.value))}
-              />
-              <RangeValue>{height} mm</RangeValue>
-            </RangeContainer>
-          </ControlGroup>
+            <ControlGroup>
+              <Label>Próg:</Label>
+              <Select
+                value={selectedThreshold}
+                onChange={(e) => setSelectedThreshold(e.target.value)}
+              >
+                {THRESHOLDS.map((threshold) => (
+                  <option key={threshold.value} value={threshold.value}>
+                    {threshold.label}
+                  </option>
+                ))}
+              </Select>
+            </ControlGroup>
+          </ControlSection>
+
+          <ControlSection>
+            <SectionHeader>Wymiary</SectionHeader>
+            
+            <ControlGroup>
+              <Label>Szerokość okna:</Label>
+              <RangeContainer>
+                <RangeInput
+                  type="range"
+                  min="2000"
+                  max="4000"
+                  step="10"
+                  value={width}
+                  onChange={(e) => setWidth(Number(e.target.value))}
+                />
+                <RangeValue>{width} mm</RangeValue>
+              </RangeContainer>
+            </ControlGroup>
+
+            <ControlGroup>
+              <Label>Wysokość okna:</Label>
+              <RangeContainer>
+                <RangeInput
+                  type="range"
+                  min="2000"
+                  max="3000"
+                  step="10"
+                  value={height}
+                  onChange={(e) => setHeight(Number(e.target.value))}
+                />
+                <RangeValue>{height} mm</RangeValue>
+              </RangeContainer>
+            </ControlGroup>
+          </ControlSection>
         </ControlPanel>
 
         <ViewerWrap>
