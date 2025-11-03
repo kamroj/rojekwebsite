@@ -1,9 +1,10 @@
 import React, { Suspense, useMemo, useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { Canvas, useThree } from '@react-three/fiber';
-import { Center, Environment, OrbitControls, useGLTF, useTexture, ContactShadows } from '@react-three/drei';
-import { RepeatWrapping, SRGBColorSpace, Box3, Vector3, Sphere } from 'three';
+import { Canvas, useThree, useFrame } from '@react-three/fiber';
+import { Center, Environment, OrbitControls, useGLTF, useTexture, ContactShadows, useAnimations } from '@react-three/drei';
+import { RepeatWrapping, SRGBColorSpace, Box3, Vector3, Sphere, LoopOnce } from 'three';
+import * as THREE from 'three';
 import Page from '../components/common/Page';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomePage';
 
@@ -266,6 +267,41 @@ const PreviewLabel = styled.div`
   }
 `;
 
+const AnimationButton = styled.button`
+  position: absolute;
+  line-height: 1.6;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10;
+  padding: 6px 12px;
+  background: ${({ disabled }) => disabled ? '#cccccc' : '#013a06bd;'};
+  color: ${({ contentColor }) => contentColor || '#f8f9fa'};
+  border: none;
+  backdrop-filter: blur(3px);
+  letter-spacing: 0.5px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: ${({ disabled }) => disabled ? 'not-allowed' : 'pointer'};
+  transition: all 0.3s ease;
+  border: 1px solid ${({ disabled }) => disabled ? '#909090' : '#01790b'};
+  
+  &:hover {
+    background: ${({ disabled }) => disabled ? '#cccccc' : '#013a06'};
+  }
+  
+  &:active {
+    transform: ${({ disabled }) => disabled ? 'none' : 'translateY(0)'};
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    bottom: 15px;
+    right: 15px;
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+`;
+
 const TEXTURES = [
   { value: '/models/remmers-natur.jpg', label: 'Natur' },
   { value: '/models/remmers-miodowa-sosna.jpg', label: 'Miodowa Sosna' },
@@ -434,10 +470,15 @@ function updateDimensions(scene, width, height) {
   });
 }
 
-function HsModel({ texturePath, handleTexturePath, width, height, onReady, ...props }) {
-  const { scene } = useGLTF('/models/example.glb');
+function HsModel({ texturePath, handleTexturePath, width, height, onReady, animationState, onAnimationComplete, ...props }) {
+  const group = useRef();
+  const { scene, animations } = useGLTF('/models/example2.glb');
   const texture = useTexture(texturePath);
   const handleTexture = useTexture(handleTexturePath);
+  const { actions, mixer } = useAnimations(animations, group);
+
+  const [lastAnimationState, setLastAnimationState] = useState(null);
+  const [animationFinishedCount, setAnimationFinishedCount] = useState(0);
 
   const textures = useMemo(() => {
     const base = texture;
@@ -493,8 +534,8 @@ function HsModel({ texturePath, handleTexturePath, width, height, onReady, ...pr
           obj.material = obj.material.clone();
           obj.material.map = textures.handleTex;
           obj.material.color?.set?.('#ffffff');
-          obj.material.roughness = 0.6; // Zwiększone z 0.3 na 0.6 - bardziej matowa
-          obj.material.metalness = 0.6; // Zmniejszone z 0.8 na 0.4 - mniej metaliczny połysk
+          obj.material.roughness = 0.4; // Zwiększone z 0.3 na 0.6 - bardziej matowa
+          obj.material.metalness = 0.5; // Zmniejszone z 0.8 na 0.4 - mniej metaliczny połysk
           obj.material.needsUpdate = true;
 
           obj.castShadow = true;
@@ -524,11 +565,105 @@ function HsModel({ texturePath, handleTexturePath, width, height, onReady, ...pr
     return root;
   }, [scene, textures, width, height]);
 
+  // Obsługa animacji - odpalamy WSZYSTKIE animacje
+  // Obsługa animacji - odpalamy WSZYSTKIE animacje
+  useEffect(() => {
+    if (!actions || Object.keys(actions).length === 0) return;
+
+    const actionEntries = Object.entries(actions);
+    const totalAnimations = actionEntries.length;
+
+    // Znajdź najdłuższą animację
+    let maxDuration = 0;
+    actionEntries.forEach(([name, action]) => {
+      const duration = action.getClip().duration;
+      if (duration > maxDuration) maxDuration = duration;
+    });
+
+    if (animationState === 'opening' && lastAnimationState !== 'opening') {
+      setAnimationFinishedCount(0);
+
+      // Odpal WSZYSTKIE animacje do przodu
+      actionEntries.forEach(([name, action]) => {
+        action.clampWhenFinished = true;
+        action.loop = LoopOnce;
+        action.reset();
+        action.timeScale = 1;
+        action.play();
+      });
+
+      setLastAnimationState('opening');
+    } else if (animationState === 'closing' && lastAnimationState !== 'closing') {
+      setAnimationFinishedCount(0);
+
+      // Odpal WSZYSTKIE animacje do tyłu z synchronizacją
+      actionEntries.forEach(([name, action]) => {
+        action.clampWhenFinished = true;
+        action.loop = LoopOnce;
+        action.reset();
+
+        const clipDuration = action.getClip().duration;
+
+        // Przy zamykaniu, animacje krótsze (jak klamka) muszą zacząć później
+        // aby zakończyły się na samym końcu całej sekwencji
+        if (name.toLowerCase().includes('handle') || name.toLowerCase().includes('klamka')) {
+          // Klamka ma zacząć się odtwarzać później
+          // Jeśli klamka trwa 30 klatek a całość 90, to ma zacząć od klatki 30
+          action.time = clipDuration; // Ustaw na koniec animacji klamki
+          action.timeScale = -1;
+          action.paused = false;
+
+          // Opóźnij start animacji klamki
+          const delay = maxDuration - clipDuration;
+          if (delay > 0) {
+            action.paused = true;
+            setTimeout(() => {
+              action.paused = false;
+              action.play();
+            }, delay * 1000); // Konwersja na milisekundy (zakładając 1 sekunda = 1 jednostka czasu)
+          } else {
+            action.play();
+          }
+        } else {
+          // Pozostałe animacje (okno) - odtwarzaj normalnie od końca
+          action.time = clipDuration;
+          action.timeScale = -1;
+          action.play();
+        }
+      });
+
+      setLastAnimationState('closing');
+    }
+
+    // Listener na zakończenie animacji
+    const handleFinished = (e) => {
+      setAnimationFinishedCount(prev => {
+        const newCount = prev + 1;
+        // Gdy wszystkie animacje się zakończą
+        if (newCount >= totalAnimations) {
+          onAnimationComplete();
+          return 0; // Reset licznika
+        }
+        return newCount;
+      });
+    };
+
+    mixer.addEventListener('finished', handleFinished);
+
+    return () => {
+      mixer.removeEventListener('finished', handleFinished);
+    };
+  }, [animationState, actions, mixer, onAnimationComplete, lastAnimationState]);
+
   useEffect(() => {
     onReady?.();
   }, [processed, onReady]);
 
-  return <primitive object={processed} {...props} />;
+  return (
+    <group ref={group}>
+      <primitive object={processed} {...props} />
+    </group>
+  );
 }
 
 function FrontFit({ modelRef }) {
@@ -579,7 +714,7 @@ function FrontFit({ modelRef }) {
 }
 
 // Preload wszystkich tekstur
-useGLTF.preload('/models/example.glb');
+useGLTF.preload('/models/example2.glb');
 TEXTURES.forEach(tex => useTexture.preload(tex.value));
 HANDLE_TEXTURES.forEach(tex => useTexture.preload(tex.value));
 
@@ -593,17 +728,42 @@ const HsConfiguratorPage = () => {
   const [width, setWidth] = useState(BASE_WIDTH);
   const [height, setHeight] = useState(BASE_HEIGHT);
 
+  // Stany dla animacji
+  const [isOpen, setIsOpen] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
+  const [animationState, setAnimationState] = useState(null);
+
+  const handleAnimationToggle = () => {
+    if (isAnimating) return;
+
+    setIsAnimating(true);
+
+    if (!isOpen) {
+      // Rozpocznij otwieranie
+      setAnimationState('opening');
+    } else {
+      // Rozpocznij zamykanie
+      setAnimationState('closing');
+    }
+  };
+
+  const handleAnimationComplete = () => {
+    setIsAnimating(false);
+    setIsOpen(!isOpen);
+    setAnimationState(null);
+  };
+
   return (
     <Page
       imageSrc="/images/hs/top.jpg"
       title={t('hsConfigurator.title', 'Konfigurator HS')}
     >
       <HeaderWrap>
-          <ProductHeader>
-            {t('hsConfigurator.header', 'Konfigurator HS')}
-          </ProductHeader>
-          <ProductHeaderSubtitle>{t('hsConfigurator.subtitle', 'Stwórz swoje wymarzone okno przesuwne')}</ProductHeaderSubtitle>
-        </HeaderWrap>
+        <ProductHeader>
+          {t('hsConfigurator.header', 'Konfigurator HS')}
+        </ProductHeader>
+        <ProductHeaderSubtitle>{t('hsConfigurator.subtitle', 'Stwórz swoje wymarzone okno przesuwne')}</ProductHeaderSubtitle>
+      </HeaderWrap>
       <ConfiguratorContainer>
         <ControlPanel>
           <ControlSection>
@@ -701,6 +861,12 @@ const HsConfiguratorPage = () => {
 
         <ViewerWrap>
           <PreviewLabel>PODGLĄD</PreviewLabel>
+          <AnimationButton
+            onClick={handleAnimationToggle}
+            disabled={isAnimating}
+          >
+            {isOpen ? 'ZAMKNIJ' : 'OTWÓRZ'}
+          </AnimationButton>
           <Canvas camera={{ position: [3, 2, 4], fov: 45 }}>
             <Suspense fallback={null}>
               <color attach="background" args={['#fffefe']} />
@@ -715,6 +881,8 @@ const HsConfiguratorPage = () => {
                     handleTexturePath={selectedHandleTexture}
                     width={width}
                     height={height}
+                    animationState={animationState}
+                    onAnimationComplete={handleAnimationComplete}
                     onReady={() => { }}
                   />
                 </group>
