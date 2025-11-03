@@ -867,7 +867,13 @@ const HsConfiguratorPage = () => {
           >
             {isOpen ? 'ZAMKNIJ' : 'OTWÓRZ'}
           </AnimationButton>
-          <Canvas camera={{ position: [3, 2, 4], fov: 45 }}>
+          <Canvas
+            camera={{ position: [3, 2, 4], fov: 45 }}
+            gl={{
+              logarithmicDepthBuffer: true,  // Poprawia precyzję depth buffer
+              antialias: true
+            }}
+          >
             <Suspense fallback={null}>
               <color attach="background" args={['#fffefe']} />
               <ambientLight intensity={0.6} />
