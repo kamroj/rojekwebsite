@@ -267,31 +267,36 @@ const PreviewLabel = styled.div`
   }
 `;
 
-const AnimationButton = styled.button`
+
+export const AnimationButton = styled.button`
   position: absolute;
   line-height: 1.6;
   bottom: 20px;
   right: 20px;
   z-index: 10;
   padding: 6px 12px;
-  background: ${({ disabled }) => disabled ? '#cccccc' : '#013a06bd;'};
-  color: ${({ contentColor }) => contentColor || '#f8f9fa'};
-  border: none;
-  backdrop-filter: blur(3px);
-  letter-spacing: 0.5px;
+  background: ${({ disabled }) => (disabled ? '#ccccccab' : '#013a06bd')};
+  color: ${({ disabled }) => (disabled ? '#000000a8' : '#f8f9fa')};
+  border: 1px solid ${({ disabled }) => (disabled ? '#909090' : '#01790b')};
   border-radius: 4px;
   font-size: 14px;
   font-weight: 500;
-  cursor: ${({ disabled }) => disabled ? 'not-allowed' : 'pointer'};
+  backdrop-filter: blur(3px);
   transition: all 0.3s ease;
-  border: 1px solid ${({ disabled }) => disabled ? '#909090' : '#01790b'};
-  
-  &:hover {
-    background: ${({ disabled }) => disabled ? '#cccccc' : '#013a06'};
+  cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
+  -webkit-tap-highlight-color: transparent; /* iOS: bez szarego highlighta */
+  touch-action: manipulation;               /* hint dla mobilnych tapów */
+
+  @media (hover: hover) and (pointer: fine) {
+      &:hover {
+        background: ${({ disabled }) => (disabled ? '#ccccccab' : '#013a06')};
+    }
   }
-  
-  &:active {
-    transform: ${({ disabled }) => disabled ? 'none' : 'translateY(0)'};
+
+  /* Dostępność dla klawiatury bez „wiecznego” hovera */
+  &:focus-visible {
+    outline: 2px solid #01790b;
+    outline-offset: 2px;
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
