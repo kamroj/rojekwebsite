@@ -1,7 +1,7 @@
 import React, { Suspense, useMemo, useRef, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { Canvas, useThree, useFrame } from '@react-three/fiber';
+import { Canvas, useThree } from '@react-three/fiber';
 import { Center, Environment, OrbitControls, useGLTF, useTexture, ContactShadows, useAnimations } from '@react-three/drei';
 import { RepeatWrapping, SRGBColorSpace, Box3, Vector3, Sphere, LoopOnce } from 'three';
 import * as THREE from 'three';
@@ -105,7 +105,6 @@ const RangeInput = styled.input`
   background: transparent;
   outline: none;
   
-  /* Track - podstawowy styl dla wszystkich przeglądarek */
   &::-webkit-slider-runnable-track {
     width: 100%;
     height: 4px;
@@ -140,7 +139,6 @@ const RangeInput = styled.input`
     border-radius: 2px;
   }
   
-  /* Thumb - uchwyt slidera */
   &::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
@@ -151,7 +149,7 @@ const RangeInput = styled.input`
     border: 2px solid white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     cursor: pointer;
-    margin-top: -8px; /* Centrowanie względem tracka */
+    margin-top: -8px;
     transition: all 0.15s ease-in-out;
     
     &:hover {
@@ -207,12 +205,10 @@ const RangeInput = styled.input`
     }
   }
   
-  /* Dodatkowe wsparcie dla starszych wersji Webkit */
   &:focus::-webkit-slider-runnable-track {
     background: #e0e0e0;
   }
   
-  /* Fallback dla przeglądarek nie wspierających pseudo-elementów */
   @supports not ((-webkit-appearance: none) or (-moz-appearance: none)) {
     height: 20px;
     background: #e0e0e0;
@@ -267,7 +263,6 @@ const PreviewLabel = styled.div`
   }
 `;
 
-
 export const AnimationButton = styled.button`
   position: absolute;
   line-height: 1.6;
@@ -275,27 +270,38 @@ export const AnimationButton = styled.button`
   right: 20px;
   z-index: 10;
   padding: 6px 12px;
-  background: ${({ disabled }) => (disabled ? '#ccccccab' : '#013a06bd')};
+  background: ${({ disabled, isReset }) =>
+    disabled ? '#ccccccab' :
+      isReset ? '#362f9ebb' :
+        '#013a06bd'
+  };
   color: ${({ disabled }) => (disabled ? '#000000a8' : '#f8f9fa')};
-  border: 1px solid ${({ disabled }) => (disabled ? '#909090' : '#01790b')};
+  border: 1px solid ${({ disabled, isReset }) =>
+    disabled ? '#909090' :
+      isReset ? '#0c065cba' :
+        '#01790bb2'
+  };  
   border-radius: 4px;
   font-size: 14px;
   font-weight: 500;
   backdrop-filter: blur(3px);
   transition: all 0.3s ease;
   cursor: ${({ disabled }) => (disabled ? 'not-allowed' : 'pointer')};
-  -webkit-tap-highlight-color: transparent; /* iOS: bez szarego highlighta */
-  touch-action: manipulation;               /* hint dla mobilnych tapów */
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
 
   @media (hover: hover) and (pointer: fine) {
-      &:hover {
-        background: ${({ disabled }) => (disabled ? '#ccccccab' : '#013a06')};
+    &:hover {
+      background: ${({ disabled, isReset }) =>
+    disabled ? '#ccccccab' :
+      isReset ? '#d47300' :
+        '#013a06'
+  };
     }
   }
 
-  /* Dostępność dla klawiatury bez „wiecznego” hovera */
   &:focus-visible {
-    outline: 2px solid #01790b;
+    outline: 2px solid ${({ isReset }) => isReset ? '#ff8c00' : '#01790b'};
     outline-offset: 2px;
   }
 
@@ -304,6 +310,35 @@ export const AnimationButton = styled.button`
     right: 15px;
     padding: 4px 10px;
     font-size: 12px;
+  }
+`;
+
+const DimensionWarning = styled.div`
+  position: absolute;
+  right: 20px;
+  bottom: 64px; /* nad przyciskiem (który ma bottom: 20px) */
+  z-index: 10;
+  font-size: 11px;
+  color: #666;
+  font-style: italic;
+  pointer-events: none;
+  user-select: none;
+  max-width: 320px;
+  text-align: right;
+  line-height: 1.3;
+
+  &:before {
+    content: '*';
+    color: #0c065cba;
+    font-weight: bold;
+    margin-right: 2px;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    right: 15px;
+    bottom: 52px; /* nad przyciskiem, który w mobile ma bottom: 15px */
+    font-size: 10px;
+    max-width: 200px;
   }
 `;
 
@@ -323,19 +358,19 @@ const TYPES = [
 
 const THRESHOLDS = [
   { value: 'silver', label: 'Srebrny' },
+  { value: 'black', label: 'Czarny' },
+  { value: 'gold', label: 'Złoty' },
 ];
 
 // Bazowe wymiary okna
 const BASE_WIDTH = 2320; // mm
-const BASE_HEIGHT = 2040; // mm
+const BASE_HEIGHT = 2040; // mm;
 
 // Funkcja do aktualizacji wymiarów elementów
 function updateDimensions(scene, width, height) {
-  const widthDiff = width - BASE_WIDTH; // różnica w mm
+  const widthDiff = width - BASE_WIDTH;
   const heightDiff = height - BASE_HEIGHT;
-
-  // Model jest w skali 1:1 (1 jednostka = 1mm)
-  const halfWidthDiff = widthDiff / 2; // każde skrzydło zmienia się o połowę
+  const halfWidthDiff = widthDiff / 2;
 
   scene.traverse((obj) => {
     if (!obj.isMesh) return;
@@ -355,33 +390,23 @@ function updateDimensions(scene, width, height) {
     const origScale = obj.userData.originalScale;
     const origSize = obj.userData.originalSize;
 
-    // === SZEROKOŚĆ ===
-
     // LEWE SKRZYDŁO (sash-front)
     if (name.includes('sash-front')) {
       if (name.includes('frame-bottom') || name.includes('frame-top')) {
-        // Elementy poziome - zwiększamy szerokość i przesuwamy
         const originalWidth = origSize.x * origScale.x;
         const newWidth = originalWidth + halfWidthDiff;
         const newScale = newWidth / originalWidth;
         obj.scale.x = origScale.x * newScale;
-
-        // Przesuń element tak, aby rozszerzał się tylko w lewo
         obj.position.x = origPos.x - halfWidthDiff / 2;
       } else if (name.includes('frame-left')) {
-        // Lewa krawędź - przesuwa się w lewo
         obj.position.x = origPos.x - halfWidthDiff;
       } else if (name.includes('frame-right')) {
-        // Prawa krawędź (środek okna) - pozostaje na miejscu
         obj.position.x = origPos.x;
       } else if (name.includes('glass')) {
-        // SZYBA w lewym skrzydle - skaluje się i przesuwa
         const originalWidth = origSize.x * origScale.x;
         const newWidth = originalWidth + halfWidthDiff;
         const newScale = newWidth / originalWidth;
         obj.scale.x = origScale.x * newScale;
-
-        // Przesuń szybę tak, aby rozszerzała się tylko w lewo
         obj.position.x = origPos.x - halfWidthDiff / 2;
       }
     }
@@ -389,95 +414,115 @@ function updateDimensions(scene, width, height) {
     // PRAWE SKRZYDŁO (sash-back)
     else if (name.includes('sash-back')) {
       if (name.includes('frame-bottom') || name.includes('frame-top')) {
-        // Elementy poziome - zwiększamy szerokość i przesuwamy
         const originalWidth = origSize.x * origScale.x;
         const newWidth = originalWidth + halfWidthDiff;
         const newScale = newWidth / originalWidth;
         obj.scale.x = origScale.x * newScale;
-
-        // Przesuń element tak, aby rozszerzał się tylko w prawo
         obj.position.x = origPos.x + halfWidthDiff / 2;
       } else if (name.includes('frame-left')) {
-        // Lewa krawędź (środek okna) - pozostaje na miejscu
         obj.position.x = origPos.x;
       } else if (name.includes('frame-right')) {
-        // Prawa krawędź - przesuwa się w prawo
         obj.position.x = origPos.x + halfWidthDiff;
       } else if (name.includes('glass')) {
-        // SZYBA w prawym skrzydle - skaluje się i przesuwa
         const originalWidth = origSize.x * origScale.x;
         const newWidth = originalWidth + halfWidthDiff;
         const newScale = newWidth / originalWidth;
         obj.scale.x = origScale.x * newScale;
-
-        // Przesuń szybę tak, aby rozszerzała się tylko w prawo
         obj.position.x = origPos.x + halfWidthDiff / 2;
       }
     }
 
-    // KLAMKI (na lewym skrzydle)
+    // KLAMKI
     else if (name.includes('handle')) {
-      // Klamka przesuwa się razem z lewym skrzydłem
       obj.position.x = origPos.x - halfWidthDiff;
     }
 
     // ZEWNĘTRZNA RAMA
-    else if (name.includes('frame') && !name.includes('sash')) {
+    else if ((name.includes('frame') || name.includes('threshold')) && !name.includes('sash')) {
       if (name.includes('left')) {
-        // Lewa rama - przesuwa się w lewo
         obj.position.x = origPos.x - halfWidthDiff;
       } else if (name.includes('right')) {
-        // Prawa rama - przesuwa się w prawo
         obj.position.x = origPos.x + halfWidthDiff;
-      } else if (name.includes('top') || name.includes('bottom')) {
-        // Górna i dolna rama - skalują się symetrycznie
+      } else if (name.includes('top') || name.includes('bottom') || name.includes('threshold')) {
         const originalWidth = origSize.x * origScale.x;
         const newWidth = originalWidth + widthDiff;
         const newScale = newWidth / originalWidth;
         obj.scale.x = origScale.x * newScale;
-        // Pozostają na środku
         obj.position.x = origPos.x;
       }
     }
 
-    // === WYSOKOŚĆ ===
-
-    // Szyby - skalują się w wysokości
+    // WYSOKOŚĆ
     if (name.includes('glass')) {
       const originalHeight = origSize.y * origScale.y;
       const newHeight = originalHeight + heightDiff;
       const newScale = newHeight / originalHeight;
       obj.scale.y = origScale.y * newScale;
-
-      // Przesuwają się do góry o połowę różnicy (rozciąganie symetryczne)
       obj.position.y = origPos.y + heightDiff / 2;
     }
-    // Elementy ramowe
     else if (name.includes('frame')) {
-      // Elementy dolne (bottom) - pozostają na miejscu
       if (name.includes('bottom')) {
         obj.position.y = origPos.y;
       }
-      // Elementy górne (top) - przesuwają się o pełną wartość
       else if (name.includes('top')) {
         obj.position.y = origPos.y + heightDiff;
       }
-      // Elementy pionowe (left/right) - skalują się i przesuwają
       else if (name.includes('left') || name.includes('right')) {
         const originalHeight = origSize.y * origScale.y;
         const newHeight = originalHeight + heightDiff;
         const newScale = newHeight / originalHeight;
         obj.scale.y = origScale.y * newScale;
-        // Przesuwają się o połowę różnicy (rozciąganie do góry)
         obj.position.y = origPos.y + heightDiff / 2;
       }
     }
   });
 }
 
-function HsModel({ texturePath, handleTexturePath, width, height, onReady, animationState, onAnimationComplete, ...props }) {
+// Funkcja do tworzenia materiału progu
+function getThresholdMaterial(thresholdType) {
+  let material = {
+    roughness: 0.3,
+    metalness: 0.8,
+    color: '#8c8c8c'
+  };
+
+  switch (thresholdType) {
+    case 'silver':
+      material.color = '#c0c0c0';
+      material.roughness = 0.25;
+      material.metalness = 0.9;
+      break;
+    case 'black':
+      material.color = '#2a2a2a';
+      material.roughness = 0.4;
+      material.metalness = 0.7;
+      break;
+    case 'gold':
+      material.color = '#d4af37';
+      material.roughness = 0.3;
+      material.metalness = 0.85;
+      break;
+    default:
+      break;
+  }
+
+  return material;
+}
+
+function HsModel({
+  texturePath,
+  handleTexturePath,
+  thresholdType,
+  width,
+  height,
+  onReady,
+  animationState,
+  onAnimationComplete,
+  forceCloseAnimation,
+  ...props
+}) {
   const group = useRef();
-  const { scene, animations } = useGLTF('/models/example2.glb');
+  const { scene, animations } = useGLTF('/models/example3.glb');
   const texture = useTexture(texturePath);
   const handleTexture = useTexture(handleTexturePath);
   const { actions, mixer } = useAnimations(animations, group);
@@ -485,102 +530,143 @@ function HsModel({ texturePath, handleTexturePath, width, height, onReady, anima
   const [lastAnimationState, setLastAnimationState] = useState(null);
   const [animationFinishedCount, setAnimationFinishedCount] = useState(0);
 
+  // Konfiguracja tekstur
   const textures = useMemo(() => {
-    const base = texture;
-    base.wrapS = RepeatWrapping;
-    base.wrapT = RepeatWrapping;
-    base.colorSpace = SRGBColorSpace;
-    base.anisotropy = 8;
+    const wood = texture;
+    wood.wrapS = RepeatWrapping;
+    wood.wrapT = RepeatWrapping;
+    wood.colorSpace = SRGBColorSpace;
+    wood.anisotropy = 16;
+    wood.minFilter = THREE.LinearMipMapLinearFilter;
+    wood.magFilter = THREE.LinearFilter;
+    wood.repeat.set(0.2, 0.2);
 
-    const textureV = base.clone();
-    textureV.repeat.set(3, 6);
-
-    const textureH = base.clone();
-    textureH.center.set(0.5, 0.5);
-    textureH.rotation = Math.PI / 2;
-    textureH.repeat.set(6, 3);
-
-    // Przygotowanie tekstury klamki
     const handleTex = handleTexture;
     handleTex.wrapS = RepeatWrapping;
     handleTex.wrapT = RepeatWrapping;
     handleTex.colorSpace = SRGBColorSpace;
-    handleTex.anisotropy = 8;
+    handleTex.anisotropy = 16;
     handleTex.repeat.set(1, 1);
 
-    return { textureV, textureH, handleTex };
+    return {
+      wood,
+      handleTex
+    };
   }, [texture, handleTexture]);
 
   const processed = useMemo(() => {
     const root = scene.clone(true);
 
-    // Aplikuj tekstury
     root.traverse((obj) => {
-      if (obj.isMesh) {
-        const n = (obj.name || '').toLowerCase();
+      if (!obj.isMesh) return;
 
-        // Tekstura szyby
-        if (n.includes('glass')) {
-          obj.material = obj.material.clone();
-          // Szkło - przezroczyste z lekkim odblaskiem
-          obj.material.transparent = true;
-          obj.material.opacity = 0.3;
-          obj.material.color?.set?.('#e8f4f8');
-          obj.material.roughness = 0.1;
-          obj.material.metalness = 0.9;
-          obj.material.envMapIntensity = 1.5;
-          obj.material.needsUpdate = true;
+      const n = (obj.name || '').toLowerCase();
 
-          obj.castShadow = false; // Szkło nie rzuca cienia
-          obj.receiveShadow = false;
+      // szyba
+      if (n.includes('glass')) {
+        obj.material = obj.material.clone();
+        obj.material.transparent = true;
+        obj.material.opacity = 0.3;
+        obj.material.color?.set?.('#e8f4f8');
+        obj.material.roughness = 0.1;
+        obj.material.metalness = 0.9;
+        obj.material.envMapIntensity = 1.5;
+        obj.material.needsUpdate = true;
+        obj.castShadow = false;
+        obj.receiveShadow = false;
+      }
+      // klamka
+      else if (n.includes('handle')) {
+        obj.material = obj.material.clone();
+        obj.material.map = textures.handleTex;
+        obj.material.color?.set?.('#ffffff');
+        obj.material.roughness = 0.4;
+        obj.material.metalness = 0.5;
+        obj.material.needsUpdate = true;
+        obj.castShadow = true;
+        obj.receiveShadow = true;
+      }
+      // próg - osobny materiał metalowy
+      else if (n.includes('threshold')) {
+        obj.material = obj.material.clone();
+        const thresholdMat = getThresholdMaterial(thresholdType);
+
+        obj.material.map = null;
+        obj.material.bumpMap = null;
+        obj.material.displacementMap = null;
+
+        obj.material.color?.set?.(thresholdMat.color);
+        obj.material.roughness = thresholdMat.roughness;
+        obj.material.metalness = thresholdMat.metalness;
+        obj.material.envMapIntensity = 1.2;
+
+        obj.material.needsUpdate = true;
+        obj.castShadow = true;
+        obj.receiveShadow = true;
+      }
+      // drewno – rama, skrzydła (bez progu)
+      else if (n.includes('frame')) {
+        obj.material = obj.material.clone();
+
+        const woodTexture = textures.wood.clone();
+
+        if (n.includes('left') || n.includes('right')) {
+          woodTexture.rotation = Math.PI / 2;
+          woodTexture.repeat.set(1, 1);
+          woodTexture.center.set(0.5, 0.5);
+        } else if (n.includes('top') || n.includes('bottom')) {
+          woodTexture.rotation = Math.PI / 2;
+          woodTexture.repeat.set(1, 1);
         }
-        // Tekstura klamki
-        else if (n.includes('handle')) {
-          obj.material = obj.material.clone();
-          obj.material.map = textures.handleTex;
-          obj.material.color?.set?.('#ffffff');
-          obj.material.roughness = 0.4; // Zwiększone z 0.3 na 0.6 - bardziej matowa
-          obj.material.metalness = 0.5; // Zmniejszone z 0.8 na 0.4 - mniej metaliczny połysk
-          obj.material.needsUpdate = true;
 
-          obj.castShadow = true;
-          obj.receiveShadow = true;
-        }
-        // Tekstura ramy
-        else if (n.includes('frame')) {
-          obj.material = obj.material.clone();
-          const isVertical = n.includes('left') || n.includes('right');
-          const isHorizontal = n.includes('top') || n.includes('bottom');
-          const map = isVertical ? textures.textureV : (isHorizontal ? textures.textureH : textures.textureV);
-          obj.material.map = map;
-          obj.material.color?.set?.('#ffffff');
-          obj.material.roughness = obj.material.roughness ?? 0.7;
-          obj.material.metalness = obj.material.metalness ?? 0.05;
-          obj.material.needsUpdate = true;
+        obj.material.map = woodTexture;
+        obj.material.color?.set?.('#ffffff');
+        obj.material.metalness = 0.0;
 
-          obj.castShadow = true;
-          obj.receiveShadow = true;
-        }
+        obj.material.bumpMap = woodTexture;
+        obj.material.bumpScale = 0.0;
+
+        obj.material.displacementMap = woodTexture;
+        obj.material.displacementScale = 0.01;
+
+        obj.material.needsUpdate = true;
+        obj.castShadow = true;
+        obj.receiveShadow = true;
       }
     });
 
-    // Aplikuj wymiary
+    // wymiary
     updateDimensions(root, width, height);
 
     return root;
-  }, [scene, textures, width, height]);
+  }, [scene, textures, thresholdType, width, height]);
 
-  // Obsługa animacji - odpalamy WSZYSTKIE animacje
-  // Obsługa animacji - odpalamy WSZYSTKIE animacje
+  // Efekt do zamykania animacji gdy wymiary się zmieniają
+  useEffect(() => {
+    if (forceCloseAnimation && actions) {
+      const actionEntries = Object.entries(actions);
+
+      // Zatrzymaj wszystkie animacje i zresetuj do pozycji zamkniętej
+      actionEntries.forEach(([_, action]) => {
+        action.stop();
+        action.reset();
+      });
+
+      setLastAnimationState(null);
+      setAnimationFinishedCount(0);
+    }
+  }, [forceCloseAnimation, actions]);
+
+  // Obsługa animacji - tylko gdy wymiary są domyślne
   useEffect(() => {
     if (!actions || Object.keys(actions).length === 0) return;
+    if (width !== BASE_WIDTH || height !== BASE_HEIGHT) return; // Blokuj animacje przy zmienionych wymiarach
 
     const actionEntries = Object.entries(actions);
     const totalAnimations = actionEntries.length;
 
-    // Znajdź najdłuższą animację
     let maxDuration = 0;
-    actionEntries.forEach(([name, action]) => {
+    actionEntries.forEach(([_, action]) => {
       const duration = action.getClip().duration;
       if (duration > maxDuration) maxDuration = duration;
     });
@@ -588,8 +674,7 @@ function HsModel({ texturePath, handleTexturePath, width, height, onReady, anima
     if (animationState === 'opening' && lastAnimationState !== 'opening') {
       setAnimationFinishedCount(0);
 
-      // Odpal WSZYSTKIE animacje do przodu
-      actionEntries.forEach(([name, action]) => {
+      actionEntries.forEach(([_, action]) => {
         action.clampWhenFinished = true;
         action.loop = LoopOnce;
         action.reset();
@@ -601,7 +686,6 @@ function HsModel({ texturePath, handleTexturePath, width, height, onReady, anima
     } else if (animationState === 'closing' && lastAnimationState !== 'closing') {
       setAnimationFinishedCount(0);
 
-      // Odpal WSZYSTKIE animacje do tyłu z synchronizacją
       actionEntries.forEach(([name, action]) => {
         action.clampWhenFinished = true;
         action.loop = LoopOnce;
@@ -609,28 +693,22 @@ function HsModel({ texturePath, handleTexturePath, width, height, onReady, anima
 
         const clipDuration = action.getClip().duration;
 
-        // Przy zamykaniu, animacje krótsze (jak klamka) muszą zacząć później
-        // aby zakończyły się na samym końcu całej sekwencji
         if (name.toLowerCase().includes('handle') || name.toLowerCase().includes('klamka')) {
-          // Klamka ma zacząć się odtwarzać później
-          // Jeśli klamka trwa 30 klatek a całość 90, to ma zacząć od klatki 30
-          action.time = clipDuration; // Ustaw na koniec animacji klamki
+          action.time = clipDuration;
           action.timeScale = -1;
           action.paused = false;
 
-          // Opóźnij start animacji klamki
           const delay = maxDuration - clipDuration;
           if (delay > 0) {
             action.paused = true;
             setTimeout(() => {
               action.paused = false;
               action.play();
-            }, delay * 1000); // Konwersja na milisekundy (zakładając 1 sekunda = 1 jednostka czasu)
+            }, delay * 1000);
           } else {
             action.play();
           }
         } else {
-          // Pozostałe animacje (okno) - odtwarzaj normalnie od końca
           action.time = clipDuration;
           action.timeScale = -1;
           action.play();
@@ -640,14 +718,12 @@ function HsModel({ texturePath, handleTexturePath, width, height, onReady, anima
       setLastAnimationState('closing');
     }
 
-    // Listener na zakończenie animacji
-    const handleFinished = (e) => {
+    const handleFinished = () => {
       setAnimationFinishedCount(prev => {
         const newCount = prev + 1;
-        // Gdy wszystkie animacje się zakończą
         if (newCount >= totalAnimations) {
           onAnimationComplete();
-          return 0; // Reset licznika
+          return 0;
         }
         return newCount;
       });
@@ -658,7 +734,7 @@ function HsModel({ texturePath, handleTexturePath, width, height, onReady, anima
     return () => {
       mixer.removeEventListener('finished', handleFinished);
     };
-  }, [animationState, actions, mixer, onAnimationComplete, lastAnimationState]);
+  }, [animationState, actions, mixer, onAnimationComplete, lastAnimationState, width, height]);
 
   useEffect(() => {
     onReady?.();
@@ -718,8 +794,8 @@ function FrontFit({ modelRef }) {
   return null;
 }
 
-// Preload wszystkich tekstur
-useGLTF.preload('/models/example2.glb');
+// Preload
+useGLTF.preload('/models/example3.glb');
 TEXTURES.forEach(tex => useTexture.preload(tex.value));
 HANDLE_TEXTURES.forEach(tex => useTexture.preload(tex.value));
 
@@ -733,23 +809,39 @@ const HsConfiguratorPage = () => {
   const [width, setWidth] = useState(BASE_WIDTH);
   const [height, setHeight] = useState(BASE_HEIGHT);
 
-  // Stany dla animacji
   const [isOpen, setIsOpen] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
   const [animationState, setAnimationState] = useState(null);
+  const [forceCloseAnimation, setForceCloseAnimation] = useState(false);
+
+  const [modelResetKey, setModelResetKey] = useState(0); // NEW – klucz do remountu HsModel
+
+  // Sprawdź czy wymiary są domyślne
+  const hasDefaultDimensions = width === BASE_WIDTH && height === BASE_HEIGHT;
 
   const handleAnimationToggle = () => {
-    if (isAnimating) return;
+    // Jeśli wymiary nie są domyślne – reset do bazowych i pełny reset modelu
+    if (!hasDefaultDimensions) {
+      setWidth(BASE_WIDTH);
+      setHeight(BASE_HEIGHT);
 
-    setIsAnimating(true);
+      // pełny reset stanu animacji po stronie konfiguratora
+      setIsOpen(false);
+      setIsAnimating(false);
+      setAnimationState(null);
+      setForceCloseAnimation(false);
 
-    if (!isOpen) {
-      // Rozpocznij otwieranie
-      setAnimationState('opening');
-    } else {
-      // Rozpocznij zamykanie
-      setAnimationState('closing');
+      // wymuś pełny remount HsModel, żeby wyczyścić lastAnimationState / mixer itd.
+      setModelResetKey((k) => k + 1); // NEW
+
+      return;
     }
+
+    // Normalna obsługa animacji tylko przy domyślnych wymiarach
+    if (isAnimating) return;
+    setIsAnimating(true);
+    if (!isOpen) setAnimationState('opening');
+    else setAnimationState('closing');
   };
 
   const handleAnimationComplete = () => {
@@ -757,6 +849,20 @@ const HsConfiguratorPage = () => {
     setIsOpen(!isOpen);
     setAnimationState(null);
   };
+
+  // Obsługa zmiany wymiarów – gdy w trakcie animacji zmienisz wymiary, wymuś zamknięcie
+  useEffect(() => {
+    if (!hasDefaultDimensions) {
+      if (isOpen || isAnimating) {
+        setForceCloseAnimation(true);
+        setIsOpen(false);
+        setIsAnimating(false);
+        setAnimationState(null);
+
+        setTimeout(() => setForceCloseAnimation(false), 100);
+      }
+    }
+  }, [width, height, hasDefaultDimensions, isOpen, isAnimating]);
 
   return (
     <Page
@@ -767,7 +873,9 @@ const HsConfiguratorPage = () => {
         <ProductHeader>
           {t('hsConfigurator.header', 'Konfigurator HS')}
         </ProductHeader>
-        <ProductHeaderSubtitle>{t('hsConfigurator.subtitle', 'Stwórz swoje wymarzone okno przesuwne')}</ProductHeaderSubtitle>
+        <ProductHeaderSubtitle>
+          {t('hsConfigurator.subtitle', 'Stwórz swoje wymarzone okno przesuwne')}
+        </ProductHeaderSubtitle>
       </HeaderWrap>
       <ConfiguratorContainer>
         <ControlPanel>
@@ -816,7 +924,7 @@ const HsConfiguratorPage = () => {
             </ControlGroup>
 
             <ControlGroup>
-              <Label>Próg:</Label>
+              <Label>Kolor progu:</Label>
               <Select
                 value={selectedThreshold}
                 onChange={(e) => setSelectedThreshold(e.target.value)}
@@ -866,34 +974,46 @@ const HsConfiguratorPage = () => {
 
         <ViewerWrap>
           <PreviewLabel>PODGLĄD</PreviewLabel>
+          {!hasDefaultDimensions && (
+            <DimensionWarning>
+              Animacja dostępna tylko przy domyślnych wymiarach
+            </DimensionWarning>
+          )}
           <AnimationButton
             onClick={handleAnimationToggle}
             disabled={isAnimating}
+            isReset={!hasDefaultDimensions}
           >
-            {isOpen ? 'ZAMKNIJ' : 'OTWÓRZ'}
+            {!hasDefaultDimensions ? 'RESETUJ WYMIARY' : (isOpen ? 'ZAMKNIJ' : 'OTWÓRZ')}
           </AnimationButton>
           <Canvas
             camera={{ position: [3, 2, 4], fov: 45 }}
             gl={{
-              logarithmicDepthBuffer: true,  // Poprawia precyzję depth buffer
-              antialias: true
+              logarithmicDepthBuffer: true,
+              antialias: true,
+              toneMapping: THREE.ACESFilmicToneMapping,
+              toneMappingExposure: 1.2
             }}
           >
             <Suspense fallback={null}>
               <color attach="background" args={['#fffefe']} />
-              <ambientLight intensity={0.6} />
-              <directionalLight position={[5, 5, 8]} intensity={1} />
+              <ambientLight intensity={0.8} />
+              <directionalLight position={[5, 5, 8]} intensity={1.2} castShadow />
+              <directionalLight position={[-5, 3, -8]} intensity={0.5} />
               <Environment preset="city" />
               <OrbitControls makeDefault enablePan enableZoom enableRotate />
               <Center>
                 <group ref={modelRef}>
                   <HsModel
+                    key={modelResetKey} // NEW – wymusza remount po resecie wymiarów
                     texturePath={selectedTexture}
                     handleTexturePath={selectedHandleTexture}
+                    thresholdType={selectedThreshold}
                     width={width}
                     height={height}
                     animationState={animationState}
                     onAnimationComplete={handleAnimationComplete}
+                    forceCloseAnimation={forceCloseAnimation}
                     onReady={() => { }}
                   />
                 </group>
