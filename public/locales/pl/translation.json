@@ -14,7 +14,7 @@
     "home": "Strona Główna",
     "realizations": "Realizacje",
     "about": "O Firmie",
-  "contact": "Kontakt"
+    "contact": "Kontakt"
   },
   "hsConfigurator": {
     "title": "Konfigurator HS"
@@ -41,7 +41,7 @@
   },
   "sections": {
     "products": "PRODUKTY",
-    "productsSubtitle": "Nowoczesność, styl, ekologia",
+    "productsSubtitle": "Poznaj nasze systemy okienne i drzwiowe",
     "realizations": "REALIZACJE",
     "whyUs": "DLACZEGO MY?",
     "companyPresentation": "PREZENTACJA FIRMY",
@@ -53,88 +53,20 @@
   },
   "products": {
     "windows": {
-      "name": "OKNA DREWNIANE",
-      "description": "Okna drewniane to klasyczne rozwiązanie łączące naturalne materiały, doskonałą izolację i elegancki wygląd, które nadaje wnętrzom niepowtarzalny charakter.",
-      "benefits": [
-        "Najwyższa jakość naturalnego drewna",
-        "Przyjazne dla środowiska i zdrowe dla mieszkańców",
-        "Wyjątkowy design i estetyka",
-        "Bogata paleta kolorów i wykończeń",
-        "Bardzo długa żywotność i trwałość konstrukcji",
-        "Doskonałe parametry izolacyjności termicznej i akustycznej"
-      ]
+      "name": "Okna",
+      "description": "Drewniane i drewniano-aluminiowe systemy okienne"
     },
-    "woodAlu": {
-      "name": "OKNA DREWNO‑ALU",
-      "description": "Okna drewniano‑aluminiowe łączą ciepło naturalnego drewna od strony wnętrza z trwałą, odporną na warunki atmosferyczne aluminiową okładziną od zewnątrz.",
-      "benefits": [
-        "Estetyka drewna wewnątrz i odporność aluminium na zewnątrz",
-        "Wysoka trwałość i niewielkie wymagania konserwacyjne",
-        "Doskonałe parametry termoizolacyjne i akustyczne",
-        "Szeroki wybór wykończeń i kolorów zewnętrznych",
-        "Możliwość dopasowania do nowoczesnych i klasycznych projektów",
-        "Odporność na warunki atmosferyczne i promieniowanie UV"
-      ]
+    "doors": {
+      "name": "Drzwi wewnętrzne",
+      "description": "Stylowe i funkcjonalne drzwi wewnętrzne"
     },
-    "exteriorDoors": {
-      "name": "DRZWI ZEWNĘTRZNE",
-      "description": "Drzwi zewnętrzne stanowią wizytówkę domu. Nasze drzwi łączą bezkompromisowe bezpieczeństwo, wysublimowaną estetykę i doskonałą izolację termiczną.",
-      "benefits": [
-        "Solidna konstrukcja gwarantująca bezpieczeństwo",
-        "Wysoka izolacyjność termiczna i akustyczna",
-        "Odporność na warunki atmosferyczne i wypaczenia",
-        "Szeroki wybór wzorów, od klasycznych po nowoczesne",
-        "Możliwość zastosowania nowoczesnych systemów kontroli dostępu",
-        "Indywidualne dopasowanie wymiarów i dodatków"
-      ]
+    "terraceDoors": {
+      "name": "Drzwi tarasowe",
+      "description": "Nowoczesne systemy przesuwne HS i PSK"
     },
-    "fireDoors": {
-      "name": "DRZWI PRZECIW‑POŻAROWE",
-      "description": "Drzwi przeciw‑pożarowe to rozwiązanie zapewniające ochronę i odporność ogniową, stosowane tam gdzie wymagane są odpowiednie klasy bezpieczeństwa i izolacji ogniowej.",
-      "benefits": [
-        "Klasyfikacja ogniowa potwierdzona certyfikatami",
-        "Zwiększone bezpieczeństwo przeciwpożarowe budynku",
-        "Solidna, ognioodporna konstrukcja",
-        "Możliwość wykonania z dodatkowymi funkcjami antywłamaniowymi",
-        "Zachowanie parametrów izolacyjnych przy dużych obciążeniach",
-        "Dostosowanie do wymogów projektowych i przepisów"
-      ]
-    },
-    "interiorDoors": {
-      "name": "DRZWI WEWNĘTRZNE",
-      "description": "Drzwi wewnętrzne to element wyposażenia wnętrza, który łączy funkcjonalność z elegancją. Nasze drzwi wewnętrzne doskonale komponują się z każdym stylem aranżacji.",
-      "benefits": [
-        "Elegancki design harmonizujący z wystrojem wnętrza",
-        "Szerokie możliwości personalizacji wzorów i kolorów",
-        "Doskonała izolacja akustyczna między pomieszczeniami",
-        "Trwała konstrukcja z wysokiej jakości materiałów",
-        "Precyzyjne wykonanie zapewniające płynne działanie",
-        "Bogaty wybór okuć i dodatków funkcjonalnych"
-      ]
-    },
-    "sliding": {
-      "name": "OKNA PRZESUWNE (HS)",
-      "description": "Systemy przesuwne HS to nowoczesne rozwiązanie pozwalające na tworzenie imponujących przeszkleń i płynne połączenie wnętrza z tarasem lub ogrodem.",
-      "benefits": [
-        "Maksymalne doświetlenie wnętrz dzięki dużym powierzchniom szyb",
-        "Oszczędność miejsca w porównaniu do tradycyjnych drzwi balkonowych",
-        "Łatwa i komfortowa obsługa nawet bardzo dużych skrzydeł",
-        "Nowoczesny design i możliwość tworzenia panoramicznych widoków",
-        "Wysoka szczelność i doskonałe parametry termoizolacyjne",
-        "Możliwość wykonania w systemie niskoprogowym dla pełnej wygody"
-      ]
-    },
-    "psk": {
-      "name": "PSK",
-      "description": "System PSK to praktyczne rozwiązanie przesuwno‑uchylne, łączące funkcję przewietrzania z komfortową obsługą dużych przeszkleń.",
-      "benefits": [
-        "Funkcja uchylna i przesuwna w jednym systemie",
-        "Komfortowa obsługa i bezpieczne przewietrzanie",
-        "Dobre parametry termoizolacyjne przy zachowaniu wygody",
-        "Możliwość zastosowania dużych skrzydeł",
-        "Estetyczne wykonanie i dopasowanie do elewacji",
-        "Opcje niskoprogowe dla ułatwienia korzystania z przestrzeni"
-      ]
+    "fireResistant": {
+      "name": "Okna i Drzwi przeciwpożarowe",
+      "description": "Bezpieczne rozwiązania przeciwpożarowe"
     }
   },
   "realizations": {

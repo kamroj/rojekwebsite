@@ -57,51 +57,27 @@ const HomePage = () => {
     [PRODUCT_TYPES.WINDOWS]: {
       id: PRODUCT_TYPES.WINDOWS,
       name: t('products.windows.name'),
-      videoSrc: VIDEO_SOURCES.WINDOWS,
-      posterSrc: '/images/posters/window_poster.jpg',
       description: t('products.windows.description'),
-      benefits: t('products.windows.benefits', { returnObjects: true })
+      videoSrc: VIDEO_SOURCES.WINDOWS,
     },
-    [PRODUCT_TYPES.WOOD_ALU]: {
-      id: PRODUCT_TYPES.WOOD_ALU,
-      name: t('products.woodAlu.name'),
-      videoSrc: VIDEO_SOURCES.WOOD_ALU,
-      posterSrc: '/images/posters/wood_alu_poster.jpg',
-      description: t('products.woodAlu.description'),
-      benefits: t('products.woodAlu.benefits', { returnObjects: true })
+    [PRODUCT_TYPES.DOORS]: {
+      id: PRODUCT_TYPES.DOORS,
+      name: t('products.doors.name'),
+      description: t('products.doors.description'),
+      videoSrc: VIDEO_SOURCES.DOORS,
     },
-    [PRODUCT_TYPES.EXTERIOR_DOORS]: {
-      id: PRODUCT_TYPES.EXTERIOR_DOORS,
-      name: t('products.exteriorDoors.name'),
-      videoSrc: VIDEO_SOURCES.EXTERIOR_DOORS,
-      posterSrc: '/images/posters/door_poster.jpg',
-      description: t('products.exteriorDoors.description'),
-      benefits: t('products.exteriorDoors.benefits', { returnObjects: true })
+    [PRODUCT_TYPES.TERRACE_DOORS]: {
+      id: PRODUCT_TYPES.TERRACE_DOORS,
+      name: t('products.terraceDoors.name'),
+      description: t('products.terraceDoors.description'),
+      videoSrc: VIDEO_SOURCES.TERRACE_DOORS,
     },
-    [PRODUCT_TYPES.FIRE_DOORS]: {
-      id: PRODUCT_TYPES.FIRE_DOORS,
-      name: t('products.fireDoors.name'),
-      videoSrc: VIDEO_SOURCES.FIRE_DOORS,
-      posterSrc: '/images/posters/fire_door_poster.jpg',
-      description: t('products.fireDoors.description'),
-      benefits: t('products.fireDoors.benefits', { returnObjects: true })
+    [PRODUCT_TYPES.FIRE_RESISTANT]: {
+      id: PRODUCT_TYPES.FIRE_RESISTANT,
+      name: t('products.fireResistant.name'),
+      description: t('products.fireResistant.description'),
+      videoSrc: VIDEO_SOURCES.FIRE_RESISTANT,
     },
-    [PRODUCT_TYPES.SLIDING]: {
-      id: PRODUCT_TYPES.SLIDING,
-      name: t('products.sliding.name'),
-      videoSrc: VIDEO_SOURCES.SLIDING,
-      posterSrc: '/images/posters/hs_poster.jpg',
-      description: t('products.sliding.description'),
-      benefits: t('products.sliding.benefits', { returnObjects: true })
-    },
-    [PRODUCT_TYPES.PSK]: {
-      id: PRODUCT_TYPES.PSK,
-      name: t('products.psk.name'),
-      videoSrc: VIDEO_SOURCES.PSK,
-      posterSrc: '/images/posters/psk_poster.jpg',
-      description: t('products.psk.description'),
-      benefits: t('products.psk.benefits', { returnObjects: true })
-    }
   };
 
   const realizationData = REALIZATION_IMAGES.map((image, index) => ({

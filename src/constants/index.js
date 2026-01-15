@@ -1,10 +1,8 @@
 export const PRODUCT_TYPES = {
-  WINDOWS: 'windows',
-  WOOD_ALU: 'woodAlu',
-  EXTERIOR_DOORS: 'exteriorDoors',
-  FIRE_DOORS: 'fireDoors',
-  SLIDING: 'sliding',
-  PSK: 'psk'
+  WINDOWS: 'okna',
+  DOORS: 'drzwi',
+  TERRACE_DOORS: 'drzwi-tarasowe',
+  FIRE_RESISTANT: 'okna-drzwi-przeciwpozarowe'
 };
 
 export const ROUTES = {
@@ -12,7 +10,8 @@ export const ROUTES = {
   REALIZATIONS: '/realizations',
   ABOUT: '/about',
   CONTACT: '/contact',
-  HS_CONFIGURATOR: '/konfigurator-hs'
+  HS_CONFIGURATOR: '/konfigurator-hs',
+  PRODUCTS: '/produkty'
 };
 
 export const BREAKPOINTS = {
@@ -50,11 +49,9 @@ export const COUNTRY_CODES = {
 
 export const VIDEO_SOURCES = {
   WINDOWS: '/videos/home/products/okno_drewniane.mp4',
-  WOOD_ALU: '/videos/home/products/okno_drewalu.mp4',
-  EXTERIOR_DOORS: '/videos/home/products/drzwi_drewniane.mp4',
-  FIRE_DOORS: '/videos/home/products/drzwi_ppoz.mp4',
-  SLIDING: '/videos/home/products/hs.mp4',
-  PSK: '/videos/home/products/psk.mp4',
+  DOORS: '/videos/home/products/drzwi_drewniane.mp4',
+  TERRACE_DOORS: '/videos/home/products/hs.mp4',
+  FIRE_RESISTANT: '/videos/home/products/drzwi_ppoz.mp4',
   BACKGROUND: '/videos/background4.mp4'
 };
 
@@ -90,7 +87,6 @@ export const WHY_US_ICONS = {
   WARRANTY: '/images/icons/cowork-icon.png'
 };
 
- // Company / contact data used in multiple places (footer, about page)
 export const COMPANY_ADDRESS = "Zakład produkcyjny, Kryspinów 399, przy autostradzie A4";
 
 export const MAP_SRC = `https://www.google.com/maps?q=Kryspinow+399&output=embed`;
