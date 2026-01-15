@@ -58,24 +58,29 @@ const HomePage = () => {
       id: PRODUCT_TYPES.WINDOWS,
       name: t('products.windows.name'),
       description: t('products.windows.description'),
+      backgroundSrc: '/images/aboutus/okno-kafelka.png',
       videoSrc: VIDEO_SOURCES.WINDOWS,
     },
     [PRODUCT_TYPES.DOORS]: {
       id: PRODUCT_TYPES.DOORS,
       name: t('products.doors.name'),
       description: t('products.doors.description'),
+      backgroundSrc: '/images/aboutus/drzwi-kafelka.png',
       videoSrc: VIDEO_SOURCES.DOORS,
     },
     [PRODUCT_TYPES.TERRACE_DOORS]: {
       id: PRODUCT_TYPES.TERRACE_DOORS,
       name: t('products.terraceDoors.name'),
       description: t('products.terraceDoors.description'),
+      backgroundSrc: '/images/aboutus/hs-kafelka.png',
+
       videoSrc: VIDEO_SOURCES.TERRACE_DOORS,
     },
     [PRODUCT_TYPES.FIRE_RESISTANT]: {
       id: PRODUCT_TYPES.FIRE_RESISTANT,
       name: t('products.fireResistant.name'),
       description: t('products.fireResistant.description'),
+      backgroundSrc: '/images/aboutus/drzwi-kafelka.png',
       videoSrc: VIDEO_SOURCES.FIRE_RESISTANT,
     },
   };
@@ -92,7 +97,7 @@ const HomePage = () => {
         productData={productData}
         initialProductId={PRODUCT_TYPES.WINDOWS}
       />
-      <Section 
+      <Section
         noMarginBottom
         dark
         customStyles={`

@@ -1,5 +1,5 @@
 // src/components/home/ProductSection.jsx
-import React, { useRef } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { IoIosArrowForward } from 'react-icons/io';
@@ -31,12 +31,10 @@ const TilesGrid = styled.div`
 `;
 
 const TileCard = styled(Link)`
-  border: 1px solid #003f0e4b;
   display: flex;
   flex-direction: column;
   background: #ffffff;
   border-radius: 12px;
-  padding: 2.4rem;
   text-decoration: none;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   box-shadow: 0px 7px 23px -9px rgba(0, 0, 0, 0.39);
@@ -44,7 +42,6 @@ const TileCard = styled(Link)`
   overflow: hidden;
   
   &:hover {
-    border: 1px solid #003f0e8d;
     transform: translateY(-4px);
     box-shadow: 0px 7px 23px -9px rgba(0, 0, 0, 0.651);
   }
@@ -55,7 +52,6 @@ const TileCard = styled(Link)`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    padding: 1rem;
     border-radius: 8px;
     box-shadow: 0px 6px 15px -9px rgba(0, 0, 0, 0.39);
 
@@ -65,16 +61,13 @@ const TileCard = styled(Link)`
   }
 `;
 
-const TileVideoWrapper = styled.div`
+const TileBackgroundWrapper = styled.div`
   width: 100%;
-  height: 320px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1.6rem;
-  border-radius: 8px;
-  overflow: hidden;
-  background-color: #ffffff;
+  height: 390px;
+  background-image: url(${({ $bgSrc }) => $bgSrc});
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     height: 280px;
@@ -82,30 +75,18 @@ const TileVideoWrapper = styled.div`
   
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     height: 140px;
-    margin-bottom: 1rem;
   }
-`;
-
-const TileBackground = styled.video`
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  background-color: #fff;
-  pointer-events: none;
-`;
-
-const TileVideo = styled.video`
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  background-color: #fff;
-  pointer-events: none;
 `;
 
 const TileContent = styled.div`
   display: flex;
   flex-direction: column;
   flex: 1;
+  padding: 0 2.4rem 2.4rem;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    padding: 0 1rem 1rem;
+  }
 `;
 
 const TileLine = styled.div`
@@ -155,10 +136,9 @@ const TileFooter = styled.div`
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  margin-top: 1.2rem;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    margin-top: 0.8rem;
+    margin-top: 0.5rem;
   }
 `;
 
@@ -172,55 +152,21 @@ const ArrowIcon = styled(IoIosArrowForward)`
   }
 `;
 
-// Osobny komponent dla pojedynczego kafelka z kontrolą wideo
+// Komponent dla pojedynczego kafelka
 const ProductTile = ({ id, product }) => {
-  const videoRef = useRef(null);
-
-  const handleLoadedData = () => {
-    if (videoRef.current) {
-      videoRef.current.currentTime = 0.01;
-    }
-  };
-
-  const handleMouseEnter = () => {
-    if (videoRef.current) {
-      videoRef.current.play().catch(() => { });
-    }
-  };
-
-  const handleMouseLeave = () => {
-    if (videoRef.current) {
-      videoRef.current.pause();
-    }
-  };
-
   return (
-    <TileCard
-      to={`/produkty/${id}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
-      <TileVideoWrapper>
-        <TileVideo
-          ref={videoRef}
-          src={product.videoSrc}
-          loop
-          muted
-          playsInline
-          preload="auto"
-          onLoadedData={handleLoadedData}
-        />
-      </TileVideoWrapper>
+    <TileCard to={`/produkty/${id}`}>
+      <TileBackgroundWrapper $bgSrc={product.backgroundSrc} />
       <TileContent>
         <TileTitle>{product.name}</TileTitle>
         <TileLine />
         <TileDescription>
           {product.description}
         </TileDescription>
+        <TileFooter>
+          <ArrowIcon />
+        </TileFooter>
       </TileContent>
-      <TileFooter>
-        <ArrowIcon />
-      </TileFooter>
     </TileCard>
   );
 };
