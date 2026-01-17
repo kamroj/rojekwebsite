@@ -32,7 +32,7 @@ const GlobalStyles = createGlobalStyle`
     line-height: 1.6;
     font-size: 1.6rem;
     color: ${({ theme }) => theme.colors.text};
-    background-color: #fffefe;
+    background-color: #fbfbfb;
     min-height: 100%;
     overflow-x: hidden;
     position: relative;

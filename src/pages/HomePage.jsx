@@ -43,7 +43,7 @@ export const ProductHeaderSubtitle = styled.div`
   font-size: 1.5rem;
   font-weight: 500;
   line-height: 1.6;
-  color: ${({ $blackBackground }) => ($blackBackground ? "#e6c619c7" : '#003708')};
+  color: ${({ $blackBackground }) => ($blackBackground ? "#259108c5" : '#015b0e')};
 
     @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
     font-size: 1.4rem;

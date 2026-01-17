@@ -49,13 +49,13 @@ const HeaderContentLayer = styled.div`
 `;
 
 const HeaderContent = styled.div`
-    border: 1px solid #e6c7197d;
+    border: 1px solid #016d197d;
     position: absolute;
     bottom: 18px;
     right: 22px;
     margin: 0;
     padding: 12px 24px;
-    background-color: ${({ contentBg }) => contentBg || '#e6c7190d'};
+    background-color: ${({ contentBg }) => contentBg || '#0136002b'};
     backdrop-filter: blur(3px);
     color: ${({ contentColor }) => contentColor || '#f8f9fa'};
     border-radius: 10px;

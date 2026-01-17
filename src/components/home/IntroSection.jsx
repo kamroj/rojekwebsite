@@ -172,7 +172,7 @@ const DynamicText = styled.p`
 const CTAButton = styled(Link)`
   display: inline-block;
   background: transparent;
-  border: 1px solid #e6c7197d;
+  border: 1px solid #016d197d;
   color: ${({ theme }) => theme.colors.textLight};
   padding: 1rem 2.5rem;
   font-size: clamp(1.2rem, 2vw, 1.4rem);
@@ -184,8 +184,8 @@ const CTAButton = styled(Link)`
               border-color ${({ theme }) => theme.transitions.default};
 
   &:hover {
-    background-color: #e6c71939;
-    border-color: #e6c719a6;
+    background-color: #0241107a;
+    border-color: #028a207c;
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {

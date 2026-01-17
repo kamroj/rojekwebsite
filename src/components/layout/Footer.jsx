@@ -46,8 +46,8 @@ const ContactGroup = styled.div`
 
 const ContactRole = styled.div`
   font-size: 1.4rem;
-  color: ${({ theme }) => theme.colors.accent};
-  font-weight: 100;
+  color: #00c811;
+  font-weight: 300;
   margin-bottom: 1rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;

@@ -11,7 +11,8 @@ export const ROUTES = {
   ABOUT: '/about',
   CONTACT: '/contact',
   HS_CONFIGURATOR: '/konfigurator-hs',
-  PRODUCTS: '/produkty'
+  PRODUCTS: '/produkty',
+  PRODUCT_CATEGORY: '/produkty/:category'
 };
 
 export const BREAKPOINTS = {

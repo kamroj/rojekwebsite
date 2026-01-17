@@ -9,6 +9,7 @@ import AboutUsPage from '../pages/AboutUsPage';
 import ContactPage from '../pages/ContactPage';
 import HsConfiguratorPage from '../pages/HsConfiguratorPage';
 import { ROUTES } from '../constants';
+import ProductCategoryPage from '../pages/ProductCategoryPage';
 
 const NotFoundContainer = styled.div`
   padding: ${({ theme }) => theme.spacings.xlarge} ${({ theme }) => theme.spacings.medium};
@@ -99,7 +100,7 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
-        path: ROUTES.REALIZATIONS.slice(1), // Remove leading slash for child routes
+        path: ROUTES.REALIZATIONS.slice(1),
         element: <RealizationsPage2 />,
       },
       {
@@ -113,6 +114,10 @@ const router = createBrowserRouter([
       {
         path: ROUTES.HS_CONFIGURATOR.slice(1),
         element: <HsConfiguratorPage />,
+      },
+      {
+        path: 'produkty/:category',
+        element: <ProductCategoryPage />,
       },
       { 
         path: '*', 

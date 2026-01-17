@@ -53,7 +53,7 @@ const HeaderWrapper = styled.header`
     transition: color ${({ theme }) => theme.transitions.default};
 
     &:hover {
-      color: ${({ $isPastThreshold }) => ($isPastThreshold ? "#039b10" : "#e6c619")};
+      color: ${({ $isPastThreshold }) => ($isPastThreshold ? "#014d07" : "#028113")};
     }
   }
   
