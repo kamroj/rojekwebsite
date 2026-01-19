@@ -324,7 +324,7 @@ const SpecValue = styled.div`
 `;
 
 const SpecLabel = styled.div`
-  font-size: 1rem;
+  font-size: 1.2rem;
   color: #6b7280;
   line-height: 1.4;
 `;
@@ -356,7 +356,7 @@ const SectionTitle = styled.h2`
   font-weight: 400;
   color: #013613;
   margin: 0 0 3rem 0;
-  text-align: ${({ $center }) => $center ? 'center' : 'left'};
+  text-align: ${({ $center }) => $center ? 'center' : 'left'}; 
   
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     font-size: 2.2rem;
@@ -420,7 +420,7 @@ const FeatureItem = styled.div`
 `;
 
 const FeatureText = styled.p`
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   color: #4b5563;
   line-height: 1.6;
   margin: 0;
@@ -437,7 +437,7 @@ const FeatureText = styled.p`
 
 const ColorsSection = styled.div`
   padding: 5rem 0;
-  background: #f8faf8;
+  background: #f6f8f9;
   margin: 0 -4rem;
   padding-left: 4rem;
   padding-right: 4rem;
@@ -523,7 +523,7 @@ const ColorSquare = styled.div`
 `;
 
 const ColorSwatchRAL = styled.span`
-  font-size: 0.85rem;
+  font-size: 1rem;
   color: ${({ $active }) => $active ? '#1a5618' : '#6b7280'};
   font-weight: ${({ $active }) => $active ? '600' : '500'};
   letter-spacing: 0.3px;
@@ -586,13 +586,13 @@ const ColorPreviewName = styled.h3`
 `;
 
 const ColorPreviewRAL = styled.span`
-  font-size: 1.05rem;
+  font-size: 1.2rem;
   color: #1a5618;
   font-weight: 500;
 `;
 
 const ColorPreviewDescription = styled.p`
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   color: #6b7280;
   line-height: 1.7;
   margin: 1.25rem 0 0 0;
@@ -622,7 +622,7 @@ const AdvantageCard = styled.div`
   border-radius: 16px;
   padding: 2rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-  border: 1px solid #f0f0f0;
+  border: 1px solid #0d6b035e;
   transition: all 0.3s ease;
   
   &:hover {
@@ -655,7 +655,7 @@ const AdvantageTitle = styled.h3`
 `;
 
 const AdvantageDescription = styled.p`
-  font-size: 1.05rem;
+  font-size: 1.2rem;
   color: #6b7280;
   line-height: 1.6;
   margin: 0;
@@ -689,7 +689,7 @@ const CTATitle = styled.h2`
 `;
 
 const CTADescription = styled.p`
-  font-size: 1.15rem;
+  font-size: 1.4rem;
   color: #6b7280;
   margin: 0 0 2rem 0;
   line-height: 1.7;
@@ -1253,7 +1253,7 @@ const ProductDetailPage = () => {
         {/* Advantages Section */}
         {product.advantages.length > 0 && (
           <AdvantagesSection>
-            <SectionTitle $center>Dlaczego warto wybrać {product.name}?</SectionTitle>
+            <SectionTitle>Dlaczego warto wybrać {product.name}?</SectionTitle>
 
             <AdvantagesGrid>
               {product.advantages.map((advantage, index) => {
@@ -1280,10 +1280,10 @@ const ProductDetailPage = () => {
               Nasi eksperci pomogą Ci dobrać idealne rozwiązanie dla Twojego domu.
               Skontaktuj się z nami, aby uzyskać bezpłatną wycenę.
             </CTADescription>
-            <CTAButton to="/contact">
+            <PrimaryButton to="/contact">
               <FiPhone />
               Skontaktuj się z nami
-            </CTAButton>
+            </PrimaryButton>
             <CTANote>Odpowiadamy w ciągu 24 godzin</CTANote>
           </CTAInner>
         </CTASection>
