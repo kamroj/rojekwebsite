@@ -661,6 +661,132 @@ const AdvantageDescription = styled.p`
   margin: 0;
 `;
 
+// ============================================
+// SEKCJA GWARANCJI
+// ============================================
+
+const WarrantySection = styled.div`
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 3.5rem 4rem;
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+  border: 1px solid #0d6b035e;
+  margin-top: 2rem;
+  position: relative;
+  overflow: hidden;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
+    flex-direction: column;
+    gap: 2.5rem;
+    padding: 3rem 2.5rem;
+    text-align: center;
+  }
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    padding: 2.5rem 1.5rem;
+  }
+`;
+
+const WarrantyBadge = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  position: relative;
+`;
+
+const WarrantyImage = styled.img`
+  width: 350px;
+  height: auto;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    width: 250px;
+  }
+`;
+
+const WarrantyYears = styled.div`
+  font-size: 4.5rem;
+  font-weight: 700;
+  color: #013613;
+  line-height: 1;
+  margin-top: 0.5rem;
+  
+  span {
+    font-size: 2rem;
+    font-weight: 500;
+    display: block;
+    color: #1a5618;
+  }
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    font-size: 3.5rem;
+    
+    span {
+      font-size: 1.6rem;
+    }
+  }
+`;
+
+const WarrantyContent = styled.div`
+  flex: 1;
+`;
+
+const WarrantyTitle = styled.h3`
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #013613;
+  margin: 0 0 1rem 0;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    font-size: 1.5rem;
+  }
+`;
+
+const WarrantyText = styled.p`
+  font-size: 1.3rem;
+  color: #4b5563;
+  line-height: 1.8;
+  margin: 0;
+  
+  strong {
+    color: #013613;
+    font-weight: 600;
+  }
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    font-size: 1.2rem;
+  }
+`;
+
+const WarrantyHighlight = styled.div`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(135deg, #e8f5e8 0%, #d4ecd4 100%);
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+  
+  svg {
+    color: #1a5618;
+    font-size: 1.3rem;
+  }
+  
+  span {
+    font-size: 1.15rem;
+    color: #1a5618;
+    font-weight: 600;
+  }
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+  }
+`;
+
 // CTA Section
 const CTASection = styled.div`
   padding: 4rem 0;
@@ -1269,6 +1395,29 @@ const ProductDetailPage = () => {
                 );
               })}
             </AdvantagesGrid>
+
+            <WarrantySection>
+              <WarrantyBadge>
+                <WarrantyImage 
+                  src="/images/products/windows/gwarancja.png" 
+                  alt="Gwarancja" 
+                />
+              </WarrantyBadge>
+              
+              <WarrantyContent>
+                <WarrantyTitle>Pewność jakości na lata</WarrantyTitle>
+                <WarrantyText>
+                  Jesteśmy pewni jakości naszych produktów, dlatego w ciągu <strong>5 lat</strong> od 
+                  montażu możesz nam zgłosić jakikolwiek problem z wszystkimi elementami 
+                  naszej stolarki okiennej. Dodatkowo oferujemy <strong>10 lat gwarancji</strong> na 
+                  szczelność pakietów szybowych z ramką Warmatec.
+                </WarrantyText>
+                <WarrantyHighlight>
+                  <FiCheck />
+                  <span>Bezpłatny serwis gwarancyjny</span>
+                </WarrantyHighlight>
+              </WarrantyContent>
+            </WarrantySection>
           </AdvantagesSection>
         )}
 
