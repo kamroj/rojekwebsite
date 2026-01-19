@@ -12,7 +12,7 @@ export const ROUTES = {
   CONTACT: '/contact',
   HS_CONFIGURATOR: '/konfigurator-hs',
   PRODUCTS: '/produkty',
-  PRODUCT_CATEGORY: '/produkty/:category'
+  PRODUCT_CATEGORY: '/produkty/:category',
 };
 
 export const BREAKPOINTS = {

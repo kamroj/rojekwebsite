@@ -10,6 +10,7 @@ import ContactPage from '../pages/ContactPage';
 import HsConfiguratorPage from '../pages/HsConfiguratorPage';
 import { ROUTES } from '../constants';
 import ProductCategoryPage from '../pages/ProductCategoryPage';
+import ProductDetailPage from '../pages/ProductDetailPage';
 
 const NotFoundContainer = styled.div`
   padding: ${({ theme }) => theme.spacings.xlarge} ${({ theme }) => theme.spacings.medium};
@@ -118,6 +119,10 @@ const router = createBrowserRouter([
       {
         path: 'produkty/:category',
         element: <ProductCategoryPage />,
+      },
+      {
+        path: '/produkty/:category/:productId',
+        element: <ProductDetailPage />,
       },
       { 
         path: '*', 

@@ -184,7 +184,7 @@ const ViewMoreButton = styled(Link)`
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background-color: #1a5618;
+  background: linear-gradient(135deg, #1a5618 0%, #2d7a2a 100%);
   color: #ffffff;
   padding: 1rem 1.8rem;
   border-radius: 6px;
@@ -195,7 +195,8 @@ const ViewMoreButton = styled(Link)`
   width: fit-content;
   
   &:hover {
-    background-color: #033408;
+    transform: translateY(-1px);
+    box-shadow: 0px 3px 10px 0px rgb(13 43 12 / 35%);
   }
   
   svg {
