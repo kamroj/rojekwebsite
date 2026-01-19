@@ -71,6 +71,7 @@ const HeaderInner = styled(MaxWidthContainer)`
   justify-content: space-between;
   align-items: center;
   position: relative;
+  max-width: 1400px;
 `;
 
 const LogoLink = styled(Link)`

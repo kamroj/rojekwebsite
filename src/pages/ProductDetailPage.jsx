@@ -7,7 +7,7 @@ import { IoIosArrowForward, IoIosArrowBack } from 'react-icons/io';
 import { RxDimensions } from 'react-icons/rx';
 import { TbTemperatureSun, TbVolume, TbWind } from 'react-icons/tb';
 import { RiContrastDrop2Line } from 'react-icons/ri';
-import { FiDownload, FiPhone, FiCheck } from 'react-icons/fi';
+import { FiDownload, FiPhone, FiCheck, FiExternalLink } from 'react-icons/fi';
 import { BsQuestionCircle } from 'react-icons/bs';
 import Page from '../components/common/Page';
 import Section from '../components/common/Section';
@@ -353,7 +353,7 @@ const FeaturesSection = styled.div`
 
 const SectionTitle = styled.h2`
   font-size: 2.8rem;
-  font-weight: 500;
+  font-weight: 400;
   color: #013613;
   margin: 0 0 3rem 0;
   text-align: ${({ $center }) => $center ? 'center' : 'left'};
@@ -419,23 +419,6 @@ const FeatureItem = styled.div`
   transition: all 0.3s ease;
 `;
 
-const FeatureCheckmark = styled.div`
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #1a5618 0%, #2d7a2a 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-top: 2px;
-  
-  svg {
-    font-size: 0.9rem;
-    color: #ffffff;
-  }
-`;
-
 const FeatureText = styled.p`
   font-size: 1.15rem;
   color: #4b5563;
@@ -448,7 +431,10 @@ const FeatureText = styled.p`
   }
 `;
 
-// Colors Section
+// ============================================
+// SEKCJA KOLORÓW
+// ============================================
+
 const ColorsSection = styled.div`
   padding: 5rem 0;
   background: #f8faf8;
@@ -463,10 +449,10 @@ const ColorsSection = styled.div`
   }
 `;
 
-const ColorsGrid = styled.div`
+const ColorsLayout = styled.div`
   display: grid;
-  grid-template-columns: 350px 1fr;
-  gap: 4rem;
+  grid-template-columns: 340px 1fr;
+  gap: 3rem;
   align-items: start;
   
   @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
@@ -475,44 +461,59 @@ const ColorsGrid = styled.div`
   }
 `;
 
-const ColorSwatches = styled.div`
+const ColorSwatchesContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+`;
+
+const ColorSwatchesLabel = styled.span`
+  font-size: 1.4rem;
+  color: #4b5563;
+  font-weight: 500;
+`;
+
+const ColorSwatchesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 1.5rem;
+  gap: 1.25rem 1rem;
   
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
+    grid-template-columns: repeat(3, 1fr);
   }
 `;
 
-const ColorSwatch = styled.button`
+const ColorSwatchButton = styled.button`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.6rem;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 0.5rem;
+  padding: 0.6rem;
   border-radius: 8px;
   transition: all 0.2s ease;
   
   &:hover {
-    background: #ffffff;
+    background: rgba(255, 255, 255, 0.8);
   }
 `;
 
-const ColorCircle = styled.div`
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
+const ColorSquare = styled.div`
+  width: 58px;
+  height: 58px;
+  border-radius: 6px;
   background: ${({ $color }) => $color};
   background-image: ${({ $image }) => $image ? `url(${$image})` : 'none'};
   background-size: cover;
   background-position: center;
-  border: 3px solid ${({ $active }) => $active ? '#1a5618' : 'transparent'};
-  box-shadow: ${({ $active }) => $active ? '0 0 0 3px rgba(26, 86, 24, 0.2)' : '0 2px 8px rgba(0, 0, 0, 0.1)'};
+  border: 2px solid ${({ $active }) => $active ? '#1a5618' : 'rgba(0, 0, 0, 0.1)'};
+  box-shadow: ${({ $active }) => 
+    $active 
+      ? '0 0 0 2px rgba(26, 86, 24, 0.2)' 
+      : '0 2px 6px rgba(0, 0, 0, 0.08)'
+  };
   transition: all 0.2s ease;
   
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
@@ -521,32 +522,80 @@ const ColorCircle = styled.div`
   }
 `;
 
-const ColorName = styled.span`
-  font-size: 0.9rem;
+const ColorSwatchRAL = styled.span`
+  font-size: 0.85rem;
   color: ${({ $active }) => $active ? '#1a5618' : '#6b7280'};
-  font-weight: ${({ $active }) => $active ? '600' : '400'};
-  text-align: center;
-  line-height: 1.3;
+  font-weight: ${({ $active }) => $active ? '600' : '500'};
+  letter-spacing: 0.3px;
+  transition: color 0.2s ease;
 `;
 
-const ColorPreview = styled.div`
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  background: #ffffff;
-  padding: 2rem;
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+const FullPaletteLink = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.4rem;
+  color: #1a5618;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  margin-top: 0.5rem;
   
-  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    max-width: 500px;
-    margin: 0 auto;
+  &:hover {
+    color: #2d7a2a;
+    text-decoration: underline;
+  }
+  
+  svg {
+    font-size: 1rem;
   }
 `;
 
-const PreviewImage = styled.img`
-  width: 100%;
-  height: auto;
-  display: block;
+const ColorPreviewContainer = styled.div`
+  background: #ffffff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid #e5e7eb;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
+    max-width: 550px;
+    margin: 0 auto;
+    width: 100%;
+  }
+`;
+
+const ColorPreviewMain = styled.div`
+  aspect-ratio: 16/9;
+  background: ${({ $color }) => $color};
+  background-image: ${({ $image }) => $image ? `url(${$image})` : 'none'};
+  background-size: cover;
+  background-position: center;
+`;
+
+const ColorPreviewInfo = styled.div`
+  padding: 1.75rem 2rem;
+  border-top: 1px solid #e5e7eb;
+`;
+
+const ColorPreviewName = styled.h3`
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #013613;
+  margin: 0 0 0.35rem 0;
+`;
+
+const ColorPreviewRAL = styled.span`
+  font-size: 1.05rem;
+  color: #1a5618;
+  font-weight: 500;
+`;
+
+const ColorPreviewDescription = styled.p`
+  font-size: 1.1rem;
+  color: #6b7280;
+  line-height: 1.7;
+  margin: 1.25rem 0 0 0;
 `;
 
 // Advantages Section
@@ -737,20 +786,112 @@ const productsData = {
       }
     ],
     colors: [
-      { id: 'aluminium', name: 'Aluminium gebürstet', color: '#b8b8b8' },
-      { id: 'anthrazit', name: 'Anthrazitgrau seidenglatt II', color: '#2d2d2d' },
-      { id: 'antracyt', name: 'Antracyt quartz', color: '#3d3d3d' },
-      { id: 'beton', name: 'Beton', color: '#8a8a8a', image: '/images/colors/beton.jpg' },
-      { id: 'bialy', name: 'Biały', color: '#ffffff' },
-      { id: 'black-jet', name: 'Black Jet', color: '#1a1a1a' },
-      { id: 'coke', name: 'Coke semimatt', color: '#3d4a5c' },
-      { id: 'dab', name: 'Dąb bagienny', color: '#2f2520', image: '/images/colors/dab.jpg' },
-      { id: 'fenstergrau', name: 'Fenstergrau matt', color: '#6d7174' },
-      { id: 'graphen', name: 'Graphen', color: '#1f1f1f' },
-      { id: 'kitami', name: 'Kitami dark matt', color: '#2a2e32', image: '/images/colors/kitami.jpg' },
-      { id: 'onyx', name: 'Onyx semimatt', color: '#4a4a4a' },
+      { 
+        id: 'ral9016', 
+        name: 'Biały Ruchu Drogowego', 
+        ral: 'RAL 9016',
+        color: '#F7F9F4',
+        description: 'Klasyczna biel w wykończeniu matowym. Idealnie komponuje się z nowoczesnymi wnętrzami, dodając im lekkości i świeżości.'
+      },
+      { 
+        id: 'ral7016', 
+        name: 'Szary Antracytowy', 
+        ral: 'RAL 7016',
+        color: '#383E42',
+        description: 'Głęboki odcień antracytu z satynowym wykończeniem. Elegancki i nowoczesny, doskonale podkreśla minimalistyczny charakter budynku.'
+      },
+      { 
+        id: 'ral9005', 
+        name: 'Czarny Głęboki', 
+        ral: 'RAL 9005',
+        color: '#0E0E10',
+        description: 'Intensywna czerń o głębokim, satynowym połysku. Nadaje oknom luksusowy, wyrazisty charakter.'
+      },
+      { 
+        id: 'ral7035', 
+        name: 'Szary Jasny', 
+        ral: 'RAL 7035',
+        color: '#C5C7C4',
+        description: 'Delikatny, jasny odcień szarości. Neutralny ton, który doskonale harmonizuje z różnymi stylami architektonicznymi.'
+      },
+      { 
+        id: 'ral8017', 
+        name: 'Brąz Czekoladowy', 
+        ral: 'RAL 8017',
+        color: '#3E2B23',
+        description: 'Ciepły, głęboki odcień brązu przypominający czekoladę. Nadaje ciepła i przytulności.'
+      },
+      { 
+        id: 'ral6005', 
+        name: 'Zielony Mchowy', 
+        ral: 'RAL 6005',
+        color: '#0F4336',
+        description: 'Głęboka, butelkowa zieleń o eleganckim charakterze. Nawiązuje do natury i doskonale komponuje się z otoczeniem.'
+      },
+      { 
+        id: 'ral7021', 
+        name: 'Szary Czarny', 
+        ral: 'RAL 7021',
+        color: '#2F3234',
+        description: 'Ciemny odcień grafitu z subtelnym niebieskim podtonem. Nowoczesny i wyrafinowany.'
+      },
+      { 
+        id: 'ral1015', 
+        name: 'Kość Słoniowa Jasna', 
+        ral: 'RAL 1015',
+        color: '#E6D2B5',
+        description: 'Ciepły, kremowy odcień kości słoniowej. Elegancka alternatywa dla czystej bieli.'
+      },
+      { 
+        id: 'ral9006', 
+        name: 'Aluminium Białe', 
+        ral: 'RAL 9006',
+        color: '#A1A1A0',
+        description: 'Metaliczny odcień aluminium z charakterystycznym połyskiem. Nowoczesny i industrialny.'
+      },
+      { 
+        id: 'ral7039', 
+        name: 'Szary Kwarcowy', 
+        ral: 'RAL 7039',
+        color: '#6B665E',
+        description: 'Ciepły odcień szarości z brązowym podtonem. Naturalny i stonowany, harmonijnie łączy się z drewnem.'
+      },
+      { 
+        id: 'ral8019', 
+        name: 'Brąz Szary', 
+        ral: 'RAL 8019',
+        color: '#3D3635',
+        description: 'Ciemny brąz z szarym podtonem. Elegancki i dyskretny, idealny do klasycznych aranżacji.'
+      },
+      { 
+        id: 'ral5011', 
+        name: 'Granatowy Stalowy', 
+        ral: 'RAL 5011',
+        color: '#1A2B3C',
+        description: 'Głęboki odcień granatu ze stalowym połyskiem. Elegancki i wyrafinowany.'
+      },
+      { 
+        id: 'ral3005', 
+        name: 'Czerwień Winna', 
+        ral: 'RAL 3005',
+        color: '#5E2028',
+        description: 'Głęboka, burgundowa czerwień. Nadaje charakter i wyróżnia budynek spośród innych.'
+      },
+      { 
+        id: 'ral9001', 
+        name: 'Biały Kremowy', 
+        ral: 'RAL 9001',
+        color: '#FFFDF4',
+        description: 'Delikatna, ciepła biel z kremowym podtonem. Stonowana i elegancka alternatywa dla czystej bieli.'
+      },
+      { 
+        id: 'ral7022', 
+        name: 'Szary Umbra', 
+        ral: 'RAL 7022',
+        color: '#4B4D46',
+        description: 'Ciepły, ziemisty odcień szarości. Naturalny i uniwersalny, pasuje do różnych stylów.'
+      },
     ],
-    colorPreviewImage: '/images/products/windows/pava-color-preview.png',
     advantages: [
       {
         icon: TbTemperatureSun,
@@ -803,10 +944,49 @@ const productsData = {
       { text: 'Możliwość zastosowania <strong>pakietów szybowych do 52 mm</strong>.' }
     ],
     colors: [
-      { id: 'bialy', name: 'Biały', color: '#ffffff' },
-      { id: 'antracyt', name: 'Antracyt', color: '#3d3d3d' },
+      { 
+        id: 'ral9016', 
+        name: 'Biały', 
+        ral: 'RAL 9016',
+        color: '#F7F9F4',
+        description: 'Klasyczna biel w wykończeniu matowym.'
+      },
+      { 
+        id: 'ral7016', 
+        name: 'Antracyt', 
+        ral: 'RAL 7016',
+        color: '#383E42',
+        description: 'Głęboki odcień antracytu z satynowym wykończeniem.'
+      },
+      { 
+        id: 'ral9005', 
+        name: 'Czarny Głęboki', 
+        ral: 'RAL 9005',
+        color: '#0E0E10',
+        description: 'Intensywna czerń o głębokim połysku.'
+      },
+      { 
+        id: 'ral7035', 
+        name: 'Szary Jasny', 
+        ral: 'RAL 7035',
+        color: '#C5C7C4',
+        description: 'Delikatny, jasny odcień szarości.'
+      },
+      { 
+        id: 'ral8017', 
+        name: 'Brąz Czekoladowy', 
+        ral: 'RAL 8017',
+        color: '#3E2B23',
+        description: 'Ciepły, głęboki odcień brązu.'
+      },
+      { 
+        id: 'ral6005', 
+        name: 'Zielony Mchowy', 
+        ral: 'RAL 6005',
+        color: '#0F4336',
+        description: 'Głęboka, butelkowa zieleń.'
+      },
     ],
-    colorPreviewImage: '/images/products/windows/pilar.png',
     advantages: []
   },
   prismatic: {
@@ -825,9 +1005,28 @@ const productsData = {
     },
     features: [],
     colors: [
-      { id: 'bialy', name: 'Biały', color: '#ffffff' },
+      { 
+        id: 'ral9016', 
+        name: 'Biały', 
+        ral: 'RAL 9016',
+        color: '#F7F9F4',
+        description: 'Klasyczna biel w wykończeniu matowym.'
+      },
+      { 
+        id: 'ral7016', 
+        name: 'Antracyt', 
+        ral: 'RAL 7016',
+        color: '#383E42',
+        description: 'Głęboki odcień antracytu.'
+      },
+      { 
+        id: 'ral9005', 
+        name: 'Czarny', 
+        ral: 'RAL 9005',
+        color: '#0E0E10',
+        description: 'Intensywna czerń.'
+      },
     ],
-    colorPreviewImage: '/images/products/windows/pilar.png',
     advantages: []
   }
 };
@@ -868,6 +1067,8 @@ const ProductDetailPage = () => {
       prev === 0 ? product.images.length - 1 : prev - 1
     );
   };
+
+  const currentColor = product.colors[selectedColor];
 
   return (
     <Page
@@ -993,34 +1194,57 @@ const ProductDetailPage = () => {
       {product.colors.length > 0 && (
         <ColorsSection>
           <Section>
-            <SectionTitle>Kolory {product.name}</SectionTitle>
+            <SectionTitle>Kolorystyka RAL</SectionTitle>
 
-            <ColorsGrid>
-              <ColorSwatches>
-                {product.colors.map((color, index) => (
-                  <ColorSwatch
-                    key={color.id}
-                    onClick={() => setSelectedColor(index)}
-                  >
-                    <ColorCircle
-                      $color={color.color}
-                      $image={color.image}
-                      $active={selectedColor === index}
-                    />
-                    <ColorName $active={selectedColor === index}>
-                      {color.name}
-                    </ColorName>
-                  </ColorSwatch>
-                ))}
-              </ColorSwatches>
+            <ColorsLayout>
+              {/* Lewa strona - próbki kolorów */}
+              <ColorSwatchesContainer>
+                <ColorSwatchesLabel>Najczęściej wybierane kolory</ColorSwatchesLabel>
+                
+                <ColorSwatchesGrid>
+                  {product.colors.map((color, index) => (
+                    <ColorSwatchButton
+                      key={color.id}
+                      onClick={() => setSelectedColor(index)}
+                    >
+                      <ColorSquare
+                        $color={color.color}
+                        $image={color.image}
+                        $active={selectedColor === index}
+                      />
+                      <ColorSwatchRAL $active={selectedColor === index}>
+                        {color.ral}
+                      </ColorSwatchRAL>
+                    </ColorSwatchButton>
+                  ))}
+                </ColorSwatchesGrid>
 
-              <ColorPreview>
-                <PreviewImage
-                  src={product.colorPreviewImage}
-                  alt={`${product.name} - ${product.colors[selectedColor]?.name}`}
+                <FullPaletteLink 
+                  href="https://www.ralcolorchart.com/" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                >
+                  Pełna paleta kolorów RAL
+                  <FiExternalLink />
+                </FullPaletteLink>
+              </ColorSwatchesContainer>
+
+              {/* Prawa strona - podgląd koloru */}
+              <ColorPreviewContainer>
+                <ColorPreviewMain 
+                  $color={currentColor?.color} 
+                  $image={currentColor?.image} 
                 />
-              </ColorPreview>
-            </ColorsGrid>
+                
+                <ColorPreviewInfo>
+                  <ColorPreviewName>{currentColor?.name}</ColorPreviewName>
+                  <ColorPreviewRAL>{currentColor?.ral}</ColorPreviewRAL>
+                  <ColorPreviewDescription>
+                    {currentColor?.description}
+                  </ColorPreviewDescription>
+                </ColorPreviewInfo>
+              </ColorPreviewContainer>
+            </ColorsLayout>
           </Section>
         </ColorsSection>
       )}
