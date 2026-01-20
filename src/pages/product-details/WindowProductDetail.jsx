@@ -2,13 +2,12 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
-import { FiDownload, FiPhone, FiCheck, FiExternalLink } from 'react-icons/fi';
+import { FiDownload, FiPhone, FiCheck, FiExternalLink, FiPlus, FiMinus } from 'react-icons/fi';
 import { BsQuestionCircle } from 'react-icons/bs';
 import Page from '../../components/common/Page';
 import Section from '../../components/common/Section';
 
 // --- Styled Components ---
-
 
 // Hero Section
 const HeroSection = styled.div`
@@ -565,7 +564,7 @@ const ColorPreviewDescription = styled.p`
 
 // Advantages Section
 const AdvantagesSection = styled.div`
-  padding: 5rem 0;
+  padding: 5rem 0 3rem 0;
 `;
 
 const AdvantagesGrid = styled.div`
@@ -593,22 +592,6 @@ const AdvantageCard = styled.div`
   &:hover {
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
     transform: translateY(-5px);
-  }
-`;
-
-const AdvantageIcon = styled.div`
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #e8f5e8 0%, #d4ecd4 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-  
-  svg {
-    font-size: 1.8rem;
-    color: #1a5618;
   }
 `;
 
@@ -729,6 +712,190 @@ const WarrantyHighlight = styled.div`
   }
 `;
 
+// ============================================
+// FAQ SECTION
+// ============================================
+
+const FAQSection = styled.div`
+  margin: 0 -4rem;
+  padding-left: 4rem;
+  padding-right: 4rem;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
+    margin: 0 -1.5rem;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+`;
+
+const FAQHeader = styled.div`
+  margin-bottom: 2.5rem;
+`;
+
+const FAQTitleWrapper = styled.h2`
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: #374151;
+  margin: 0 0 0.5rem 0;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    font-size: 2rem;
+  }
+`;
+
+const FAQProductName = styled.span`
+  color: #013613;
+  font-weight: 500;
+`;
+
+const FAQSubtitle = styled.p`
+  font-size: 1.3rem;
+  color: #6b7280;
+  margin: 0;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    font-size: 1.15rem;
+  }
+`;
+
+const FAQContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+`;
+
+const FAQItem = styled.div`
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+  border: 1px solid ${({ $isOpen }) => $isOpen ? '#1a5618' : '#e5e7eb'};
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: ${({ $isOpen }) => $isOpen ? '#1a5618' : '#1a561850'};
+    box-shadow: 0 4px 20px rgba(26, 86, 24, 0.08);
+  }
+`;
+
+const FAQQuestion = styled.button`
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.3s ease;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    padding: 1.25rem 1.5rem;
+    gap: 1rem;
+  }
+`;
+
+const FAQQuestionContent = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  flex: 1;
+`;
+
+const FAQNumber = styled.span`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: ${({ $isOpen }) => $isOpen 
+    ? 'linear-gradient(135deg, #1a5618 0%, #2d7a2a 100%)' 
+    : 'linear-gradient(135deg, #e8f5e8 0%, #d4ecd4 100%)'};
+  color: ${({ $isOpen }) => $isOpen ? '#ffffff' : '#1a5618'};
+  font-size: 1.1rem;
+  font-weight: 600;
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    width: 32px;
+    height: 32px;
+    font-size: 1rem;
+  }
+`;
+
+const FAQQuestionText = styled.span`
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: ${({ $isOpen }) => $isOpen ? '#013613' : '#374151'};
+  line-height: 1.4;
+  transition: color 0.3s ease;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    font-size: 1.2rem;
+  }
+`;
+
+const FAQIconWrapper = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: ${({ $isOpen }) => $isOpen 
+    ? 'linear-gradient(135deg, #1a5618 0%, #2d7a2a 100%)' 
+    : '#f3f4f6'};
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+  transform: ${({ $isOpen }) => $isOpen ? 'rotate(180deg)' : 'rotate(0)'};
+  
+  svg {
+    font-size: 1.3rem;
+    color: ${({ $isOpen }) => $isOpen ? '#ffffff' : '#6b7280'};
+    transition: color 0.3s ease;
+  }
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    width: 36px;
+    height: 36px;
+    
+    svg {
+      font-size: 1.1rem;
+    }
+  }
+`;
+
+const FAQAnswerWrapper = styled.div`
+  max-height: ${({ $isOpen }) => $isOpen ? '500px' : '0'};
+  overflow: hidden;
+  transition: max-height 0.4s ease;
+`;
+
+const FAQAnswer = styled.div`
+  padding: 0 2rem 1.5rem 5.5rem;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    padding: 0 1.5rem 1.25rem 1.5rem;
+  }
+`;
+
+const FAQAnswerText = styled.p`
+  font-size: 1.2rem;
+  color: #000000;
+  line-height: 1.8;
+  margin: 0;
+  padding-top: 0.5rem;
+  border-top: 1px dashed #e5e7eb;
+  
+  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
+    font-size: 1.1rem;
+  }
+`;
+
 // CTA Section
 const CTASection = styled.div`
   padding: 4rem 0;
@@ -770,9 +937,38 @@ const CTANote = styled.span`
   color: #9ca3af;
 `;
 
+// FAQ Data
+const faqData = [
+  {
+    question: "Jak często należy konserwować okna PVC?",
+    answer: "Okna PVC wymagają minimalnej konserwacji. Zalecamy czyszczenie ram i szyb co najmniej 2-3 razy w roku przy użyciu łagodnych środków czyszczących. Okucia warto smarować specjalnym olejem raz w roku, najlepiej przed sezonem zimowym. Uszczelki można przecierać preparatem silikonowym, co przedłuży ich żywotność."
+  },
+  {
+    question: "Jaki współczynnik przenikania ciepła Uw jest najlepszy?",
+    answer: "Im niższy współczynnik Uw, tym lepsza izolacja termiczna okna. Dla domów energooszczędnych zalecamy okna z Uw poniżej 0,9 W/m²K. Standardowe okna mają Uw na poziomie 1,1-1,3 W/m²K. Nasze okna premium osiągają nawet Uw = 0,7 W/m²K, co przekłada się na znaczne oszczędności w ogrzewaniu."
+  },
+  {
+    question: "Czy oferujecie montaż okien i ile trwa realizacja?",
+    answer: "Tak, oferujemy profesjonalny montaż wykonywany przez certyfikowanych monterów. Czas realizacji zamówienia wynosi zazwyczaj 4-6 tygodni od momentu pomiaru. Sam montaż standardowego okna trwa około 2-3 godzin. Oferujemy również demontaż starych okien i wywóz gruzu w cenie usługi."
+  },
+  {
+    question: "Czy mogę zamówić okna w niestandardowych wymiarach?",
+    answer: "Oczywiście! Specjalizujemy się w produkcji okien na wymiar. Możemy wykonać okna o nietypowych kształtach - łukowe, trójkątne, trapezowe czy okrągłe. Minimalny wymiar to 30x30 cm, a maksymalny zależy od typu okna i może sięgać nawet 300x280 cm dla okien przesuwnych."
+  },
+  {
+    question: "Jakie są różnice między oknami dwu- a trzyszybowymi?",
+    answer: "Okna trzyszybowe oferują lepszą izolację termiczną (Ug nawet 0,5 W/m²K vs 1,0 W/m²K dla dwuszybowych) i akustyczną. Są cięższe o około 30%, co wymaga mocniejszych okuć. Przy dzisiejszych cenach energii okna trzyszybowe zwracają się w ciągu 5-7 lat. Polecamy je szczególnie do domów energooszczędnych i budynków przy ruchliwych ulicach."
+  },
+  {
+    question: "Jak długo trwa gwarancja na okna?",
+    answer: "Udzielamy 5-letniej gwarancji na wszystkie elementy stolarki okiennej, obejmującej profile, okucia i uszczelki. Dodatkowo oferujemy rozszerzoną 10-letnią gwarancję na szczelność pakietów szybowych z ciepłą ramką. Gwarancja obejmuje bezpłatne naprawy i wymianę wadliwych elementów."
+  }
+];
+
 const WindowProductDetail = ({ product, category }) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
+  const [openFAQIndex, setOpenFAQIndex] = useState(null);
 
   const nextImage = () => {
     setCurrentImageIndex((prev) =>
@@ -784,6 +980,10 @@ const WindowProductDetail = ({ product, category }) => {
     setCurrentImageIndex((prev) =>
       prev === 0 ? product.images.length - 1 : prev - 1
     );
+  };
+
+  const toggleFAQ = (index) => {
+    setOpenFAQIndex(openFAQIndex === index ? null : index);
   };
 
   const currentColor = product.colors[selectedColor];
@@ -973,18 +1173,12 @@ const WindowProductDetail = ({ product, category }) => {
             <SectionTitle>Dlaczego warto wybrać {product.name}?</SectionTitle>
 
             <AdvantagesGrid>
-              {product.advantages.map((advantage, index) => {
-                const IconComponent = advantage.icon;
-                return (
-                  <AdvantageCard key={index}>
-                    <AdvantageIcon>
-                      <IconComponent />
-                    </AdvantageIcon>
-                    <AdvantageTitle>{advantage.title}</AdvantageTitle>
-                    <AdvantageDescription>{advantage.description}</AdvantageDescription>
-                  </AdvantageCard>
-                );
-              })}
+              {product.advantages.map((advantage, index) => (
+                <AdvantageCard key={index}>
+                  <AdvantageTitle>{advantage.title}</AdvantageTitle>
+                  <AdvantageDescription>{advantage.description}</AdvantageDescription>
+                </AdvantageCard>
+              ))}
             </AdvantagesGrid>
 
             <WarrantySection>
@@ -1011,7 +1205,49 @@ const WindowProductDetail = ({ product, category }) => {
             </WarrantySection>
           </AdvantagesSection>
         )}
+      </Section>
 
+      {/* FAQ Section */}
+      <FAQSection>
+        <Section>
+          <FAQHeader>
+            <FAQTitleWrapper>
+              <FAQProductName>{product.name}</FAQProductName> – Najczęściej zadawane pytania
+            </FAQTitleWrapper>
+            <FAQSubtitle>
+              Znajdź odpowiedzi na najważniejsze pytania dotyczące naszego produktu
+            </FAQSubtitle>
+          </FAQHeader>
+
+          <FAQContainer>
+            {faqData.map((faq, index) => (
+              <FAQItem key={index} $isOpen={openFAQIndex === index}>
+                <FAQQuestion onClick={() => toggleFAQ(index)}>
+                  <FAQQuestionContent>
+                    <FAQNumber $isOpen={openFAQIndex === index}>
+                      {String(index + 1).padStart(2, '0')}
+                    </FAQNumber>
+                    <FAQQuestionText $isOpen={openFAQIndex === index}>
+                      {faq.question}
+                    </FAQQuestionText>
+                  </FAQQuestionContent>
+                  <FAQIconWrapper $isOpen={openFAQIndex === index}>
+                    {openFAQIndex === index ? <FiMinus /> : <FiPlus />}
+                  </FAQIconWrapper>
+                </FAQQuestion>
+                
+                <FAQAnswerWrapper $isOpen={openFAQIndex === index}>
+                  <FAQAnswer>
+                    <FAQAnswerText>{faq.answer}</FAQAnswerText>
+                  </FAQAnswer>
+                </FAQAnswerWrapper>
+              </FAQItem>
+            ))}
+          </FAQContainer>
+        </Section>
+      </FAQSection>
+
+      <Section>
         {/* CTA Section */}
         <CTASection>
           <CTAInner>
