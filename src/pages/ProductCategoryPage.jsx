@@ -10,6 +10,7 @@ import { RiContrastDrop2Line } from 'react-icons/ri';
 import Page from '../components/common/Page';
 import Section from '../components/common/Section';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomePage';
+import { productCategories } from '../data/products';
 
 // --- Styled Components ---
 
@@ -262,87 +263,12 @@ const NotFoundText = styled.p`
   padding: 4rem 0;
 `;
 
-// --- Dane produktów ---
-const categoriesData = {
-  okna: {
-    title: 'Produkty okienne',
-    subtitle: 'Poznaj nasze nowoczesne systemy okienne.',
-    pageTitle: 'Okna',
-    headerImage: '/images/hs/top.jpg',
-    products: [
-      {
-        id: 'pava',
-        name: 'PAVA',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-        specs: {
-          chambers: '70 mm',
-          chambersLabel: 'grubość profilu',
-          uw: 'Uw < 0,73',
-          uwUnit: 'W/m²K',
-          pressure: 'do 1500 Pa',
-          pressureLabel: 'wodoszczelność'
-        },
-        image: '/images/products/windows/pilar.png'
-      },
-      {
-        id: 'pilar',
-        name: 'PILAR',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.',
-        specs: {
-          chambers: '80 mm',
-          chambersLabel: 'grubość profilu',
-          uw: 'Uw < 0,79',
-          uwUnit: 'W/m²K',
-          pressure: 'do 1500 Pa',
-          pressureLabel: 'wodoszczelność'
-        },
-        image: '/images/products/windows/pilar.png'
-      },
-      {
-        id: 'prismatic',
-        name: 'PRISMATIC',
-        description: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. ',
-        specs: {
-          chambers: '70 mm',
-          chambersLabel: 'grubość profilu',
-          uw: 'Uw < 0,79',
-          uwUnit: 'W/m²K',
-          pressure: 'do 1500 Pa',
-          pressureLabel: 'wodoszczelność'
-        },
-        image: '/images/products/windows/pilar.png'
-      }
-    ]
-  },
-  drzwi: {
-    title: 'Produkty drzwiowe',
-    subtitle: 'Poznaj nasze nowoczesne systemy drzwiowe.',
-    pageTitle: 'Drzwi',
-    headerImage: '/images/products/drzwi-header.jpg',
-    products: []
-  },
-  bramy: {
-    title: 'Bramy garażowe',
-    subtitle: 'Poznaj nasze nowoczesne systemy bram garażowych.',
-    pageTitle: 'Bramy',
-    headerImage: '/images/products/bramy-header.jpg',
-    products: []
-  },
-  rolety: {
-    title: 'Rolety i żaluzje',
-    subtitle: 'Poznaj nasze nowoczesne systemy rolet i żaluzji.',
-    pageTitle: 'Rolety',
-    headerImage: '/images/products/rolety-header.jpg',
-    products: []
-  }
-};
-
 // --- Component ---
 const ProductCategoryPage = () => {
   const { t } = useTranslation();
   const { category } = useParams();
 
-  const categoryInfo = categoriesData[category];
+  const categoryInfo = productCategories[category];
 
   if (!categoryInfo) {
     return (
