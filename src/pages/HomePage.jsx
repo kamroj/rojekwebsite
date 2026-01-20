@@ -58,7 +58,7 @@ const HomePage = () => {
       id: PRODUCT_TYPES.WINDOWS,
       name: t('products.windows.name'),
       description: t('products.windows.description'),
-      backgroundSrc: '/images/aboutus/okno-kafelka2.png',
+      backgroundSrc: '/images/aboutus/okno-kafelka.png',
       videoSrc: VIDEO_SOURCES.WINDOWS,
     },
     [PRODUCT_TYPES.DOORS]: {
