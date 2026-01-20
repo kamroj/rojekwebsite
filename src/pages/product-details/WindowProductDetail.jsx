@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
-import { IoIosArrowForward, IoIosArrowBack } from 'react-icons/io';
-import { RxDimensions } from 'react-icons/rx';
-import { TbTemperatureSun, TbVolume, TbWind } from 'react-icons/tb';
-import { RiContrastDrop2Line } from 'react-icons/ri';
+import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { FiDownload, FiPhone, FiCheck, FiExternalLink } from 'react-icons/fi';
 import { BsQuestionCircle } from 'react-icons/bs';
 import Page from '../../components/common/Page';
@@ -12,36 +9,6 @@ import Section from '../../components/common/Section';
 
 // --- Styled Components ---
 
-// Breadcrumbs
-const Breadcrumbs = styled.nav`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1.5rem 0;
-  font-size: 1.1rem;
-  color: #6b7280;
-  flex-wrap: wrap;
-  
-  a {
-    color: #6b7280;
-    text-decoration: none;
-    transition: color 0.2s ease;
-    
-    &:hover {
-      color: #1a5618;
-    }
-  }
-  
-  span {
-    color: #1a5618;
-    font-weight: 500;
-  }
-  
-  svg {
-    font-size: 0.85rem;
-    color: #9ca3af;
-  }
-`;
 
 // Hero Section
 const HeroSection = styled.div`
@@ -825,19 +792,18 @@ const WindowProductDetail = ({ product, category }) => {
     <Page
       imageSrc={product.headerImage}
       title={product.name}
+      headerProps={{
+        badge: { label: product.name },
+        headerContent: {
+          content: {
+            isSubpage: true,
+            pageType: 'product',
+            subpageType: 'product'
+          }
+        }
+      }}
     >
       <Section>
-        {/* Breadcrumbs */}
-        <Breadcrumbs>
-          <Link to="/">Strona główna</Link>
-          <IoIosArrowForward />
-          <Link to="/produkty">Produkty</Link>
-          <IoIosArrowForward />
-          <Link to={`/produkty/${category}`}>{product.category}</Link>
-          <IoIosArrowForward />
-          <span>{product.name}</span>
-        </Breadcrumbs>
-
         {/* Hero Section */}
         <HeroSection>
           <HeroContent>

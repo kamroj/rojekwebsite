@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import PageHeader from './PageHeader';
 import MaxWidthContainer from './MaxWidthContainer';
+import AppBreadcrumbs from './AppBreadcrumbs';
 
 const PageWrapper = styled.div`
   width: 100%;
@@ -50,6 +51,7 @@ const Page = ({
                 {...(headerProps || {})}
             />
             <MaxWidthContainer>
+                <AppBreadcrumbs />
                 {children}
             </MaxWidthContainer>
         </PageWrapper>

@@ -87,6 +87,11 @@ const Navigation = ({ variant = 'header', isPastThreshold }) => {
       path: ROUTES.HOME, 
       label: 'nav.home'
     },
+    {
+      key: 'products',
+      path: ROUTES.PRODUCTS,
+      label: 'nav.products'
+    },
     { 
       key: 'realizations', 
       path: ROUTES.REALIZATIONS, 

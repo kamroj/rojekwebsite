@@ -11,6 +11,8 @@ import HsConfiguratorPage from '../pages/HsConfiguratorPage';
 import { ROUTES } from '../constants';
 import ProductCategoryPage from '../pages/ProductCategoryPage';
 import ProductDetailPage from '../pages/ProductDetailPage';
+import ProductsPage from '../pages/ProductsPage';
+import { productCategories, productDetailsByType } from '../data/products';
 
 const NotFoundContainer = styled.div`
   padding: ${({ theme }) => theme.spacings.xlarge} ${({ theme }) => theme.spacings.medium};
@@ -95,6 +97,9 @@ const router = createBrowserRouter([
     path: ROUTES.HOME,
     element: <MainLayout />,
     errorElement: <ErrorBoundary />,
+    handle: {
+      crumb: { to: '/', labelKey: 'breadcrumbs.home', defaultLabel: 'Strona główna' }
+    },
     children: [
       {
         index: true,
@@ -103,26 +108,77 @@ const router = createBrowserRouter([
       {
         path: ROUTES.REALIZATIONS.slice(1),
         element: <RealizationsPage2 />,
+        handle: {
+          crumb: { to: ROUTES.REALIZATIONS, labelKey: 'breadcrumbs.realizations', defaultLabel: 'Realizacje' }
+        }
       },
       {
         path: ROUTES.ABOUT.slice(1),
         element: <AboutUsPage />,
+        handle: {
+          crumb: { to: ROUTES.ABOUT, labelKey: 'breadcrumbs.about', defaultLabel: 'O nas' }
+        }
       },
       {
         path: ROUTES.CONTACT.slice(1),
         element: <ContactPage />,
+        handle: {
+          crumb: { to: ROUTES.CONTACT, labelKey: 'breadcrumbs.contact', defaultLabel: 'Kontakt' }
+        }
       },
       {
         path: ROUTES.HS_CONFIGURATOR.slice(1),
         element: <HsConfiguratorPage />,
+        handle: {
+          crumb: { to: ROUTES.HS_CONFIGURATOR, labelKey: 'breadcrumbs.configurator', defaultLabel: 'Konfigurator HS' }
+        }
       },
       {
-        path: 'produkty/:category',
-        element: <ProductCategoryPage />,
-      },
-      {
-        path: '/produkty/:category/:productId',
-        element: <ProductDetailPage />,
+        path: 'produkty',
+        handle: {
+          crumb: { to: ROUTES.PRODUCTS, labelKey: 'breadcrumbs.products', defaultLabel: 'Produkty' }
+        },
+        children: [
+          {
+            index: true,
+            element: <ProductsPage />
+          },
+          {
+            path: ':category',
+            handle: {
+              crumb: (match) => {
+                const c = productCategories[match.params.category];
+                return {
+                  to: `/produkty/${match.params.category}`,
+                  label: c?.pageTitle || match.params.category
+                };
+              }
+            },
+            children: [
+              {
+                index: true,
+                element: <ProductCategoryPage />
+              },
+              {
+                path: ':productId',
+                element: <ProductDetailPage />,
+                handle: {
+                  crumb: (match) => {
+                    const c = productCategories[match.params.category];
+                    const detailType = c?.detailType;
+                    const p = detailType
+                      ? productDetailsByType?.[detailType]?.[match.params.productId]
+                      : undefined;
+                    return {
+                      to: `/produkty/${match.params.category}/${match.params.productId}`,
+                      label: p?.name || match.params.productId
+                    };
+                  }
+                }
+              }
+            ]
+          },
+        ]
       },
       { 
         path: '*', 

@@ -1,5 +1,8 @@
 import { windowCategory, windowProductDetails } from './windows.js';
 
+// Convenience: re-export from this folder so consumers can import from "../data/products".
+export { windowCategory, windowProductDetails };
+
 export const productCategories = {
   okna: windowCategory,
   drzwi: {
