@@ -2,13 +2,15 @@ import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import useResourcePreloader from './useResourcePreloader';
 import { collectPageResources, getUniqueResources } from '../utils/resourceCollector';
+import { getRouteKeyFromPathname } from '../utils/i18nRouting';
 
 const usePageResourceLoader = (additionalData = {}) => {
   const location = useLocation();
 
   // Zbierz zasoby dla aktualnej strony
   const resources = useMemo(() => {
-    const pageResources = collectPageResources(location.pathname, additionalData);
+    const routeKey = getRouteKeyFromPathname(location.pathname);
+    const pageResources = collectPageResources(routeKey, additionalData);
     return getUniqueResources(pageResources);
   }, [location.pathname, JSON.stringify(additionalData)]);
 

@@ -15,7 +15,11 @@
     "home": "Home Page",
     "realizations": "Realizations",
     "about": "About Us",
-    "contact": "Contact"
+    "contact": "Contact",
+    "okna": "Windows",
+    "drzwi": "Doors",
+    "bramy": "Gates",
+    "rolety": "Shutters"
   },
   "hsConfigurator": {
     "title": "HS Configurator"
@@ -39,6 +43,11 @@
     "pause": "Pause",
     "play": "Play",
     "see": "See"
+  },
+  "common": {
+    "contactUs": "Contact us",
+    "warranty": "Warranty",
+    "viewMore": "View more"
   },
   "sections": {
     "products": "PRODUCTS",
@@ -134,6 +143,59 @@
         "Aesthetically finished and adaptable to façades",
         "Low‑threshold options available for improved access"
       ]
+    },
+    "notFound": "Not found",
+    "emptyCategory": "No products in this category.",
+    "categoryNotFoundTitle": "Category not found",
+    "categoryNotFoundSubtitle": "The selected product category does not exist."
+  },
+  "productCategories": {
+    "okna": {
+      "title": "Window products",
+      "subtitle": "Discover our modern window systems."
+    },
+    "drzwi": {
+      "title": "Door products",
+      "subtitle": "Discover our modern door systems."
+    },
+    "bramy": {
+      "title": "Garage doors",
+      "subtitle": "Discover our modern garage door systems."
+    },
+    "rolety": {
+      "title": "Roller shutters & blinds",
+      "subtitle": "Discover our modern shutter and blind systems."
+    }
+  },
+  "productDetail": {
+    "downloadCatalogPdf": "Download PDF catalogue",
+    "windows": {
+      "featuresTitle": "What makes the {{product}} window stand out?",
+      "colorsTitle": "RAL colour range",
+      "colorsMostPopular": "Most popular colours",
+      "colorsFullPalette": "Full RAL colour chart",
+      "advantagesTitle": "Why choose {{product}}?",
+      "warranty": {
+        "title": "Quality you can rely on for years",
+        "text": "We are confident in the quality of our products, which is why within <strong>5 years</strong> after installation you can report any issue with any part of our window joinery. In addition, we offer a <strong>10‑year warranty</strong> for the tightness of glazing units with a Warmatec spacer.",
+        "highlight": "Free warranty service"
+      },
+      "cta": {
+        "title": "Interested in {{product}} windows?",
+        "description": "Our experts will help you choose the perfect solution for your home. Contact us to get a free quote.",
+        "note": "We respond within 24 hours"
+      }
+    },
+    "faq": {
+      "title": "<product>{{product}}</product> – Frequently asked questions",
+      "subtitle": "Find answers to the most important questions about our product"
+    },
+    "errors": {
+      "productNotFoundTitle": "Product not found",
+      "productNotFoundText": "The selected product does not exist.",
+      "backToCategory": "Back to category",
+      "noTemplateTitle": "No product template",
+      "noTemplateText": "We haven't prepared a product detail page for this category yet."
     }
   },
   "realizations": {
@@ -295,6 +357,20 @@
     "en": "English",
     "de": "German"
   },
+  "breadcrumbs": {
+    "home": "Home",
+    "products": "Products",
+    "realizations": "Realizations",
+    "about": "About Us",
+    "contact": "Contact",
+    "configurator": "HS Configurator",
+    "categories": {
+      "okna": "Windows",
+      "drzwi": "Doors",
+      "bramy": "Gates",
+      "rolety": "Shutters"
+    }
+  },
   "history": {
     "title": "Our History",
     "subtitle": "Over 40 years of experience in the industry",
@@ -376,6 +452,19 @@
     },
     "gdpr": {
       "notice": "The controller of your personal data is ROJEK Okna i Drzwi Sp. z o.o. with its registered office in Kraków (Kryspinów 399, 32-060 Kryspinów). Personal data will be processed in order to respond to your inquiry and to ensure the highest service standards. Submitting the form constitutes voluntary consent to be contacted by email or phone for the purpose of handling the inquiry. Consent may be withdrawn at any time by sending a message to biuro@rojekoid.pl."
+    }
+  },
+  "productSpecs": {
+    "labels": {
+      "profileThickness": "profile thickness",
+      "thermalTransmittance": "thermal transmittance (Uw)",
+      "waterTightness": "water tightness"
+    },
+    "tooltipAria": "Parameter explanation: {{spec}}",
+    "tooltips": {
+      "profileThickness": "Profile thickness (e.g. 70–86 mm) affects structural rigidity and allows using thicker glazing units.",
+      "thermalTransmittance": "Thermal transmittance (Uw) indicates how much heat escapes through the window. The lower the value, the better the insulation and the lower the heating costs.",
+      "waterTightness": "Water tightness (e.g. class 9A) indicates resistance to water penetration during rain and wind. A higher class means better protection against leakage."
     }
   }
 }

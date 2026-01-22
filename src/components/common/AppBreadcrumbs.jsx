@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { useMatches } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import Breadcrumbs from './Breadcrumbs';
+import { translatePathname } from '../../utils/i18nRouting';
 
 /**
  * Reads breadcrumbs from react-router route `handle.crumb` definitions.
@@ -9,7 +10,8 @@ import Breadcrumbs from './Breadcrumbs';
  */
 const AppBreadcrumbs = () => {
   const matches = useMatches();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
 
   const items = useMemo(() => {
     const crumbs = matches
@@ -21,17 +23,18 @@ const AppBreadcrumbs = () => {
         if (!crumb) return null;
 
         const label = crumb.label ?? t(crumb.labelKey, crumb.defaultLabel);
-        const to = crumb.to ?? m.pathname;
+        // If a route explicitly provides `crumb.to`, treat it as a PL base path and translate it.
+        // Otherwise use router's resolved pathname.
+        const to = crumb.to ? translatePathname(crumb.to, lang) : m.pathname;
 
         return { label, to };
       })
       .filter(Boolean);
 
     return crumbs;
-  }, [matches, t]);
+  }, [lang, matches, t]);
 
   return <Breadcrumbs items={items} />;
 };
 
 export default AppBreadcrumbs;
-

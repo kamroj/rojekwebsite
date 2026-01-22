@@ -6,6 +6,8 @@ import { IoIosArrowForward } from 'react-icons/io';
 import MaxWidthContainer from '../common/MaxWidthContainer';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../pages/HomePage';
 import { t } from 'i18next';
+import { useTranslation } from 'react-i18next';
+import { getProductCategoryPath } from '../../utils/i18nRouting';
 
 // --- Styled Components ---
 const ProductContentContainer = styled.div`
@@ -154,8 +156,17 @@ const ArrowIcon = styled(IoIosArrowForward)`
 
 // Komponent dla pojedynczego kafelka
 const ProductTile = ({ id, product }) => {
+  const { i18n } = useTranslation();
+  const lang = i18n.language;
+
+  // In `PRODUCT_TYPES` we have internal ids for categories.
+  // For now, map only ids that exist in productCategories (okna/drzwi/bramy/rolety).
+  // Others fall back to products index.
+  const categoryKey = id;
+  const to = getProductCategoryPath(lang, categoryKey);
+
   return (
-    <TileCard to={`/produkty/${id}`}>
+    <TileCard to={to}>
       <TileBackgroundWrapper $bgSrc={product.backgroundSrc} />
       <TileContent>
         <TileTitle>{product.name}</TileTitle>

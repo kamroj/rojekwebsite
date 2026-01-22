@@ -6,6 +6,8 @@ import Page from '../components/common/Page';
 import Section from '../components/common/Section';
 import { productCategories, productDetailsByType } from '../data/products';
 import WindowProductDetail from './product-details/WindowProductDetail';
+import { useTranslation } from 'react-i18next';
+import { getCategoryKeyFromSlug, getProductCategoryPath, getProductsIndexPath } from '../utils/i18nRouting';
 
 const BackLink = styled(Link)`
   display: inline-flex;
@@ -27,9 +29,13 @@ const BackLink = styled(Link)`
 `;
 
 const ProductDetailPage = () => {
+  const { i18n, t } = useTranslation();
+  const lang = i18n.language;
   const { category, productId } = useParams();
 
-  const categoryInfo = productCategories[category];
+  const categoryKey = getCategoryKeyFromSlug(lang, category) || category;
+
+  const categoryInfo = productCategories[categoryKey];
   const detailType = categoryInfo?.detailType;
 
   const product = detailType
@@ -41,12 +47,12 @@ const ProductDetailPage = () => {
     return (
       <Page
         imageSrc="/images/products/default-header.jpg"
-        title="Nie znaleziono produktu"
+        title={t('productDetail.errors.productNotFoundTitle', 'Nie znaleziono produktu')}
       >
         <Section>
-          <p>Wybrany produkt nie istnieje.</p>
-          <BackLink to={categoryInfo ? `/produkty/${category}` : '/produkty'}>
-            Wróć do kategorii
+          <p>{t('productDetail.errors.productNotFoundText', 'Wybrany produkt nie istnieje.')}</p>
+          <BackLink to={categoryInfo ? getProductCategoryPath(lang, categoryKey) : getProductsIndexPath(lang)}>
+            {t('productDetail.errors.backToCategory', 'Wróć do kategorii')}
           </BackLink>
         </Section>
       </Page>
@@ -57,20 +63,22 @@ const ProductDetailPage = () => {
   // For now only windows are implemented, but adding new types is a single mapping.
   switch (detailType) {
     case 'windows':
-      return <WindowProductDetail product={product} category={category} />;
+      return <WindowProductDetail product={product} />;
     default:
       return (
         <Page
           imageSrc="/images/products/default-header.jpg"
-          title="Brak szablonu produktu"
+          title={t('productDetail.errors.noTemplateTitle', 'Brak szablonu produktu')}
         >
           <Section>
             <p>
-              Dla tej kategorii produktów nie mamy jeszcze przygotowanej strony
-              detalu.
+              {t(
+                'productDetail.errors.noTemplateText',
+                'Dla tej kategorii produktów nie mamy jeszcze przygotowanej strony detalu.'
+              )}
             </p>
-            <BackLink to={`/produkty/${category}`}>
-              Wróć do kategorii
+            <BackLink to={getProductCategoryPath(lang, categoryKey)}>
+              {t('productDetail.errors.backToCategory', 'Wróć do kategorii')}
             </BackLink>
           </Section>
         </Page>

@@ -103,18 +103,19 @@ export const collectContactPageResources = () => {
 };
 
 // Główna funkcja kolektora - automatycznie wybiera odpowiednią funkcję na podstawie ścieżki
-export const collectPageResources = (pathname, additionalData = {}) => {
-  switch (pathname) {
-    case '/':
+// Main collector - uses route key (language-independent)
+export const collectPageResources = (routeKey, additionalData = {}) => {
+  switch (routeKey) {
+    case 'home':
       return collectHomePageResources(additionalData.productData);
     
-    case '/realizations':
+    case 'realizations':
       return collectRealizationsPageResources();
     
-    case '/about':
+    case 'about':
       return collectAboutPageResources();
     
-    case '/contact':
+    case 'contact':
       return collectContactPageResources();
     
     default:

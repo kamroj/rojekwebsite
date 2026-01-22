@@ -43,6 +43,31 @@ Kategorie są predefiniowane i już są w menu:
 > Ważne: jeśli tworzysz produkt z poziomu danej kategorii (np. **Produkty → Okna → Produkty w tej kategorii**),
 > to pole **Kategoria** ustawia się automatycznie i jest zablokowane (żeby nie trzeba było wybierać jej ręcznie).
 
+### Ustawienia kategorii (productCategory)
+
+Kategorie są **predefiniowane w kodzie** (nazwa + tłumaczenia + URL). Dlatego w CMS w dokumencie kategorii **nie wpisujesz nazwy, sluga ani kolejności**.
+
+W `productCategory` zostają tylko media:
+- **Zdjęcie nagłówkowe** (header)
+- **Kafelek (Home/Produkty)** → obraz tła
+
+### Układ pól w produkcie (product)
+
+Żeby formularz był czytelny, pola produktu są zgrupowane:
+- **Podstawowe**: nazwa, slug, kategoria, zdjęcie nagłówkowe (hero)
+- **Media**: zdjęcie kafelka (lista produktów w kategorii) + galeria
+- **Specyfikacja**: wartości współczynników + plik **mp4** (wideo)
+- **Treści**: krótki/długi opis, cechy, zalety
+- **FAQ**: pytania i odpowiedzi
+
+### FAQ (dla produktu)
+
+Każdy produkt może mieć swoją sekcję **FAQ** – listę pytań i odpowiedzi (FAQ jest przypisane do konkretnego produktu).
+
+- `FAQ[]` → pozycje zawierają:
+  - `Pytanie` (PL/EN/DE)
+  - `Odpowiedź` (PL/EN/DE, treść blokowa)
+
 ## Jak dodawać Realizacje
 
 Wejdź w **Realizacje** i twórz wpisy typu **Realizacja (zdjęcie)**:

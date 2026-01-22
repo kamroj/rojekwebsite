@@ -1,20 +1,19 @@
 // sanity/schemaTypes/productCategory.js
 import {defineField, defineType} from 'sanity'
 
+const CATEGORY_TITLES_BY_ID = {
+  category_okna: 'Okna',
+  category_okna_przesuwne: 'Okna przesuwne',
+  category_drzwi_zewnetrzne: 'Drzwi zewnętrzne',
+  category_ppoz: 'Ppoż.',
+}
+
 export default defineType({
   name: 'productCategory',
   title: 'Kategoria produktu',
   type: 'document',
   fields: [
-    defineField({name: 'title', title: 'Nazwa', type: 'localizedString', validation: (Rule) => Rule.required()}),
-    defineField({
-      name: 'slug',
-      title: 'Slug (URL)',
-      type: 'slug',
-      options: {source: 'title.pl', maxLength: 96},
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({name: 'subtitle', title: 'Podtytuł', type: 'localizedText'}),
+    // Kategorie są predefiniowane w kodzie (IA + tłumaczenia + slug). W CMS trzymamy tylko media.
     defineField({name: 'headerImage', title: 'Zdjęcie nagłówkowe', type: 'image', options: {hotspot: true}}),
     defineField({
       name: 'tile',
@@ -22,15 +21,14 @@ export default defineType({
       type: 'object',
       fields: [
         defineField({name: 'backgroundImage', title: 'Obrazek w tle', type: 'image', options: {hotspot: true}}),
-        defineField({name: 'video', title: 'Wideo (mp4)', type: 'file'}),
       ],
     }),
-    defineField({name: 'order', title: 'Kolejność', type: 'number'}),
     defineField({
       name: 'type',
       title: 'Typ kategorii (predefiniowany)',
       type: 'string',
       readOnly: true,
+      hidden: true,
       options: {
         list: [
           {title: 'Okna', value: 'windows'},
@@ -44,8 +42,12 @@ export default defineType({
   ],
   preview: {
     select: {
-      title: 'title.pl',
+      id: '_id',
       media: 'headerImage',
     },
+    prepare: ({id, media}) => ({
+      title: CATEGORY_TITLES_BY_ID[id] || id,
+      media,
+    }),
   },
 })

@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled, { css } from 'styled-components';
 import { useTranslation } from 'react-i18next';
+import { useLocation, useNavigate } from 'react-router-dom';
 import ReactCountryFlag from 'react-country-flag';
 import { COUNTRY_CODES, SUPPORTED_LANGUAGES } from '../../constants';
 import { getValidLanguage, handleKeyboardNavigation } from '../../utils';
+import { translatePathname } from '../../utils/i18nRouting';
 
 const SwitcherWrapper = styled.div`
   position: relative;
@@ -133,6 +135,8 @@ const LanguageOption = styled.button`
 
 const LanguageSwitcher = ({ isMobile = false, isPastThreshold = false }) => {
   const { i18n, t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef(null);
 
@@ -151,6 +155,12 @@ const LanguageSwitcher = ({ isMobile = false, isPastThreshold = false }) => {
 
   const changeLanguage = (langCode) => {
     i18n.changeLanguage(langCode);
+
+    // Keep the current page, translate the whole URL (prefix + localized slugs).
+    const nextPath = translatePathname(location.pathname, langCode);
+    if (nextPath !== location.pathname) {
+      navigate(nextPath, { replace: true });
+    }
     if (!isMobile) {
       setIsOpen(false);
     }

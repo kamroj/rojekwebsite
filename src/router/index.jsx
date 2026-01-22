@@ -13,6 +13,26 @@ import ProductCategoryPage from '../pages/ProductCategoryPage';
 import ProductDetailPage from '../pages/ProductDetailPage';
 import ProductsPage from '../pages/ProductsPage';
 import { productCategories, productDetailsByType } from '../data/products';
+import I18nRouteSync from './I18nRouteSync';
+import { getCategoryKeyFromAnySlug, getProductDetailPath, getProductCategoryPath, getSectionPath, SECTION_SLUGS } from '../utils/i18nRouting';
+
+const cloneWithPaths = (routes, mapping) => {
+  return {
+    ...routes,
+    children: routes.children.map((c) => {
+      if (!c.path) return c
+
+      const next = {...c, path: mapping[c.path] || c.path}
+
+      // products subtree
+      if (c.path === SECTION_SLUGS.pl.products && c.children) {
+        next.children = c.children.map((cc) => ({...cc}))
+      }
+
+      return next
+    }),
+  }
+}
 
 const NotFoundContainer = styled.div`
   padding: ${({ theme }) => theme.spacings.xlarge} ${({ theme }) => theme.spacings.medium};
@@ -65,13 +85,14 @@ const BackButton = styled.a`
 `;
 
 const NotFoundPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
 
   return (
     <NotFoundContainer>
       <h1>{t('errors.404.title')}</h1>
       <p>{t('errors.404.message')}</p>
-      <BackButton href={ROUTES.HOME}>
+      <BackButton href={getSectionPath(lang, 'home')}>
         {t('buttons.backToHome')}
       </BackButton>
     </NotFoundContainer>
@@ -79,111 +100,164 @@ const NotFoundPage = () => {
 };
 
 const ErrorBoundary = ({ error }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
 
   return (
     <NotFoundContainer>
       <h1>{t('errors.general')}</h1>
       <p>{error?.message || t('errors.general')}</p>
-      <BackButton href={ROUTES.HOME}>
+      <BackButton href={getSectionPath(lang, 'home')}>
         {t('buttons.backToHome')}
       </BackButton>
     </NotFoundContainer>
   );
 };
 
-const router = createBrowserRouter([
-  {
-    path: ROUTES.HOME,
-    element: <MainLayout />,
-    errorElement: <ErrorBoundary />,
-    handle: {
-      crumb: { to: '/', labelKey: 'breadcrumbs.home', defaultLabel: 'Strona główna' }
+const appRoutes = {
+  element: <MainLayout />,
+  errorElement: <ErrorBoundary />,
+  handle: {
+    crumb: {to: '/', labelKey: 'breadcrumbs.home', defaultLabel: 'Home'},
+  },
+  children: [
+    {
+      index: true,
+      element: <HomePage />,
     },
+    {
+      path: SECTION_SLUGS.pl.realizations,
+      element: <RealizationsPage2 />,
+      handle: {
+        crumb: {
+          // base route key (localized later in AppBreadcrumbs)
+          to: '/realizacje',
+          labelKey: 'breadcrumbs.realizations',
+          defaultLabel: 'Realizations',
+        },
+      },
+    },
+    {
+      path: SECTION_SLUGS.pl.about,
+      element: <AboutUsPage />,
+      handle: {
+        crumb: {to: '/o-firmie', labelKey: 'breadcrumbs.about', defaultLabel: 'About'},
+      },
+    },
+    {
+      path: SECTION_SLUGS.pl.contact,
+      element: <ContactPage />,
+      handle: {
+        crumb: {to: '/kontakt', labelKey: 'breadcrumbs.contact', defaultLabel: 'Contact'},
+      },
+    },
+    {
+      path: SECTION_SLUGS.pl.hsConfigurator,
+      element: <HsConfiguratorPage />,
+      handle: {
+        crumb: {
+          to: '/konfigurator-hs',
+          labelKey: 'breadcrumbs.configurator',
+          defaultLabel: 'HS Configurator',
+        },
+      },
+    },
+    {
+      path: SECTION_SLUGS.pl.products,
+      handle: {
+        crumb: {to: '/produkty', labelKey: 'breadcrumbs.products', defaultLabel: 'Products'},
+      },
+      children: [
+        {
+          index: true,
+          element: <ProductsPage />,
+        },
+        {
+          path: ':category',
+          handle: {
+            crumb: (match) => {
+              const rawSlug = match.params.category
+              const categoryKey = getCategoryKeyFromAnySlug(rawSlug) || rawSlug
+              const c = productCategories[categoryKey];
+              return {
+                to: getProductCategoryPath('pl', categoryKey),
+                labelKey: `breadcrumbs.categories.${categoryKey}`,
+                defaultLabel: c?.pageTitle || categoryKey,
+              };
+            },
+          },
+          children: [
+            {
+              index: true,
+              element: <ProductCategoryPage />,
+            },
+            {
+              path: ':productId',
+              element: <ProductDetailPage />,
+              handle: {
+                crumb: (match) => {
+                  const rawSlug = match.params.category
+                  const categoryKey = getCategoryKeyFromAnySlug(rawSlug) || rawSlug
+                  const c = productCategories[categoryKey];
+                  const detailType = c?.detailType;
+                  const p = detailType
+                    ? productDetailsByType?.[detailType]?.[match.params.productId]
+                    : undefined;
+                  return {
+                    to: getProductDetailPath('pl', categoryKey, match.params.productId),
+                    label: p?.name || match.params.productId,
+                  };
+                },
+              },
+            },
+          ],
+        },
+      ],
+    },
+    {
+      path: '*',
+      element: <NotFoundPage />,
+    },
+  ],
+};
+
+const router = createBrowserRouter([
+  // Default language (PL) - no prefix
+  {
+    path: '/',
+    element: <I18nRouteSync lang="pl" />,
+    children: [appRoutes],
+  },
+
+  // Other languages - with prefix
+  {
+    path: '/en',
+    element: <I18nRouteSync lang="en" />,
     children: [
       {
-        index: true,
-        element: <HomePage />,
+        ...cloneWithPaths(appRoutes, {
+          [SECTION_SLUGS.pl.realizations]: SECTION_SLUGS.en.realizations,
+          [SECTION_SLUGS.pl.about]: SECTION_SLUGS.en.about,
+          [SECTION_SLUGS.pl.contact]: SECTION_SLUGS.en.contact,
+          [SECTION_SLUGS.pl.hsConfigurator]: SECTION_SLUGS.en.hsConfigurator,
+          [SECTION_SLUGS.pl.products]: SECTION_SLUGS.en.products,
+        }),
       },
+    ],
+  },
+  {
+    path: '/de',
+    element: <I18nRouteSync lang="de" />,
+    children: [
       {
-        path: ROUTES.REALIZATIONS.slice(1),
-        element: <RealizationsPage2 />,
-        handle: {
-          crumb: { to: ROUTES.REALIZATIONS, labelKey: 'breadcrumbs.realizations', defaultLabel: 'Realizacje' }
-        }
+        ...cloneWithPaths(appRoutes, {
+          [SECTION_SLUGS.pl.realizations]: SECTION_SLUGS.de.realizations,
+          [SECTION_SLUGS.pl.about]: SECTION_SLUGS.de.about,
+          [SECTION_SLUGS.pl.contact]: SECTION_SLUGS.de.contact,
+          [SECTION_SLUGS.pl.hsConfigurator]: SECTION_SLUGS.de.hsConfigurator,
+          [SECTION_SLUGS.pl.products]: SECTION_SLUGS.de.products,
+        }),
       },
-      {
-        path: ROUTES.ABOUT.slice(1),
-        element: <AboutUsPage />,
-        handle: {
-          crumb: { to: ROUTES.ABOUT, labelKey: 'breadcrumbs.about', defaultLabel: 'O nas' }
-        }
-      },
-      {
-        path: ROUTES.CONTACT.slice(1),
-        element: <ContactPage />,
-        handle: {
-          crumb: { to: ROUTES.CONTACT, labelKey: 'breadcrumbs.contact', defaultLabel: 'Kontakt' }
-        }
-      },
-      {
-        path: ROUTES.HS_CONFIGURATOR.slice(1),
-        element: <HsConfiguratorPage />,
-        handle: {
-          crumb: { to: ROUTES.HS_CONFIGURATOR, labelKey: 'breadcrumbs.configurator', defaultLabel: 'Konfigurator HS' }
-        }
-      },
-      {
-        path: 'produkty',
-        handle: {
-          crumb: { to: ROUTES.PRODUCTS, labelKey: 'breadcrumbs.products', defaultLabel: 'Produkty' }
-        },
-        children: [
-          {
-            index: true,
-            element: <ProductsPage />
-          },
-          {
-            path: ':category',
-            handle: {
-              crumb: (match) => {
-                const c = productCategories[match.params.category];
-                return {
-                  to: `/produkty/${match.params.category}`,
-                  label: c?.pageTitle || match.params.category
-                };
-              }
-            },
-            children: [
-              {
-                index: true,
-                element: <ProductCategoryPage />
-              },
-              {
-                path: ':productId',
-                element: <ProductDetailPage />,
-                handle: {
-                  crumb: (match) => {
-                    const c = productCategories[match.params.category];
-                    const detailType = c?.detailType;
-                    const p = detailType
-                      ? productDetailsByType?.[detailType]?.[match.params.productId]
-                      : undefined;
-                    return {
-                      to: `/produkty/${match.params.category}/${match.params.productId}`,
-                      label: p?.name || match.params.productId
-                    };
-                  }
-                }
-              }
-            ]
-          },
-        ]
-      },
-      { 
-        path: '*', 
-        element: <NotFoundPage /> 
-      }
     ],
   },
 ]);

@@ -4,8 +4,10 @@ import { Link } from 'react-router-dom';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { FiDownload, FiPhone, FiCheck, FiExternalLink, FiPlus, FiMinus } from 'react-icons/fi';
 import { BsQuestionCircle } from 'react-icons/bs';
+import { Trans, useTranslation } from 'react-i18next';
 import Page from '../../components/common/Page';
 import Section from '../../components/common/Section';
+import { WINDOW_COLORS_PALETTE, WINDOW_SPECS_DEFS, WINDOW_SPECS_ORDER_LIST } from '../../data/products/windows';
 
 // --- Styled Components ---
 
@@ -229,20 +231,14 @@ const SliderArrow = styled.button`
 // Specs Section
 const SpecsSection = styled.div`
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* auto-fit -> lepsze ułożenie dla 3 lub 4 parametrów */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
   padding: 3rem 0;
   border-radius: 12px;
   background: #ffff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.096);
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    grid-template-columns: 1fr;
-  }
+  align-items: stretch;
 `;
 
 const SpecCard = styled.div`
@@ -253,6 +249,7 @@ const SpecCard = styled.div`
   border-radius: 12px;
   position: relative;
   transition: all 0.3s ease;
+  min-height: 96px;
 `;
 
 const SpecIconWrapper = styled.div`
@@ -293,18 +290,84 @@ const SpecLabel = styled.div`
   line-height: 1.4;
 `;
 
-const TooltipIcon = styled.div`
+const TooltipBubble = styled.div`
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 280px;
+  max-width: min(75vw, 320px);
+  background: rgba(17, 24, 39, 0.96);
+  color: #ffffff;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  font-size: 1.1rem;
+  line-height: 1.5;
+  z-index: 50;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    right: 10px;
+    width: 14px;
+    height: 14px;
+    background: rgba(17, 24, 39, 0.96);
+    transform: rotate(45deg);
+  }
+`;
+
+const TooltipWrapper = styled.div`
   position: absolute;
   top: 1rem;
   right: 1rem;
+  z-index: 60;
+
+  /* hover (desktop) + focus (keyboard) */
+  &:hover ${TooltipBubble},
+  &:focus-within ${TooltipBubble} {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  /* click (mobile) */
+  &[data-open='true'] ${TooltipBubble} {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+`;
+
+const TooltipButton = styled.button`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(209, 213, 219, 0.9);
+  background: rgba(255, 255, 255, 0.85);
   cursor: pointer;
-  color: #9ca3af;
-  transition: color 0.2s ease;
-  
+  color: #6b7280;
+  transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+
   &:hover {
     color: #1a5618;
+    border-color: rgba(26, 86, 24, 0.35);
   }
-  
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(26, 86, 24, 0.25);
+    border-color: rgba(26, 86, 24, 0.65);
+  }
+
   svg {
     font-size: 1.2rem;
   }
@@ -965,10 +1028,20 @@ const faqData = [
   }
 ];
 
-const WindowProductDetail = ({ product, category }) => {
+const WindowProductDetail = ({ product }) => {
+  const { t } = useTranslation();
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [selectedColor, setSelectedColor] = useState(0);
   const [openFAQIndex, setOpenFAQIndex] = useState(null);
+  const [openSpecTooltip, setOpenSpecTooltip] = useState(null);
+
+  // zamknij tooltip po kliknięciu poza nim (głównie mobile)
+  React.useEffect(() => {
+    if (!openSpecTooltip) return;
+    const onDocClick = () => setOpenSpecTooltip(null);
+    document.addEventListener('click', onDocClick);
+    return () => document.removeEventListener('click', onDocClick);
+  }, [openSpecTooltip]);
 
   const nextImage = () => {
     setCurrentImageIndex((prev) =>
@@ -986,7 +1059,16 @@ const WindowProductDetail = ({ product, category }) => {
     setOpenFAQIndex(openFAQIndex === index ? null : index);
   };
 
-  const currentColor = product.colors[selectedColor];
+  const specTooltipKeyMap = {
+    profileThickness: 'productSpecs.tooltips.profileThickness',
+    thermalTransmittance: 'productSpecs.tooltips.thermalTransmittance',
+    waterTightness: 'productSpecs.tooltips.waterTightness'
+  };
+
+  // W CMS okna nie mają kolorów (kolory są wspólne i zdefiniowane w kodzie),
+  // więc jeśli produkt nie ma `colors`, używamy palety domyślnej.
+  const colors = product?.colors?.length ? product.colors : WINDOW_COLORS_PALETTE;
+  const currentColor = colors?.[selectedColor];
 
   return (
     <Page
@@ -1007,7 +1089,9 @@ const WindowProductDetail = ({ product, category }) => {
         {/* Hero Section */}
         <HeroSection>
           <HeroContent>
-            <ProductCategory>{product.category}</ProductCategory>
+            <ProductCategory>
+              {t(`products.${product.categoryKey || 'windows'}.name`, product.category)}
+            </ProductCategory>
             <ProductTitle>{product.name}</ProductTitle>
             <TitleDivider />
             <ProductDescription>{product.shortDescription}</ProductDescription>
@@ -1016,11 +1100,11 @@ const WindowProductDetail = ({ product, category }) => {
             <ButtonsContainer>
               <PrimaryButton to="/contact">
                 <FiPhone />
-                Skontaktuj się z nami
+                {t('common.contactUs', 'Skontaktuj się z nami')}
               </PrimaryButton>
               <OutlineButton>
                 <FiDownload />
-                Pobierz katalog PDF
+                {t('productDetail.downloadCatalogPdf', 'Pobierz katalog PDF')}
               </OutlineButton>
             </ButtonsContainer>
           </HeroContent>
@@ -1060,29 +1144,66 @@ const WindowProductDetail = ({ product, category }) => {
 
         {/* Specs Section */}
         <SpecsSection>
-          {Object.entries(product.specs).map(([key, spec]) => {
-            const IconComponent = spec.icon;
+          {WINDOW_SPECS_ORDER_LIST.map((specKey) => {
+            const def = WINDOW_SPECS_DEFS[specKey]
+            const value = product?.specs?.[specKey]
+            if (!def || !value) return null
+
+            const IconComponent = def.icon
+
             return (
-              <SpecCard key={key}>
+              <SpecCard key={specKey}>
                 <SpecIconWrapper>
                   <IconComponent />
                 </SpecIconWrapper>
                 <SpecContent>
-                  <SpecValue>{spec.value}</SpecValue>
-                  <SpecLabel>{spec.label}</SpecLabel>
+                  <SpecValue>{value}</SpecValue>
+                  <SpecLabel>{def?.labelKey ? t(def.labelKey, def.label) : def.label}</SpecLabel>
                 </SpecContent>
-                <TooltipIcon>
-                  <BsQuestionCircle />
-                </TooltipIcon>
+
+                {specTooltipKeyMap[specKey] && (
+                  <TooltipWrapper
+                    data-open={openSpecTooltip === specKey ? 'true' : 'false'}
+                    onClick={(e) => {
+                      // nie zamykaj tooltipa gdy klikamy w środku wrappera (dymek/przycisk)
+                      e.stopPropagation();
+                    }}
+                  >
+                    <TooltipButton
+                      type="button"
+                      aria-label={t('productSpecs.tooltipAria', {
+                        spec: def?.labelKey ? t(def.labelKey, def.label) : def.label,
+                      })}
+                      onClick={(e) => {
+                        // click działa też na mobile, ale nie blokuje hover/focus na desktopie
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setOpenSpecTooltip((prev) => (prev === specKey ? null : specKey));
+                      }}
+                      onBlur={() => setOpenSpecTooltip(null)}
+                    >
+                      <BsQuestionCircle />
+                    </TooltipButton>
+
+                    <TooltipBubble role="tooltip">
+                      {t(specTooltipKeyMap[specKey])}
+                    </TooltipBubble>
+                  </TooltipWrapper>
+                )}
               </SpecCard>
-            );
+            )
           })}
         </SpecsSection>
 
         {/* Features Section */}
         {product.features.length > 0 && (
           <FeaturesSection>
-            <SectionTitle>Co wyróżnia okno {product.name}?</SectionTitle>
+            <SectionTitle>
+              {t('productDetail.windows.featuresTitle', {
+                product: product.name,
+                defaultValue: 'Co wyróżnia okno {{product}}?',
+              })}
+            </SectionTitle>
 
             <FeaturesLayout>
               <VideoWrapper>
@@ -1108,18 +1229,20 @@ const WindowProductDetail = ({ product, category }) => {
       </Section>
 
       {/* Colors Section */}
-      {product.colors.length > 0 && (
+      {colors.length > 0 && (
         <ColorsSection>
           <Section>
-            <SectionTitle>Kolorystyka RAL</SectionTitle>
+            <SectionTitle>{t('productDetail.windows.colorsTitle', 'Kolorystyka RAL')}</SectionTitle>
 
             <ColorsLayout>
               {/* Lewa strona - próbki kolorów */}
               <ColorSwatchesContainer>
-                <ColorSwatchesLabel>Najczęściej wybierane kolory</ColorSwatchesLabel>
+                <ColorSwatchesLabel>
+                  {t('productDetail.windows.colorsMostPopular', 'Najczęściej wybierane kolory')}
+                </ColorSwatchesLabel>
                 
                 <ColorSwatchesGrid>
-                  {product.colors.map((color, index) => (
+                  {colors.map((color, index) => (
                     <ColorSwatchButton
                       key={color.id}
                       onClick={() => setSelectedColor(index)}
@@ -1141,7 +1264,7 @@ const WindowProductDetail = ({ product, category }) => {
                   target="_blank" 
                   rel="noopener noreferrer"
                 >
-                  Pełna paleta kolorów RAL
+                  {t('productDetail.windows.colorsFullPalette', 'Pełna paleta kolorów RAL')}
                   <FiExternalLink />
                 </FullPaletteLink>
               </ColorSwatchesContainer>
@@ -1170,7 +1293,12 @@ const WindowProductDetail = ({ product, category }) => {
         {/* Advantages Section */}
         {product.advantages.length > 0 && (
           <AdvantagesSection>
-            <SectionTitle>Dlaczego warto wybrać {product.name}?</SectionTitle>
+            <SectionTitle>
+              {t('productDetail.windows.advantagesTitle', {
+                product: product.name,
+                defaultValue: 'Dlaczego warto wybrać {{product}}?',
+              })}
+            </SectionTitle>
 
             <AdvantagesGrid>
               {product.advantages.map((advantage, index) => (
@@ -1185,21 +1313,26 @@ const WindowProductDetail = ({ product, category }) => {
               <WarrantyBadge>
                 <WarrantyImage 
                   src="/images/products/windows/gwarancja.png" 
-                  alt="Gwarancja" 
+                  alt={t('common.warranty', 'Gwarancja')} 
                 />
               </WarrantyBadge>
               
               <WarrantyContent>
-                <WarrantyTitle>Pewność jakości na lata</WarrantyTitle>
+                <WarrantyTitle>
+                  {t('productDetail.windows.warranty.title', 'Pewność jakości na lata')}
+                </WarrantyTitle>
                 <WarrantyText>
-                  Jesteśmy pewni jakości naszych produktów, dlatego w ciągu <strong>5 lat</strong> od 
-                  montażu możesz nam zgłosić jakikolwiek problem z wszystkimi elementami 
-                  naszej stolarki okiennej. Dodatkowo oferujemy <strong>10 lat gwarancji</strong> na 
-                  szczelność pakietów szybowych z ramką Warmatec.
+                  <Trans
+                    i18nKey="productDetail.windows.warranty.text"
+                    defaults="Jesteśmy pewni jakości naszych produktów, dlatego w ciągu <strong>5 lat</strong> od montażu możesz nam zgłosić jakikolwiek problem z wszystkimi elementami naszej stolarki okiennej. Dodatkowo oferujemy <strong>10 lat gwarancji</strong> na szczelność pakietów szybowych z ramką Warmatec."
+                    components={{ strong: <strong /> }}
+                  />
                 </WarrantyText>
                 <WarrantyHighlight>
                   <FiCheck />
-                  <span>Bezpłatny serwis gwarancyjny</span>
+                  <span>
+                    {t('productDetail.windows.warranty.highlight', 'Bezpłatny serwis gwarancyjny')}
+                  </span>
                 </WarrantyHighlight>
               </WarrantyContent>
             </WarrantySection>
@@ -1212,10 +1345,18 @@ const WindowProductDetail = ({ product, category }) => {
         <Section>
           <FAQHeader>
             <FAQTitleWrapper>
-              <FAQProductName>{product.name}</FAQProductName> – Najczęściej zadawane pytania
+              <Trans
+                i18nKey="productDetail.faq.title"
+                defaults="<product>{{product}}</product> – Najczęściej zadawane pytania"
+                values={{ product: product.name }}
+                components={{ product: <FAQProductName /> }}
+              />
             </FAQTitleWrapper>
             <FAQSubtitle>
-              Znajdź odpowiedzi na najważniejsze pytania dotyczące naszego produktu
+              {t(
+                'productDetail.faq.subtitle',
+                'Znajdź odpowiedzi na najważniejsze pytania dotyczące naszego produktu'
+              )}
             </FAQSubtitle>
           </FAQHeader>
 
@@ -1251,16 +1392,23 @@ const WindowProductDetail = ({ product, category }) => {
         {/* CTA Section */}
         <CTASection>
           <CTAInner>
-            <CTATitle>Zainteresowany oknami {product.name}?</CTATitle>
+            <CTATitle>
+              {t('productDetail.windows.cta.title', {
+                product: product.name,
+                defaultValue: 'Zainteresowany oknami {{product}}?',
+              })}
+            </CTATitle>
             <CTADescription>
-              Nasi eksperci pomogą Ci dobrać idealne rozwiązanie dla Twojego domu.
-              Skontaktuj się z nami, aby uzyskać bezpłatną wycenę.
+              {t(
+                'productDetail.windows.cta.description',
+                'Nasi eksperci pomogą Ci dobrać idealne rozwiązanie dla Twojego domu. Skontaktuj się z nami, aby uzyskać bezpłatną wycenę.'
+              )}
             </CTADescription>
             <PrimaryButton to="/contact">
               <FiPhone />
-              Skontaktuj się z nami
+              {t('common.contactUs', 'Skontaktuj się z nami')}
             </PrimaryButton>
-            <CTANote>Odpowiadamy w ciągu 24 godzin</CTANote>
+            <CTANote>{t('productDetail.windows.cta.note', 'Odpowiadamy w ciągu 24 godzin')}</CTANote>
           </CTAInner>
         </CTASection>
       </Section>

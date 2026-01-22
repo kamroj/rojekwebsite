@@ -10,6 +10,7 @@ import ScrollToTop from '../components/common/ScrollToTop';
 import { PRODUCT_TYPES, VIDEO_SOURCES } from '../constants';
 import { collectPageResources } from '../utils/resourceCollector';
 import { useResourceCollector } from '../context/ResourceCollectorContext';
+import { getRouteKeyFromPathname, stripLangPrefix } from '../utils/i18nRouting';
 
 // Main layout wrapper
 const LayoutWrapper = styled.div`
@@ -43,8 +44,8 @@ const MainLayout = () => {
   } = useResourceCollector();
 
   // Przygotuj dane produktów dla HomePage (potrzebne do kolektora zasobów)
-  const getAdditionalData = () => {
-    if (location.pathname === '/') {
+  const getAdditionalData = (routeKey) => {
+    if (routeKey === 'home') {
       return {
         productData: {
           [PRODUCT_TYPES.WINDOWS]: {
@@ -95,8 +96,9 @@ const MainLayout = () => {
     }
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
 
+    const routeKey = getRouteKeyFromPathname(location.pathname);
     resetResources();
-    const resources = collectPageResources(location.pathname, getAdditionalData());
+    const resources = collectPageResources(routeKey, getAdditionalData(routeKey));
     addResources(resources);
     setIsLoading(true);
     setIsHiding(false);

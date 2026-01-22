@@ -13,8 +13,6 @@ export default defineType({
       title: 'Wstęp (Intro)',
       type: 'object',
       fields: [
-        defineField({name: 'headline', title: 'Nagłówek', type: 'localizedString'}),
-        defineField({name: 'subheadline', title: 'Podtytuł', type: 'localizedText'}),
         defineField({name: 'backgroundVideo', title: 'Wideo w tle', type: 'file'}),
       ],
     }),

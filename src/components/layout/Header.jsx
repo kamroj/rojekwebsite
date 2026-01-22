@@ -13,6 +13,7 @@ import logoWhite from '/images/logo.png';
 import logoBlack from '/images/logo-black.png';
 import { fadeIn, fadeOut, slideInRight, slideOutRight, hamburgerToX } from '../../styles/animations.js';
 import MaxWidthContainer from '../common/MaxWidthContainer.jsx';
+import { getSectionPath } from '../../utils/i18nRouting';
 
 const MENU_ANIMATION_MS = 300;
 
@@ -305,17 +306,27 @@ const Header = () => {
   const restoreOverflowTimeoutRef = useRef(null);
   const lastPathnameRef = useRef(null);
 
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
+  const lang = i18n.language;
   const { isPastThreshold, isScrollingUp, isScrollingDown } = useScrollPosition(5);
   const theme = useTheme();
 
   const isActive = useCallback(
     (path) => {
-      if (path === ROUTES.HOME && location.pathname === ROUTES.HOME) return true;
-      return path !== ROUTES.HOME && location.pathname.startsWith(path);
+      const routeMap = {
+        [ROUTES.HOME]: getSectionPath(lang, 'home'),
+        [ROUTES.PRODUCTS]: getSectionPath(lang, 'products'),
+        [ROUTES.REALIZATIONS]: getSectionPath(lang, 'realizations'),
+        [ROUTES.ABOUT]: getSectionPath(lang, 'about'),
+        [ROUTES.CONTACT]: getSectionPath(lang, 'contact'),
+        [ROUTES.HS_CONFIGURATOR]: getSectionPath(lang, 'hsConfigurator'),
+      };
+      const localized = routeMap[path] || getSectionPath(lang, 'home');
+      if (path === ROUTES.HOME && location.pathname === localized) return true;
+      return path !== ROUTES.HOME && location.pathname.startsWith(localized);
     },
-    [location.pathname]
+    [lang, location.pathname]
   );
 
   const closeMobileMenu = useCallback(() => {
@@ -413,7 +424,7 @@ const Header = () => {
       $isVisible={isVisible}
     >
       <HeaderInner>
-        <LogoLink to={ROUTES.HOME}>
+        <LogoLink to={getSectionPath(lang, 'home')}>
           <img
             src={isPastThreshold ? logoBlack : logoWhite}
             alt={t('nav.logoAlt', 'ROJEK okna i drzwi Logo')}
@@ -453,7 +464,21 @@ const Header = () => {
             {navItems.map((item, index) => (
               <MobileNavItem 
                 key={item.key} 
-                to={item.path} 
+                to={
+                  item.path === ROUTES.HOME
+                    ? getSectionPath(lang, 'home')
+                    : item.path === ROUTES.PRODUCTS
+                      ? getSectionPath(lang, 'products')
+                      : item.path === ROUTES.REALIZATIONS
+                        ? getSectionPath(lang, 'realizations')
+                        : item.path === ROUTES.ABOUT
+                          ? getSectionPath(lang, 'about')
+                          : item.path === ROUTES.CONTACT
+                            ? getSectionPath(lang, 'contact')
+                            : item.path === ROUTES.HS_CONFIGURATOR
+                              ? getSectionPath(lang, 'hsConfigurator')
+                              : getSectionPath(lang, 'home')
+                } 
                 onClick={closeMobileMenu}
                 className={isActive(item.path) ? 'active' : ''}
                 $index={index}

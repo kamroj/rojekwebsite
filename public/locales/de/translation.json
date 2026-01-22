@@ -15,7 +15,11 @@
     "home": "Startseite",
     "realizations": "Projekte",
     "about": "Über uns",
-    "contact": "Kontakt"
+    "contact": "Kontakt",
+    "okna": "Fenster",
+    "drzwi": "Türen",
+    "bramy": "Garagentore",
+    "rolety": "Rollläden"
   },
   "hsConfigurator": {
     "title": "HS‑Konfigurator"
@@ -39,6 +43,11 @@
     "pause": "Pause",
     "play": "Abspielen",
     "see": "Ansehen"
+  },
+  "common": {
+    "contactUs": "Kontaktieren Sie uns",
+    "warranty": "Garantie",
+    "viewMore": "Mehr anzeigen"
   },
   "sections": {
     "products": "PRODUKTE",
@@ -134,6 +143,59 @@
         "Ästhetische Ausführung und Anpassung an Fassaden",
         "Niedrigschwellenoptionen für erleichterten Zugang"
       ]
+    },
+    "notFound": "Nicht gefunden",
+    "emptyCategory": "Keine Produkte in dieser Kategorie.",
+    "categoryNotFoundTitle": "Kategorie nicht gefunden",
+    "categoryNotFoundSubtitle": "Die ausgewählte Produktkategorie existiert nicht."
+  },
+  "productCategories": {
+    "okna": {
+      "title": "Fensterprodukte",
+      "subtitle": "Entdecken Sie unsere modernen Fenstersysteme."
+    },
+    "drzwi": {
+      "title": "Türprodukte",
+      "subtitle": "Entdecken Sie unsere modernen Türsysteme."
+    },
+    "bramy": {
+      "title": "Garagentore",
+      "subtitle": "Entdecken Sie unsere modernen Garagentorsysteme."
+    },
+    "rolety": {
+      "title": "Rollläden & Jalousien",
+      "subtitle": "Entdecken Sie unsere modernen Rollladen- und Jalousiesysteme."
+    }
+  },
+  "productDetail": {
+    "downloadCatalogPdf": "PDF‑Katalog herunterladen",
+    "windows": {
+      "featuresTitle": "Was zeichnet das Fenster {{product}} aus?",
+      "colorsTitle": "RAL‑Farbpalette",
+      "colorsMostPopular": "Beliebteste Farben",
+      "colorsFullPalette": "Vollständige RAL‑Farbkarte",
+      "advantagesTitle": "Warum {{product}} wählen?",
+      "warranty": {
+        "title": "Qualität, auf die Sie sich jahrelang verlassen können",
+        "text": "Wir sind von der Qualität unserer Produkte überzeugt. Deshalb können Sie innerhalb von <strong>5 Jahren</strong> nach der Montage jedes Problem mit allen Elementen unserer Fensterkonstruktionen melden. Zusätzlich bieten wir <strong>10 Jahre Garantie</strong> auf die Dichtheit von Isolierglaseinheiten mit Warmatec‑Abstandhalter.",
+        "highlight": "Kostenloser Garantieservice"
+      },
+      "cta": {
+        "title": "Interessiert an {{product}} Fenstern?",
+        "description": "Unsere Experten helfen Ihnen, die ideale Lösung für Ihr Zuhause zu wählen. Kontaktieren Sie uns für ein kostenloses Angebot.",
+        "note": "Wir antworten innerhalb von 24 Stunden"
+      }
+    },
+    "faq": {
+      "title": "<product>{{product}}</product> – Häufig gestellte Fragen",
+      "subtitle": "Finden Sie Antworten auf die wichtigsten Fragen zu unserem Produkt"
+    },
+    "errors": {
+      "productNotFoundTitle": "Produkt nicht gefunden",
+      "productNotFoundText": "Das ausgewählte Produkt existiert nicht.",
+      "backToCategory": "Zurück zur Kategorie",
+      "noTemplateTitle": "Keine Produktvorlage",
+      "noTemplateText": "Für diese Produktkategorie haben wir noch keine Detailseite vorbereitet."
     }
   },
   "realizations": {
@@ -295,6 +357,20 @@
     "en": "Englisch",
     "de": "Deutsch"
   },
+  "breadcrumbs": {
+    "home": "Startseite",
+    "products": "Produkte",
+    "realizations": "Projekte",
+    "about": "Über uns",
+    "contact": "Kontakt",
+    "configurator": "HS‑Konfigurator",
+    "categories": {
+      "okna": "Fenster",
+      "drzwi": "Türen",
+      "bramy": "Garagentore",
+      "rolety": "Rollläden"
+    }
+  },
   "history": {
     "title": "Unsere Geschichte",
     "subtitle": "Über 40 Jahre Erfahrung in der Branche",
@@ -387,6 +463,19 @@
     },
     "gdpr": {
       "notice": "Verantwortlicher für Ihre personenbezogenen Daten ist ROJEK Okna i Drzwi Sp. z o.o. mit Sitz in Kraków (Kryspinów 399, 32-060 Kryspinów). Die personenbezogenen Daten werden verarbeitet, um Ihre Anfrage zu beantworten und den höchsten Servicestandard zu gewährleisten. Das Absenden des Formulars stellt eine freiwillige Einwilligung dar, per E‑Mail oder Telefon zum Zweck der Bearbeitung der Anfrage kontaktiert zu werden. Die Einwilligung kann jederzeit widerrufen werden, indem eine Nachricht an biuro@rojekoid.pl gesendet wird."
+    }
+  },
+  "productSpecs": {
+    "labels": {
+      "profileThickness": "Profilstärke",
+      "thermalTransmittance": "Wärmedurchgang (Uw)",
+      "waterTightness": "Wasserdichtheit"
+    },
+    "tooltipAria": "Parametererklärung: {{spec}}",
+    "tooltips": {
+      "profileThickness": "Die Profilstärke (z. B. 70–86 mm) beeinflusst die Stabilität der Konstruktion und ermöglicht den Einsatz dickerer Verglasungseinheiten.",
+      "thermalTransmittance": "Der Wärmedurchgangskoeffizient (Uw) zeigt, wie viel Wärme durch das Fenster verloren geht. Je niedriger der Wert, desto besser die Dämmung und desto geringer die Heizkosten.",
+      "waterTightness": "Die Wasserdichtheit (z. B. Klasse 9A) beschreibt die Beständigkeit gegen Wassereindringen bei Regen und Wind. Eine höhere Klasse bedeutet besseren Schutz vor Undichtigkeiten."
     }
   }
 }

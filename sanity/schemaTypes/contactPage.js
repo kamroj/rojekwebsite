@@ -9,8 +9,6 @@ export default defineType({
   __experimental_formPreviewTitle: false,
   fields: [
     defineField({name: 'headerImage', title: 'Zdjęcie nagłówkowe', type: 'image', options: {hotspot: true}}),
-    defineField({name: 'headerTitle', title: 'Tytuł', type: 'localizedString'}),
-    defineField({name: 'headerSubtitle', title: 'Podtytuł', type: 'localizedText'}),
     defineField({
       name: 'contact',
       title: 'Dane kontaktowe',

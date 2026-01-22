@@ -27,7 +27,8 @@ i18n
     },
     detection: {
       // Order and from where user language should be detected
-      order: ['localStorage', 'navigator', 'htmlTag', 'path', 'subdomain'],
+      // With URL prefixes (/en, /de) we want the path to win.
+      order: ['path', 'localStorage', 'navigator', 'htmlTag', 'subdomain'],
       // Caches the language in localStorage
       caches: ['localStorage'],
     }

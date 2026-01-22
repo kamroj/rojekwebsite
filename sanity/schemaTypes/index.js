@@ -11,6 +11,8 @@ import teamMember from './teamMember'
 import tag from './tag'
 import realization from './realization'
 
+import faqItem from './faqItem'
+
 import {localizedString, localizedText, localizedBlockContent, blockContent} from './l10n'
 
 export const schemaTypes = [
@@ -19,6 +21,9 @@ export const schemaTypes = [
   localizedText,
   blockContent,
   localizedBlockContent,
+
+  // object types
+  faqItem,
 
   // documents
   homePage,

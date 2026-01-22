@@ -4,13 +4,12 @@ import styled from 'styled-components';
 import { Link, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { IoIosArrowForward } from 'react-icons/io';
-import { RxDimensions } from "react-icons/rx";
-import { TbTemperatureSun } from 'react-icons/tb';
-import { RiContrastDrop2Line } from 'react-icons/ri';
 import Page from '../components/common/Page';
 import Section from '../components/common/Section';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomePage';
 import { productCategories } from '../data/products';
+import { getCategoryKeyFromSlug, getProductDetailPath } from '../utils/i18nRouting';
+import { WINDOW_SPECS_DEFS, WINDOW_SPECS_ORDER_LIST } from '../data/products/windows';
 
 // --- Styled Components ---
 
@@ -265,10 +264,13 @@ const NotFoundText = styled.p`
 
 // --- Component ---
 const ProductCategoryPage = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
   const { category } = useParams();
 
-  const categoryInfo = productCategories[category];
+  const categoryKey = getCategoryKeyFromSlug(lang, category) || category;
+
+  const categoryInfo = productCategories[categoryKey];
 
   if (!categoryInfo) {
     return (
@@ -278,9 +280,11 @@ const ProductCategoryPage = () => {
       >
         <Section>
           <HeaderWrap>
-            <ProductHeader>Kategoria nie znaleziona</ProductHeader>
+            <ProductHeader>
+              {t('products.categoryNotFoundTitle', 'Kategoria nie znaleziona')}
+            </ProductHeader>
             <ProductHeaderSubtitle>
-              Wybrana kategoria produktów nie istnieje.
+              {t('products.categoryNotFoundSubtitle', 'Wybrana kategoria produktów nie istnieje.')}
             </ProductHeaderSubtitle>
           </HeaderWrap>
         </Section>
@@ -291,12 +295,16 @@ const ProductCategoryPage = () => {
   return (
     <Page
       imageSrc={categoryInfo.headerImage}
-      title={t(`pageTitle.${category}`, categoryInfo.pageTitle)}
+      title={t(`pageTitle.${categoryKey}`, categoryInfo.pageTitle)}
     >
       <Section>
         <HeaderWrap>
-          <ProductHeader>{categoryInfo.title}</ProductHeader>
-          <ProductHeaderSubtitle>{categoryInfo.subtitle}</ProductHeaderSubtitle>
+          <ProductHeader>
+            {t(`productCategories.${categoryKey}.title`, categoryInfo.title)}
+          </ProductHeader>
+          <ProductHeaderSubtitle>
+            {t(`productCategories.${categoryKey}.subtitle`, categoryInfo.subtitle)}
+          </ProductHeaderSubtitle>
         </HeaderWrap>
 
         {categoryInfo.products.length > 0 ? (
@@ -310,42 +318,33 @@ const ProductCategoryPage = () => {
                   <Divider />
 
                   <SpecsContainer>
-                    <SpecItem>
-                      <SpecIconWrapper>
-                        <RxDimensions />
-                      </SpecIconWrapper>
-                      <SpecDetails>
-                        <SpecValue>{product.specs.chambers}</SpecValue>
-                        <SpecLabel>{product.specs.chambersLabel}</SpecLabel>
-                      </SpecDetails>
-                    </SpecItem>
+                    {WINDOW_SPECS_ORDER_LIST.map((specKey, idx) => {
+                      const def = WINDOW_SPECS_DEFS[specKey]
+                      if (!def) return null
+                      const Icon = def.icon
+                      const value = product?.specs?.[specKey]
 
-                    <SpecSeparator />
+                      // Jeśli produkt nie ma wartości, nie renderujemy tej pozycji.
+                      if (!value) return null
 
-                    <SpecItem>
-                      <SpecIconWrapper>
-                        <TbTemperatureSun />
-                      </SpecIconWrapper>
-                      <SpecDetails>
-                        <SpecValue>{product.specs.uw}</SpecValue>
-                        <SpecLabel>{product.specs.uwUnit}</SpecLabel>
-                      </SpecDetails>
-                    </SpecItem>
-
-                    <SpecSeparator />
-
-                    <SpecItem>
-                      <SpecIconWrapper>
-                        <RiContrastDrop2Line />
-                      </SpecIconWrapper>
-                      <SpecDetails>
-                        <SpecValue>{product.specs.pressure}</SpecValue>
-                        <SpecLabel>{product.specs.pressureLabel}</SpecLabel>
-                      </SpecDetails>
-                    </SpecItem>
+                      return (
+                        <React.Fragment key={specKey}>
+                          <SpecItem>
+                            <SpecIconWrapper>
+                              <Icon />
+                            </SpecIconWrapper>
+                            <SpecDetails>
+                              <SpecValue>{value}</SpecValue>
+                              <SpecLabel>{def?.labelKey ? t(def.labelKey, def.label) : def.label}</SpecLabel>
+                            </SpecDetails>
+                          </SpecItem>
+                          {idx < WINDOW_SPECS_ORDER_LIST.length - 1 && <SpecSeparator />}
+                        </React.Fragment>
+                      )
+                    })}
                   </SpecsContainer>
 
-                  <ViewMoreButton to={`/produkty/${category}/${product.id}`}>
+                  <ViewMoreButton to={getProductDetailPath(lang, categoryKey, product.id)}>
                     {t('common.viewMore', 'Zobacz więcej')}
                     <IoIosArrowForward />
                   </ViewMoreButton>

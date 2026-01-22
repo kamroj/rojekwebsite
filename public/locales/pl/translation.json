@@ -15,7 +15,11 @@
     "home": "Strona Główna",
     "realizations": "Realizacje",
     "about": "O Firmie",
-    "contact": "Kontakt"
+    "contact": "Kontakt",
+    "okna": "Okna",
+    "drzwi": "Drzwi",
+    "bramy": "Bramy",
+    "rolety": "Rolety"
   },
   "hsConfigurator": {
     "title": "Konfigurator HS"
@@ -39,6 +43,11 @@
     "pause": "Pauza",
     "play": "Odtwórz",
     "see": "Zobacz"
+  },
+  "common": {
+    "contactUs": "Skontaktuj się z nami",
+    "warranty": "Gwarancja",
+    "viewMore": "Zobacz więcej"
   },
   "sections": {
     "products": "PRODUKTY",
@@ -68,6 +77,59 @@
     "fireResistant": {
       "name": "Okna i Drzwi przeciwpożarowe",
       "description": "Bezpieczne rozwiązania przeciwpożarowe"
+    },
+    "notFound": "Nie znaleziono",
+    "emptyCategory": "Brak produktów w tej kategorii.",
+    "categoryNotFoundTitle": "Kategoria nie znaleziona",
+    "categoryNotFoundSubtitle": "Wybrana kategoria produktów nie istnieje."
+  },
+  "productCategories": {
+    "okna": {
+      "title": "Produkty okienne",
+      "subtitle": "Poznaj nasze nowoczesne systemy okienne."
+    },
+    "drzwi": {
+      "title": "Produkty drzwiowe",
+      "subtitle": "Poznaj nasze nowoczesne systemy drzwiowe."
+    },
+    "bramy": {
+      "title": "Bramy garażowe",
+      "subtitle": "Poznaj nasze nowoczesne systemy bram garażowych."
+    },
+    "rolety": {
+      "title": "Rolety i żaluzje",
+      "subtitle": "Poznaj nasze nowoczesne systemy rolet i żaluzji."
+    }
+  },
+  "productDetail": {
+    "downloadCatalogPdf": "Pobierz katalog PDF",
+    "windows": {
+      "featuresTitle": "Co wyróżnia okno {{product}}?",
+      "colorsTitle": "Kolorystyka RAL",
+      "colorsMostPopular": "Najczęściej wybierane kolory",
+      "colorsFullPalette": "Pełna paleta kolorów RAL",
+      "advantagesTitle": "Dlaczego warto wybrać {{product}}?",
+      "warranty": {
+        "title": "Pewność jakości na lata",
+        "text": "Jesteśmy pewni jakości naszych produktów, dlatego w ciągu <strong>5 lat</strong> od montażu możesz nam zgłosić jakikolwiek problem z wszystkimi elementami naszej stolarki okiennej. Dodatkowo oferujemy <strong>10 lat gwarancji</strong> na szczelność pakietów szybowych z ramką Warmatec.",
+        "highlight": "Bezpłatny serwis gwarancyjny"
+      },
+      "cta": {
+        "title": "Zainteresowany oknami {{product}}?",
+        "description": "Nasi eksperci pomogą Ci dobrać idealne rozwiązanie dla Twojego domu. Skontaktuj się z nami, aby uzyskać bezpłatną wycenę.",
+        "note": "Odpowiadamy w ciągu 24 godzin"
+      }
+    },
+    "faq": {
+      "title": "<product>{{product}}</product> – Najczęściej zadawane pytania",
+      "subtitle": "Znajdź odpowiedzi na najważniejsze pytania dotyczące naszego produktu"
+    },
+    "errors": {
+      "productNotFoundTitle": "Nie znaleziono produktu",
+      "productNotFoundText": "Wybrany produkt nie istnieje.",
+      "backToCategory": "Wróć do kategorii",
+      "noTemplateTitle": "Brak szablonu produktu",
+      "noTemplateText": "Dla tej kategorii produktów nie mamy jeszcze przygotowanej strony detalu."
     }
   },
   "realizations": {
@@ -229,6 +291,20 @@
     "en": "Angielski",
     "de": "Niemiecki"
   },
+  "breadcrumbs": {
+    "home": "Strona główna",
+    "products": "Produkty",
+    "realizations": "Realizacje",
+    "about": "O firmie",
+    "contact": "Kontakt",
+    "configurator": "Konfigurator HS",
+    "categories": {
+      "okna": "Okna",
+      "drzwi": "Drzwi",
+      "bramy": "Bramy",
+      "rolety": "Rolety"
+    }
+  },
   "history": {
     "title": "Nasza Historia",
     "subtitle": "Ponad 40 lat doświadczenia w branży",
@@ -339,6 +415,19 @@
     },
     "gdpr": {
       "notice": "Administratorem Państwa danych osobowych jest ROJEK Okna i Drzwi Sp. z o.o. z siedzibą w Krakowie (Kryspinów 399, 32-060 Kryspinów). Dane osobowe będą przetwarzane w celu udzielenia odpowiedzi na przesłane zapytanie oraz zapewnienia najwyższych standardów obsługi. Przesłanie formularza oznacza dobrowolne wyrażenie zgody na kontakt drogą e-mailową lub telefoniczną w celu obsługi zapytania. Zgodę można w każdej chwili wycofać, wysyłając wiadomość na adres biuro@rojekoid.pl"
+    }
+  },
+  "productSpecs": {
+    "labels": {
+      "profileThickness": "grubość profilu",
+      "thermalTransmittance": "przenikanie ciepła (Uw)",
+      "waterTightness": "wodoszczelność"
+    },
+    "tooltipAria": "Wyjaśnienie parametru: {{spec}}",
+    "tooltips": {
+      "profileThickness": "Grubość profilu (np. 70–86 mm) wpływa m.in. na stabilność konstrukcji oraz możliwość zastosowania pakietów szybowych o większej grubości.",
+      "thermalTransmittance": "Współczynnik przenikania ciepła (Uw) informuje, ile ciepła ucieka przez okno. Im niższa wartość, tym lepsza izolacja i mniejsze koszty ogrzewania.",
+      "waterTightness": "Wodoszczelność (np. klasa 9A) określa odporność na przenikanie wody podczas deszczu i wiatru. Wyższa klasa oznacza lepszą ochronę przed przeciekaniem."
     }
   }
 }

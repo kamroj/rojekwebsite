@@ -1,8 +1,9 @@
 import React from 'react';
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Link, useLocation } from 'react-router-dom';
 import { ROUTES } from '../../constants';
+import { getSectionPath } from '../../utils/i18nRouting';
 
 const BaseNavContainer = styled.nav`
   display: flex;
@@ -75,7 +76,8 @@ export const IntroNavItem = styled(BaseNavItem)`
 `;
 
 const Navigation = ({ variant = 'header', isPastThreshold }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
   const location = useLocation();
   
   const NavContainer = variant === 'intro' ? IntroNavContainer : HeaderNavContainer;
@@ -115,10 +117,20 @@ const Navigation = ({ variant = 'header', isPastThreshold }) => {
   ];
   
   const isActive = (path) => {
-    if (path === ROUTES.HOME && location.pathname === ROUTES.HOME) {
+    const routeMap = {
+      [ROUTES.HOME]: getSectionPath(lang, 'home'),
+      [ROUTES.PRODUCTS]: getSectionPath(lang, 'products'),
+      [ROUTES.REALIZATIONS]: getSectionPath(lang, 'realizations'),
+      [ROUTES.ABOUT]: getSectionPath(lang, 'about'),
+      [ROUTES.CONTACT]: getSectionPath(lang, 'contact'),
+      [ROUTES.HS_CONFIGURATOR]: getSectionPath(lang, 'hsConfigurator'),
+    };
+    const localized = routeMap[path] || getSectionPath(lang, 'home');
+
+    if (path === ROUTES.HOME && location.pathname === localized) {
       return true;
     }
-    return path !== ROUTES.HOME && location.pathname.startsWith(path);
+    return path !== ROUTES.HOME && location.pathname.startsWith(localized);
   };
   
   return (
@@ -126,7 +138,21 @@ const Navigation = ({ variant = 'header', isPastThreshold }) => {
       {navItems.map(item => (
         <NavItem 
           $isPastThreshold={isPastThreshold} 
-          to={item.path} 
+          to={
+            item.path === ROUTES.HOME
+              ? getSectionPath(lang, 'home')
+              : item.path === ROUTES.PRODUCTS
+                ? getSectionPath(lang, 'products')
+                : item.path === ROUTES.REALIZATIONS
+                  ? getSectionPath(lang, 'realizations')
+                  : item.path === ROUTES.ABOUT
+                    ? getSectionPath(lang, 'about')
+                    : item.path === ROUTES.CONTACT
+                      ? getSectionPath(lang, 'contact')
+                      : item.path === ROUTES.HS_CONFIGURATOR
+                        ? getSectionPath(lang, 'hsConfigurator')
+                        : getSectionPath(lang, 'home')
+          } 
           key={item.key}
           className={isActive(item.path) ? 'active' : ''}
           aria-current={isActive(item.path) ? 'page' : undefined}
