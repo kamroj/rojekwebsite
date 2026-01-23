@@ -8,6 +8,10 @@ import { productCategories, productDetailsByType } from '../data/products';
 import WindowProductDetail from './product-details/WindowProductDetail';
 import { useTranslation } from 'react-i18next';
 import { getCategoryKeyFromSlug, getProductCategoryPath, getProductsIndexPath } from '../utils/i18nRouting';
+import { useResourceCollector } from '../context/ResourceCollectorContext';
+import { runSanityTask } from '../services/sanity/runSanityTask';
+import { fetchWindowProductDetail } from '../services/sanity/windows';
+import { isSanityConfigured } from '../services/sanity/config';
 
 const BackLink = styled(Link)`
   display: inline-flex;
@@ -33,14 +37,64 @@ const ProductDetailPage = () => {
   const lang = i18n.language;
   const { category, productId } = useParams();
 
+  const { beginTask, endTask, addResources } = useResourceCollector();
+  const [sanityProduct, setSanityProduct] = React.useState(undefined); // undefined = not fetched yet, null = fetched but not found
+
   const categoryKey = getCategoryKeyFromSlug(lang, category) || category;
 
   const categoryInfo = productCategories[categoryKey];
   const detailType = categoryInfo?.detailType;
 
-  const product = detailType
+  const isWindows = detailType === 'windows';
+
+  // Try Sanity first for windows.
+  React.useEffect(() => {
+    if (!isWindows) {
+      setSanityProduct(undefined);
+      return;
+    }
+    if (!isSanityConfigured()) {
+      setSanityProduct(undefined);
+      return;
+    }
+    if (!productId) {
+      setSanityProduct(null);
+      return;
+    }
+
+    const controller = new AbortController();
+
+    runSanityTask({
+      beginTask,
+      endTask,
+      addResources,
+      taskName: `sanity:windows:detail:${productId}`,
+      fetcher: ({ signal }) => fetchWindowProductDetail(productId, lang, { signal }),
+      extractAssetUrls: (data) => data?._assetUrls || [],
+      signal: controller.signal,
+    })
+      .then((data) => {
+        if (controller.signal.aborted) return;
+        setSanityProduct(data || null);
+      })
+      .catch((e) => {
+        if (controller.signal.aborted) return;
+        console.warn('Sanity windows detail fetch failed', e);
+        // Fallback to local data.
+        setSanityProduct(null);
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [isWindows, productId, lang, beginTask, endTask, addResources]);
+
+  // Fallback: local data when Sanity is not configured / no data found.
+  const productFromLocal = detailType
     ? productDetailsByType?.[detailType]?.[productId]
     : undefined;
+
+  const product = isWindows && sanityProduct ? sanityProduct : productFromLocal;
 
   // Keep existing behavior for missing product/category
   if (!categoryInfo || !product) {

@@ -59,20 +59,6 @@ export default defineType({
       group: 'basic',
       description: 'Pokazuje się w nagłówku (hero) na stronie detalu produktu.',
     }),
-
-    defineField({
-      name: 'shortDescription',
-      title: 'Krótki opis',
-      type: 'localizedText',
-      group: 'content',
-    }),
-    defineField({
-      name: 'longDescription',
-      title: 'Długi opis',
-      type: 'localizedBlockContent',
-      group: 'content',
-    }),
-
     defineField({
       name: 'listImage',
       title: 'Zdjęcie kafelka (lista produktów w kategorii)',
@@ -81,6 +67,18 @@ export default defineType({
       group: 'media',
       description:
         'Obraz używany na liście produktów (np. strona „Okna” pokazująca listę produktów w tej kategorii).',
+    }),
+    defineField({
+      name: 'shortDescription',
+      title: 'Zdanie promocyjne',
+      type: 'localizedText',
+      group: 'content',
+    }),
+    defineField({
+      name: 'longDescription',
+      title: 'Opis',
+      type: 'localizedBlockContent',
+      group: 'content',
     }),
     defineField({
       name: 'gallery',
@@ -170,4 +168,3 @@ export default defineType({
     },
   },
 })
-

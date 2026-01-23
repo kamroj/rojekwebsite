@@ -159,6 +159,22 @@ export const ResourceCollectorProvider = ({ children }) => {
   const [totalCount, setTotalCount] = useState(0);
   const loadingRef = useRef(false);
 
+  // Additional async work not represented by image/video preload.
+  // We will use it to track Sanity fetch requests so the global LoadingScreen can wait
+  // for both: data fetch + asset preloading.
+  const [pendingTasks, setPendingTasks] = useState(0);
+  const pendingTasksRef = useRef(0);
+
+  const beginTask = useCallback(() => {
+    pendingTasksRef.current += 1;
+    setPendingTasks(pendingTasksRef.current);
+  }, []);
+
+  const endTask = useCallback(() => {
+    pendingTasksRef.current = Math.max(0, pendingTasksRef.current - 1);
+    setPendingTasks(pendingTasksRef.current);
+  }, []);
+
   // Dodaj zasoby do kolektora (unikalne po url)
   const addResources = useCallback((newResources) => {
     setResources(prev => {
@@ -195,6 +211,10 @@ export const ResourceCollectorProvider = ({ children }) => {
     setLoadedCount(0);
     setTotalCount(0);
     loadingRef.current = false;
+
+    // Reset pending tasks as well (route change / hard reset)
+    pendingTasksRef.current = 0;
+    setPendingTasks(0);
   }, []);
 
   // Automatycznie ładuj zasoby, gdy się pojawią
@@ -260,7 +280,12 @@ export const ResourceCollectorProvider = ({ children }) => {
         totalCount,
         progress,
         loadedResources,
-        failedResources
+        failedResources,
+
+        // Async tasks (e.g. Sanity fetch)
+        pendingTasks,
+        beginTask,
+        endTask
       }}
     >
       {children}

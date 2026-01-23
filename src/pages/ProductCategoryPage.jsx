@@ -10,6 +10,10 @@ import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomePage';
 import { productCategories } from '../data/products';
 import { getCategoryKeyFromSlug, getProductDetailPath } from '../utils/i18nRouting';
 import { WINDOW_SPECS_DEFS, WINDOW_SPECS_ORDER_LIST } from '../data/products/windows';
+import { useResourceCollector } from '../context/ResourceCollectorContext';
+import { runSanityTask } from '../services/sanity/runSanityTask';
+import { fetchWindowProductsList } from '../services/sanity/windows';
+import { isSanityConfigured } from '../services/sanity/config';
 
 // --- Styled Components ---
 
@@ -268,9 +272,51 @@ const ProductCategoryPage = () => {
   const lang = i18n.language;
   const { category } = useParams();
 
+  const { beginTask, endTask, addResources } = useResourceCollector();
+  const [sanityProducts, setSanityProducts] = React.useState(null);
+  const [_sanityError, setSanityError] = React.useState(null);
+
   const categoryKey = getCategoryKeyFromSlug(lang, category) || category;
 
   const categoryInfo = productCategories[categoryKey];
+
+  const isWindowsCategory = categoryKey === 'okna';
+
+  // Fetch window products from Sanity (only for Okna).
+  React.useEffect(() => {
+    if (!isWindowsCategory) return;
+    if (!isSanityConfigured()) {
+      setSanityProducts(null);
+      return;
+    }
+
+    const controller = new AbortController();
+
+    runSanityTask({
+      beginTask,
+      endTask,
+      addResources,
+      taskName: 'sanity:windows:list',
+      fetcher: ({ signal }) => fetchWindowProductsList(lang, { signal }),
+      extractAssetUrls: (data) => (data || []).flatMap((p) => p?._assetUrls || []),
+      signal: controller.signal,
+    })
+      .then((data) => {
+        if (controller.signal.aborted) return;
+        setSanityError(null);
+        setSanityProducts(data || []);
+      })
+      .catch((e) => {
+        if (controller.signal.aborted) return;
+        console.warn('Sanity windows list fetch failed', e);
+        setSanityError(e);
+        setSanityProducts([]);
+      });
+
+    return () => {
+      controller.abort();
+    };
+  }, [isWindowsCategory, lang, beginTask, endTask, addResources]);
 
   if (!categoryInfo) {
     return (
@@ -292,6 +338,13 @@ const ProductCategoryPage = () => {
     );
   }
 
+  // Data source:
+  // - for Okna: prefer Sanity (if configured + data fetched), otherwise fallback to local.
+  // - for other categories: keep local behavior.
+  const productsToRender = isWindowsCategory && Array.isArray(sanityProducts) && sanityProducts.length > 0
+    ? sanityProducts
+    : categoryInfo.products;
+
   return (
     <Page
       imageSrc={categoryInfo.headerImage}
@@ -307,9 +360,9 @@ const ProductCategoryPage = () => {
           </ProductHeaderSubtitle>
         </HeaderWrap>
 
-        {categoryInfo.products.length > 0 ? (
+        {productsToRender.length > 0 ? (
           <ProductsContainer>
-            {categoryInfo.products.map((product) => (
+            {productsToRender.map((product) => (
               <ProductCard key={product.id}>
                 <ProductInfo>
                   <ProductName>{product.name}</ProductName>
@@ -344,7 +397,7 @@ const ProductCategoryPage = () => {
                     })}
                   </SpecsContainer>
 
-                  <ViewMoreButton to={getProductDetailPath(lang, categoryKey, product.id)}>
+                  <ViewMoreButton to={getProductDetailPath(lang, categoryKey, product.slug || product.id)}>
                     {t('common.viewMore', 'Zobacz więcej')}
                     <IoIosArrowForward />
                   </ViewMoreButton>

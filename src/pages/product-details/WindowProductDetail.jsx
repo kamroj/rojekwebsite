@@ -5,6 +5,7 @@ import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { FiDownload, FiPhone, FiCheck, FiExternalLink, FiPlus, FiMinus } from 'react-icons/fi';
 import { BsQuestionCircle } from 'react-icons/bs';
 import { Trans, useTranslation } from 'react-i18next';
+import { PortableText } from '@portabletext/react';
 import Page from '../../components/common/Page';
 import Section from '../../components/common/Section';
 import { WINDOW_COLORS_PALETTE, WINDOW_SPECS_DEFS, WINDOW_SPECS_ORDER_LIST } from '../../data/products/windows';
@@ -1000,8 +1001,8 @@ const CTANote = styled.span`
   color: #9ca3af;
 `;
 
-// FAQ Data
-const faqData = [
+// Local fallback FAQ (used only if CMS has no FAQ yet)
+const fallbackFaqData = [
   {
     question: "Jak często należy konserwować okna PVC?",
     answer: "Okna PVC wymagają minimalnej konserwacji. Zalecamy czyszczenie ram i szyb co najmniej 2-3 razy w roku przy użyciu łagodnych środków czyszczących. Okucia warto smarować specjalnym olejem raz w roku, najlepiej przed sezonem zimowym. Uszczelki można przecierać preparatem silikonowym, co przedłuży ich żywotność."
@@ -1010,22 +1011,6 @@ const faqData = [
     question: "Jaki współczynnik przenikania ciepła Uw jest najlepszy?",
     answer: "Im niższy współczynnik Uw, tym lepsza izolacja termiczna okna. Dla domów energooszczędnych zalecamy okna z Uw poniżej 0,9 W/m²K. Standardowe okna mają Uw na poziomie 1,1-1,3 W/m²K. Nasze okna premium osiągają nawet Uw = 0,7 W/m²K, co przekłada się na znaczne oszczędności w ogrzewaniu."
   },
-  {
-    question: "Czy oferujecie montaż okien i ile trwa realizacja?",
-    answer: "Tak, oferujemy profesjonalny montaż wykonywany przez certyfikowanych monterów. Czas realizacji zamówienia wynosi zazwyczaj 4-6 tygodni od momentu pomiaru. Sam montaż standardowego okna trwa około 2-3 godzin. Oferujemy również demontaż starych okien i wywóz gruzu w cenie usługi."
-  },
-  {
-    question: "Czy mogę zamówić okna w niestandardowych wymiarach?",
-    answer: "Oczywiście! Specjalizujemy się w produkcji okien na wymiar. Możemy wykonać okna o nietypowych kształtach - łukowe, trójkątne, trapezowe czy okrągłe. Minimalny wymiar to 30x30 cm, a maksymalny zależy od typu okna i może sięgać nawet 300x280 cm dla okien przesuwnych."
-  },
-  {
-    question: "Jakie są różnice między oknami dwu- a trzyszybowymi?",
-    answer: "Okna trzyszybowe oferują lepszą izolację termiczną (Ug nawet 0,5 W/m²K vs 1,0 W/m²K dla dwuszybowych) i akustyczną. Są cięższe o około 30%, co wymaga mocniejszych okuć. Przy dzisiejszych cenach energii okna trzyszybowe zwracają się w ciągu 5-7 lat. Polecamy je szczególnie do domów energooszczędnych i budynków przy ruchliwych ulicach."
-  },
-  {
-    question: "Jak długo trwa gwarancja na okna?",
-    answer: "Udzielamy 5-letniej gwarancji na wszystkie elementy stolarki okiennej, obejmującej profile, okucia i uszczelki. Dodatkowo oferujemy rozszerzoną 10-letnią gwarancję na szczelność pakietów szybowych z ciepłą ramką. Gwarancja obejmuje bezpłatne naprawy i wymianę wadliwych elementów."
-  }
 ];
 
 const WindowProductDetail = ({ product }) => {
@@ -1070,6 +1055,16 @@ const WindowProductDetail = ({ product }) => {
   const colors = product?.colors?.length ? product.colors : WINDOW_COLORS_PALETTE;
   const currentColor = colors?.[selectedColor];
 
+  // Long description: local data uses string, Sanity uses PortableText blocks.
+  const longDescriptionContent = Array.isArray(product?.longDescription) ? (
+    <PortableText value={product.longDescription} />
+  ) : (
+    product.longDescription
+  );
+
+  // FAQ: prefer CMS
+  const faqItems = Array.isArray(product?.faq) && product.faq.length > 0 ? product.faq : fallbackFaqData;
+
   return (
     <Page
       imageSrc={product.headerImage}
@@ -1095,7 +1090,7 @@ const WindowProductDetail = ({ product }) => {
             <ProductTitle>{product.name}</ProductTitle>
             <TitleDivider />
             <ProductDescription>{product.shortDescription}</ProductDescription>
-            <ProductHighlight>{product.longDescription}</ProductHighlight>
+            <ProductHighlight as="div">{longDescriptionContent}</ProductHighlight>
 
             <ButtonsContainer>
               <PrimaryButton to="/contact">
@@ -1219,7 +1214,18 @@ const WindowProductDetail = ({ product }) => {
               <FeaturesContent>
                 {product.features.map((feature, index) => (
                   <FeatureItem key={index}>
-                    <FeatureText dangerouslySetInnerHTML={{ __html: feature.text }} />
+                    {/*
+                      Local data uses `{text: "<strong>..."}` (HTML).
+                      Sanity data is PortableText blocks.
+                      We support both in a backwards-compatible way.
+                    */}
+                    {Array.isArray(feature) ? (
+                      <FeatureText as="div">
+                        <PortableText value={feature} />
+                      </FeatureText>
+                    ) : (
+                      <FeatureText dangerouslySetInnerHTML={{ __html: feature.text }} />
+                    )}
                   </FeatureItem>
                 ))}
               </FeaturesContent>
@@ -1361,7 +1367,7 @@ const WindowProductDetail = ({ product }) => {
           </FAQHeader>
 
           <FAQContainer>
-            {faqData.map((faq, index) => (
+            {faqItems.map((faq, index) => (
               <FAQItem key={index} $isOpen={openFAQIndex === index}>
                 <FAQQuestion onClick={() => toggleFAQ(index)}>
                   <FAQQuestionContent>
@@ -1379,7 +1385,14 @@ const WindowProductDetail = ({ product }) => {
                 
                 <FAQAnswerWrapper $isOpen={openFAQIndex === index}>
                   <FAQAnswer>
-                    <FAQAnswerText>{faq.answer}</FAQAnswerText>
+                    {/* Sanity FAQ answer is PortableText blocks */}
+                    {Array.isArray(faq?.answer) ? (
+                      <FAQAnswerText as="div">
+                        <PortableText value={faq.answer} />
+                      </FAQAnswerText>
+                    ) : (
+                      <FAQAnswerText>{faq.answer}</FAQAnswerText>
+                    )}
                   </FAQAnswer>
                 </FAQAnswerWrapper>
               </FAQItem>

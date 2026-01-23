@@ -143,7 +143,7 @@ const LoadingScreen = ({
     if (isVisible && !isHiding) {
       // Save current scroll position and current path
       const scrollY = window.scrollY;
-      const initialPath = window.location.pathname;
+      // const initialPath = window.location.pathname;
       
       // Block scrolling
       document.body.style.position = 'fixed';
