@@ -5,10 +5,10 @@ import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { FiDownload, FiPhone, FiCheck, FiExternalLink, FiPlus, FiMinus } from 'react-icons/fi';
 import { BsQuestionCircle } from 'react-icons/bs';
 import { Trans, useTranslation } from 'react-i18next';
-import { PortableText } from '@portabletext/react';
 import Page from '../../components/common/Page';
 import Section from '../../components/common/Section';
 import { WINDOW_COLORS_PALETTE, WINDOW_SPECS_DEFS, WINDOW_SPECS_ORDER_LIST } from '../../data/products/windows';
+import SanityPortableText from '../../components/common/SanityPortableText';
 
 // --- Styled Components ---
 
@@ -1057,7 +1057,7 @@ const WindowProductDetail = ({ product }) => {
 
   // Long description: local data uses string, Sanity uses PortableText blocks.
   const longDescriptionContent = Array.isArray(product?.longDescription) ? (
-    <PortableText value={product.longDescription} />
+    <SanityPortableText value={product.longDescription} />
   ) : (
     product.longDescription
   );
@@ -1221,7 +1221,7 @@ const WindowProductDetail = ({ product }) => {
                     */}
                     {Array.isArray(feature) ? (
                       <FeatureText as="div">
-                        <PortableText value={feature} />
+                        <SanityPortableText value={feature} variant="compact" />
                       </FeatureText>
                     ) : (
                       <FeatureText dangerouslySetInnerHTML={{ __html: feature.text }} />
@@ -1388,7 +1388,7 @@ const WindowProductDetail = ({ product }) => {
                     {/* Sanity FAQ answer is PortableText blocks */}
                     {Array.isArray(faq?.answer) ? (
                       <FAQAnswerText as="div">
-                        <PortableText value={faq.answer} />
+                        <SanityPortableText value={faq.answer} />
                       </FAQAnswerText>
                     ) : (
                       <FAQAnswerText>{faq.answer}</FAQAnswerText>
