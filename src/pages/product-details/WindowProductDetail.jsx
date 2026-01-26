@@ -232,10 +232,9 @@ const SliderArrow = styled.button`
 // Specs Section
 const SpecsSection = styled.div`
   display: grid;
-  /* auto-fit -> lepsze ułożenie dla 3 lub 4 parametrów */
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
   gap: 1.5rem;
-  padding: 3rem 0;
+  padding: 1.5rem 0;
   border-radius: 12px;
   background: #ffff;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.096);
@@ -244,7 +243,7 @@ const SpecsSection = styled.div`
 
 const SpecCard = styled.div`
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 1rem;
   padding: 1.5rem;
   border-radius: 12px;
@@ -298,7 +297,6 @@ const TooltipBubble = styled.div`
   width: 280px;
   max-width: min(75vw, 320px);
   background: rgba(17, 24, 39, 0.96);
-  color: #ffffff;
   padding: 0.9rem 1rem;
   border-radius: 10px;
   font-size: 1.1rem;
@@ -329,7 +327,6 @@ const TooltipWrapper = styled.div`
   right: 1rem;
   z-index: 60;
 
-  /* hover (desktop) + focus (keyboard) */
   &:hover ${TooltipBubble},
   &:focus-within ${TooltipBubble} {
     opacity: 1;
@@ -337,7 +334,6 @@ const TooltipWrapper = styled.div`
     pointer-events: auto;
   }
 
-  /* click (mobile) */
   &[data-open='true'] ${TooltipBubble} {
     opacity: 1;
     transform: translateY(0);
@@ -352,7 +348,7 @@ const TooltipButton = styled.button`
   width: 34px;
   height: 34px;
   border-radius: 10px;
-  border: 1px solid rgba(209, 213, 219, 0.9);
+  border: 1px solid #014f1b55;
   background: rgba(255, 255, 255, 0.85);
   cursor: pointer;
   color: #6b7280;
@@ -360,7 +356,7 @@ const TooltipButton = styled.button`
 
   &:hover {
     color: #1a5618;
-    border-color: rgba(26, 86, 24, 0.35);
+    border-color: rgba(6, 86, 3, 0.586);
   }
 
   &:focus-visible {
@@ -371,6 +367,7 @@ const TooltipButton = styled.button`
 
   svg {
     font-size: 1.2rem;
+    color: #004505;
   }
 `;
 
@@ -626,22 +623,90 @@ const ColorPreviewDescription = styled.p`
   margin: 1.25rem 0 0 0;
 `;
 
-// Advantages Section
+// ============================================
+// SEKCJA ZALET (ADVANTAGES)
+// ============================================
+
 const AdvantagesSection = styled.div`
   padding: 5rem 0 3rem 0;
 `;
 
 const AdvantagesGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
   gap: 2rem;
+  grid-template-columns: repeat(6, 1fr);
+  
+  /* Domyślnie: 3 elementy w wierszu (każdy span 2) */
+  & > * {
+    grid-column: span 2;
+  }
+  
+  /* 1 element - pełna szerokość */
+  ${({ $count }) => $count === 1 && `
+    & > * {
+      grid-column: span 6;
+    }
+  `}
+  
+  /* 2 elementy - pełna szerokość (każdy 50%) */
+  ${({ $count }) => $count === 2 && `
+    & > * {
+      grid-column: span 3;
+    }
+  `}
+  
+  /* 4 elementy - 2 w wierszu (każdy 50%) */
+  ${({ $count }) => $count === 4 && `
+    & > * {
+      grid-column: span 3;
+    }
+  `}
+  
+  /* 5 elementów - pierwsze 3 zajmują po 2 kolumny (33%), ostatnie 2 zajmują po 3 (50%) */
+  ${({ $count }) => $count === 5 && `
+    & > *:nth-child(n+4) {
+      grid-column: span 3;
+    }
+  `}
+  
+  /* 7 elementów - 3+3+1, ostatni na środku */
+  ${({ $count }) => $count === 7 && `
+    & > *:last-child {
+      grid-column: 3 / span 2;
+    }
+  `}
+  
+  /* 8 elementów - 3+3+2, ostatnie 2 wycentrowane */
+  ${({ $count }) => $count === 8 && `
+    & > *:nth-child(7) {
+      grid-column: 2 / span 2;
+    }
+    & > *:nth-child(8) {
+      grid-column: 4 / span 2;
+    }
+  `}
   
   @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
     grid-template-columns: repeat(2, 1fr);
+    
+    & > * {
+      grid-column: span 1 !important;
+    }
+    
+    /* Dla nieparzystej liczby - ostatni element na pełną szerokość */
+    ${({ $count }) => $count % 2 === 1 && `
+      & > *:last-child {
+        grid-column: span 2 !important;
+      }
+    `}
   }
   
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
     grid-template-columns: 1fr;
+    
+    & > * {
+      grid-column: span 1 !important;
+    }
   }
 `;
 
@@ -1093,7 +1158,7 @@ const WindowProductDetail = ({ product }) => {
             <ProductHighlight as="div">{longDescriptionContent}</ProductHighlight>
 
             <ButtonsContainer>
-              <PrimaryButton to="/contact">
+              <PrimaryButton to="/kontakt">
                 <FiPhone />
                 {t('common.contactUs', 'Skontaktuj się z nami')}
               </PrimaryButton>
@@ -1160,7 +1225,6 @@ const WindowProductDetail = ({ product }) => {
                   <TooltipWrapper
                     data-open={openSpecTooltip === specKey ? 'true' : 'false'}
                     onClick={(e) => {
-                      // nie zamykaj tooltipa gdy klikamy w środku wrappera (dymek/przycisk)
                       e.stopPropagation();
                     }}
                   >
@@ -1170,7 +1234,6 @@ const WindowProductDetail = ({ product }) => {
                         spec: def?.labelKey ? t(def.labelKey, def.label) : def.label,
                       })}
                       onClick={(e) => {
-                        // click działa też na mobile, ale nie blokuje hover/focus na desktopie
                         e.preventDefault();
                         e.stopPropagation();
                         setOpenSpecTooltip((prev) => (prev === specKey ? null : specKey));
@@ -1214,11 +1277,6 @@ const WindowProductDetail = ({ product }) => {
               <FeaturesContent>
                 {product.features.map((feature, index) => (
                   <FeatureItem key={index}>
-                    {/*
-                      Local data uses `{text: "<strong>..."}` (HTML).
-                      Sanity data is PortableText blocks.
-                      We support both in a backwards-compatible way.
-                    */}
                     {Array.isArray(feature) ? (
                       <FeatureText as="div">
                         <SanityPortableText value={feature} variant="compact" />
@@ -1306,7 +1364,7 @@ const WindowProductDetail = ({ product }) => {
               })}
             </SectionTitle>
 
-            <AdvantagesGrid>
+            <AdvantagesGrid $count={product.advantages.length}>
               {product.advantages.map((advantage, index) => (
                 <AdvantageCard key={index}>
                   <AdvantageTitle>{advantage.title}</AdvantageTitle>
@@ -1385,7 +1443,6 @@ const WindowProductDetail = ({ product }) => {
                 
                 <FAQAnswerWrapper $isOpen={openFAQIndex === index}>
                   <FAQAnswer>
-                    {/* Sanity FAQ answer is PortableText blocks */}
                     {Array.isArray(faq?.answer) ? (
                       <FAQAnswerText as="div">
                         <SanityPortableText value={faq.answer} />
@@ -1417,7 +1474,7 @@ const WindowProductDetail = ({ product }) => {
                 'Nasi eksperci pomogą Ci dobrać idealne rozwiązanie dla Twojego domu. Skontaktuj się z nami, aby uzyskać bezpłatną wycenę.'
               )}
             </CTADescription>
-            <PrimaryButton to="/contact">
+            <PrimaryButton to="/kontakt">
               <FiPhone />
               {t('common.contactUs', 'Skontaktuj się z nami')}
             </PrimaryButton>

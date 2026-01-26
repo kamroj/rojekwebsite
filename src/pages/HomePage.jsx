@@ -80,7 +80,7 @@ const HomePage = () => {
       id: PRODUCT_TYPES.FIRE_RESISTANT,
       name: t('products.fireResistant.name'),
       description: t('products.fireResistant.description'),
-      backgroundSrc: '/images/aboutus/drzwi-kafelka.png',
+      backgroundSrc: '/images/aboutus/drzwi-ppoz-kafelka.png',
       videoSrc: VIDEO_SOURCES.FIRE_RESISTANT,
     },
   };
