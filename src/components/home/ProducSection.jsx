@@ -223,15 +223,17 @@ const ArrowWrapper = styled.div`
 
 const ArrowIcon = styled(IoIosArrowForward)`
   color: ${({ theme }) => theme.colors.bottleGreen || '#004d14'};
-  font-size: 1rem;
-  transition: color 0.3s ease;
+  font-size: 2rem;
+  transition: transform 0.3s ease, color 0.3s ease;
   
   ${ProductCard}:hover & {
-    color: #ffffff;
+    transform: translateX(4px);
+    color: ${({ theme }) => theme.colors.bottleGreenDark || '#003b0a'};
   }
   
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    font-size: 0.9rem;
+    font-size: 1.6rem;
+    color: #014e01
   }
 `;
 
@@ -259,9 +261,7 @@ const ProductTile = ({ id, product }) => {
           
           <CardFooter>
             <LinkText>{product.linkText || t('common.learnMore', 'Dowiedz się więcej')}</LinkText>
-            <ArrowWrapper>
-              <ArrowIcon />
-            </ArrowWrapper>
+            <ArrowIcon />
           </CardFooter>
         </CardContent>
       </CardLink>
