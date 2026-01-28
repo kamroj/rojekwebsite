@@ -57,9 +57,23 @@
     "companyPresentation": "COMPANY PRESENTATION",
     "partners": "OUR PARTNERS",
     "aboutUs": "ABOUT US",
-    "contactInfo": "CONTACT"
+    "contactInfo": "CONTACT",
+    "history": "HISTORY",
+    "headquarters": "COMPANY HEADQUARTERS"
   },
   "products": {
+    "doors": {
+      "name": "Exterior doors",
+      "description": "Stylish and functional exterior doors"
+    },
+    "terraceDoors": {
+      "name": "Terrace doors",
+      "description": "Modern HS and PSK sliding systems"
+    },
+    "fireResistant": {
+      "name": "Fire-resistant windows and doors",
+      "description": "Safe fire protection solutions"
+    },
     "windows": {
       "name": "WOODEN WINDOWS",
       "description": "Wooden windows are a classic solution combining natural materials, excellent insulation and an elegant look that gives interiors a distinctive character.",
@@ -409,10 +423,39 @@
     "ctaText": "Contact us and learn more about our products and services",
     "ctaButton": "Contact us"
   },
+  "headquarters": {
+    "title": "Company headquarters",
+    "subtitle": "Our location",
+    "description1": "The production facility is located in Kryspinów 399, near the A4 highway.",
+    "description2": "We invite you to visit our showroom, where you can see the full range of our products and receive expert advice.",
+    "imageAlt": "ROJEK company headquarters"
+  },
+  "management": {
+    "label": "MANAGEMENT",
+    "title": "Management",
+    "members": [
+      {
+        "name": "Wiesław Rojek",
+        "role": "Owner"
+      },
+      {
+        "name": "Przemysław Rojek",
+        "role": "Owner"
+      },
+      {
+        "name": "Tomasz Rojek",
+        "role": "Owner"
+      },
+      {
+        "name": "Anna Nowak",
+        "role": "Production Manager"
+      }
+    ]
+  },
   "contactPage": {
     "header": {
       "title": "Contact information",
-      "subtitle": "Have any questions? We’re here to help!"
+      "subtitle": "Have any questions? We're here to help!"
     },
     "form": {
       "useForm": "Use our form",

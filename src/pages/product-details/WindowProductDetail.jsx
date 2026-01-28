@@ -702,8 +702,6 @@ const AdvantagesGrid = styled.div`
   }
   
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    grid-template-columns: 1fr;
-    
     & > * {
       grid-column: span 1 !important;
     }

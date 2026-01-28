@@ -57,9 +57,23 @@
     "companyPresentation": "FIRMENPRÄSENTATION",
     "partners": "UNSERE PARTNER",
     "aboutUs": "ÜBER UNS",
-    "contactInfo": "KONTAKT"
+    "contactInfo": "KONTAKT",
+    "history": "GESCHICHTE",
+    "headquarters": "FIRMENSITZ"
   },
   "products": {
+    "doors": {
+      "name": "Außentüren",
+      "description": "Stilvolle und funktionale Außentüren"
+    },
+    "terraceDoors": {
+      "name": "Terrassentüren",
+      "description": "Moderne HS- und PSK-Schiebeanlagen"
+    },
+    "fireResistant": {
+      "name": "Brandschutzfenster und -türen",
+      "description": "Sichere Brandschutzlösungen"
+    },
     "windows": {
       "name": "HOLZFENSTER",
       "description": "Holzfenster sind eine klassische Lösung, die natürliche Materialien, hervorragende Dämmung und ein elegantes Erscheinungsbild verbindet und Innenräumen Charakter verleiht.",
@@ -412,7 +426,31 @@
   "management": {
     "label": "VORSTAND",
     "title": "Management",
-    "subtitle": "Lernen Sie unser Team kennen"
+    "members": [
+      {
+        "name": "Wiesław Rojek",
+        "role": "Eigentümer"
+      },
+      {
+        "name": "Przemysław Rojek",
+        "role": "Eigentümer"
+      },
+      {
+        "name": "Tomasz Rojek",
+        "role": "Eigentümer"
+      },
+      {
+        "name": "Anna Nowak",
+        "role": "Produktionsleiterin"
+      }
+    ]
+  },
+  "headquarters": {
+    "title": "Firmensitz",
+    "subtitle": "Unser Standort",
+    "description1": "Die Produktionsstätte befindet sich in Kryspinów 399, an der Autobahn A4.",
+    "description2": "Wir laden Sie ein, unseren Showroom zu besuchen, wo Sie die gesamte Palette unserer Produkte sehen und fachkundige Beratung erhalten können.",
+    "imageAlt": "ROJEK Firmensitz"
   },
   "aboutPage": {
     "headers": {
