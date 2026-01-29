@@ -61,7 +61,7 @@ const HeaderOverline = styled.span`
 
 const HeaderTitle = styled.h2`
   text-transform: uppercase;
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-size: clamp(2.5rem, 1.5rem + 3vw, 3.5rem);
   font-weight: 500;
   color: #0f591a;
   line-height: 1.1;

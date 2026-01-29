@@ -60,7 +60,7 @@ const ProductInfo = styled.div`
 `;
 
 const ProductName = styled.h2`
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-size: clamp(2.5rem, 1.5rem + 3vw, 3.5rem);
   font-weight: 400;
   color: #013613;
   margin: 0 0 1rem 0;
