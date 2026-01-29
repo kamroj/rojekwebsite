@@ -35,7 +35,6 @@ const VideoWrapper = styled.div`
   position: relative;
   border-radius: 20px;
   overflow: hidden;
-  background: #0a0a0a;
   aspect-ratio: 4/3;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.096);
 

@@ -50,13 +50,10 @@ const ProductTitle = styled.h1`
   line-height: 1.1;
   white-space: nowrap;
   overflow: hidden;
+  text-transform: uppercase;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    font-size: 4rem;
-  }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    font-size: 3rem;
+    font-size: clamp(3rem, 5vw, 3.5rem);
   }
 `;
 

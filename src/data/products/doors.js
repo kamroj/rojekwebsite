@@ -10,7 +10,7 @@ export const DOORS_MOCK_DATA = [
   {
     id: 'plycinowo-fryzowe',
     slug: 'plycinowo-fryzowe',
-    name: 'Drzwi płycinowo-fryzowe',
+    name: 'płycinowo-fryzowe',
     category: 'Drzwi zewnętrzne',
     categoryKey: 'exteriorDoors',
     shortDescription: 'Klasyczne drzwi łączące tradycję z nowoczesnością, wykonane w technologii płycinowo-fryzowej.',
@@ -90,7 +90,7 @@ export const DOORS_MOCK_DATA = [
   {
     id: 'pelno-plytowe',
     slug: 'pelno-plytowe',
-    name: 'Drzwi pełno-płytowe',
+    name: 'pełno-płytowe',
     category: 'Drzwi zewnętrzne',
     categoryKey: 'exteriorDoors',
     shortDescription: 'Nowoczesne drzwi o gładkiej powierzchni z możliwością frezowania dowolnych wzorów CNC.',
@@ -168,7 +168,7 @@ export const DOORS_MOCK_DATA = [
   {
     id: 'drewniano-aluminiowe',
     slug: 'drewniano-aluminiowe',
-    name: 'Drzwi drewniano-aluminiowe',
+    name: 'drewniano-aluminiowe',
     category: 'Drzwi zewnętrzne',
     categoryKey: 'exteriorDoors',
     shortDescription: 'Połączenie ciepła drewna z trwałością aluminium. Szeroki wybór paneli Aluron.',

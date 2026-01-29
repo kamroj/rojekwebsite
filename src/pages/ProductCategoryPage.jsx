@@ -60,9 +60,10 @@ const ProductInfo = styled.div`
 `;
 
 const ProductName = styled.h2`
-  font-size: clamp(2.5rem, 1.5rem + 3vw, 3.5rem);
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  text-transform: uppercase;
   font-weight: 400;
-  color: #013613;
+  color: #03531d;
   margin: 0 0 1rem 0;
   letter-spacing: 0.5px;
   
@@ -351,7 +352,7 @@ const ProductCategoryPage = () => {
 
   return (
     <Page
-      imageSrc={categoryInfo.headerImage}
+      imageSrc="/images/products/doors/drzwi-zewnetrzne-top.jpg"
       title={t(`pageTitle.${categoryKey}`, categoryInfo.pageTitle)}
     >
       <Section>

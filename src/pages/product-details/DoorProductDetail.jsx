@@ -61,7 +61,7 @@ const HeaderOverline = styled.span`
 
 const HeaderTitle = styled.h2`
   text-transform: uppercase;
-  font-size: clamp(2.5rem, 1.5rem + 3vw, 3.5rem);
+  font-size: 4rem;
   font-weight: 500;
   color: #0f591a;
   line-height: 1.1;
@@ -126,7 +126,7 @@ const Overline = styled.span`
 `;
 
 const BlockTitle = styled.h2`
-  font-size: clamp(2.5rem, 5vw, 3.25rem);
+  font-size: 3rem;
   font-weight: 400;
   color: #104818;
   line-height: 1.1;
@@ -511,7 +511,7 @@ const DoorProductDetail = ({ product }) => {
 
   return (
     <Page
-      imageSrc={product.headerImage}
+      imageSrc="/images/products/doors/drzwi-zewnetrzne-top.jpg"
       title={product.name}
       headerProps={{
         badge: { label: product.name },
