@@ -200,6 +200,41 @@
         "note": "We respond within 24 hours"
       }
     },
+    "doors": {
+      "featuresTitle": "What makes the {{product}} door stand out?",
+      "colorsTitle": "RAL colour range",
+      "colorsMostPopular": "Most popular colours",
+      "colorsFullPalette": "Full RAL colour chart",
+      "advantagesTitle": "Why choose {{product}}?",
+      "warranty": {
+        "title": "Quality you can rely on for years",
+        "text": "We are confident in the quality of our products, which is why within <strong>5 years</strong> after installation you can report any issue with any part of our joinery. In addition, we offer a <strong>10‑year warranty</strong> for the tightness of glazing units with a Warmatec spacer.",
+        "highlight": "Free warranty service"
+      },
+      "cta": {
+        "title": "Interested in {{product}} doors?",
+        "description": "Our experts will help you choose the perfect solution for your home. Contact us to get a free quote.",
+        "note": "We respond within 24 hours"
+      },
+      "sections": {
+        "lock": {
+          "kicker": "Security",
+          "title": "3‑point lock as standard",
+          "description": "Security starts with reliable locking. A standard 3‑point lock secures the door leaf in several places at once, improving resistance to forced entry and enhancing gasket pressure.",
+          "b1": "3‑point locking",
+          "b2": "Better pressure and tightness",
+          "b3": "Higher burglary resistance"
+        },
+        "threshold": {
+          "kicker": "Comfort",
+          "title": "Low aluminium threshold",
+          "description": "A low threshold improves everyday comfort – it makes passage easier, increases accessibility and supports water drainage. It’s a small detail that makes a big difference.",
+          "b1": "Easier passage and accessibility",
+          "b2": "Durable and weather‑resistant material",
+          "b3": "Supports water drainage"
+        }
+      }
+    },
     "faq": {
       "title": "<product>{{product}}</product> – Frequently asked questions",
       "subtitle": "Find answers to the most important questions about our product"
@@ -501,13 +536,17 @@
     "labels": {
       "profileThickness": "profile thickness",
       "thermalTransmittance": "thermal transmittance (Uw)",
-      "waterTightness": "water tightness"
+      "waterTightness": "water tightness",
+      "lockSystem": "locking system",
+      "threshold": "threshold"
     },
     "tooltipAria": "Parameter explanation: {{spec}}",
     "tooltips": {
       "profileThickness": "Profile thickness (e.g. 70–86 mm) affects structural rigidity and allows using thicker glazing units.",
       "thermalTransmittance": "Thermal transmittance (Uw) indicates how much heat escapes through the window. The lower the value, the better the insulation and the lower the heating costs.",
-      "waterTightness": "Water tightness (e.g. class 9A) indicates resistance to water penetration during rain and wind. A higher class means better protection against leakage."
+      "waterTightness": "Water tightness (e.g. class 9A) indicates resistance to water penetration during rain and wind. A higher class means better protection against leakage.",
+      "lockSystem": "A multi‑point lock provides significantly higher security than a standard lock. It locks the door in several places at once, making forced entry more difficult.",
+      "threshold": "A low aluminium threshold improves accessibility, is easy to keep clean and helps drain water, protecting the entrance from flooding."
     }
   }
 }

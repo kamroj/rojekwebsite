@@ -6,6 +6,7 @@ import Page from '../components/common/Page';
 import Section from '../components/common/Section';
 import { productCategories, productDetailsByType } from '../data/products';
 import WindowProductDetail from './product-details/WindowProductDetail';
+import DoorProductDetail from './product-details/DoorProductDetail';
 import { useTranslation } from 'react-i18next';
 import { getCategoryKeyFromSlug, getProductCategoryPath, getProductsIndexPath } from '../utils/i18nRouting';
 import { useResourceCollector } from '../context/ResourceCollectorContext';
@@ -114,10 +115,11 @@ const ProductDetailPage = () => {
   }
 
   // Route to a detail component based on detailType.
-  // For now only windows are implemented, but adding new types is a single mapping.
   switch (detailType) {
     case 'windows':
       return <WindowProductDetail product={product} />;
+    case 'doors':
+      return <DoorProductDetail product={product} />;
     default:
       return (
         <Page

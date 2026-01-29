@@ -33,6 +33,7 @@ export const ProductHeader = styled.div`
   font-size: 3rem;
   font-weight: 300;
   line-height: 1.2;
+  
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     font-size: 2rem;

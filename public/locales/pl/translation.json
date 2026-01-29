@@ -120,6 +120,41 @@
         "note": "Odpowiadamy w ciągu 24 godzin"
       }
     },
+    "doors": {
+      "featuresTitle": "Co wyróżnia drzwi {{product}}?",
+      "colorsTitle": "Kolorystyka RAL",
+      "colorsMostPopular": "Najczęściej wybierane kolory",
+      "colorsFullPalette": "Pełna paleta kolorów RAL",
+      "advantagesTitle": "Dlaczego warto wybrać {{product}}?",
+      "warranty": {
+        "title": "Pewność jakości na lata",
+        "text": "Jesteśmy pewni jakości naszych produktów, dlatego w ciągu <strong>5 lat</strong> od montażu możesz nam zgłosić jakikolwiek problem z wszystkimi elementami naszej stolarki. Dodatkowo oferujemy <strong>10 lat gwarancji</strong> na szczelność pakietów szybowych z ramką Warmatec.",
+        "highlight": "Bezpłatny serwis gwarancyjny"
+      },
+      "cta": {
+        "title": "Zainteresowany drzwiami {{product}}?",
+        "description": "Nasi eksperci pomogą Ci dobrać idealne rozwiązanie dla Twojego domu. Skontaktuj się z nami, aby uzyskać bezpłatną wycenę.",
+        "note": "Odpowiadamy w ciągu 24 godzin"
+      },
+      "sections": {
+        "lock": {
+          "kicker": "Bezpieczeństwo",
+          "title": "Zamek 3‑punktowy w standardzie",
+          "description": "Bezpieczeństwo zaczyna się od solidnego ryglowania. Standardowy zamek 3‑punktowy blokuje skrzydło w kilku miejscach jednocześnie, zwiększając odporność na wyważenie i poprawiając docisk uszczelek.",
+          "b1": "Ryglowanie w 3 punktach",
+          "b2": "Lepszy docisk i szczelność",
+          "b3": "Wyższa odporność na włamanie"
+        },
+        "threshold": {
+          "kicker": "Komfort",
+          "title": "Niski próg aluminiowy",
+          "description": "Niski próg zwiększa komfort codziennego użytkowania – ułatwia przejście, poprawia dostępność (bez barier) i wspiera odprowadzanie wody. To detal, który realnie wpływa na wygodę w domu.",
+          "b1": "Łatwiejsze przejście i dostępność",
+          "b2": "Trwały materiał odporny na warunki zewnętrzne",
+          "b3": "Wsparcie odprowadzania wody"
+        }
+      }
+    },
     "faq": {
       "title": "<product>{{product}}</product> – Najczęściej zadawane pytania",
       "subtitle": "Znajdź odpowiedzi na najważniejsze pytania dotyczące naszego produktu"
@@ -421,13 +456,17 @@
     "labels": {
       "profileThickness": "grubość profilu",
       "thermalTransmittance": "przenikanie ciepła (Uw)",
-      "waterTightness": "wodoszczelność"
+      "waterTightness": "wodoszczelność",
+      "lockSystem": "system zamykania",
+      "threshold": "próg"
     },
     "tooltipAria": "Wyjaśnienie parametru: {{spec}}",
     "tooltips": {
       "profileThickness": "Grubość profilu (np. 70–86 mm) wpływa m.in. na stabilność konstrukcji oraz możliwość zastosowania pakietów szybowych o większej grubości.",
       "thermalTransmittance": "Współczynnik przenikania ciepła (Uw) informuje, ile ciepła ucieka przez okno. Im niższa wartość, tym lepsza izolacja i mniejsze koszty ogrzewania.",
-      "waterTightness": "Wodoszczelność (np. klasa 9A) określa odporność na przenikanie wody podczas deszczu i wiatru. Wyższa klasa oznacza lepszą ochronę przed przeciekaniem."
+      "waterTightness": "Wodoszczelność (np. klasa 9A) określa odporność na przenikanie wody podczas deszczu i wiatru. Wyższa klasa oznacza lepszą ochronę przed przeciekaniem.",
+      "lockSystem": "Zamek wielopunktowy zapewnia znacznie większe bezpieczeństwo niż standardowy zamek. Blokuje drzwi w kilku miejscach jednocześnie, utrudniając włamanie.",
+      "threshold": "Niski próg aluminiowy ułatwia dostęp (bezbarierowy), jest łatwy w utrzymaniu czystości i odprowadza wodę, chroniąc przed zalewaniem."
     }
   }
 }

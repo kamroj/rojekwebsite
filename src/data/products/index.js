@@ -1,7 +1,15 @@
 import { windowCategory, windowProductDetails } from './windows.js';
+import { DOORS_MOCK_DATA, getAllDoors } from './doors.js';
 
 // Convenience: re-export from this folder so consumers can import from "../data/products".
 export { windowCategory, windowProductDetails };
+export { DOORS_MOCK_DATA, getAllDoors };
+
+// Convert doors mock data to the format expected by productDetailsByType
+const doorProductDetails = {};
+DOORS_MOCK_DATA.forEach(door => {
+  doorProductDetails[door.slug] = door;
+});
 
 export const productCategories = {
   okna: windowCategory,
@@ -11,8 +19,15 @@ export const productCategories = {
     title: 'Produkty drzwiowe',
     subtitle: 'Poznaj nasze nowoczesne systemy drzwiowe.',
     pageTitle: 'Drzwi',
-    headerImage: '/images/products/drzwi-header.jpg',
-    products: []
+    headerImage: '/images/aboutus/drzwi-kafelka.png',
+    products: DOORS_MOCK_DATA.map(door => ({
+      id: door.id,
+      slug: door.slug,
+      name: door.name,
+      image: door.images[0],
+      description: door.shortDescription,
+      specs: door.specs
+    }))
   },
   bramy: {
     id: 'bramy',
@@ -35,5 +50,6 @@ export const productCategories = {
 };
 
 export const productDetailsByType = {
-  windows: windowProductDetails
+  windows: windowProductDetails,
+  doors: doorProductDetails
 };

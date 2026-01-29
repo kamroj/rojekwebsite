@@ -10,6 +10,7 @@ import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomePage';
 import { productCategories } from '../data/products';
 import { getCategoryKeyFromSlug, getProductDetailPath } from '../utils/i18nRouting';
 import { WINDOW_SPECS_DEFS, WINDOW_SPECS_ORDER_LIST } from '../data/products/windows';
+import { DOOR_SPECS_DEFS, DOOR_SPECS_ORDER_LIST } from '../data/products/doors';
 import { useResourceCollector } from '../context/ResourceCollectorContext';
 import { runSanityTask } from '../services/sanity/runSanityTask';
 import { fetchWindowProductsList } from '../services/sanity/windows';
@@ -59,14 +60,13 @@ const ProductInfo = styled.div`
 `;
 
 const ProductName = styled.h2`
-  font-size: 5rem;
+  font-size: clamp(2.5rem, 5vw, 3.5rem);
   font-weight: 400;
   color: #013613;
   margin: 0 0 1rem 0;
   letter-spacing: 0.5px;
   
   @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    font-size: 2.5rem;
     margin: 0 0 0.6rem 0;
   }
 `;
@@ -281,6 +281,10 @@ const ProductCategoryPage = () => {
   const categoryInfo = productCategories[categoryKey];
 
   const isWindowsCategory = categoryKey === 'okna';
+  const isDoorsCategory = categoryKey === 'drzwi';
+
+  const specsDefs = isWindowsCategory ? WINDOW_SPECS_DEFS : (isDoorsCategory ? DOOR_SPECS_DEFS : WINDOW_SPECS_DEFS);
+  const specsOrderList = isWindowsCategory ? WINDOW_SPECS_ORDER_LIST : (isDoorsCategory ? DOOR_SPECS_ORDER_LIST : WINDOW_SPECS_ORDER_LIST);
 
   // Fetch window products from Sanity (only for Okna).
   React.useEffect(() => {
@@ -366,13 +370,13 @@ const ProductCategoryPage = () => {
               <ProductCard key={product.id}>
                 <ProductInfo>
                   <ProductName>{product.name}</ProductName>
-                  <ProductDescription>{product.description}</ProductDescription>
+                  <ProductDescription>{product.description || product.shortDescription}</ProductDescription>
 
                   <Divider />
 
                   <SpecsContainer>
-                    {WINDOW_SPECS_ORDER_LIST.map((specKey, idx) => {
-                      const def = WINDOW_SPECS_DEFS[specKey]
+                    {specsOrderList.map((specKey, idx) => {
+                      const def = specsDefs[specKey]
                       if (!def) return null
                       const Icon = def.icon
                       const value = product?.specs?.[specKey]
@@ -391,7 +395,7 @@ const ProductCategoryPage = () => {
                               <SpecLabel>{def?.labelKey ? t(def.labelKey, def.label) : def.label}</SpecLabel>
                             </SpecDetails>
                           </SpecItem>
-                          {idx < WINDOW_SPECS_ORDER_LIST.length - 1 && <SpecSeparator />}
+                          {idx < specsOrderList.length - 1 && <SpecSeparator />}
                         </React.Fragment>
                       )
                     })}
@@ -405,7 +409,7 @@ const ProductCategoryPage = () => {
 
                 <ProductImageWrapper>
                   <ProductImage
-                    src={product.image}
+                    src={product.image || product.images?.[0]}
                     alt={product.name}
                     loading="lazy"
                   />
