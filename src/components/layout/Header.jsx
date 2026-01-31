@@ -3,17 +3,19 @@ import styled, { css, keyframes, useTheme } from 'styled-components';
 import { Link, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FiMenu, FiX } from 'react-icons/fi';
+import { IoIosArrowForward } from 'react-icons/io';
 import LanguageSwitcher from '../common/LanguageSwitcher';
 import Navigation from '../common/Navigation';
 import SwipeHandler from '../common/SwipeHandler';
 import { useScrollPosition } from '../../hooks';
 import { ROUTES } from '../../constants';
 import { handleKeyboardNavigation } from '../../utils';
+import { productCategories } from '../../data/products';
 import logoWhite from '/images/logo.png';
 import logoBlack from '/images/logo-black.png';
 import { fadeIn, fadeOut, slideInRight, slideOutRight, hamburgerToX } from '../../styles/animations.js';
 import MaxWidthContainer from '../common/MaxWidthContainer.jsx';
-import { getSectionPath } from '../../utils/i18nRouting';
+import { getProductCategoryPath, getProductDetailPath, getSectionPath } from '../../utils/i18nRouting';
 
 const MENU_ANIMATION_MS = 300;
 
@@ -42,20 +44,28 @@ const HeaderWrapper = styled.header`
   padding: 0;
   height: ${({ theme }) => theme.layout.headerHeight};
   z-index: 1000;
-  transition: opacity ${({ theme }) => theme.transitions.default}, 
-              background-color 0.1s linear, 
-              border-color 0.1s linear, 
-              color 0.1s linear;
+  transition: 
+    opacity ${({ theme }) => theme.transitions.default}, 
+    background-color 0.15s ease, 
+    border-color 0.15s ease, 
+    color 0.15s ease;
 
   background-color: ${({ $isPastThreshold, $isVisible }) =>
-    $isPastThreshold && $isVisible ? "#fffefe" : '#017e5414'};
+    $isPastThreshold && $isVisible ? "#fbfbfb" : 'rgba(1, 126, 84, 0.08)'};
+  
+  -webkit-backdrop-filter: ${({ $isPastThreshold, $isVisible }) =>
+    $isPastThreshold && $isVisible ? 'blur(8px)' : 'blur(12px)'};
+  backdrop-filter: ${({ $isPastThreshold, $isVisible }) =>
+    $isPastThreshold && $isVisible ? 'blur(8px)' : 'blur(12px)'};
 
   border-bottom-width: 1px;
   border-bottom-style: solid;
-  border-bottom-color:  ${({ $isPastThreshold }) => ($isPastThreshold ? "#004a2468" : "#059c4e68")};
+  border-bottom-color: ${({ $isPastThreshold }) => 
+    ($isPastThreshold ? "rgba(0, 74, 36, 0.25)" : "rgba(5, 156, 78, 0.35)")};
 
   opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
   pointer-events: ${({ $isVisible }) => ($isVisible ? 'auto' : 'none')};
+  visibility: ${({ $isVisible }) => ($isVisible ? 'visible' : 'hidden')};
 
   color: ${({ $isPastThreshold, theme }) =>
     $isPastThreshold ? theme.colors.text : theme.colors.textLight};
@@ -71,7 +81,7 @@ const HeaderWrapper = styled.header`
   
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     background-color: ${({ $isPastThreshold, $isVisible }) =>
-      $isPastThreshold && $isVisible ? "#fffefe" : '#017e5414'};
+      $isPastThreshold && $isVisible ? "#fbfbfb" : 'rgba(1, 126, 84, 0.08)'};
     color: ${({ $isPastThreshold, theme }) =>
       $isPastThreshold ? theme.colors.text : theme.colors.textLight};
   }
@@ -103,9 +113,17 @@ const DesktopNav = styled.div`
   display: flex;
   align-items: center;
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 70%;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  transform: none;
+  height: 100%;
+  pointer-events: none;
+
+  nav {
+    pointer-events: auto;
+  }
   
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
     display: none;
@@ -155,7 +173,6 @@ const MobileMenuButton = styled.button`
   &:active {
     transform: scale(0.95);
   }
-
 `;
 
 const MobileMenuOverlay = styled.div`
@@ -164,13 +181,14 @@ const MobileMenuOverlay = styled.div`
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
+  background-color: rgba(0, 0, 0, 0.6);
   z-index: 1005;
   animation: ${props => props.$isOpen ? fadeIn : fadeOut} 0.3s forwards;
   opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
   visibility: ${({ $isOpen }) => ($isOpen ? 'visible' : 'hidden')};
-  backdrop-filter: ${({ $isOpen }) => ($isOpen ? 'blur(2px)' : 'blur(0)')};
-  transition: backdrop-filter 0.3s ease, visibility 0.3s;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  transition: visibility 0.3s;
 `;
 
 const MobileMenuContainer = styled.div`
@@ -183,7 +201,7 @@ const MobileMenuContainer = styled.div`
   height: 100dvh;
   background-color: ${({ theme }) => theme.colors.background};
   z-index: 1009;
-  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.2);
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.25);
   animation: ${props => props.$isOpen ? slideInRight : slideOutRight} 0.3s forwards;
   padding: ${({ theme }) => theme.spacings.large} ${({ theme }) => theme.spacings.medium};
   padding-top: env(safe-area-inset-top, ${({ theme }) => theme.spacings.large});
@@ -263,7 +281,6 @@ const MobileNavItem = styled(Link)`
     color: ${({ theme }) => theme.colors.secondary};
   }
 
-  
   &:active {
     background-color: rgba(0, 0, 0, 0.05);
   }
@@ -291,6 +308,71 @@ const MobileNavItem = styled(Link)`
   opacity: 0;
 `;
 
+const MobileNavButton = styled.button`
+  font-size: 1.8rem;
+  font-weight: 500;
+  padding: ${({ theme }) => theme.spacings.small} 0;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+  background: transparent;
+  color: ${({ theme }) => theme.colors.text};
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-decoration: none;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  text-align: left;
+
+  @media (min-height: 700px) {
+    padding: ${({ theme }) => theme.spacings.medium} 0;
+    font-size: 1.8rem;
+  }
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.secondary};
+  }
+
+  &:active {
+    background-color: rgba(0, 0, 0, 0.05);
+  }
+
+  animation: ${fadeIn} 0.3s forwards;
+  animation-delay: ${props => props.$index * 0.05}s;
+  opacity: 0;
+`;
+
+const MobileSubList = styled.div`
+  width: 100%;
+  padding: 0 0 0 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 10px;
+`;
+
+const MobileBackButton = styled.button`
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: ${({ theme }) => theme.spacings.small} 0;
+  border: none;
+  background: transparent;
+  color: ${({ theme }) => theme.colors.text};
+  font-size: 1.5rem;
+  cursor: pointer;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border};
+
+  &:hover {
+    color: ${({ theme }) => theme.colors.secondary};
+  }
+`;
+
 const MobileLangSwitcher = styled.div`
   margin-top: auto;
   padding-top: ${({ theme }) => theme.spacings.large};
@@ -303,6 +385,8 @@ const MobileLangSwitcher = styled.div`
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
+  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
+  const [mobileActiveCategoryKey, setMobileActiveCategoryKey] = useState(null);
   const restoreOverflowTimeoutRef = useRef(null);
   const lastPathnameRef = useRef(null);
 
@@ -331,10 +415,27 @@ const Header = () => {
 
   const closeMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(false);
+    setMobileProductsOpen(false);
+    setMobileActiveCategoryKey(null);
   }, []);
 
   const toggleMobileMenu = useCallback(() => {
     setIsMobileMenuOpen((prev) => !prev);
+  }, []);
+
+  const openMobileProducts = useCallback(() => {
+    setMobileProductsOpen(true);
+    if (!mobileActiveCategoryKey) {
+      const first = Object.entries(productCategories || {}).find(
+        ([, c]) => Array.isArray(c?.products) && c.products.length > 0
+      );
+      if (first) setMobileActiveCategoryKey(first[0]);
+    }
+  }, [mobileActiveCategoryKey]);
+
+  const closeMobileProducts = useCallback(() => {
+    setMobileProductsOpen(false);
+    setMobileActiveCategoryKey(null);
   }, []);
 
   const handleMenuButtonKeyDown = useCallback(
@@ -344,8 +445,7 @@ const Header = () => {
     [toggleMobileMenu]
   );
 
-  // Header visibility based on scroll direction + threshold.
-  // Keep it visible when mobile menu is open to avoid UI "jumping".
+  // Header visibility based on scroll direction
   useEffect(() => {
     if (!isPastThreshold) {
       setIsVisible(true);
@@ -359,7 +459,7 @@ const Header = () => {
     }
   }, [isPastThreshold, isMobileMenuOpen, isScrollingDown, isScrollingUp]);
 
-  // Expose CSS var for consistent layout offset.
+  // CSS variable for layout offset
   useEffect(() => {
     const gap = theme.spacings.small;
     const offset = isVisible ? `calc(${theme.layout.headerHeight} + ${gap})` : gap;
@@ -373,14 +473,11 @@ const Header = () => {
     };
   }, [isVisible, theme.layout.headerHeight, theme.spacings.small]);
 
-  // Close menu on route change.
-  // Important: do not react to isMobileMenuOpen changes here, otherwise opening the menu
-  // would instantly trigger this effect.
+  // Close menu on route change
   useEffect(() => {
     const prevPathname = lastPathnameRef.current;
     lastPathnameRef.current = location.pathname;
 
-    // First render: only initialize ref.
     if (prevPathname == null) return;
 
     if (prevPathname !== location.pathname && isMobileMenuOpen) {
@@ -388,9 +485,8 @@ const Header = () => {
     }
   }, [closeMobileMenu, isMobileMenuOpen, location.pathname]);
 
-  // Lock body scroll while the menu is open + close on ESC.
+  // Lock body scroll while menu is open + close on ESC
   useEffect(() => {
-    // Prevent a previous close timer from restoring overflow while menu is opening again.
     if (restoreOverflowTimeoutRef.current) {
       window.clearTimeout(restoreOverflowTimeoutRef.current);
       restoreOverflowTimeoutRef.current = null;
@@ -402,26 +498,43 @@ const Header = () => {
     document.body.style.overflow = 'hidden';
 
     const onKeyDown = (event) => {
-      if (event.key === 'Escape') closeMobileMenu();
+      if (event.key === 'Escape') {
+        if (mobileProductsOpen) {
+          closeMobileProducts();
+        } else {
+          closeMobileMenu();
+        }
+      }
     };
 
     document.addEventListener('keydown', onKeyDown);
     return () => {
       document.removeEventListener('keydown', onKeyDown);
-      // Wait until close animation finishes, then restore.
       restoreOverflowTimeoutRef.current = window.setTimeout(() => {
         document.body.style.overflow = previousOverflow;
         restoreOverflowTimeoutRef.current = null;
       }, MENU_ANIMATION_MS);
     };
-  }, [closeMobileMenu, isMobileMenuOpen]);
+  }, [closeMobileMenu, closeMobileProducts, isMobileMenuOpen, mobileProductsOpen]);
 
   const navItems = useMemo(() => NAV_ITEMS, []);
+
+  const mobileCategories = useMemo(() => {
+    const entries = Object.entries(productCategories || {});
+    return entries
+      .map(([key, c]) => ({
+        key,
+        title: t(`breadcrumbs.categories.${key}`, c?.pageTitle || key),
+        products: Array.isArray(c?.products) ? c.products : [],
+      }))
+      .filter((c) => c.products.length > 0);
+  }, [t]);
 
   return (
     <HeaderWrapper 
       $isPastThreshold={isPastThreshold} 
       $isVisible={isVisible}
+      aria-hidden={!isVisible}
     >
       <HeaderInner>
         <LogoLink to={getSectionPath(lang, 'home')}>
@@ -432,7 +545,7 @@ const Header = () => {
         </LogoLink>
 
         <DesktopNav>
-          <Navigation variant="header" isPastThreshold={isPastThreshold} />
+          <Navigation variant="header" isPastThreshold={isPastThreshold} isHeaderVisible={isVisible} />
         </DesktopNav>
 
         <DesktopLangContainer>
@@ -449,7 +562,6 @@ const Header = () => {
         >
           {isMobileMenuOpen ? <FiX /> : <FiMenu />}
         </MobileMenuButton>
-
       </HeaderInner>
 
       <MobileMenuOverlay $isOpen={isMobileMenuOpen} onClick={closeMobileMenu} />
@@ -461,32 +573,100 @@ const Header = () => {
           </MobileMenuLogo>
 
           <MobileNavigation role="navigation" aria-label={t('nav.mobileNavigation', 'Mobile navigation')}>
-            {navItems.map((item, index) => (
-              <MobileNavItem 
-                key={item.key} 
-                to={
-                  item.path === ROUTES.HOME
-                    ? getSectionPath(lang, 'home')
-                    : item.path === ROUTES.PRODUCTS
-                      ? getSectionPath(lang, 'products')
-                      : item.path === ROUTES.REALIZATIONS
-                        ? getSectionPath(lang, 'realizations')
-                        : item.path === ROUTES.ABOUT
-                          ? getSectionPath(lang, 'about')
-                          : item.path === ROUTES.CONTACT
-                            ? getSectionPath(lang, 'contact')
-                            : item.path === ROUTES.HS_CONFIGURATOR
-                              ? getSectionPath(lang, 'hsConfigurator')
-                              : getSectionPath(lang, 'home')
-                } 
-                onClick={closeMobileMenu}
-                className={isActive(item.path) ? 'active' : ''}
-                $index={index}
-                aria-current={isActive(item.path) ? 'page' : undefined}
-              >
-                {t(item.label)}
-              </MobileNavItem>
-            ))}
+            {!mobileProductsOpen ? (
+              <>
+                {navItems.map((item, index) => {
+                  if (item.key === 'products') {
+                    return (
+                      <MobileNavButton
+                        key={item.key}
+                        onClick={openMobileProducts}
+                        $index={index}
+                        aria-haspopup="true"
+                        aria-expanded={mobileProductsOpen}
+                      >
+                        <span>{t(item.label)}</span>
+                        <IoIosArrowForward aria-hidden="true" />
+                      </MobileNavButton>
+                    );
+                  }
+
+                  return (
+                    <MobileNavItem
+                      key={item.key}
+                      to={
+                        item.path === ROUTES.HOME
+                          ? getSectionPath(lang, 'home')
+                          : item.path === ROUTES.PRODUCTS
+                            ? getSectionPath(lang, 'products')
+                            : item.path === ROUTES.REALIZATIONS
+                              ? getSectionPath(lang, 'realizations')
+                              : item.path === ROUTES.ABOUT
+                                ? getSectionPath(lang, 'about')
+                                : item.path === ROUTES.CONTACT
+                                  ? getSectionPath(lang, 'contact')
+                                  : item.path === ROUTES.HS_CONFIGURATOR
+                                    ? getSectionPath(lang, 'hsConfigurator')
+                                    : getSectionPath(lang, 'home')
+                      }
+                      onClick={closeMobileMenu}
+                      className={isActive(item.path) ? 'active' : ''}
+                      $index={index}
+                      aria-current={isActive(item.path) ? 'page' : undefined}
+                    >
+                      {t(item.label)}
+                    </MobileNavItem>
+                  );
+                })}
+              </>
+            ) : (
+              <>
+                <MobileBackButton onClick={closeMobileProducts}>
+                  {'‹'} {t('buttons.backToHome', 'Wróć')}
+                </MobileBackButton>
+
+                {mobileCategories.map((c, idx) => (
+                  <React.Fragment key={c.key}>
+                    <MobileNavButton
+                      onClick={() => setMobileActiveCategoryKey((prev) => (prev === c.key ? null : c.key))}
+                      $index={idx}
+                      aria-expanded={mobileActiveCategoryKey === c.key}
+                    >
+                      <span>{c.title}</span>
+                      <IoIosArrowForward
+                        aria-hidden="true"
+                        style={{
+                          transform: mobileActiveCategoryKey === c.key ? 'rotate(90deg)' : 'rotate(0deg)',
+                          transition: 'transform 180ms ease',
+                        }}
+                      />
+                    </MobileNavButton>
+
+                    {mobileActiveCategoryKey === c.key && (
+                      <MobileSubList>
+                        {(c.products || []).map((p) => (
+                          <MobileNavItem
+                            key={p.slug || p.id}
+                            to={getProductDetailPath(lang, c.key, p.slug || p.id)}
+                            onClick={closeMobileMenu}
+                            $index={0}
+                          >
+                            {p.name}
+                          </MobileNavItem>
+                        ))}
+                        <MobileNavItem
+                          to={getProductCategoryPath(lang, c.key)}
+                          onClick={closeMobileMenu}
+                          $index={0}
+                        >
+                          {t('common.seeAll', 'Zobacz wszystkie')}
+                        </MobileNavItem>
+                      </MobileSubList>
+                    )}
+                  </React.Fragment>
+                ))}
+              </>
+            )}
           </MobileNavigation>
 
           <MobileLangSwitcher>

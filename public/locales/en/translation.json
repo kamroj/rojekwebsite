@@ -47,7 +47,8 @@
   "common": {
     "contactUs": "Contact us",
     "warranty": "Warranty",
-    "viewMore": "View more"
+    "viewMore": "View more",
+    "seeAll": "See all"
   },
   "sections": {
     "products": "PRODUCTS",
