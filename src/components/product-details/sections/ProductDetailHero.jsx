@@ -42,9 +42,8 @@ const ProductCategory = styled.span`
 `;
 
 const ProductTitle = styled.h1`
-  font-size: 5.5rem;
   font-weight: 400;
-  color: #013613;
+  color: #233601;
   margin: 0 0 1.5rem 0;
   letter-spacing: 1px;
   line-height: 1.1;
@@ -53,7 +52,6 @@ const ProductTitle = styled.h1`
   text-transform: uppercase;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    font-size: clamp(3rem, 5vw, 3.5rem);
   }
 `;
 
@@ -235,7 +233,7 @@ export default function ProductDetailHero({
   t,
 }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const titleRef = useFitText({ minPx: 32, deps: [product?.name] });
+  const titleRef = useFitText({ minPx: 22, deps: [product?.name] });
 
   const images = Array.isArray(product?.images) ? product.images : [];
 
