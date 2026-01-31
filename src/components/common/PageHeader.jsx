@@ -51,6 +51,7 @@ const HeaderContentLayer = styled.div`
 const HeaderContent = styled.div`
     border: 1px solid #016d197d;
     position: absolute;
+    text-transform: uppercase;
     bottom: 18px;
     right: 22px;
     margin: 0;
