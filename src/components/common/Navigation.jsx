@@ -6,6 +6,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { ROUTES } from '../../constants';
 import { productCategories } from '../../data/products';
 import { getProductCategoryPath, getProductDetailPath, getSectionPath } from '../../utils/i18nRouting';
+import { isSanityConfigured } from '../../services/sanity/config';
+import { fetchWindowProductsList } from '../../services/sanity/windows';
 
 const BaseNavContainer = styled.nav`
   display: flex;
@@ -134,7 +136,8 @@ const MegaMenuInner = styled.div`
 
 const MegaMenuGrid = styled.div`
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* 3 kolumny tylko na desktop/header (NavContainer i tak jest ukryty na md i niżej) */
+  grid-template-columns: 1.05fr 1fr 0.9fr;
   gap: 0;
   min-height: 320px;
 `;
@@ -147,6 +150,37 @@ const MegaMenuLeft = styled.div`
 
 const MegaMenuRight = styled.div`
   padding-left: 22px;
+`;
+
+const MegaMenuImageCol = styled.div`
+  padding-left: 22px;
+  border-left: 1px solid ${({ $isPastThreshold }) =>
+    ($isPastThreshold ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.18)')};
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+`;
+
+const MegaMenuImageWrapper = styled.div`
+  width: 100%;
+  max-width: 360px;
+  aspect-ratio: 4 / 3;
+  border-radius: 12px;
+  overflow: hidden;
+  background: ${({ $isPastThreshold }) =>
+    ($isPastThreshold ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.12)')};
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
+  border: 1px solid ${({ $isPastThreshold }) =>
+    ($isPastThreshold ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.18)')};
+`;
+
+const MegaMenuImage = styled.img`
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
 `;
 
 const MegaTitle = styled.div`
@@ -216,7 +250,7 @@ const CategoryIcon = styled.span`
     width: 18px;
     height: 18px;
     display: block;
-    filter: ${({ $isPastThreshold }) => ($isPastThreshold ? 'none' : 'brightness(10)')};
+    filter: ${({ $isPastThreshold }) => ($isPastThreshold ? 'none' : 'brightness(2.6)')};
   }
 `;
 
@@ -239,13 +273,51 @@ const ProductLink = styled(Link)`
   color: ${({ theme, $isPastThreshold }) => 
     ($isPastThreshold ? theme.colors.text : theme.colors.textLight)};
   font-size: 1.6rem;
-  font-weight: 800;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.3px;
   transition: color 150ms ease;
 
   &:hover {
-    color: ${({ theme }) => theme.colors.accent};
+    color: #018001;
+  }
+`;
+
+const ProductSpecs = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+
+  /* bez tła; same badge'e zostają jako kapsułki */
+  padding: 0;
+`;
+
+const SpecBadge = styled.span`
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 6px 8px;
+  border-radius: 999px;
+  background: rgb(1, 72, 2);
+  border: 1px solid rgba(12, 179, 15, 0.851);
+
+  color: rgb(255, 255, 255);
+  line-height: 1;
+
+  span:last-child {
+    font-size: 0.92rem;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+  }
+
+  span:first-child {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: rgb(213, 213, 213);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
   }
 `;
 
@@ -278,6 +350,52 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
   
   const { isHovered: isMegaOpen, handleMouseEnter, handleMouseLeave } = useHoverIntent(1);
   const [activeCategoryKey, setActiveCategoryKey] = useState(null);
+  const [activeProductKey, setActiveProductKey] = useState(null);
+
+  // Sanity (dynamic list for okna)
+  const [sanityWindows, setSanityWindows] = useState(null);
+  const [sanityWindowsLoaded, setSanityWindowsLoaded] = useState(false);
+  const windowsFetchAbortRef = useRef(null);
+
+  // Lazy-load: pobieramy listę okien z Sanity dopiero przy pierwszym otwarciu mega menu.
+  useEffect(() => {
+    if (variant !== 'header') return;
+    if (!isMegaOpen) return;
+    if (sanityWindowsLoaded) return;
+    if (!isSanityConfigured()) {
+      setSanityWindows(null);
+      setSanityWindowsLoaded(true);
+      return;
+    }
+
+    const controller = new AbortController();
+    windowsFetchAbortRef.current = controller;
+
+    fetchWindowProductsList(lang, { signal: controller.signal })
+      .then((items) => {
+        if (controller.signal.aborted) return;
+        setSanityWindows(Array.isArray(items) ? items : []);
+        setSanityWindowsLoaded(true);
+      })
+      .catch((e) => {
+        if (controller.signal.aborted) return;
+        console.warn('Sanity windows list fetch failed (mega menu)', e);
+        setSanityWindows([]);
+        setSanityWindowsLoaded(true);
+      });
+
+    return () => controller.abort();
+  }, [isMegaOpen, lang, sanityWindowsLoaded, variant]);
+
+  // Po zmianie języka chcemy odświeżyć listę (bo opisy są lokalizowane)
+  useEffect(() => {
+    setSanityWindows(null);
+    setSanityWindowsLoaded(false);
+    if (windowsFetchAbortRef.current) {
+      windowsFetchAbortRef.current.abort();
+      windowsFetchAbortRef.current = null;
+    }
+  }, [lang]);
 
   // Jeśli header znika (scroll w dół), to natychmiast chowamy MegaMenu.
   // Ponieważ MegaMenu otwiera się hoverem, najprościej jest zasymulować mouseleave.
@@ -321,21 +439,37 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
     const entries = Object.entries(productCategories || {});
 
     const iconByKey = {
-      okna: '/images/icons/window-icon.png',
-      drzwi: '/images/icons/tools-icon.png',
+      okna: '/images/window-icon.png',
+      drzwi: '/images/door-icon.png',
       bramy: '/images/icons/tools-icon.png',
       rolety: '/images/icons/tools-icon.png',
     };
 
     return entries
-      .map(([key, c]) => ({
+      .map(([key, c]) => {
+        const localProducts = Array.isArray(c?.products) ? c.products : [];
+
+        // Okna: preferuj Sanity (jeśli są dane), inaczej lokalny fallback.
+        const products =
+          key === 'okna' && Array.isArray(sanityWindows) && sanityWindows.length > 0
+            ? sanityWindows
+            : localProducts;
+
+        return ({
         key,
         title: t(`breadcrumbs.categories.${key}`, c?.pageTitle || key),
         icon: iconByKey[key] || '/images/icons/tools-icon.png',
-        products: Array.isArray(c?.products) ? c.products : [],
-      }))
+        products,
+      });
+      })
       .filter((c) => c.products.length > 0);
-  }, [t]);
+  }, [sanityWindows, t]);
+
+  const specItemsForMegaMenu = useMemo(() => ([
+    { key: 'profileThickness', label: t('productSpecs.short.profileThickness', 'profil') },
+    { key: 'thermalTransmittance', label: t('productSpecs.short.thermalTransmittance', 'uw') },
+    { key: 'waterTightness', label: t('productSpecs.short.waterTightness', 'wodoszczelność') },
+  ]), [t]);
 
   const resolvedActiveCategoryKey = useMemo(() => {
     if (activeCategoryKey) return activeCategoryKey;
@@ -346,6 +480,52 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
     if (!resolvedActiveCategoryKey) return null;
     return menuCategories.find((c) => c.key === resolvedActiveCategoryKey) || null;
   }, [menuCategories, resolvedActiveCategoryKey]);
+
+  const resolvedActiveProduct = useMemo(() => {
+    const products = activeCategory?.products || [];
+    if (!products.length) return null;
+
+    if (activeProductKey) {
+      return products.find((p) => (p.slug || p.id) === activeProductKey) || null;
+    }
+    return products[0] || null;
+  }, [activeCategory?.products, activeProductKey]);
+
+  const resolvedActiveProductSpecs = useMemo(() => {
+    return resolvedActiveProduct?.specs || null;
+  }, [resolvedActiveProduct]);
+
+  const resolvedActiveProductImage = useMemo(() => {
+    // W danych lokalnych obrazek siedzi w `image`, czasem bywa też `images[0]`.
+    // Dla sanity możemy tu później podpiąć urlForImage(...) - ale na razie trzymamy się danych, które już są używane w UI.
+    return resolvedActiveProduct?.image || resolvedActiveProduct?.images?.[0] || null;
+  }, [resolvedActiveProduct]);
+
+  // Kiedy otwieramy mega menu, ustawiamy domyślny produkt (pierwszy z aktywnej kategorii)
+  useEffect(() => {
+    if (variant !== 'header') return;
+    if (!isMegaOpen) return;
+    const products = activeCategory?.products || [];
+    const first = products[0];
+    if (!first) return;
+    const firstKey = first.slug || first.id;
+    setActiveProductKey((prev) => prev || firstKey);
+  }, [activeCategory?.products, isMegaOpen, variant]);
+
+  // Jeśli zmienimy kategorię, a aktywny produkt nie należy do tej kategorii,
+  // to przestawiamy go na pierwszą pozycję (żeby podgląd zawsze miał sens).
+  useEffect(() => {
+    const products = activeCategory?.products || [];
+    if (!products.length) {
+      setActiveProductKey(null);
+      return;
+    }
+    const exists = activeProductKey && products.some((p) => (p.slug || p.id) === activeProductKey);
+    if (!exists) {
+      const first = products[0];
+      setActiveProductKey(first?.slug || first?.id || null);
+    }
+  }, [activeCategory?.products, activeProductKey]);
 
   const getLocalizedPath = (path) => {
     const pathMap = {
@@ -412,12 +592,38 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
                     to={getProductDetailPath(lang, activeCategory.key, p.slug || p.id)}
                     $isPastThreshold={isPastThreshold}
                     role="menuitem"
+                    onMouseEnter={() => setActiveProductKey(p.slug || p.id)}
+                    onFocus={() => setActiveProductKey(p.slug || p.id)}
                   >
                     {p.name}
                   </ProductLink>
                 ))}
               </ProductList>
             </MegaMenuRight>
+
+            <MegaMenuImageCol $isPastThreshold={isPastThreshold} aria-hidden="true">
+              <MegaMenuImageWrapper $isPastThreshold={isPastThreshold}>
+                {resolvedActiveProductImage ? (
+                  <MegaMenuImage src={resolvedActiveProductImage} alt="" loading="lazy" />
+                ) : null}
+              </MegaMenuImageWrapper>
+
+              {/* SpecItems pod zdjęciem aktywnego produktu */}
+              {resolvedActiveProductSpecs ? (
+                <ProductSpecs aria-hidden="true" style={{ width: '100%' }}>
+                  {specItemsForMegaMenu.map((s) => {
+                    const value = resolvedActiveProductSpecs?.[s.key];
+                    if (!value) return null;
+                    return (
+                      <SpecBadge key={s.key}>
+                        <span>{s.label}</span>
+                        <span>{value}</span>
+                      </SpecBadge>
+                    );
+                  })}
+                </ProductSpecs>
+              ) : null}
+            </MegaMenuImageCol>
           </MegaMenuGrid>
         </MegaMenuInner>
       </MegaMenu>,
@@ -441,12 +647,23 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
                   if (!activeCategoryKey && menuCategories?.[0]?.key) {
                     setActiveCategoryKey(menuCategories[0].key);
                   }
+                  // Domyślne zdjęcie: pierwsza kategoria -> pierwszy produkt
+                  const firstCat = menuCategories?.[0];
+                  const firstProd = firstCat?.products?.[0];
+                  if (!activeProductKey && firstProd) {
+                    setActiveProductKey(firstProd.slug || firstProd.id);
+                  }
                 }}
                 onMouseLeave={handleMouseLeave}
                 onFocus={() => {
                   handleMouseEnter();
                   if (!activeCategoryKey && menuCategories?.[0]?.key) {
                     setActiveCategoryKey(menuCategories[0].key);
+                  }
+                  const firstCat = menuCategories?.[0];
+                  const firstProd = firstCat?.products?.[0];
+                  if (!activeProductKey && firstProd) {
+                    setActiveProductKey(firstProd.slug || firstProd.id);
                   }
                 }}
                 onBlur={(e) => {
