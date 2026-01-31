@@ -1,5 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { BsQuestionCircle } from 'react-icons/bs';
 
 const SpecsSection = styled.div`
@@ -22,6 +22,13 @@ const SpecCard = styled.div`
   position: relative;
   transition: all 0.3s ease;
   min-height: 96px;
+  z-index: 1;
+
+  ${({ $isTooltipOpen }) =>
+    $isTooltipOpen &&
+    css`
+      z-index: 999999;
+    `}
 `;
 
 const SpecIconWrapper = styled.div`
@@ -68,13 +75,15 @@ const TooltipBubble = styled.div`
   right: 0;
   width: 280px;
   max-width: min(75vw, 320px);
-  background: rgba(17, 24, 39, 0.96);
+  background: #ffffff;
+  color: #374151;
   padding: 0.9rem 1rem;
   border-radius: 10px;
   font-size: 1.1rem;
   line-height: 1.5;
-  z-index: 50;
-  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  z-index: 999999;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
 
   opacity: 0;
   transform: translateY(-4px);
@@ -84,11 +93,13 @@ const TooltipBubble = styled.div`
   &::before {
     content: '';
     position: absolute;
-    top: -7px;
+    top: -8px;
     right: 10px;
     width: 14px;
     height: 14px;
-    background: rgba(17, 24, 39, 0.96);
+    background: #ffffff;
+    border-left: 1px solid #e5e7eb;
+    border-top: 1px solid #e5e7eb;
     transform: rotate(45deg);
   }
 `;
@@ -97,7 +108,6 @@ const TooltipWrapper = styled.div`
   position: absolute;
   top: 1rem;
   right: 1rem;
-  z-index: 60;
 
   &:hover ${TooltipBubble},
   &:focus-within ${TooltipBubble} {
@@ -152,7 +162,6 @@ export default function ProductDetailSpecs({
 }) {
   const [openSpecTooltip, setOpenSpecTooltip] = React.useState(null);
 
-  // close tooltip after outside click (mainly mobile)
   React.useEffect(() => {
     if (!openSpecTooltip) return;
     const onDocClick = () => setOpenSpecTooltip(null);
@@ -168,9 +177,10 @@ export default function ProductDetailSpecs({
         if (!def || !value) return null;
 
         const IconComponent = def.icon;
+        const isTooltipOpen = openSpecTooltip === specKey;
 
         return (
-          <SpecCard key={specKey}>
+          <SpecCard key={specKey} $isTooltipOpen={isTooltipOpen}>
             <SpecIconWrapper>
               <IconComponent />
             </SpecIconWrapper>
@@ -181,7 +191,7 @@ export default function ProductDetailSpecs({
 
             {tooltipKeyMap?.[specKey] && (
               <TooltipWrapper
-                data-open={openSpecTooltip === specKey ? 'true' : 'false'}
+                data-open={isTooltipOpen ? 'true' : 'false'}
                 onClick={(e) => {
                   e.stopPropagation();
                 }}
