@@ -2,8 +2,8 @@ export async function verifyRecaptcha(token) {
   if (!token) return { ok: false, error: 'missing-token' };
 
   const payload = { token };
-  // Try Netlify first (/.netlify/functions/*), then Azure SWA (/api/*)
-  const endpoints = ['/.netlify/functions/verify-recaptcha', '/api/verify-recaptcha'];
+  // Netlify Functions
+  const endpoints = ['/.netlify/functions/verify-recaptcha'];
 
   for (let i = 0; i < endpoints.length; i += 1) {
     const url = endpoints[i];

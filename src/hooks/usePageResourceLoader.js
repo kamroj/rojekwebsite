@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { useLocation } from 'react-router-dom';
 import useResourcePreloader from './useResourcePreloader';
 import { collectPageResources, getUniqueResources } from '../utils/resourceCollector';
-import { getRouteKeyFromPathname } from '../utils/i18nRouting';
+import { getRouteKeyFromPathname } from '../lib/i18n/routing';
 
 const usePageResourceLoader = (additionalData = {}) => {
   const location = useLocation();

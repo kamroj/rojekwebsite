@@ -164,6 +164,9 @@ dist/
 # Serverless directories
 .serverless/
 
+# Netlify CLI local state
+.netlify/
+
 # FuseBox cache
 .fusebox/
 

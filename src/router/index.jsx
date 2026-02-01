@@ -3,18 +3,18 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import MainLayout from '../layouts/MainLayout';
-import HomePage from '../pages/HomePage';
-import RealizationsPage2 from '../pages/RealizationsPage2';
-import AboutUsPage from '../pages/AboutUsPage';
-import ContactPage from '../pages/ContactPage';
-import HsConfiguratorPage from '../pages/HsConfiguratorPage';
+import HomePage from '../views/HomeView';
+import RealizationsPage2 from '../views/Realizations2View';
+import AboutUsPage from '../views/AboutUsView';
+import ContactPage from '../views/ContactView';
+import HsConfiguratorPage from '../views/HsConfiguratorView';
 import { ROUTES } from '../constants';
-import ProductCategoryPage from '../pages/ProductCategoryPage';
-import ProductDetailPage from '../pages/ProductDetailPage';
-import ProductsPage from '../pages/ProductsPage';
+import ProductCategoryPage from '../views/ProductCategoryView';
+import ProductDetailPage from '../views/ProductDetailView';
+import ProductsPage from '../views/ProductsView';
 import { productCategories, productDetailsByType } from '../data/products';
 import I18nRouteSync from './I18nRouteSync';
-import { getCategoryKeyFromAnySlug, getProductDetailPath, getProductCategoryPath, getSectionPath, SECTION_SLUGS } from '../utils/i18nRouting';
+import { getCategoryKeyFromAnySlug, getProductDetailPath, getProductCategoryPath, getSectionPath, SECTION_SLUGS } from '../lib/i18n/routing';
 
 const cloneWithPaths = (routes, mapping) => {
   return {

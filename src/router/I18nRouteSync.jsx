@@ -2,7 +2,7 @@ import React, {useEffect} from 'react'
 import {Outlet, useLocation, useParams} from 'react-router-dom'
 import {useTranslation} from 'react-i18next'
 import {DEFAULT_LANGUAGE} from '../constants'
-import {normalizeLang} from '../utils/i18nRouting'
+import { normalizeLang } from '../lib/i18n/routing'
 
 /**
  * Synchronizes i18next language with the current route.

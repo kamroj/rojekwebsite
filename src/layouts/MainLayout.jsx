@@ -2,10 +2,10 @@
 import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
 import styled from 'styled-components';
 import { Outlet, useLocation } from 'react-router-dom';
-import Header from '../components/layout/Header';
-import Footer from '../components/layout/Footer';
-import LoadingScreen from '../components/common/LoadingScreen';
-import ScrollToTop from '../components/common/ScrollToTop';
+import Header from '../components/shared/Header';
+import Footer from '../components/shared/Footer';
+import LoadingScreen from '../components/ui/LoadingScreen';
+import ScrollToTop from '../components/shared/ScrollToTop';
 import { useResourceCollector } from '../context/ResourceCollectorContext';
 
 const LayoutWrapper = styled.div`

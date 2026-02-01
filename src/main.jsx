@@ -7,7 +7,7 @@ import { Suspense } from 'react';
 import App from './App.jsx';
 import GlobalStyles from './styles/GlobalStyles.js';
 import theme from './styles/theme.js';
-import LoadingScreen from './components/common/LoadingScreen.jsx';
+import LoadingScreen from './components/ui/LoadingScreen.jsx';
 import { ResourceCollectorProvider } from './context/ResourceCollectorContext.jsx';
  // Import internationalization
 import './i18n.js';
