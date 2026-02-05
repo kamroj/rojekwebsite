@@ -13,23 +13,12 @@ import {
   ProductDetailFAQ,
   ProductDetailCTA,
 } from '../../components/sections/products/detail';
+import { WINDOW_FAQ_FALLBACK } from '../../data/products/faqFallback.js';
 
 // NOTE: This page composes reusable product-detail components.
 
 // --- Styled Components ---
 
-
-// Local fallback FAQ (used only if CMS has no FAQ yet)
-const fallbackFaqData = [
-  {
-    question: "Jak często należy konserwować okna PVC?",
-    answer: "Okna PVC wymagają minimalnej konserwacji. Zalecamy czyszczenie ram i szyb co najmniej 2-3 razy w roku przy użyciu łagodnych środków czyszczących. Okucia warto smarować specjalnym olejem raz w roku, najlepiej przed sezonem zimowym. Uszczelki można przecierać preparatem silikonowym, co przedłuży ich żywotność."
-  },
-  {
-    question: "Jaki współczynnik przenikania ciepła Uw jest najlepszy?",
-    answer: "Im niższy współczynnik Uw, tym lepsza izolacja termiczna okna. Dla domów energooszczędnych zalecamy okna z Uw poniżej 0,9 W/m²K. Standardowe okna mają Uw na poziomie 1,1-1,3 W/m²K. Nasze okna premium osiągają nawet Uw = 0,7 W/m²K, co przekłada się na znaczne oszczędności w ogrzewaniu."
-  },
-];
 
 const WindowProductDetail = ({ product }) => {
   const { t } = useTranslation();
@@ -52,7 +41,7 @@ const WindowProductDetail = ({ product }) => {
   );
 
   // FAQ: prefer CMS
-  const faqItems = Array.isArray(product?.faq) && product.faq.length > 0 ? product.faq : fallbackFaqData;
+  const faqItems = Array.isArray(product?.faq) && product.faq.length > 0 ? product.faq : WINDOW_FAQ_FALLBACK;
 
   const categoryLabel = t(`products.${product.categoryKey || 'windows'}.name`, product.category);
 
@@ -83,6 +72,7 @@ const WindowProductDetail = ({ product }) => {
   return (
     <Page
       imageSrc={product.headerImage}
+      headerImage={product.headerImageSanity}
       title={product.name}
       headerProps={{
         badge: { label: product.name },

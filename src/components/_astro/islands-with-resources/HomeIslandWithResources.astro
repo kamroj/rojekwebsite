@@ -1,0 +1,22 @@
+---
+import HomeIsland from '../islands/home.jsx';
+import { getI18nResources } from '../../../lib/i18n/resources.js';
+
+const {
+  lang = 'pl',
+  viewProps = {},
+  hydrate = 'load',
+} = Astro.props;
+
+const resources = await getI18nResources(lang);
+---
+
+{
+  hydrate === 'only'
+    ? <HomeIsland lang={lang} resources={resources} viewProps={viewProps} client:only="react" />
+    : hydrate === 'idle'
+      ? <HomeIsland lang={lang} resources={resources} viewProps={viewProps} client:idle />
+      : hydrate === 'visible'
+        ? <HomeIsland lang={lang} resources={resources} viewProps={viewProps} client:visible />
+        : <HomeIsland lang={lang} resources={resources} viewProps={viewProps} client:load />
+}

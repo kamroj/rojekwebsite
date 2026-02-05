@@ -1,13 +1,12 @@
 // src/pages/ProductCategoryPage.jsx
 import React from 'react';
-import styled from 'styled-components';
-import { Link, useParams } from 'react-router-dom';
+import RouterAgnosticLink from '../components/_astro/RouterAgnosticLink.jsx';
 import { useTranslation } from 'react-i18next';
 import { IoIosArrowForward } from 'react-icons/io';
 import Page from '../components/ui/Page';
 import Section from '../components/ui/Section';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomeView';
-import { productCategories } from '../data/products';
+import { productCategories } from '../data/products/index.js';
 import { getCategoryKeyFromSlug, getProductDetailPath } from '../lib/i18n/routing';
 import { WINDOW_SPECS_DEFS, WINDOW_SPECS_ORDER_LIST } from '../data/products/windows';
 import { DOOR_SPECS_DEFS, DOOR_SPECS_ORDER_LIST } from '../data/products/doors';
@@ -15,266 +14,24 @@ import { useResourceCollector } from '../context/ResourceCollectorContext';
 import { runSanityTask } from '../lib/sanity/runSanityTask';
 import { fetchWindowProductsList } from '../lib/sanity/windows';
 import { isSanityConfigured } from '../lib/sanity/config';
+import SanityImage from '../components/ui/SanityImage.jsx';
 
-// --- Styled Components ---
+import styles from './ProductCategoryView.module.css';
 
-const ProductsContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  margin-top: 2rem;
-`;
+function ViewMoreButton({ className, ...props }) {
+  const classes = [styles.viewMoreButton, className].filter(Boolean).join(' ');
+  return <RouterAgnosticLink className={classes} {...props} />;
+}
 
-const ProductCard = styled.div`
-  display: flex;
-  background: #ffffff;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-  min-height: 420px;
-  position: relative;
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    flex-direction: column;
-    min-height: auto;
-  }
-`;
-
-const ProductInfo = styled.div`
-  flex: 1;
-  padding: 1rem 3rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  min-width: 0;
-  background: #ffffff;
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    padding: 0 1rem 1.5rem 1rem;;
-    order: 2;
-  }
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    padding: 0 1rem 1.5rem 1rem;
-  }
-`;
-
-const ProductName = styled.h2`
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
-  text-transform: uppercase;
-  font-weight: 400;
-  color: #03531d;
-  margin: 0 0 1rem 0;
-  letter-spacing: 0.5px;
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    margin: 0 0 0.6rem 0;
-  }
-`;
-
-const ProductDescription = styled.p`
-  font-size: 1.4rem;
-  color: #6b7280;
-  margin: 0 0 1.5rem 0;
-  line-height: 1.6;
-  max-width: 600px;
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    font-size: 1.2rem;
-    margin: 0 0 1.2rem 0;
-  }
-`;
-
-const Divider = styled.div`
-  width: 30%;
-  height: 1px;
-  background-color: #0132068e;
-  margin-bottom: 1.5rem;
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    margin-bottom: 1.2rem;
-  }
-`;
-
-const SpecsContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    margin-bottom: 1.5rem;
-    gap: 1rem 0;
-  }
-`;
-
-const SpecItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding-right: 2rem;
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    gap: 0.6rem;
-    padding-right: 0;
-    flex: 1 1 100%;
-  }
-`;
-
-const SpecSeparator = styled.div`
-  width: 1px;
-  height: 45px;
-  background-color: #d1d5db;
-  margin-right: 2rem;
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    display: none;
-  }
-`;
-
-const SpecIconWrapper = styled.div`
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  background-color: #f0f4f0;
-  border: 1px solid #e0e5e0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  
-  svg {
-    font-size: 1.8rem;
-    color: #4a7c59;
-  }
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    width: 40px;
-    height: 40px;
-    
-    svg {
-      font-size: 1.5rem;
-    }
-  }
-`;
-
-const SpecDetails = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-`;
-
-const SpecValue = styled.span`
-  font-size: 1.3rem;
-  font-weight: 600;
-  color: #1a1a1a;
-  white-space: nowrap;
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    font-size: 1.15rem;
-  }
-`;
-
-const SpecLabel = styled.span`
-  font-size: 1rem;
-  color: #9ca3af;
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    font-size: 0.9rem;
-  }
-`;
-
-const ViewMoreButton = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: linear-gradient(135deg, #1a5618 0%, #2d7a2a 100%);
-  color: #ffffff;
-  padding: 1rem 1.8rem;
-  border-radius: 6px;
-  text-decoration: none;
-  font-size: 1.25rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  width: fit-content;
-  
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0px 3px 10px 0px rgb(13 43 12 / 35%);
-  }
-  
-  svg {
-    font-size: 1.4rem;
-    transition: transform 0.3s ease;
-  }
-  
-  &:hover svg {
-    transform: translateX(4px);
-  }
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    padding: 0.9rem 1.5rem;
-    font-size: 1.15rem;
-  }
-`;
-
-const ProductImageWrapper = styled.div`
-  width: 550px;
-  min-width: 550px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #ffffff;
-  position: relative;
-  overflow: hidden;
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    width: 100%;
-    min-width: 100%;
-    height: auto;
-    order: 1;
-    min-height: 320px;
-  }
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    min-height: 280px;
-    padding: 1.5rem;
-  }
-`;
-
-const ProductImage = styled.img`
-  width: 100%; /* Zawsze 100% szerokości kontenera */
-  height: auto; /* Wysokość dostosowuje się automatycznie */
-  max-height: 100%; /* Nie przekracza wysokości kontenera */
-  object-fit: contain; /* Zachowuje proporcje i mieści się w kontenerze */
-  display: block;
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    max-height: 280px;
-  }
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.sm}) {
-    max-height: 240px;
-  }
-`;
-
-const NotFoundText = styled.p`
-  font-size: 1.4rem;
-  color: #6b7280;
-  text-align: center;
-  padding: 4rem 0;
-`;
-
-// --- Component ---
-const ProductCategoryPage = () => {
+// --- Base (router-agnostic) ---
+function ProductCategoryPageBase({ category, initialSanityProducts }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
-  const { category } = useParams();
 
   const { beginTask, endTask, addResources } = useResourceCollector();
-  const [sanityProducts, setSanityProducts] = React.useState(null);
+  const [sanityProducts, setSanityProducts] = React.useState(
+    Array.isArray(initialSanityProducts) ? initialSanityProducts : null
+  );
   const [_sanityError, setSanityError] = React.useState(null);
 
   const categoryKey = getCategoryKeyFromSlug(lang, category) || category;
@@ -288,8 +45,13 @@ const ProductCategoryPage = () => {
   const specsOrderList = isWindowsCategory ? WINDOW_SPECS_ORDER_LIST : (isDoorsCategory ? DOOR_SPECS_ORDER_LIST : WINDOW_SPECS_ORDER_LIST);
 
   // Fetch window products from Sanity (only for Okna).
+  // In Astro SSG we may already have `initialSanityProducts` from build-time.
   React.useEffect(() => {
     if (!isWindowsCategory) return;
+
+    // If we already have initial products (SSG), don't refetch on mount.
+    if (Array.isArray(initialSanityProducts) && initialSanityProducts.length > 0) return;
+
     if (!isSanityConfigured()) {
       setSanityProducts(null);
       return;
@@ -321,7 +83,7 @@ const ProductCategoryPage = () => {
     return () => {
       controller.abort();
     };
-  }, [isWindowsCategory, lang, beginTask, endTask, addResources]);
+  }, [isWindowsCategory, lang, initialSanityProducts, beginTask, endTask, addResources]);
 
   if (!categoryInfo) {
     return (
@@ -366,16 +128,16 @@ const ProductCategoryPage = () => {
         </HeaderWrap>
 
         {productsToRender.length > 0 ? (
-          <ProductsContainer>
+          <div className={styles.productsContainer}>
             {productsToRender.map((product) => (
-              <ProductCard key={product.id}>
-                <ProductInfo>
-                  <ProductName>{product.name}</ProductName>
-                  <ProductDescription>{product.description || product.shortDescription}</ProductDescription>
+              <div className={styles.productCard} key={product.id}>
+                <div className={styles.productInfo}>
+                  <h2 className={styles.productName}>{product.name}</h2>
+                  <p className={styles.productDescription}>{product.description || product.shortDescription}</p>
 
-                  <Divider />
+                  <div className={styles.divider} />
 
-                  <SpecsContainer>
+                  <div className={styles.specsContainer}>
                     {specsOrderList.map((specKey, idx) => {
                       const def = specsDefs[specKey]
                       if (!def) return null
@@ -387,45 +149,68 @@ const ProductCategoryPage = () => {
 
                       return (
                         <React.Fragment key={specKey}>
-                          <SpecItem>
-                            <SpecIconWrapper>
+                          <div className={styles.specItem}>
+                            <div className={styles.specIconWrapper}>
                               <Icon />
-                            </SpecIconWrapper>
-                            <SpecDetails>
-                              <SpecValue>{value}</SpecValue>
-                              <SpecLabel>{def?.labelKey ? t(def.labelKey, def.label) : def.label}</SpecLabel>
-                            </SpecDetails>
-                          </SpecItem>
-                          {idx < specsOrderList.length - 1 && <SpecSeparator />}
+                            </div>
+                            <div className={styles.specDetails}>
+                              <span className={styles.specValue}>{value}</span>
+                              <span className={styles.specLabel}>{def?.labelKey ? t(def.labelKey, def.label) : def.label}</span>
+                            </div>
+                          </div>
+                          {idx < specsOrderList.length - 1 && <div className={styles.specSeparator} />}
                         </React.Fragment>
                       )
                     })}
-                  </SpecsContainer>
+                  </div>
 
-                  <ViewMoreButton to={getProductDetailPath(lang, categoryKey, product.slug || product.id)}>
+                  <ViewMoreButton href={getProductDetailPath(lang, categoryKey, product.slug || product.id)}>
                     {t('common.viewMore', 'Zobacz więcej')}
                     <IoIosArrowForward />
                   </ViewMoreButton>
-                </ProductInfo>
+                </div>
 
-                <ProductImageWrapper>
-                  <ProductImage
-                    src={product.image || product.images?.[0]}
-                    alt={product.name}
-                    loading="lazy"
-                  />
-                </ProductImageWrapper>
-              </ProductCard>
+                <div className={styles.productImageWrapper}>
+                  {product?.listImage ? (
+                    <SanityImage
+                      className={styles.productImage}
+                      image={product.listImage}
+                      altFallback={product.name}
+                      loading="lazy"
+                      sizes="(max-width: 900px) 100vw, 520px"
+                      widths={[320, 480, 640, 800, 1024]}
+                    />
+                  ) : (
+                    <img
+                      className={styles.productImage}
+                      src={product.image || product.images?.[0]}
+                      alt={product.name}
+                      loading="lazy"
+                    />
+                  )}
+                </div>
+              </div>
             ))}
-          </ProductsContainer>
+          </div>
         ) : (
-          <NotFoundText>
+          <p className={styles.notFoundText}>
             {t('products.emptyCategory', 'Brak produktów w tej kategorii.')}
-          </NotFoundText>
+          </p>
         )}
       </Section>
     </Page>
   );
-};
+}
 
-export default ProductCategoryPage;
+// NOTE: React Router is removed. This default export is kept for compatibility
+// (some islands/views may still import the default). It expects `category` as a prop.
+export default function ProductCategoryPage({ category }) {
+  return <ProductCategoryPageBase category={category} />;
+}
+
+// --- Astro (no React Router context) ---
+// NOTE: `ViewIsland` passes `viewProps` as regular props to the rendered view.
+// So for Astro we accept `category` directly (not nested under `viewProps`).
+export function ProductCategoryViewAstro({ category, initialSanityProducts }) {
+  return <ProductCategoryPageBase category={category} initialSanityProducts={initialSanityProducts} />;
+}

@@ -1,0 +1,10 @@
+/* This replaces the previous styled-components probe styles.
+   The component is kept as a simple regression-test for CSS Modules usage in React islands. */
+
+.probe {
+  border: 3px solid rgb(0, 200, 0);
+  padding: 12px;
+  border-radius: 10px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  background: rgba(0, 200, 0, 0.08);
+}

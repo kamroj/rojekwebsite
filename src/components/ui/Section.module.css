@@ -1,0 +1,17 @@
+.section {
+  position: relative;
+  margin-bottom: 4rem;
+}
+
+.noMarginBottom {
+  margin-bottom: 0;
+}
+
+.dark {
+  background-color: #000;
+  color: var(--color-text-light);
+}
+
+.content {
+  width: 100%;
+}

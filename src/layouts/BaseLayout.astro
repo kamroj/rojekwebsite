@@ -1,0 +1,124 @@
+---
+// BaseLayout.astro
+// Minimal HTML scaffold for SSG pages.
+// Intentionally framework-agnostic (no React, no styled-components).
+
+import '../styles/prose.css';
+import '../styles/global.css';
+
+import { translatePathname } from '../lib/i18n/routing.js';
+import { getCompanyJsonLd } from '../data/company.js';
+
+const {
+  lang = 'pl',
+  title = 'ROJEK',
+  description = 'ROJEK',
+  // Default OG image (used in social previews).
+  // NOTE: Keep it as an existing asset to avoid 404s in social crawlers.
+  // If you add a dedicated OG image later (recommended 1200×630), change this path.
+  image = '/images/logo.png',
+} = Astro.props;
+
+// --- SEO helpers
+const pathname = Astro.url?.pathname || '/';
+
+// Canonical MUST be absolute in HTML output.
+// `Astro.site` is configured in `astro.config.mjs` (Netlify env URL / local fallback).
+const canonical = Astro.site ? new URL(pathname, Astro.site).toString() : undefined;
+
+const ogImage = Astro.site ? new URL(image, Astro.site).toString() : undefined;
+
+const jsonLd = JSON.stringify(getCompanyJsonLd({ url: canonical }), null, 0);
+
+// Indexing policy:
+// - production deploys: index
+// - deploy previews / branch deploys: noindex
+const netlifyContext = process.env.CONTEXT; // 'production' | 'deploy-preview' | 'branch-deploy'
+const shouldIndex = netlifyContext ? netlifyContext === 'production' : import.meta.env.PROD;
+
+// hreflang (absolute alternate URLs)
+const hreflangs = ['pl', 'en', 'de'].map((l) => ({
+  lang: l,
+  href: Astro.site ? new URL(translatePathname(pathname, l), Astro.site).toString() : undefined,
+}));
+const xDefaultHref = Astro.site ? new URL(translatePathname(pathname, 'pl'), Astro.site).toString() : undefined;
+
+// OG locale mapping
+const ogLocaleMap = {
+  pl: 'pl_PL',
+  en: 'en_US',
+  de: 'de_DE',
+};
+const ogLocale = ogLocaleMap[lang] || 'pl_PL';
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+
+    <!-- robots -->
+    <meta name="robots" content={shouldIndex ? 'index,follow' : 'noindex,nofollow'} />
+
+    <!-- icons -->
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    {canonical ? <link rel="canonical" href={canonical} /> : null}
+
+    <!-- hreflang -->
+    {hreflangs.map((h) =>
+      h.href ? <link rel="alternate" hreflang={h.lang} href={h.href} /> : null
+    )}
+    {xDefaultHref ? <link rel="alternate" hreflang="x-default" href={xDefaultHref} /> : null}
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    {canonical ? <meta property="og:url" content={canonical} /> : null}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="ROJEK" />
+    <meta property="og:locale" content={ogLocale} />
+    {hreflangs
+      .filter((h) => h.lang !== lang)
+      .map((h) => (h.lang in ogLocaleMap ? <meta property="og:locale:alternate" content={ogLocaleMap[h.lang]} /> : null))}
+    {ogImage ? <meta property="og:image" content={ogImage} /> : null}
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    {ogImage ? <meta name="twitter:image" content={ogImage} /> : null}
+
+    <!-- Schema.org -->
+    <script type="application/ld+json" set:html={jsonLd} />
+
+    <!-- Per-page extra metadata/scripts (e.g. Product/FAQ JSON-LD) -->
+    <slot name="head" />
+  </head>
+  <body>
+    <slot />
+
+    <style>
+      /* Sticky footer layout for all pages */
+      html,
+      body {
+        height: 100%;
+      }
+
+      body {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* our SiteLayout places <main> between header and footer */
+      main {
+        flex: 1 0 auto;
+      }
+    </style>
+  </body>
+</html>

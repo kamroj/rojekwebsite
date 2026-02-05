@@ -8,7 +8,20 @@ export default defineType({
   // Singleton (edytujesz jeden dokument strony "O firmie")
   __experimental_formPreviewTitle: false,
   fields: [
-    defineField({name: 'headerImage', title: 'Zdjęcie nagłówkowe', type: 'image', options: {hotspot: true}}),
+    defineField({
+      name: 'headerImage',
+      title: 'Zdjęcie nagłówkowe',
+      type: 'image',
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt (tekst alternatywny)',
+          type: 'string',
+          description: 'Opis obrazka dla SEO i dostępności.',
+        }),
+      ],
+    }),
     defineField({
       name: 'content',
       title: 'Treść',

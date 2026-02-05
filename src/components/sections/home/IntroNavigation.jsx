@@ -1,35 +1,27 @@
 import React from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-
-const NavContainer = styled.nav`
-  display: flex;
-  gap: ${({ theme }) => theme.spacings.large};
-  justify-content: center;
-  flex-grow: 1;
-`;
-
-const NavItem = styled.a`
-  text-decoration: none;
-  font-size: 1.4rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-  padding: 5px 0;
-  position: relative;
-`;
+import { getSectionPath } from '../../../lib/i18n/routing.js';
+import styles from './IntroNavigation.module.css';
 
 const IntroNavigation = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
 
   return (
-    <NavContainer>
-      <NavItem href="/realizations">{t('nav.realizations')}</NavItem>
-      <NavItem href="/realizations">{t('nav.realizations')}</NavItem>
-      <NavItem href="/about">{t('nav.about')}</NavItem>
-      <NavItem href="/contact">{t('nav.contact')}</NavItem>
-    </NavContainer>
+    <nav className={styles.nav}>
+      <a className={styles.item} href={getSectionPath(lang, 'realizations')}>
+        {t('nav.realizations')}
+      </a>
+      <a className={styles.item} href={getSectionPath(lang, 'realizations')}>
+        {t('nav.realizations')}
+      </a>
+      <a className={styles.item} href={getSectionPath(lang, 'about')}>
+        {t('nav.about')}
+      </a>
+      <a className={styles.item} href={getSectionPath(lang, 'contact')}>
+        {t('nav.contact')}
+      </a>
+    </nav>
   );
 };
 

@@ -1,0 +1,127 @@
+---
+import IntroIslandWithResources from '../../islands-with-resources/IntroIslandWithResources.astro';
+import RealizationsGalleryIslandWithResources from '../../islands-with-resources/RealizationsGalleryIslandWithResources.astro';
+import WhyUsIslandWithResources from '../../islands-with-resources/WhyUsIslandWithResources.astro';
+import CompanyPresentationIslandWithResources from '../../islands-with-resources/CompanyPresentationIslandWithResources.astro';
+import PartnersIslandWithResources from '../../islands-with-resources/PartnersIslandWithResources.astro';
+
+import MaxWidthContainerStyles from '../../../ui/MaxWidthContainer.module.css';
+import homeHeaderStyles from '../../../../views/HomeView.module.css';
+import productStyles from '../../../sections/home/ProducSection.module.css';
+
+import { PRODUCT_TYPES, REALIZATION_IMAGES, GALLERY_CONFIG } from '../../../../constants/index.js';
+import { getProductCategoryPath, getSectionPath } from '../../../../lib/i18n/routing.js';
+import { loadTranslationJson } from '../../../../lib/i18n/resources.js';
+import { t as tt } from '../../../../lib/i18n/t.js';
+
+const { lang = 'pl' } = Astro.props;
+const tr = await loadTranslationJson(lang);
+const t = (key, def = '') => tt(tr, key, def);
+
+const productData = {
+  [PRODUCT_TYPES.WINDOWS]: {
+    id: PRODUCT_TYPES.WINDOWS,
+    name: t('products.windows.name', 'Okna'),
+    description: t('products.windows.description', ''),
+    backgroundSrc: '/images/aboutus/okno-kafelka.png',
+  },
+  [PRODUCT_TYPES.DOORS]: {
+    id: PRODUCT_TYPES.DOORS,
+    name: t('products.doors.name', 'Drzwi'),
+    description: t('products.doors.description', ''),
+    backgroundSrc: '/images/aboutus/drzwi-kafelka.png',
+  },
+  [PRODUCT_TYPES.TERRACE_DOORS]: {
+    id: PRODUCT_TYPES.TERRACE_DOORS,
+    name: t('products.terraceDoors.name', 'Drzwi tarasowe'),
+    description: t('products.terraceDoors.description', ''),
+    backgroundSrc: '/images/aboutus/hs-kafelka.png',
+  },
+  [PRODUCT_TYPES.FIRE_RESISTANT]: {
+    id: PRODUCT_TYPES.FIRE_RESISTANT,
+    name: t('products.fireResistant.name', 'Ppoż'),
+    description: t('products.fireResistant.description', ''),
+    backgroundSrc: '/images/aboutus/drzwi-ppoz-kafelka.png',
+  },
+};
+
+const productIds = Object.keys(productData);
+
+const realizationsData = REALIZATION_IMAGES.map((img, idx) => ({
+  ...img,
+  title: t(`realizations.items.${idx}.title`, `Realization ${idx + 1}`),
+}));
+---
+
+<!-- HERO (interactive) -->
+<IntroIslandWithResources lang={lang} hydrate="load" />
+
+<!-- PRODUCTS (SSG) -->
+<section class={productStyles.section} aria-labelledby="products-heading">
+  <div class={MaxWidthContainerStyles.root} data-max-width-container="true">
+    <div class={`${homeHeaderStyles.headerWrap} full-width`}>
+      <div class={homeHeaderStyles.productHeader} id="products-heading">{t('sections.products', 'PRODUKTY')}</div>
+      <div class={homeHeaderStyles.productHeaderSubtitle}>
+        {t('sections.productsSubtitle', 'Poznaj nasze systemy okienne i drzwiowe')}
+      </div>
+    </div>
+
+    <div class={productStyles.content}>
+      <div class={productStyles.grid}>
+        {productIds.map((id) => {
+          const p = productData[id];
+          const to = getProductCategoryPath(lang, id);
+          return (
+            <article class={productStyles.card}>
+              <a class={productStyles.cardLink} href={to} aria-label={`${p.name} - ${t('common.learnMore', 'Dowiedz się więcej')}`}>
+                <div class={productStyles.imageContainer}>
+                  <img class={productStyles.image} src={p.backgroundSrc} alt={p.name} loading="lazy" />
+                </div>
+                <div class={productStyles.cardContent}>
+                  <h3 class={productStyles.cardTitle}>{p.name}</h3>
+                  <div class={productStyles.divider} />
+                  <p class={productStyles.description}>{p.description}</p>
+                  <div class={productStyles.footer}>
+                    <span class={productStyles.linkText}>{t('common.learnMore', 'Dowiedz się więcej')}</span>
+                    <span class={productStyles.arrowWrapper} aria-hidden="true">→</span>
+                  </div>
+                </div>
+              </a>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- REALIZATIONS (slider island) -->
+<section style="background: rgb(15 15 15 / var(--tw-bg-opacity, 1)); padding: 0; margin: 0;">
+  <RealizationsGalleryIslandWithResources
+    lang={lang}
+    hydrate="visible"
+    viewProps={{
+      images: realizationsData,
+      options: {
+        slidesPerViewDesktop: GALLERY_CONFIG.DEFAULT_SLIDES_PER_VIEW.DESKTOP,
+        slidesPerViewTablet: GALLERY_CONFIG.DEFAULT_SLIDES_PER_VIEW.TABLET,
+        slidesPerViewMobile: GALLERY_CONFIG.DEFAULT_SLIDES_PER_VIEW.MOBILE,
+        delay: GALLERY_CONFIG.DEFAULT_DELAY,
+      },
+    }}
+  />
+  <div class={MaxWidthContainerStyles.root} data-max-width-container="true" style="padding-bottom: 32px; display: flex; justify-content: flex-end;">
+    <a href={getSectionPath(lang, 'realizations')} style="color: white; text-decoration: underline;">
+      {t('common.viewMore', 'Zobacz więcej')}
+    </a>
+  </div>
+</section>
+
+<!-- WHY US (island) -->
+<WhyUsIslandWithResources lang={lang} hydrate="visible" />
+
+<!-- COMPANY PRESENTATION (island; youtube iframe on click) -->
+<CompanyPresentationIslandWithResources lang={lang} hydrate="visible" />
+
+<!-- PARTNERS (island; mobile swiper) -->
+<PartnersIslandWithResources lang={lang} hydrate="visible" />

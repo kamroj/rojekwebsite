@@ -1,0 +1,67 @@
+---
+import PageHeaderSsg from '../PageHeaderSsg.astro';
+import BreadcrumbsSsg from '../BreadcrumbsSsg.astro';
+
+import maxWidthStyles from '../../../ui/MaxWidthContainer.module.css';
+import styles from '../../../../views/Realizations2View.module.css';
+
+import { loadTranslationJson } from '../../../../lib/i18n/resources.js';
+import { t as tt } from '../../../../lib/i18n/t.js';
+import { getSectionPath } from '../../../../lib/i18n/routing.js';
+
+import { REALIZATIONS_DATA } from '../../../../data/realizations.js';
+
+const { lang = 'pl' } = Astro.props;
+
+const tr = await loadTranslationJson(lang);
+const t = (key, def = '') => tt(tr, key, def);
+
+const breadcrumbs = [
+  { label: t('breadcrumbs.home', 'Home'), to: getSectionPath(lang, 'home') },
+  { label: t('breadcrumbs.realizations', 'Realizations') },
+];
+
+// Centralized dataset used by both React and SSG.
+const realizations = REALIZATIONS_DATA;
+---
+
+<div>
+  <PageHeaderSsg
+    imageSrc="/images/realizations/top.jpg"
+    title={t('realizationsPage.title', 'Realizacje')}
+    height={500}
+  />
+
+  <div class={maxWidthStyles.root} data-max-width-container="true">
+    <BreadcrumbsSsg items={breadcrumbs} />
+
+    <div class={styles.filterContainer}>
+      <div class={styles.filterCounter}>
+        {t('realizationsPage.results.found', '').replace('{{count}}', String(realizations.length)) || `Znaleziono ${realizations.length} realizacji`}
+      </div>
+      <!-- We keep filters as a later enhancement (island). For now: fully indexable list. -->
+    </div>
+
+    <div class={styles.realizationsContainer}>
+      {realizations.map((item, idx) => (
+        <div class={styles.singleRealizationContainer}>
+          <img
+            class={styles.realizationImage}
+            src={item.img}
+            alt={`${t('realizationsPage.title', 'Realizacje')} ${idx + 1}`}
+            loading="lazy"
+          />
+          <div class={styles.realizationTags}>
+            {Object.entries(item.tags).flatMap(([category, values]) =>
+              values.map((val, i) => (
+                <span class={styles.tag}>
+                  {t(`tags.categories.${category}`, category)}: {val}
+                </span>
+              ))
+            )}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>

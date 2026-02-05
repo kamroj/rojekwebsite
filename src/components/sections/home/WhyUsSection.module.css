@@ -1,0 +1,190 @@
+.container {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  position: relative;
+  padding-bottom: 30px;
+}
+
+.desktopGrid {
+  display: none;
+}
+
+@media (min-width: 1400px) {
+  .desktopGrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4rem;
+  }
+}
+
+.mobileSwiper {
+  display: block;
+  position: relative;
+}
+
+@media (min-width: 1400px) {
+  .mobileSwiper {
+    display: none;
+  }
+}
+
+.mobileSwiper :global(.swiper) {
+  width: 100%;
+  padding: 20px 0 20px;
+  overflow: visible;
+}
+
+@media (max-width: 1400px) {
+  .mobileSwiper :global(.swiper) {
+    cursor: grab;
+  }
+}
+
+.mobileSwiper :global(.swiper-slide) {
+  height: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.featureCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 350px;
+  transition: transform var(--transition-default), background-color var(--transition-default);
+}
+
+.iconWrapper {
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.35);
+  width: 150px;
+  height: 150px;
+  border: 1px solid var(--color-bottle-green-light);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 2rem;
+  background-color: var(--color-background);
+  position: relative;
+  overflow: hidden;
+}
+
+.iconWrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--color-bottle-green);
+  opacity: 0;
+  transition: opacity var(--transition-default);
+}
+
+.featureCard:hover .iconWrapper::before {
+  opacity: 0.05;
+}
+
+.icon {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  z-index: 1;
+  position: relative;
+}
+
+.featureTitle {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--color-bottle-green);
+  margin-bottom: 1rem;
+  line-height: 1.3;
+  min-height: 2.6em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (--bp-sm) {
+  .featureTitle {
+    font-size: 1.6rem;
+    min-height: auto;
+  }
+}
+
+.featureDescription {
+  font-size: 1.4rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  margin: 0;
+}
+
+@media (--bp-sm) {
+  .featureDescription {
+    font-size: 1.3rem;
+  }
+}
+
+.sideArrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 5;
+  width: 44px;
+  height: 64px;
+  border: none;
+  background: transparent;
+  color: #015123;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: transform 0.18s ease, opacity var(--transition-default);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.sideArrow:disabled {
+  cursor: default;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.arrowIcon {
+  width: 2.2rem;
+  height: 2.2rem;
+  color: #015123;
+  transform: translateX(0);
+  transition: transform 0.18s ease;
+}
+
+.sideArrow:hover:not(:disabled) .arrowIcon {
+  transform: translateX(4px);
+}
+
+@media (min-width: 1400px) {
+  .sideArrow {
+    display: none;
+  }
+}
+
+.sideArrowLeft {
+  left: 8px;
+}
+
+.sideArrowLeft .arrowIcon {
+  transform: rotate(180deg) translateX(0);
+}
+
+.sideArrowLeft:hover:not(:disabled) .arrowIcon {
+  transform: rotate(180deg) translateX(-4px);
+}
+
+.sideArrowRight {
+  right: 8px;
+}

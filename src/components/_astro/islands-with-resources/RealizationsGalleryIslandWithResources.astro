@@ -1,0 +1,22 @@
+---
+import RealizationsGalleryIsland from '../islands/realizationsGallery.jsx';
+import { getI18nResources } from '../../../lib/i18n/resources.js';
+
+const {
+  lang = 'pl',
+  viewProps = {},
+  hydrate = 'visible',
+} = Astro.props;
+
+const resources = await getI18nResources(lang);
+---
+
+{
+  hydrate === 'only'
+    ? <RealizationsGalleryIsland lang={lang} resources={resources} viewProps={viewProps} client:only="react" />
+    : hydrate === 'idle'
+      ? <RealizationsGalleryIsland lang={lang} resources={resources} viewProps={viewProps} client:idle />
+      : hydrate === 'visible'
+        ? <RealizationsGalleryIsland lang={lang} resources={resources} viewProps={viewProps} client:visible />
+        : <RealizationsGalleryIsland lang={lang} resources={resources} viewProps={viewProps} client:load />
+}

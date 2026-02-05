@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useMemo, useState, useEffect, useRef } from 'react';
 
 const useImagePreloader = (imageUrls = []) => {
   const [imagesLoaded, setImagesLoaded] = useState(false);
@@ -7,8 +7,15 @@ const useImagePreloader = (imageUrls = []) => {
   const loadedCountRef = useRef(0);
   const isLoadingRef = useRef(false);
 
+  // Normalize input into a stable dependency.
+  // We keep ordering stable so callers can pass a new array instance without retriggering unnecessarily.
+  const stableUrls = useMemo(() => {
+    if (!Array.isArray(imageUrls)) return [];
+    return imageUrls.filter(Boolean);
+  }, [imageUrls]);
+
   useEffect(() => {
-    if (!imageUrls || imageUrls.length === 0) {
+    if (!stableUrls || stableUrls.length === 0) {
       setImagesLoaded(true);
       setTotalCount(0);
       setLoadedCount(0);
@@ -19,12 +26,12 @@ const useImagePreloader = (imageUrls = []) => {
     if (isLoadingRef.current) return;
     
     isLoadingRef.current = true;
-    setTotalCount(imageUrls.length);
+    setTotalCount(stableUrls.length);
     setLoadedCount(0);
     setImagesLoaded(false);
     loadedCountRef.current = 0;
 
-    const imagePromises = imageUrls.map((url) => {
+    const imagePromises = stableUrls.map((url) => {
       return new Promise((resolve) => {
         const img = new Image();
         
@@ -37,7 +44,10 @@ const useImagePreloader = (imageUrls = []) => {
         const handleError = () => {
           loadedCountRef.current++;
           setLoadedCount(loadedCountRef.current);
-          console.warn(`Failed to load image: ${url}`);
+          // Avoid noisy logs in production.
+          if (import.meta?.env?.DEV) {
+            console.warn(`Failed to load image: ${url}`);
+          }
           resolve(url); 
         };
         
@@ -56,7 +66,7 @@ const useImagePreloader = (imageUrls = []) => {
       isLoadingRef.current = false;
     };
 
-  }, [imageUrls.join(',')]); // Use join to create stable dependency
+  }, [stableUrls]);
 
   const progress = totalCount > 0 ? (loadedCount / totalCount) * 100 : 100;
 

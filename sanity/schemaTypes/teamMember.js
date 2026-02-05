@@ -8,7 +8,20 @@ export default defineType({
   fields: [
     defineField({name: 'name', title: 'Imię i nazwisko', type: 'string', validation: (Rule) => Rule.required()}),
     defineField({name: 'role', title: 'Stanowisko', type: 'localizedString'}),
-    defineField({name: 'photo', title: 'Zdjęcie', type: 'image', options: {hotspot: true}}),
+    defineField({
+      name: 'photo',
+      title: 'Zdjęcie',
+      type: 'image',
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt (tekst alternatywny)',
+          type: 'string',
+          description: 'Opis obrazka dla SEO i dostępności.',
+        }),
+      ],
+    }),
     defineField({name: 'phone', title: 'Telefon', type: 'string'}),
     defineField({name: 'email', title: 'E-mail', type: 'string'}),
     defineField({name: 'order', title: 'Kolejność', type: 'number'}),

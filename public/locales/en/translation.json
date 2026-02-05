@@ -1,7 +1,7 @@
 {
   "nav": {
-    "products": "Products",
     "home": "Home",
+    "products": "Products",
     "realizations": "Realizations",
     "about": "About Us",
     "contact": "Contact",
@@ -13,6 +13,7 @@
   },
   "pageTitle": {
     "home": "Home Page",
+    "products": "Products",
     "realizations": "Realizations",
     "about": "About Us",
     "contact": "Contact",
@@ -22,7 +23,46 @@
     "rolety": "Shutters"
   },
   "hsConfigurator": {
-    "title": "HS Configurator"
+    "loading": "Loading configurator…",
+    "title": "HS Configurator",
+    "header": "HS Configurator",
+    "subtitle": "Create your dream sliding window",
+    "sections": {
+      "elements": "Elements",
+      "dimensions": "Dimensions",
+      "preview": "PREVIEW"
+    },
+    "labels": {
+      "frameMaterial": "Frame material:",
+      "handleColor": "Handle colour:",
+      "type": "Type:",
+      "thresholdColor": "Threshold colour:",
+      "width": "Window width:",
+      "height": "Window height:"
+    },
+    "warnings": {
+      "animationOnlyDefault": "Animation is only available for the default dimensions"
+    },
+    "buttons": {
+      "resetDimensions": "RESET DIMENSIONS",
+      "open": "OPEN",
+      "close": "CLOSE"
+    },
+    "options": {
+      "textures": {
+        "natur": "Natural",
+        "honeyPine": "Honey pine"
+      },
+      "handleTextures": {
+        "silver": "Silver",
+        "gold": "Gold"
+      },
+      "thresholds": {
+        "silver": "Silver",
+        "black": "Black",
+        "gold": "Gold"
+      }
+    }
   },
   "footer": {
     "copy": "© {{year}} ROJEK windows & doors. All rights reserved."
@@ -48,6 +88,7 @@
     "contactUs": "Contact us",
     "warranty": "Warranty",
     "viewMore": "View more",
+    "learnMore": "Learn more",
     "seeAll": "See all"
   },
   "sections": {
@@ -318,7 +359,8 @@
   },
   "partners": {
     "title": "We cooperate with the best",
-    "subtitle": "Companies we work with"
+    "subtitle": "Companies we work with",
+    "visitWebsite": "Visit {{name}} website"
   },
   "aboutPage": {
     "headers": {
@@ -362,7 +404,8 @@
   "loading.resources": "resources",
   "navigation": {
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "goToSlide": "Go to slide"
   },
   "realizationsPage": {
     "title": "Realizations",

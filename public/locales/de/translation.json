@@ -1,7 +1,7 @@
 {
   "nav": {
-    "products": "Produkte",
     "home": "Startseite",
+    "products": "Produkte",
     "realizations": "Projekte",
     "about": "Über uns",
     "contact": "Kontakt",
@@ -13,6 +13,7 @@
   },
   "pageTitle": {
     "home": "Startseite",
+    "products": "Produkte",
     "realizations": "Projekte",
     "about": "Über uns",
     "contact": "Kontakt",
@@ -22,7 +23,46 @@
     "rolety": "Rollläden"
   },
   "hsConfigurator": {
-    "title": "HS‑Konfigurator"
+    "loading": "Konfigurator wird geladen…",
+    "title": "HS‑Konfigurator",
+    "header": "HS‑Konfigurator",
+    "subtitle": "Erstellen Sie Ihr Traum-Schiebefenster",
+    "sections": {
+      "elements": "Elemente",
+      "dimensions": "Abmessungen",
+      "preview": "VORSCHAU"
+    },
+    "labels": {
+      "frameMaterial": "Rahmenmaterial:",
+      "handleColor": "Grifffarbe:",
+      "type": "Typ:",
+      "thresholdColor": "Schwellenfarbe:",
+      "width": "Fensterbreite:",
+      "height": "Fensterhöhe:"
+    },
+    "warnings": {
+      "animationOnlyDefault": "Animation ist nur bei den Standardabmessungen verfügbar"
+    },
+    "buttons": {
+      "resetDimensions": "ABMESSUNGEN ZURÜCKSETZEN",
+      "open": "ÖFFNEN",
+      "close": "SCHLIESSEN"
+    },
+    "options": {
+      "textures": {
+        "natur": "Natur",
+        "honeyPine": "Honigkiefer"
+      },
+      "handleTextures": {
+        "silver": "Silber",
+        "gold": "Gold"
+      },
+      "thresholds": {
+        "silver": "Silber",
+        "black": "Schwarz",
+        "gold": "Gold"
+      }
+    }
   },
   "footer": {
     "copy": "© {{year}} ROJEK Fenster & Türen. Alle Rechte vorbehalten."
@@ -48,6 +88,7 @@
     "contactUs": "Kontaktieren Sie uns",
     "warranty": "Garantie",
     "viewMore": "Mehr anzeigen",
+    "learnMore": "Mehr erfahren",
     "seeAll": "Alle anzeigen"
   },
   "sections": {
@@ -318,7 +359,8 @@
   },
   "partners": {
     "title": "Wir arbeiten mit den Besten zusammen",
-    "subtitle": "Firmen, mit denen wir zusammenarbeiten"
+    "subtitle": "Firmen, mit denen wir zusammenarbeiten",
+    "visitWebsite": "Website von {{name}} besuchen"
   },
   "aboutPage": {
     "headers": {
@@ -362,7 +404,8 @@
   "loading.resources": "Ressourcen",
   "navigation": {
     "previous": "Vorherige",
-    "next": "Nächste"
+    "next": "Nächste",
+    "goToSlide": "Zum Slide wechseln"
   },
   "realizationsPage": {
     "title": "Realisierungen",

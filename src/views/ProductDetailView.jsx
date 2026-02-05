@@ -1,10 +1,8 @@
 // src/pages/ProductDetailPage.jsx
 import React from 'react';
-import { Link, useParams } from 'react-router-dom';
-import styled from 'styled-components';
 import Page from '../components/ui/Page';
 import Section from '../components/ui/Section';
-import { productCategories, productDetailsByType } from '../data/products';
+import { productCategories, productDetailsByType } from '../data/products/index.js';
 import WindowProductDetail from './product-details/WindowProductDetail';
 import DoorProductDetail from './product-details/DoorProductDetail';
 import { useTranslation } from 'react-i18next';
@@ -13,33 +11,23 @@ import { useResourceCollector } from '../context/ResourceCollectorContext';
 import { runSanityTask } from '../lib/sanity/runSanityTask';
 import { fetchWindowProductDetail } from '../lib/sanity/windows';
 import { isSanityConfigured } from '../lib/sanity/config';
+import RouterAgnosticLink from '../components/_astro/RouterAgnosticLink.jsx';
 
-const BackLink = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.6rem;
-  background: linear-gradient(135deg, #1a5618 0%, #2d7a2a 100%);
-  color: #ffffff;
-  padding: 1.1rem 2.2rem;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 1.15rem;
-  font-weight: 500;
-  transition: all 0.3s ease;
+import styles from './ProductDetailView.module.css';
 
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0px 3px 10px 0px rgb(13 43 12 / 35%);
-  }
-`;
+function BackLink({ className, ...props }) {
+  const classes = [styles.backLink, className].filter(Boolean).join(' ');
+  return <RouterAgnosticLink className={classes} {...props} />;
+}
 
-const ProductDetailPage = () => {
+function ProductDetailPageBase({ category, productId, initialSanityProduct }) {
   const { i18n, t } = useTranslation();
   const lang = i18n.language;
-  const { category, productId } = useParams();
 
   const { beginTask, endTask, addResources } = useResourceCollector();
-  const [sanityProduct, setSanityProduct] = React.useState(undefined); // undefined = not fetched yet, null = fetched but not found
+  const [sanityProduct, setSanityProduct] = React.useState(
+    typeof initialSanityProduct === 'undefined' ? undefined : initialSanityProduct
+  ); // undefined = not fetched yet, null = fetched but not found
 
   const categoryKey = getCategoryKeyFromSlug(lang, category) || category;
 
@@ -54,6 +42,10 @@ const ProductDetailPage = () => {
       setSanityProduct(undefined);
       return;
     }
+
+    // If Astro SSG provided initial data for this product, don't refetch.
+    if (typeof initialSanityProduct !== 'undefined') return;
+
     if (!isSanityConfigured()) {
       setSanityProduct(undefined);
       return;
@@ -88,13 +80,16 @@ const ProductDetailPage = () => {
     return () => {
       controller.abort();
     };
-  }, [isWindows, productId, lang, beginTask, endTask, addResources]);
+  }, [isWindows, productId, lang, initialSanityProduct, beginTask, endTask, addResources]);
 
   // Fallback: local data when Sanity is not configured / no data found.
   const productFromLocal = detailType
     ? productDetailsByType?.[detailType]?.[productId]
     : undefined;
 
+  // For windows:
+  // - if Sanity returned a product object, use it
+  // - if Sanity explicitly returned `null` (not found), fallback to local mock
   const product = isWindows && sanityProduct ? sanityProduct : productFromLocal;
 
   // Keep existing behavior for missing product/category
@@ -106,7 +101,7 @@ const ProductDetailPage = () => {
       >
         <Section>
           <p>{t('productDetail.errors.productNotFoundText', 'Wybrany produkt nie istnieje.')}</p>
-          <BackLink to={categoryInfo ? getProductCategoryPath(lang, categoryKey) : getProductsIndexPath(lang)}>
+          <BackLink href={categoryInfo ? getProductCategoryPath(lang, categoryKey) : getProductsIndexPath(lang)}>
             {t('productDetail.errors.backToCategory', 'Wróć do kategorii')}
           </BackLink>
         </Section>
@@ -133,13 +128,30 @@ const ProductDetailPage = () => {
                 'Dla tej kategorii produktów nie mamy jeszcze przygotowanej strony detalu.'
               )}
             </p>
-            <BackLink to={getProductCategoryPath(lang, categoryKey)}>
+            <BackLink href={getProductCategoryPath(lang, categoryKey)}>
               {t('productDetail.errors.backToCategory', 'Wróć do kategorii')}
             </BackLink>
           </Section>
         </Page>
       );
   }
-};
+}
 
-export default ProductDetailPage;
+// NOTE: React Router is removed. This default export is kept for compatibility
+// (some islands/views may still import the default). It expects `category` and `productId` as props.
+export default function ProductDetailPage({ category, productId }) {
+  return <ProductDetailPageBase category={category} productId={productId} />;
+}
+
+// --- Astro (no React Router context) ---
+// NOTE: `ViewIsland` passes `viewProps` as regular props to the rendered view.
+// So for Astro we accept `category` + `productId` directly (not nested under `viewProps`).
+export function ProductDetailViewAstro({ category, productId, initialSanityProduct }) {
+  return (
+    <ProductDetailPageBase
+      category={category}
+      productId={productId}
+      initialSanityProduct={initialSanityProduct}
+    />
+  );
+}

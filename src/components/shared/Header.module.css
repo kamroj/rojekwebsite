@@ -1,0 +1,455 @@
+.wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+  height: var(--header-height);
+  z-index: 1000;
+
+  transition:
+    opacity var(--transition-default),
+    background-color 0.15s ease,
+    border-color 0.15s ease,
+    color 0.15s ease;
+
+  background-color: rgba(1, 126, 84, 0.08);
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+  border-bottom-color: rgba(5, 156, 78, 0.35);
+
+  color: var(--color-text-light);
+}
+
+.pastThreshold {
+  background-color: #fbfbfb;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-bottom-color: rgba(0, 74, 36, 0.25);
+  color: var(--color-text);
+}
+
+/*
+  Header used to implement hide-on-scroll (visible/hidden classes).
+  In the Astro migration we keep the header always visible,
+  but we still keep the background switch via `.pastThreshold`.
+  (Classes removed to avoid accidental usage.)
+*/
+
+.wrapper a {
+  color: inherit;
+  transition: color var(--transition-default);
+}
+
+.wrapper a:hover {
+  color: #028113;
+}
+
+.pastThreshold.wrapper a:hover {
+  color: #014d07;
+}
+
+.inner {
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  max-width: 1400px;
+}
+
+.logoLink {
+  display: block;
+  height: 50px;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.logoLink img {
+  height: 100%;
+  width: auto;
+  display: block;
+}
+
+.desktopNav {
+  display: none;
+  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  transform: none;
+  height: 100%;
+  pointer-events: none;
+}
+
+.desktopNav nav {
+  pointer-events: auto;
+}
+
+.desktopLang {
+  display: none;
+  align-items: center;
+}
+
+/*
+  Mobile-first header:
+  - On small screens show hamburger + hide desktop nav/lang.
+  - On large screens (>= 993px) show desktop nav/lang + hide hamburger.
+
+  This is intentionally the inverse of the previous approach (desktop-first),
+  because a missing/unsupported breakpoint would otherwise hide the hamburger
+  completely (your reported bug).
+*/
+
+.mobileMenuButton {
+  display: flex;
+  background: none;
+  border: none;
+  font-size: 2.4rem;
+  cursor: pointer;
+  padding: 8px;
+  margin: -8px;
+  /*
+    Keep hamburger above overlay + sliding panel.
+    Without this, the panel can cover the button and it appears to "blink"/disappear.
+  */
+  position: fixed;
+  top: calc((var(--header-height) - 2.4rem) / 2);
+  right: 15px;
+  z-index: 3002;
+  transition: color 0.3s ease, transform 0.3s ease;
+  color: var(--color-text-light);
+}
+
+.mobileMenuButtonPastThreshold {
+  color: var(--color-text);
+}
+
+.mobileMenuButtonOpen {
+  color: var(--color-text);
+}
+
+@media (min-width: 993px) {
+  .desktopNav,
+  .desktopLang {
+    display: flex;
+  }
+
+  .mobileMenuButton {
+    display: none;
+  }
+}
+
+.mobileMenuButton svg {
+  transition: transform 0.3s ease;
+}
+
+.mobileMenuButtonOpen svg {
+  animation: hamburgerToX 0.3s forwards;
+}
+
+.mobileMenuButton:hover {
+  transform: scale(1.1);
+}
+
+.mobileMenuButton:active {
+  transform: scale(0.95);
+}
+
+.mobileMenuOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 3000;
+
+  opacity: 0;
+  visibility: hidden;
+  animation: fadeOut 0.3s forwards;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  transition: visibility 0.3s;
+}
+
+.mobileMenuOverlayOpen {
+  opacity: 1;
+  visibility: visible;
+  animation: fadeIn 0.3s forwards;
+}
+
+.mobileMenuContainer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 80%;
+  max-width: 350px;
+  height: 100vh;
+  height: 100dvh;
+  background-color: var(--color-background);
+  z-index: 3001;
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.25);
+
+  padding: var(--space-lg) var(--space-sm);
+  padding-top: env(safe-area-inset-top, var(--space-lg));
+  padding-right: env(safe-area-inset-right, var(--space-sm));
+  padding-bottom: env(safe-area-inset-bottom, var(--space-lg));
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  color: var(--color-text);
+
+  /* closed state */
+  transform: translateX(100%);
+  animation: slideOutRight 0.3s forwards;
+  visibility: hidden;
+  transition: visibility 0s linear 0.3s;
+}
+
+.mobileMenuContainerOpen {
+  transform: translateX(0);
+  animation: slideInRight 0.3s forwards;
+  visibility: visible;
+  transition-delay: 0s;
+}
+
+@media (max-width: 480px) {
+  .mobileMenuContainer {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.mobileMenuContainer::-webkit-scrollbar {
+  width: 6px;
+}
+
+.mobileMenuContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.mobileMenuContainer::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+}
+
+.mobileMenuLogo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-lg);
+  margin-top: 2rem;
+}
+
+.mobileMenuLogo img {
+  height: 40px;
+  width: auto;
+}
+
+.mobileNavigation {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: var(--space-lg);
+}
+
+@media (min-height: 700px) {
+  .mobileNavigation {
+    margin-top: var(--space-xl);
+  }
+}
+
+.mobileNavItem {
+  font-size: 1.8rem;
+  font-weight: 500;
+  padding: var(--space-xs) 0;
+  width: 100%;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  animation: fadeIn 0.3s forwards;
+  opacity: 0;
+}
+
+@media (min-height: 700px) {
+  .mobileNavItem {
+    padding: var(--space-sm) 0;
+    font-size: 1.8rem;
+  }
+}
+
+.mobileNavItem:hover {
+  color: var(--color-secondary);
+}
+
+.mobileNavItem:active {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.mobileNavItemActive {
+  color: var(--color-bottle-green);
+  font-weight: 600;
+}
+
+.mobileNavItemActive::after {
+  content: '';
+  position: absolute;
+  left: -15px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 5px;
+  height: 70%;
+  background-color: var(--color-bottle-green);
+  border-radius: 0 3px 3px 0;
+  animation: activeLinkHighlight 0.3s forwards;
+}
+
+.mobileNavButton {
+  font-size: 1.8rem;
+  font-weight: 500;
+  padding: var(--space-xs) 0;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--color-border);
+  background: transparent;
+  color: var(--color-text);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-decoration: none;
+  position: relative;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+  text-align: left;
+
+  animation: fadeIn 0.3s forwards;
+  opacity: 0;
+}
+
+@media (min-height: 700px) {
+  .mobileNavButton {
+    padding: var(--space-sm) 0;
+    font-size: 1.8rem;
+  }
+}
+
+.mobileNavButton:hover {
+  color: var(--color-secondary);
+}
+
+.mobileNavButton:active {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.mobileSubList {
+  width: 100%;
+  padding: 0 0 0 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-bottom: 10px;
+}
+
+.mobileBackButton {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: var(--space-xs) 0;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  font-size: 1.5rem;
+  cursor: pointer;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.mobileBackButton:hover {
+  color: var(--color-secondary);
+}
+
+.mobileLangSwitcher {
+  margin-top: auto;
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--color-border);
+  animation: fadeIn 0.3s forwards;
+  animation-delay: 0.3s;
+  opacity: 0;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOutRight {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes hamburgerToX {
+  0% {
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(180deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes activeLinkHighlight {
+  0% {
+    transform: translateX(-10px) scaleY(0.5);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0) scaleY(1);
+    opacity: 1;
+  }
+}

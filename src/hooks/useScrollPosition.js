@@ -7,15 +7,28 @@ import { throttle } from '../utils';
  * @returns {Object} - Object containing scroll information
  */
 export const useScrollPosition = (threshold = 100) => {
+  // Hydration-safe initial state:
+  // On the server we don't know scroll position; on the client during hydration
+  // React expects the initial render to match SSR HTML. Therefore we start with a
+  // deterministic default and sync after mount in useEffect.
   const [scrollPosition, setScrollPosition] = useState({
-    scrollY: window.pageYOffset,
-    isPastThreshold: window.pageYOffset > threshold,
+    scrollY: 0,
+    isPastThreshold: false,
     isScrollingUp: false,
-    isScrollingDown: false
+    isScrollingDown: false,
   });
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     let lastScrollY = window.pageYOffset;
+
+    // Sync once after mount.
+    setScrollPosition({
+      scrollY: lastScrollY,
+      isPastThreshold: lastScrollY > threshold,
+      isScrollingUp: false,
+      isScrollingDown: false,
+    });
 
     const handleScroll = throttle(() => {
       const currentScrollY = window.pageYOffset;

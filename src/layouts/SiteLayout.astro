@@ -1,0 +1,38 @@
+---
+// SiteLayout.astro
+// Wrapper for pages.
+// In Astro SSG, this layout owns the global page chrome (Header/Footer).
+import BaseLayout from './BaseLayout.astro';
+
+import { getI18nResources } from '../lib/i18n/resources.js';
+import SiteHeaderSsg from '../components/_astro/ssg/SiteHeaderSsg.jsx';
+import SiteFooterSsg from '../components/_astro/ssg/SiteFooterSsg.jsx';
+
+const {
+  lang = 'pl',
+  title = 'ROJEK',
+  description = 'ROJEK',
+} = Astro.props;
+
+const resources = await getI18nResources(lang);
+---
+
+<BaseLayout lang={lang} title={title} description={description}>
+  <!-- Forward named slots to BaseLayout (e.g. per-page JSON-LD, extra meta tags). -->
+  <slot name="head" slot="head" />
+
+  <!-- SSR first (SEO), then hydrate for interactivity. -->
+  <SiteHeaderSsg
+    lang={lang}
+    resources={resources}
+    pathname={Astro.url?.pathname || '/'}
+    client:visible
+  />
+
+  <main>
+    <slot />
+  </main>
+
+  <!-- Footer is SSR-only (no hydration). It has no interactivity and saves JS. -->
+  <SiteFooterSsg lang={lang} resources={resources} />
+</BaseLayout>

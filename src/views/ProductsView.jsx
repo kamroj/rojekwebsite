@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import Page from '../components/ui/Page';
 import ProductSection from '../components/sections/home/ProducSection';
 import { useTranslation } from 'react-i18next';
-import { PRODUCT_TYPES, VIDEO_SOURCES } from '../constants';
+import { PRODUCT_TYPES, VIDEO_SOURCES } from '../constants/index.js';
 
 const ProductsPage = () => {
   const { t } = useTranslation();
@@ -41,7 +41,10 @@ const ProductsPage = () => {
   }), [t]);
 
   return (
-    <Page imageSrc="/images/products/windows/top.jpg" title="Produkty">
+    <Page
+      imageSrc="/images/products/windows/top.jpg"
+      title={t('pageTitle.products', t('nav.products', 'Produkty'))}
+    >
       <ProductSection productData={productData} />
     </Page>
   );

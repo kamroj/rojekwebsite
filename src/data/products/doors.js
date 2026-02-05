@@ -1,4 +1,4 @@
-import { WINDOW_COLORS_PALETTE, WINDOW_SPECS_DEFS, WINDOW_SPECS_ORDER_LIST } from './windows';
+import { WINDOW_COLORS_PALETTE, WINDOW_SPECS_DEFS, WINDOW_SPECS_ORDER_LIST } from './windows.js';
 
 // NOTE:
 // Drzwi mają mieć taką samą specyfikację jak okna (te same 3 parametry i te same ikony/etykiety).

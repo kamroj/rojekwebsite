@@ -1,325 +1,50 @@
 import React, { useEffect, useMemo, useState, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { Link, useLocation } from 'react-router-dom';
-import { ROUTES } from '../../constants';
-import { productCategories } from '../../data/products';
+import RouterAgnosticLink from '../_astro/RouterAgnosticLink.jsx';
+import { ROUTES } from '../../constants/index.js';
+import { productCategories } from '../../data/products/index.js';
 import { getProductCategoryPath, getProductDetailPath, getSectionPath } from '../../lib/i18n/routing';
 import { isSanityConfigured } from '../../lib/sanity/config';
 import { fetchWindowProductsList } from '../../lib/sanity/windows';
+import styles from './Navigation.module.css';
 
-const BaseNavContainer = styled.nav`
-  display: flex;
-  gap: ${({ theme }) => theme.spacings.large};
-  justify-content: center;
-  flex-grow: 1;
-  align-items: center;
-  height: 100%;
-`;
+const cn = (...classes) => classes.filter(Boolean).join(' ');
 
-const NavItemWrapper = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 100%;
-`;
+const BaseNavContainer = ({ className, ...props }) => (
+  <nav {...props} className={cn(styles.baseNavContainer, className)} />
+);
 
-const BaseNavItem = styled(Link)`
-  text-decoration: none;
-  font-size: 1.3rem;
-  font-weight: ${({ $isPastThreshold }) => ($isPastThreshold ? "600" : "400")};
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  cursor: pointer;
-  padding: 5px 0;
-  position: relative;
-  transition: color ${({ theme }) => theme.transitions.default};
-  display: inline-flex;
-  align-items: center;
-  height: 100%;
-  
-  &:hover {
-    color: ${({ theme }) => theme.colors.accent};
-  }
+const NavItemWrapper = ({ className, ...props }) => (
+  <div {...props} className={cn(styles.navItemWrapper, className)} />
+);
 
-  &.active {
-    font-weight: ${({ $isPastThreshold }) => ($isPastThreshold ? "800" : "600")};
-    &::after {
-      content: '';
-      position: absolute;
-      transform: translateX(-5%);
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      width: 110%;
-      background-color: ${({ $isPastThreshold }) => ($isPastThreshold ? "#009247" : "#026303b1")};
-      transition: background-color 1s ease;
-    }
-  }
-`;
+const BaseNavItem = ({ $isPastThreshold, className, ...props }) => (
+  <RouterAgnosticLink
+    {...props}
+    className={cn(
+      styles.baseNavItem,
+      $isPastThreshold ? styles.pastThreshold : styles.beforeThreshold,
+      className
+    )}
+  />
+);
 
-export const HeaderNavContainer = styled(BaseNavContainer)`
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    display: none;
-  }
-`;
+export const HeaderNavContainer = ({ className, ...props }) => (
+  <BaseNavContainer {...props} className={cn(styles.headerNavContainer, className)} />
+);
 
-export const HeaderNavItem = styled(BaseNavItem)`
-  color: ${({ theme, $isPastThreshold }) => ($isPastThreshold ? theme.colors.text : theme.colors.textLight)};
-`;
+export const HeaderNavItem = ({ className, ...props }) => (
+  <BaseNavItem {...props} className={cn(styles.headerNavItem, className)} />
+);
 
-export const IntroNavContainer = styled(BaseNavContainer)`
-  flex-direction: column;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacings.medium};
+export const IntroNavContainer = ({ className, ...props }) => (
+  <BaseNavContainer {...props} className={cn(styles.introNavContainer, className)} />
+);
 
-  @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
-    flex-direction: row;
-    gap: ${({ theme }) => theme.spacings.large};
-  }
-`;
-
-export const IntroNavItem = styled(BaseNavItem)`
-  color: ${({ theme }) => theme.colors.textLight};
-  font-size: 1.6rem;
-  
-  @media (min-width: ${({ theme }) => theme.breakpoints.sm}) {
-    font-size: 1.4rem;
-  }
-`;
-
-// MegaMenu - teraz renderowane przez Portal bezpośrednio do body
-const MegaMenu = styled.div`
-  position: fixed;
-  top: ${({ theme }) => theme.layout.headerHeight};
-  left: 0;
-  right: 0;
-  z-index: 2000;
-
-  visibility: ${({ $isOpen }) => ($isOpen ? 'visible' : 'hidden')};
-  pointer-events: ${({ $isOpen }) => ($isOpen ? 'auto' : 'none')};
-  opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
-
-  /*
-    MegaMenu jest renderowane przez Portal (poza HeaderWrapper).
-    Kiedy header znika przy scrollu, chowamy MegaMenu razem z nim.
-  */
-
-  padding: 0 15px;
-`;
-
-const MegaMenuInner = styled.div`
-  width: 100%;
-  max-width: 1400px;
-  margin: 0 auto;
-
-  /* Tło MUSI być semi-transparentne żeby blur był widoczny */
-  background-color: ${({ $isPastThreshold }) => 
-    ($isPastThreshold ? "#fbfbfb" : 'rgba(1, 126, 84, 0.12)')};
-  
-  /* Tylko JEDNA definicja backdrop-filter */
-  -webkit-backdrop-filter: ${({ $isPastThreshold }) => 
-    ($isPastThreshold ? 'blur(8px)' : 'blur(16px)')};
-  backdrop-filter: ${({ $isPastThreshold }) => 
-    ($isPastThreshold ? 'blur(8px)' : 'blur(16px)')};
-
-  border-radius: 0 0 12px 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
-
-  border: 1px solid ${({ $isPastThreshold }) => 
-    ($isPastThreshold ? "rgba(0, 74, 36, 0.25)" : 'rgba(5, 156, 78, 0.35)')};
-  border-top: none;
-  padding: 22px 18px;
-`;
-
-const MegaMenuGrid = styled.div`
-  display: grid;
-  /* 3 kolumny tylko na desktop/header (NavContainer i tak jest ukryty na md i niżej) */
-  grid-template-columns: 1.05fr 1fr 0.9fr;
-  gap: 0;
-  min-height: 320px;
-`;
-
-const MegaMenuLeft = styled.div`
-  padding-right: 18px;
-  border-right: 1px solid ${({ $isPastThreshold }) => 
-    ($isPastThreshold ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.18)')};
-`;
-
-const MegaMenuRight = styled.div`
-  padding-left: 22px;
-`;
-
-const MegaMenuImageCol = styled.div`
-  padding-left: 22px;
-  border-left: 1px solid ${({ $isPastThreshold }) =>
-    ($isPastThreshold ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.18)')};
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-`;
-
-const MegaMenuImageWrapper = styled.div`
-  width: 100%;
-  max-width: 360px;
-  aspect-ratio: 4 / 3;
-  border-radius: 12px;
-  overflow: hidden;
-  background: ${({ $isPastThreshold }) =>
-    ($isPastThreshold ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.12)')};
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
-  border: 1px solid ${({ $isPastThreshold }) =>
-    ($isPastThreshold ? 'rgba(0, 0, 0, 0.08)' : 'rgba(255, 255, 255, 0.18)')};
-`;
-
-const MegaMenuImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-`;
-
-const MegaTitle = styled.div`
-  font-size: 1.05rem;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  color: ${({ $isPastThreshold }) => 
-    ($isPastThreshold ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.75)')};
-  margin-bottom: 14px;
-  font-weight: 600;
-`;
-
-const CategoryList = styled.div`
-  display: flex;
-  flex-direction: column;
-`;
-
-const CategoryRow = styled(Link)`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 12px 10px;
-  border-radius: 10px;
-  text-decoration: none;
-  color: ${({ theme, $isPastThreshold }) => 
-    ($isPastThreshold ? theme.colors.text : theme.colors.textLight)};
-  font-size: 1.35rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  transition: background-color 150ms ease;
-
-  ${({ $active, $isPastThreshold }) =>
-    $active
-      ? `background: ${$isPastThreshold ? 'rgba(2, 99, 3, 0.12)' : 'rgba(255, 255, 255, 0.15)'};`
-      : `background: transparent;`}
-
-  &:hover {
-    background: ${({ $isPastThreshold }) => 
-      ($isPastThreshold ? 'rgba(2, 99, 3, 0.14)' : 'rgba(255, 255, 255, 0.18)')};
-    color: inherit;
-  }
-`;
-
-const CategoryLeft = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
-`;
-
-const CategoryIcon = styled.span`
-  width: 32px;
-  height: 32px;
-  border: 1px solid ${({ $isPastThreshold }) => 
-    ($isPastThreshold ? 'rgba(2, 99, 3, 0.25)' : 'rgba(255, 255, 255, 0.3)')};
-  border-radius: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  background: ${({ $isPastThreshold }) => 
-    ($isPastThreshold ? 'rgba(2, 99, 3, 0.05)' : 'rgba(255, 255, 255, 0.1)')};
-
-  img {
-    width: 18px;
-    height: 18px;
-    display: block;
-    filter: ${({ $isPastThreshold }) => ($isPastThreshold ? 'none' : 'brightness(2.6)')};
-  }
-`;
-
-const Chevron = styled.span`
-  color: ${({ $isPastThreshold }) => 
-    ($isPastThreshold ? 'rgba(2, 99, 3, 0.75)' : 'rgba(255, 255, 255, 0.7)')};
-  font-size: 2.2rem;
-  line-height: 1;
-  margin-top: -2px;
-`;
-
-const ProductList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-`;
-
-const ProductLink = styled(Link)`
-  text-decoration: none;
-  color: ${({ theme, $isPastThreshold }) => 
-    ($isPastThreshold ? theme.colors.text : theme.colors.textLight)};
-  font-size: 1.6rem;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.3px;
-  transition: color 150ms ease;
-
-  &:hover {
-    color: #018001;
-  }
-`;
-
-const ProductSpecs = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  align-items: center;
-  justify-content: center;
-
-  /* bez tła; same badge'e zostają jako kapsułki */
-  padding: 0;
-`;
-
-const SpecBadge = styled.span`
-  display: inline-flex;
-  align-items: baseline;
-  gap: 6px;
-  padding: 6px 8px;
-  border-radius: 999px;
-  background: rgb(1, 72, 2);
-  border: 1px solid rgba(12, 179, 15, 0.851);
-
-  color: rgb(255, 255, 255);
-  line-height: 1;
-
-  span:last-child {
-    font-size: 0.92rem;
-    font-weight: 700;
-    letter-spacing: 0.2px;
-  }
-
-  span:first-child {
-    font-size: 0.78rem;
-    font-weight: 600;
-    color: rgb(213, 213, 213);
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-  }
-`;
+export const IntroNavItem = ({ className, ...props }) => (
+  <BaseNavItem {...props} className={cn(styles.introNavItem, className)} />
+);
 
 // Hook do obsługi hover z opóźnieniem (zapobiega migotaniu)
 const useHoverIntent = (delay = 1) => {
@@ -343,10 +68,18 @@ const useHoverIntent = (delay = 1) => {
   return { isHovered, handleMouseEnter, handleMouseLeave };
 };
 
-const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = true }) => {
+const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = true, pathname = '/' }) => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
-  const location = useLocation();
+
+  // Hydration safety:
+  // - On the server we can't render portals (no `document`).
+  // - If we render a portal on the first client render, React may report hydration mismatch.
+  // Therefore we only enable portals AFTER mount.
+  const [isMounted, setIsMounted] = useState(false);
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
   
   const { isHovered: isMegaOpen, handleMouseEnter, handleMouseLeave } = useHoverIntent(1);
   const [activeCategoryKey, setActiveCategoryKey] = useState(null);
@@ -429,10 +162,10 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
     };
     const localized = routeMap[path] || getSectionPath(lang, 'home');
 
-    if (path === ROUTES.HOME && location.pathname === localized) {
+    if (path === ROUTES.HOME && pathname === localized) {
       return true;
     }
-    return path !== ROUTES.HOME && location.pathname.startsWith(localized);
+    return path !== ROUTES.HOME && pathname.startsWith(localized);
   };
 
   const menuCategories = useMemo(() => {
@@ -543,90 +276,102 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
   const renderMegaMenu = () => {
     if (variant !== 'header') return null;
 
+    if (!isMounted) return null;
+
+    // SSR/SSG safety: portals require document.
+    if (typeof document === 'undefined') return null;
+
     const isOpen = isMegaOpen && isHeaderVisible;
 
+    const megaMenuInnerClassName = cn(
+      styles.megaMenuInner,
+      isPastThreshold && styles.megaMenuInnerPastThreshold
+    );
+
     return createPortal(
-      <MegaMenu 
-        $isOpen={isOpen} 
-        $isHeaderVisible={isHeaderVisible}
+      <div
+        id="megaMenuProducts"
+        className={cn(styles.megaMenu, isOpen && styles.megaMenuOpen)}
         role="menu" 
         aria-label={t('nav.products', 'Produkty')}
         aria-hidden={!isOpen}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <MegaMenuInner $isPastThreshold={isPastThreshold}>
-          <MegaMenuGrid>
-            <MegaMenuLeft $isPastThreshold={isPastThreshold}>
-              <CategoryList>
+        <div className={megaMenuInnerClassName}>
+          <div className={styles.megaMenuGrid}>
+            <div className={styles.megaMenuLeft}>
+              <div className={styles.categoryList}>
                 {menuCategories.map((c) => (
-                  <CategoryRow
+                  <RouterAgnosticLink
                     key={c.key}
                     to={getProductCategoryPath(lang, c.key)}
-                    $active={c.key === resolvedActiveCategoryKey}
-                    $isPastThreshold={isPastThreshold}
                     role="menuitem"
                     onMouseEnter={() => setActiveCategoryKey(c.key)}
                     onFocus={() => setActiveCategoryKey(c.key)}
+                    className={cn(
+                      styles.categoryRow,
+                      c.key === resolvedActiveCategoryKey && styles.categoryRowActive
+                    )}
                   >
-                    <CategoryLeft>
-                      <CategoryIcon $isPastThreshold={isPastThreshold} aria-hidden="true">
+                    <div className={styles.categoryLeft}>
+                      <span className={styles.categoryIcon} aria-hidden="true">
                         <img src={c.icon} alt="" />
-                      </CategoryIcon>
+                      </span>
                       <span>{c.title}</span>
-                    </CategoryLeft>
-                    <Chevron $isPastThreshold={isPastThreshold} aria-hidden="true">›</Chevron>
-                  </CategoryRow>
+                    </div>
+                    <span className={styles.chevron} aria-hidden="true">›</span>
+                  </RouterAgnosticLink>
                 ))}
-              </CategoryList>
-            </MegaMenuLeft>
+              </div>
+            </div>
 
-            <MegaMenuRight>
-              <MegaTitle $isPastThreshold={isPastThreshold}>
+            <div className={styles.megaMenuRight}>
+              <div className={styles.megaTitle}>
                 {t('products.selectProduct', 'Wybierz produkt')}
-              </MegaTitle>
-              <ProductList>
+              </div>
+              <div className={styles.productList}>
                 {(activeCategory?.products || []).map((p) => (
-                  <ProductLink
+                  <RouterAgnosticLink
                     key={p.slug || p.id}
                     to={getProductDetailPath(lang, activeCategory.key, p.slug || p.id)}
-                    $isPastThreshold={isPastThreshold}
                     role="menuitem"
                     onMouseEnter={() => setActiveProductKey(p.slug || p.id)}
                     onFocus={() => setActiveProductKey(p.slug || p.id)}
+                    className={styles.productLink}
                   >
                     {p.name}
-                  </ProductLink>
+                  </RouterAgnosticLink>
                 ))}
-              </ProductList>
-            </MegaMenuRight>
+              </div>
+            </div>
 
-            <MegaMenuImageCol $isPastThreshold={isPastThreshold} aria-hidden="true">
-              <MegaMenuImageWrapper $isPastThreshold={isPastThreshold}>
+            <div className={styles.megaMenuImageCol} aria-hidden="true">
+              <div className={styles.megaMenuImageWrapper}>
                 {resolvedActiveProductImage ? (
-                  <MegaMenuImage src={resolvedActiveProductImage} alt="" loading="lazy" />
+                  <img className={styles.megaMenuImage} src={resolvedActiveProductImage} alt="" loading="lazy" />
                 ) : null}
-              </MegaMenuImageWrapper>
+              </div>
 
               {/* SpecItems pod zdjęciem aktywnego produktu */}
               {resolvedActiveProductSpecs ? (
-                <ProductSpecs aria-hidden="true" style={{ width: '100%' }}>
+                <div className={styles.productSpecs} aria-hidden="true" style={{ width: '100%' }}>
                   {specItemsForMegaMenu.map((s) => {
                     const value = resolvedActiveProductSpecs?.[s.key];
                     if (!value) return null;
                     return (
-                      <SpecBadge key={s.key}>
+                      <span className={styles.specBadge} key={s.key}>
                         <span>{s.label}</span>
                         <span>{value}</span>
-                      </SpecBadge>
+                      </span>
                     );
                   })}
-                </ProductSpecs>
+                </div>
               ) : null}
-            </MegaMenuImageCol>
-          </MegaMenuGrid>
-        </MegaMenuInner>
-      </MegaMenu>,
+            </div>
+          </div>
+        </div>
+      </div>,
       document.body
     );
   };
@@ -675,10 +420,11 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
                 <NavItem
                   $isPastThreshold={isPastThreshold}
                   to={to}
-                  className={isActive(item.path) ? 'active' : ''}
+                  className={isActive(item.path) ? styles.active : ''}
                   aria-current={isActive(item.path) ? 'page' : undefined}
-                  aria-haspopup="true"
-                  aria-expanded={isMegaOpen}
+                  aria-haspopup="menu"
+                  aria-controls="megaMenuProducts"
+                  aria-expanded={isMegaOpen && isHeaderVisible}
                 >
                   {t(item.label)}
                 </NavItem>
@@ -692,7 +438,7 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
               $isPastThreshold={isPastThreshold}
               to={to}
               key={item.key}
-              className={isActive(item.path) ? 'active' : ''}
+              className={isActive(item.path) ? styles.active : ''}
               aria-current={isActive(item.path) ? 'page' : undefined}
             >
               {t(item.label)}

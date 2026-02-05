@@ -1,0 +1,101 @@
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  /* Use dynamic viewport height to avoid being covered by mobile browser UI. Add 1px spare to avoid 1-2px visual gap caused by rounding. */
+  height: calc(var(--vvh, 100dvh) + 1px);
+  min-height: calc(var(--vvh, 100dvh) + 1px);
+  background: linear-gradient(135deg, #000000 10%, #0c0c0c 50%, #002719 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.overlayHiding {
+  animation: fadeOut 0.5s ease-in-out;
+  pointer-events: none;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-lg);
+  text-align: center;
+  max-width: 400px;
+  padding: var(--space-sm);
+}
+
+.logo {
+  width: 160px;
+  height: auto;
+  margin-bottom: var(--space-sm);
+  opacity: 0.9;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 3px solid rgba(1, 126, 84, 0.3);
+  border-top: 3px solid var(--color-secondary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+.loadingText {
+  color: var(--color-text-light);
+  font-size: 1.8rem;
+  font-weight: 300;
+  margin: 0;
+  opacity: 0.8;
+}
+
+.progressContainer {
+  width: 100%;
+  max-width: 300px;
+  margin-top: var(--space-sm);
+}
+
+.progressBar {
+  width: 100%;
+  height: 4px;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progressFill {
+  height: 100%;
+  background: linear-gradient(90deg, #017e54, #07be56);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.progressText {
+  color: var(--color-text-light);
+  font-size: 1.4rem;
+  margin-top: var(--space-xs);
+  opacity: 0.7;
+  text-align: center;
+}

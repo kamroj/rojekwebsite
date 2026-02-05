@@ -1,0 +1,22 @@
+---
+import ContactFormIsland from '../islands/contactForm.jsx';
+import { getI18nResources } from '../../../lib/i18n/resources.js';
+
+const {
+  lang = 'pl',
+  viewProps = {},
+  hydrate = 'load',
+} = Astro.props;
+
+const resources = await getI18nResources(lang);
+---
+
+{
+  hydrate === 'only'
+    ? <ContactFormIsland lang={lang} resources={resources} viewProps={viewProps} client:only="react" />
+    : hydrate === 'idle'
+      ? <ContactFormIsland lang={lang} resources={resources} viewProps={viewProps} client:idle />
+      : hydrate === 'visible'
+        ? <ContactFormIsland lang={lang} resources={resources} viewProps={viewProps} client:visible />
+        : <ContactFormIsland lang={lang} resources={resources} viewProps={viewProps} client:load />
+}

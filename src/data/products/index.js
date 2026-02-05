@@ -1,7 +1,9 @@
 import { windowCategory, windowProductDetails } from './windows.js';
 import { DOORS_MOCK_DATA, getAllDoors } from './doors.js';
 
-// Convenience: re-export from this folder so consumers can import from "../data/products".
+// Convenience re-export.
+// NOTE: In Node ESM (used by Astro build/SSG), directory imports like `../data/products` are not supported.
+// Prefer importing explicitly from `../data/products/index.js`.
 export { windowCategory, windowProductDetails };
 export { DOORS_MOCK_DATA, getAllDoors };
 

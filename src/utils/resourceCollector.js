@@ -3,7 +3,7 @@ import {
   PARTNER_LOGOS, 
   WHY_US_ICONS, 
   VIDEO_SOURCES 
-} from '../constants';
+} from '../constants/index.js';
 
 // Funkcja do zbierania zasobów dla HomePage
 export const collectHomePageResources = (productData) => {

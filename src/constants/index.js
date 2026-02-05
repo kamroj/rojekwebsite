@@ -7,9 +7,15 @@ export const PRODUCT_TYPES = {
 
 export const ROUTES = {
   HOME: '/',
-  REALIZATIONS: '/realizations',
-  ABOUT: '/about',
-  CONTACT: '/contact',
+  // NOTE: These are *base* paths (Polish, no language prefix).
+  // For localized, user-facing navigation always prefer helpers:
+  // - getSectionPath(lang, sectionKey)
+  // - getProductsIndexPath(lang)
+  // - getProductCategoryPath(lang, categoryKey)
+  // - getProductDetailPath(lang, categoryKey, productId)
+  REALIZATIONS: '/realizacje',
+  ABOUT: '/o-firmie',
+  CONTACT: '/kontakt',
   HS_CONFIGURATOR: '/konfigurator-hs',
   PRODUCTS: '/produkty',
   PRODUCT_CATEGORY: '/produkty/:category',
@@ -57,7 +63,9 @@ export const VIDEO_SOURCES = {
 };
 
 export const IMAGE_PATHS = {
-  LOGO: '/src/assets/images/logo.png',
+  // Assets should be served from /public, not from /src, to be stable in production builds.
+  // NOTE: Logo is available at /public/images/logo.png
+  LOGO: '/images/logo.png',
   REALIZATIONS: '/images/realizations/',
   PARTNERS: '/images/partners/',
   ICONS: '/images/icons/'
@@ -88,6 +96,4 @@ export const WHY_US_ICONS = {
   WARRANTY: '/images/icons/cowork-icon.png'
 };
 
-export const COMPANY_ADDRESS = "Zakład produkcyjny, Kryspinów 399, przy autostradzie A4";
-
-export const MAP_SRC = `https://www.google.com/maps?q=Kryspinow+399&output=embed`;
+// Company details are centralized in src/data/company.js.

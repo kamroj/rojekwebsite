@@ -1,0 +1,15 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import { getI18nResources } from '../../../lib/i18n/resources.js';
+import ProductsIndexSsg from '../../../components/_astro/ssg/ProductsIndexSsg.jsx';
+
+const resources = await getI18nResources('en');
+---
+
+<SiteLayout
+  lang="en"
+  title="Products – ROJEK | Windows, doors, gates & shutters"
+  description="ROJEK products: windows, doors, gates and shutters. Browse categories and choose the right solution."
+>
+  <ProductsIndexSsg lang="en" resources={resources} />
+</SiteLayout>

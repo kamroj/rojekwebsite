@@ -9,16 +9,12 @@ export const getSanityClient = () => {
   if (!isSanityConfigured()) return null;
 
   // NOTE: Sanity public API does not allow CORS from localhost by default.
-  // In dev we proxy requests through Vite (`/api/sanity`) to keep same-origin.
+  // In the browser (DEV) we proxy requests through Astro/Vite (`/api/sanity`) to keep same-origin.
+  // On the server (Astro SSR / build), CORS is not a problem, so we keep the default API host.
   const configForEnv = {
     ...sanityConfig,
-    ...(import.meta.env.DEV
-      ? {
-          apiHost:
-            typeof window !== 'undefined'
-              ? `${window.location.origin}/api/sanity`
-              : 'http://localhost:5173/api/sanity',
-        }
+    ...(import.meta.env.DEV && typeof window !== 'undefined'
+      ? { apiHost: `${window.location.origin}/api/sanity` }
       : null),
   };
 

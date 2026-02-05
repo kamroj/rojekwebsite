@@ -1,19 +1,9 @@
 import React from 'react';
-import styled from 'styled-components';
 import { PortableText } from '@portabletext/react';
 
-// Wrapper uses flex+gap instead of default <p> margins.
-// This prevents "mystery empty line" while still allowing intentional empty paragraphs.
-const Wrapper = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ $gap }) => $gap};
-
-  /* Ensure PortableText blocks don't add their own margins */
-  p {
-    margin: 0;
-  }
-`;
+// NOTE:
+// This renderer is intentionally **styled-components free**.
+// Styling should come from surrounding CSS, e.g. `.prose` typography rules.
 
 const isEmptyBlock = (block) => {
   if (!block || block._type !== 'block') return false;
@@ -51,11 +41,15 @@ const SanityPortableText = ({ value, variant = 'default' }) => {
   };
 
   return (
-    <Wrapper $gap={gap}>
+    <div
+      className={variant === 'compact' ? 'portabletext portabletext--compact' : 'portabletext'}
+      style={{ display: 'flex', flexDirection: 'column', gap }}
+    >
       <PortableText value={value} components={components} />
-    </Wrapper>
+    </div>
   );
 };
 
 export default SanityPortableText;
+
 

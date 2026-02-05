@@ -1,0 +1,46 @@
+---
+import headerStyles from '../../ui/PageHeader.module.css';
+import containerStyles from '../../ui/MaxWidthContainer.module.css';
+
+const {
+  imageSrc,
+  title,
+  height = 300,
+  // Hint that this header image is likely the LCP element.
+  // Use "high" only for above-the-fold headers (default true for PageHeader).
+  fetchPriority = 'high',
+  loading = 'eager',
+  decoding = 'async',
+  id,
+  overlayColor,
+  contentBg,
+  contentColor,
+} = Astro.props;
+---
+
+<section class={headerStyles.headerWrapper} id={id}>
+  <div class={headerStyles.headerImageWrapper} style={`height: ${height ? `${height}px` : '300px'}`}> 
+    <img
+      class={headerStyles.headerImage}
+      src={imageSrc}
+      alt={title || ''}
+      loading={loading}
+      decoding={decoding}
+      fetchpriority={fetchPriority}
+    />
+    <div class={headerStyles.overlay} style={`background-color: ${overlayColor || 'rgba(0,0,0,0.65)'}`} />
+
+    {title && (
+      <div class={headerStyles.headerContentLayer}>
+        <div class={containerStyles.root} data-max-width-container="true">
+          <div
+            class={headerStyles.headerContent}
+            style={`background-color: ${contentBg || '#0136002b'}; color: ${contentColor || '#f8f9fa'};`}
+          >
+            <h1>{title}</h1>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+</section>

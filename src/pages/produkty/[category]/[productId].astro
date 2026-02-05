@@ -1,0 +1,121 @@
+---
+// @ts-nocheck
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import { getI18nResources } from '../../../lib/i18n/resources.js';
+import ProductDetailSsg from '../../../components/_astro/ssg/ProductDetailSsg.jsx';
+
+import { productCategories, productDetailsByType } from '../../../data/products/index.js';
+import { CATEGORY_SLUGS } from '../../../lib/i18n/routing.js';
+import { fetchWindowDetailForBuild, fetchWindowsListForBuild } from '../../../lib/sanity/build.js';
+import { getProductDetailMeta } from '../../../lib/seo/productsMeta.js';
+import { getFaqPageJsonLd, getProductJsonLd } from '../../../lib/seo/structuredData.js';
+import { getCategoryKeyFromSlug, getProductDetailPath } from '../../../lib/i18n/routing.js';
+import { DOOR_FAQ_FALLBACK, WINDOW_FAQ_FALLBACK } from '../../../data/products/faqFallback.js';
+
+const { category, productId } = Astro.params;
+
+const initialSanityProduct = Astro.props?.initialSanityProduct;
+
+const resources = await getI18nResources('pl');
+
+const meta = getProductDetailMeta({
+  lang: 'pl',
+  categorySlug: category,
+  productId,
+  initialSanityProduct,
+});
+
+// --- Structured data (JSON-LD): Product + FAQPage
+// Build-time: prefer prefetched Sanity product (windows) and fallback to local data.
+const categoryKey = getCategoryKeyFromSlug('pl', category) || category;
+const detailType = productCategories?.[categoryKey]?.detailType;
+const productFromLocal = detailType ? productDetailsByType?.[detailType]?.[productId] : undefined;
+const product = initialSanityProduct || productFromLocal;
+
+const faqItems = Array.isArray(product?.faq) && product.faq.length > 0
+  ? product.faq
+  : (detailType === 'doors' ? DOOR_FAQ_FALLBACK : WINDOW_FAQ_FALLBACK);
+
+const canonicalUrl = Astro.site
+  ? new URL(getProductDetailPath('pl', categoryKey, productId), Astro.site).toString()
+  : undefined;
+
+const productJsonLd = getProductJsonLd({
+  product,
+  site: Astro.site,
+  canonicalUrl,
+  categoryName: productCategories?.[categoryKey]?.pageTitle,
+});
+
+const faqJsonLd = getFaqPageJsonLd({
+  items: faqItems,
+  canonicalUrl,
+});
+
+// We may return null if data is missing; filter those out.
+const structuredData = [productJsonLd, faqJsonLd].filter(Boolean);
+
+export async function getStaticPaths() {
+  // PL routes only (no language prefix).
+  // We generate product detail pages from local mock data.
+  // NOTE: In later steps we will expand this to Sanity-driven products + EN/DE URL variants.
+
+  const paths = [];
+
+  for (const [categoryKey, c] of Object.entries(productCategories || {})) {
+    const categorySlug = CATEGORY_SLUGS?.pl?.[categoryKey] || categoryKey;
+
+    const detailType = c?.detailType;
+    const details = detailType ? (productDetailsByType?.[detailType] || null) : null;
+
+    // Prefer productDetailsByType keys if available; fallback to category products list.
+    let productIds = details
+      ? Object.keys(details)
+      : (c?.products || []).map((p) => (typeof p === 'string' ? p : (p?.slug || p?.id))).filter(Boolean);
+
+    // IMPORTANT: In SSG, if a URL is not returned by getStaticPaths(), Astro returns 404.
+    // For windows, we must include *all* slugs from Sanity, not only local mock data.
+    if (detailType === 'windows') {
+      const sanityList = await fetchWindowsListForBuild('pl');
+      const sanitySlugs = (sanityList || []).map((p) => p?.slug).filter(Boolean);
+      productIds = Array.from(new Set([...(productIds || []), ...sanitySlugs]));
+    }
+
+    for (const pid of productIds) {
+      const props = {};
+      if (detailType === 'windows') {
+        // Prefetch detail so HTML is generated at build-time.
+        const detail = await fetchWindowDetailForBuild(pid, 'pl');
+        if (detail) props.initialSanityProduct = detail;
+      }
+      paths.push({ params: { category: categorySlug, productId: pid }, props });
+    }
+  }
+
+  return paths;
+}
+---
+
+<SiteLayout
+  lang="pl"
+  title={meta.title}
+  description={meta.description}
+>
+  {
+    structuredData.length ? (
+      <slot slot="head" name="head">
+        {structuredData.map((obj) => (
+          <script type="application/ld+json" set:html={JSON.stringify(obj)} />
+        ))}
+      </slot>
+    ) : null
+  }
+  <ProductDetailSsg
+    lang="pl"
+    resources={resources}
+    category={category}
+    productId={productId}
+    initialSanityProduct={initialSanityProduct}
+    client:visible
+  />
+</SiteLayout>

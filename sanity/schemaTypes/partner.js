@@ -7,7 +7,20 @@ export default defineType({
   type: 'document',
   fields: [
     defineField({name: 'name', title: 'Nazwa', type: 'string', validation: (Rule) => Rule.required()}),
-    defineField({name: 'logo', title: 'Logo', type: 'image', options: {hotspot: true}}),
+    defineField({
+      name: 'logo',
+      title: 'Logo',
+      type: 'image',
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt (tekst alternatywny)',
+          type: 'string',
+          description: 'Opis obrazka dla SEO i dostępności.',
+        }),
+      ],
+    }),
     defineField({name: 'url', title: 'URL', type: 'url'}),
     defineField({name: 'order', title: 'Kolejność', type: 'number'}),
   ],

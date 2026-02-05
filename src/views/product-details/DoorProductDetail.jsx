@@ -1,11 +1,11 @@
 // src/pages/products/DoorProductDetail.jsx
 import React from 'react';
-import styled, { css } from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import Page from '../../components/ui/Page';
 import Section from '../../components/ui/Section';
 import { DOOR_SPECS_DEFS, DOOR_SPECS_ORDER_LIST } from '../../data/products/doors';
 import SanityPortableText from '../../components/portable/SanityPortableText';
+import styles from './DoorProductDetail.module.css';
 import {
   ProductDetailHero,
   ProductDetailSpecs,
@@ -15,254 +15,7 @@ import {
   ProductDetailFAQ,
   ProductDetailCTA,
 } from '../../components/sections/products/detail';
-
-// ============================================
-// STANDARD FEATURES SECTION STYLES
-// ============================================
-
-const StandardSectionWrapper = styled.section`
-  position: relative;
-  background: #ffffff;
-  overflow: hidden;
-`;
-
-const SectionHeader = styled.div`
-  text-align: center;
-  padding: 4rem 2rem 3rem;
-  max-width: 1200px;
-  margin: 0 auto;
-  position: relative;
-  
-  &::after {
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 50%;
-    height: 1px;
-    background-color: #065e0d6c;
-
-    @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-      width: 60%;
-    }
-  }
-`;
-
-const HeaderOverline = styled.span`
-  display: inline-block;
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: #4c4c4c;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 1.2rem;
-`;
-
-const HeaderTitle = styled.h2`
-  text-transform: uppercase;
-  font-size: 3.2rem;
-  font-weight: 500;
-  color: #0f591a;
-  line-height: 1.1;
-  margin-bottom: 1.2rem;
-`;
-
-const HeaderSubtitle = styled.p`
-  letter-spacing: 0.1em;
-  font-size: 1.6rem;
-  color: #5a6b5f;
-  margin: 0;
-  font-weight: 400;
-`;
-
-// Shared Block Styles
-const BlockWrapper = styled.div`
-  position: relative;
-  background: #ffffff;
-  overflow: hidden;
-`;
-
-const ContentGrid = styled.div`
-  display: grid;
-  grid-template-columns: ${({ $reversed }) => $reversed ? '1.1fr 1fr' : '1fr 1fr'};
-  gap: 5rem;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: ${({ $withPadding }) => $withPadding ? '4rem 2rem' : '0'};
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    grid-template-columns: 1fr;
-    gap: 3rem;
-    padding: ${({ $withPadding }) => $withPadding ? '3rem 1.5rem' : '0'};
-  }
-`;
-
-const TextContent = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  padding: ${({ $withPadding }) => $withPadding ? '3rem' : '0'};
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    order: 2;
-    padding: ${({ $withPadding }) => $withPadding ? '2rem 1.5rem' : '0'};
-  }
-`;
-
-const TitleBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-`;
-
-const Overline = styled.span`
-  font-size: 1.4rem;
-  font-weight: 500;
-  color: #4c4c4c;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-`;
-
-const BlockTitle = styled.h2`
-  font-size: 3rem;
-  font-weight: 400;
-  color: #104818;
-  line-height: 1.1;
-  margin: 0;
-`;
-
-const BlockSubtitle = styled.p`
-  font-size: 1.6rem;
-  font-weight: 400;
-  color: #4a5f4e;
-  margin: 0;
-  margin-top: 0.25rem;
-  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    font-size: 1.4rem;
-  }
-`;
-
-const Description = styled.p`
-  font-size: 1.4rem;
-  color: #4a5c50;
-  line-height: 1.75;
-  margin: 0;
-  max-width: 520px;
-`;
-
-const FeaturesList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-top: 0.5rem;
-`;
-
-const FeatureItem = styled.div`
-  display: flex;
-  align-items: flex-start;
-  gap: 1rem;
-`;
-
-const FeatureIconBox = styled.div`
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
-  background: rgba(26, 86, 24, 0.08);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  
-  svg {
-    width: 26px;
-    height: 26px;
-    color: #1a5618;
-  }
-`;
-
-const FeatureTextBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 0.2rem;
-  padding-top: 0.25rem;
-`;
-
-const FeatureTitle = styled.span`
-  font-size: 1.4rem;
-  font-weight: 600;
-  color: #1a2e1f;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    font-size: 1.3rem;
-  }
-`;
-
-const FeatureDesc = styled.span`
-  font-size: 1.3rem;
-  color: #5a6b5f;
-  line-height: 1.5;
-  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    font-size: 1.2rem;
-  }
-`;
-
-const ImageContainer = styled.div`
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 520px;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    min-height: 400px;
-    order: 1;
-  }
-`;
-
-const ImageWrapper = styled.div`
-  position: relative;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const GlowEffect = styled.div`
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 380px;
-  height: 380px;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    rgb(10 96 8 / 19%) 0%,
-    rgb(43 186 39 / 5%) 40%,
-    #00000000 70%
-  );
-  z-index: 0;
-`;
-
-const ProductImage = styled.img`
-  position: relative;
-  z-index: 1;
-  width: 100%;
-  height: auto;
-  max-height: 480px;
-  object-fit: contain;
-  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-  
-  &:hover {
-    transform: scale(1.02) translateY(-5px);
-  }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    max-height: 380px;
-  }
-`;
+import { DOOR_FAQ_FALLBACK } from '../../data/products/faqFallback.js';
 
 // ============================================
 // STANDARD FEATURES SECTION COMPONENT
@@ -339,122 +92,107 @@ const DoorStandardFeaturesSection = ({ t }) => {
   ];
 
   return (
-    <StandardSectionWrapper>
+    <section className={styles.standardSectionWrapper}>
       {/* Header */}
-      <SectionHeader>
-        <HeaderOverline>
+      <div className={styles.sectionHeader}>
+        <span className={styles.headerOverline}>
           {t('productDetail.doors.standard.overline', 'Wszystko co potrzebujesz')}
-        </HeaderOverline>
-        <HeaderTitle>
+        </span>
+        <h2 className={styles.headerTitle}>
           {t('productDetail.doors.standard.title', 'W standardzie')}
-        </HeaderTitle>
-        <HeaderSubtitle>
+        </h2>
+        <p className={styles.headerSubtitle}>
           {t('productDetail.doors.standard.subtitle', 'Bez dodatkowych opłat')}
-        </HeaderSubtitle>
-      </SectionHeader>
+        </p>
+      </div>
 
       {/* Lock Block */}
-      <BlockWrapper>
-        <ContentGrid>
-          <TextContent $withPadding>
-            <TitleBlock>
-              <Overline>{t('productDetail.doors.lock.overline', 'Bezpieczeństwo')}</Overline>
-              <BlockTitle>
+      <div className={styles.blockWrapper}>
+        <div className={styles.contentGrid}>
+          <div className={`${styles.textContent} ${styles.textContentWithPadding}`}>
+            <div className={styles.titleBlock}>
+              <span className={styles.overline}>{t('productDetail.doors.lock.overline', 'Bezpieczeństwo')}</span>
+              <h2 className={styles.blockTitle}>
                 {t('productDetail.doors.lock.title', 'Zamek 3-punktowy')}
-              </BlockTitle>
-            </TitleBlock>
+              </h2>
+            </div>
 
-            <Description>
+            <p className={styles.description}>
               {t(
                 'productDetail.doors.lock.description',
                 'Bezpieczeństwo zaczyna się od solidnego ryglowania. Nasz standardowy zamek 3-punktowy blokuje skrzydło w trzech miejscach jednocześnie — zwiększając odporność na wyważenie i zapewniając lepszy docisk uszczelek na całej wysokości drzwi.'
               )}
-            </Description>
+            </p>
 
-            <FeaturesList>
+            <div className={styles.featuresList}>
               {lockFeatures.map((feature, idx) => (
-                <FeatureItem key={idx}>
-                  <FeatureIconBox>{feature.icon}</FeatureIconBox>
-                  <FeatureTextBlock>
-                    <FeatureTitle>{feature.title}</FeatureTitle>
-                    <FeatureDesc>{feature.desc}</FeatureDesc>
-                  </FeatureTextBlock>
-                </FeatureItem>
+                <div className={styles.featureItem} key={idx}>
+                  <div className={styles.featureIconBox}>{feature.icon}</div>
+                  <div className={styles.featureTextBlock}>
+                    <span className={styles.featureTitle}>{feature.title}</span>
+                    <span className={styles.featureDesc}>{feature.desc}</span>
+                  </div>
+                </div>
               ))}
-            </FeaturesList>
-          </TextContent>
+            </div>
+          </div>
 
-          <ImageContainer>
-            <ImageWrapper>
-              <GlowEffect />
-              <ProductImage
+          <div className={styles.imageContainer}>
+            <div className={styles.imageWrapper}>
+              <div className={styles.glowEffect} />
+              <img
+                className={styles.productImage}
                 src="/images/products/doors/lock-3point.png"
                 alt={t('productDetail.doors.lock.imageAlt', 'Zamek 3-punktowy')}
               />
-            </ImageWrapper>
-          </ImageContainer>
-        </ContentGrid>
-      </BlockWrapper>
+            </div>
+          </div>
+        </div>
+      </div>
 
       {/* Threshold Block */}
-      <ContentGrid $reversed $withPadding>
-        <ImageContainer>
-          <ImageWrapper>
-            <GlowEffect />
-            <ProductImage
+      <div className={`${styles.contentGrid} ${styles.contentGridReversed} ${styles.contentGridWithPadding}`}>
+        <div className={styles.imageContainer}>
+          <div className={styles.imageWrapper}>
+            <div className={styles.glowEffect} />
+            <img
+              className={styles.productImage}
               src="/images/products/doors/threshold-alu.png"
               alt={t('productDetail.doors.threshold.imageAlt', 'Niski próg aluminiowy')}
             />
-          </ImageWrapper>
-        </ImageContainer>
+          </div>
+        </div>
 
-        <TextContent>
-          <TitleBlock>
-            <Overline>{t('productDetail.doors.threshold.overline', 'Komfort użytkowania')}</Overline>
-            <BlockTitle>
+        <div className={styles.textContent}>
+          <div className={styles.titleBlock}>
+            <span className={styles.overline}>{t('productDetail.doors.threshold.overline', 'Komfort użytkowania')}</span>
+            <h2 className={styles.blockTitle}>
               {t('productDetail.doors.threshold.title', 'Niski próg aluminiowy')}
-            </BlockTitle>
-            <BlockSubtitle>
+            </h2>
+            <p className={styles.blockSubtitle}>
               {t(
                 'productDetail.doors.threshold.description',
                 'Przemyślany detal, który realnie wpływa na komfort codziennego użytkowania. Zaledwie 20mm wysokości zapewnia swobodne przejście bez potykania się.'
               )}
-            </BlockSubtitle>
-          </TitleBlock>
+            </p>
+          </div>
 
-          <FeaturesList>
+          <div className={styles.featuresList}>
             {thresholdFeatures.map((feature, idx) => (
-              <FeatureItem key={idx}>
-                <FeatureIconBox>{feature.icon}</FeatureIconBox>
-                <FeatureTextBlock>
-                  <FeatureTitle>{feature.title}</FeatureTitle>
-                  <FeatureDesc>{feature.desc}</FeatureDesc>
-                </FeatureTextBlock>
-              </FeatureItem>
+              <div className={styles.featureItem} key={idx}>
+                <div className={styles.featureIconBox}>{feature.icon}</div>
+                <div className={styles.featureTextBlock}>
+                  <span className={styles.featureTitle}>{feature.title}</span>
+                  <span className={styles.featureDesc}>{feature.desc}</span>
+                </div>
+              </div>
             ))}
-          </FeaturesList>
-        </TextContent>
-      </ContentGrid>
-    </StandardSectionWrapper>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 };
-
-// ============================================
-// FALLBACK FAQ DATA
-// ============================================
-
-const fallbackFaqData = [
-  {
-    question: 'Jak długo trwa realizacja zamówienia drzwi?',
-    answer:
-      'Standardowy czas realizacji to 4-6 tygodni od momentu zatwierdzenia projektu i wpłaty zaliczki. Dla projektów indywidualnych czas może się wydłużyć do 8 tygodni.',
-  },
-  {
-    question: 'Czy drzwi są montowane przez firmę?',
-    answer:
-      'Tak, oferujemy profesjonalny montaż przez doświadczony zespół. Montaż jest wliczony w cenę i objęty gwarancją.',
-  },
-];
 
 // ============================================
 // MAIN COMPONENT
@@ -478,7 +216,7 @@ const DoorProductDetail = ({ product }) => {
   );
 
   const faqItems =
-    Array.isArray(product?.faq) && product.faq.length > 0 ? product.faq : fallbackFaqData;
+    Array.isArray(product?.faq) && product.faq.length > 0 ? product.faq : DOOR_FAQ_FALLBACK;
 
   const categoryLabel = t(
     `products.${product.categoryKey || 'exteriorDoors'}.name`,

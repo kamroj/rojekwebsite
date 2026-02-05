@@ -1,0 +1,163 @@
+---
+import PageHeaderSsg from '../PageHeaderSsg.astro';
+import BreadcrumbsSsg from '../BreadcrumbsSsg.astro';
+
+import maxWidthStyles from '../../../ui/MaxWidthContainer.module.css';
+import homeHeaderStyles from '../../../../views/HomeView.module.css';
+import styles from '../../../../views/AboutUsView.module.css';
+
+import { loadTranslationJson } from '../../../../lib/i18n/resources.js';
+import { t as tt } from '../../../../lib/i18n/t.js';
+import { getSectionPath } from '../../../../lib/i18n/routing.js';
+
+const { lang = 'pl' } = Astro.props;
+
+const tr = await loadTranslationJson(lang);
+const t = (key, def = '') => tt(tr, key, def);
+
+const breadcrumbs = [
+  { label: t('breadcrumbs.home', 'Home'), to: getSectionPath(lang, 'home') },
+  { label: t('breadcrumbs.about', 'About') },
+];
+
+/**
+ * Timeline items are based on existing translation keys (history.item1..item7)
+ * but the years are not localized in JSON, so we keep them as constants.
+ */
+const timeline = [
+  { year: 'Od 1994', key: 'history.item1' },
+  { year: '2002', key: 'history.item2' },
+  { year: '2012', key: 'history.item3' },
+  { year: '2014', key: 'history.item4' },
+  { year: '2016', key: 'history.item5' },
+  { year: '2019', key: 'history.item6' },
+  { year: '2020', key: 'history.item7' },
+].map((it) => ({
+  year: it.year,
+  title: t(`${it.key}.title`, ''),
+  text: t(`${it.key}.text`, ''),
+}));
+
+const managementMembers = t('management.members', []);
+const managementPhotos = [
+  '/images/realizations/realization2.jpg',
+  '/images/history/przemek.jpg',
+  '/images/history/tomek.jpg',
+  '/images/realizations/realization5.jpg',
+];
+const members = Array.isArray(managementMembers)
+  ? managementMembers.map((m, idx) => ({
+      ...m,
+      photo: managementPhotos[idx] || managementPhotos[0],
+    }))
+  : [];
+---
+
+<div>
+  <PageHeaderSsg
+    imageSrc="/images/company/company-top.jpg"
+    title={t('pageTitle.about', 'O Firmie')}
+    height={500}
+  />
+
+  <div class={maxWidthStyles.root} data-max-width-container="true">
+    <BreadcrumbsSsg items={breadcrumbs} />
+
+    <!-- WHY US -->
+    <section>
+      <div class={`${homeHeaderStyles.headerWrap} full-width`}>
+        <div class={homeHeaderStyles.productHeader}>{t('sections.whyUs', 'DLACZEGO MY?')}</div>
+        <div class={homeHeaderStyles.productHeaderSubtitle}>
+          {t('aboutPage.headers.whyUsSubtitle', 'Co odróżnia nas od innych')}
+        </div>
+      </div>
+
+      <div class={styles.whyUsContainer}>
+        <div class={styles.whyUsContentContainer}>
+          <p>
+            {t(
+              'headquarters.description1',
+              'Zakład produkcyjny mieści się w miejscowości Kryspinów 399, przy autostradzie A4.'
+            )}
+          </p>
+          <p>
+            {t(
+              'headquarters.description2',
+              'Zapraszamy do odwiedzenia naszego showroomu, gdzie można zobaczyć pełną gamę naszych produktów oraz uzyskać fachowe doradztwo.'
+            )}
+          </p>
+        </div>
+        <div class={styles.headquartersImage}>
+          <img
+            src="/images/company/company-building.jpg"
+            alt={t('headquarters.imageAlt', 'Siedziba firmy ROJEK')}
+            loading="lazy"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section>
+      <div class={`${homeHeaderStyles.headerWrap} ${homeHeaderStyles.headerWrapReversed} full-width`}>
+        <div class={homeHeaderStyles.productHeader}>{t('history.title', 'Nasza Historia')}</div>
+        <div class={homeHeaderStyles.productHeaderSubtitle}>
+          {t('aboutPage.headers.historySubtitle', 'Jak zmienialiśmy się przez lata')}
+        </div>
+      </div>
+
+      <div class={styles.introText}>
+        <p>
+          {t(
+            'history.intro1',
+            'Firma ROJEK to rodzinne przedsiębiorstwo z ponad 40-letnią tradycją. Od samego początku stawiamy na najwyższą jakość, indywidualne podejście do klienta oraz ciągły rozwój.'
+          )}
+        </p>
+        <p>
+          {t(
+            'history.intro2',
+            'Nasza historia to opowieść o pasji, determinacji i nieustannym dążeniu do doskonałości. Każdy etap naszego rozwoju był przemyślany i ukierunkowany na dostarczanie produktów spełniających najwyższe standardy.'
+          )}
+        </p>
+      </div>
+
+      <div class={styles.timelineContainer}>
+        {timeline.map((item, idx) => (
+          <div class={`${styles.timelineItem} ${idx % 2 === 0 ? '' : styles.timelineItemRight}`.trim()}>
+            <div class={styles.timelineCard}>
+              <div class={styles.yearBadge}>
+                {item.year}
+              </div>
+              <h3 class={styles.timelineTitle}>{item.title}</h3>
+              <p class={styles.timelineText}>{item.text}</p>
+            </div>
+            <div class={styles.timelineMarker} aria-hidden="true" />
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- MANAGEMENT (static, no swiper) -->
+    <section>
+      <div class={`${homeHeaderStyles.headerWrap} full-width`}>
+        <div class={homeHeaderStyles.productHeader}>{t('management.title', 'Management')}</div>
+      </div>
+
+      <div class={styles.managementGrid} style="display: grid;">
+        {members.map((m) => (
+          <article class={styles.managerCard}>
+            <div class={styles.managerImageWrapper}>
+              <img class={styles.managerPhoto} src={m.photo} alt={m.name} loading="lazy" />
+            </div>
+            <div class={styles.managerBody}>
+              <div class={styles.managerTopRow}>
+                <h4 class={styles.managerName}>{m.name}</h4>
+              </div>
+              <p class={styles.managerRole}>{m.role}</p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  </div>
+</div>

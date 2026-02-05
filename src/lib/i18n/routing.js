@@ -1,4 +1,4 @@
-import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from '../../constants'
+import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from '../../constants/index.js'
 
 /**
  * Languages that should appear in the URL as a prefix.

@@ -12,44 +12,45 @@ import {
   VIDEO_SOURCES,
   REALIZATION_IMAGES,
   GALLERY_CONFIG
-} from '../constants';
-import styled from 'styled-components';
+} from '../constants/index.js';
 
-export const HeaderWrap = styled.div`
-    position: relative;
-    isolation: isolate;
-    display: inline-flex;
-    width: 100%;
-    flex-direction: column;
-    margin: 20px 0 40px 0;
-    align-items: ${({ $reversed }) => ($reversed ? 'flex-end' : 'flex-start')};
+import styles from './HomeView.module.css';
 
-    @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-      margin: 20px 0;
-    }
-  `;
+export function HeaderWrap({ reversed, className, children, ...rest }) {
+  const classes = [styles.headerWrap, reversed ? styles.headerWrapReversed : null, className]
+    .filter(Boolean)
+    .join(' ');
+  return (
+    <div className={classes} {...rest}>
+      {children}
+    </div>
+  );
+}
 
-export const ProductHeader = styled.div`
-  font-size: 3rem;
-  font-weight: 300;
-  line-height: 1.2;
-  
+export function ProductHeader({ className, children, ...rest }) {
+  const classes = [styles.productHeader, className].filter(Boolean).join(' ');
+  return (
+    <div className={classes} {...rest}>
+      {children}
+    </div>
+  );
+}
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    font-size: 2rem;
-  }
-  `;
+export function ProductHeaderSubtitle({ blackBackground, className, children, ...rest }) {
+  const classes = [
+    styles.productHeaderSubtitle,
+    blackBackground ? styles.productHeaderSubtitleBlackBackground : null,
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
 
-export const ProductHeaderSubtitle = styled.div`
-  font-size: 1.5rem;
-  font-weight: 500;
-  line-height: 1.6;
-  color: ${({ $blackBackground }) => ($blackBackground ? "#259108c5" : '#015b0e')};
-
-    @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    font-size: 1.4rem;
-  }
-  `;
+  return (
+    <div className={classes} {...rest}>
+      {children}
+    </div>
+  );
+}
 
 const HomePage = () => {
   const { t } = useTranslation();
@@ -101,9 +102,7 @@ const HomePage = () => {
       <Section
         noMarginBottom
         dark
-        customStyles={`
-          background: rgb(15 15 15 / var(--tw-bg-opacity, 1));
-        `}
+        style={{ background: 'rgb(15 15 15 / var(--tw-bg-opacity, 1))' }}
         noPadding
       >
         <RealizationsGallery

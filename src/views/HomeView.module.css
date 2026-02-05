@@ -1,0 +1,48 @@
+.headerWrap {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  width: 100%;
+  flex-direction: column;
+  margin: 20px 0 40px 0;
+  align-items: flex-start;
+}
+
+.headerWrapReversed {
+  align-items: flex-end;
+}
+
+@media (--bp-md) {
+  .headerWrap {
+    margin: 20px 0;
+  }
+}
+
+.productHeader {
+  font-size: 3rem;
+  font-weight: 300;
+  line-height: 1.2;
+}
+
+@media (--bp-md) {
+  .productHeader {
+    font-size: 2rem;
+  }
+}
+
+.productHeaderSubtitle {
+  font-size: 1.5rem;
+  font-weight: 500;
+  line-height: 1.6;
+  color: #015b0e;
+}
+
+.productHeaderSubtitleBlackBackground {
+  color: #259108c5;
+}
+
+@media (--bp-lg) {
+  .productHeaderSubtitle {
+    font-size: 1.4rem;
+  }
+}

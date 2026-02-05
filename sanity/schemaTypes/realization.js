@@ -12,6 +12,14 @@ export default defineType({
       type: 'image',
       options: {hotspot: true},
       validation: (Rule) => Rule.required(),
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt (tekst alternatywny)',
+          type: 'string',
+          description: 'Opis obrazka dla SEO i dostępności.',
+        }),
+      ],
     }),
     defineField({
       name: 'tags',

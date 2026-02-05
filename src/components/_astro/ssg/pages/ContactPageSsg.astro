@@ -1,0 +1,111 @@
+---
+import PageHeaderSsg from '../PageHeaderSsg.astro';
+import BreadcrumbsSsg from '../BreadcrumbsSsg.astro';
+import ContactFormIslandWithResources from '../../islands-with-resources/ContactFormIslandWithResources.astro';
+
+import maxWidthStyles from '../../../ui/MaxWidthContainer.module.css';
+import homeHeaderStyles from '../../../../views/HomeView.module.css';
+import styles from '../../../../views/ContactView.module.css';
+
+import { loadTranslationJson } from '../../../../lib/i18n/resources.js';
+import { t as tt } from '../../../../lib/i18n/t.js';
+import { getSectionPath } from '../../../../lib/i18n/routing.js';
+import { COMPANY } from '../../../../data/company.js';
+
+const { lang = 'pl' } = Astro.props;
+
+const tr = await loadTranslationJson(lang);
+const t = (key, def = '') => tt(tr, key, def);
+
+const breadcrumbs = [
+  { label: t('breadcrumbs.home', 'Home'), to: getSectionPath(lang, 'home') },
+  { label: t('breadcrumbs.contact', 'Contact') },
+];
+
+const email = COMPANY.email;
+const phoneLabel = COMPANY.phone;
+const phoneHref = `tel:${String(phoneLabel).replace(/\s/g, '')}`;
+const address = `${COMPANY.address.streetAddress}, ${COMPANY.address.postalCode} ${COMPANY.address.addressLocality}`;
+const nip = COMPANY.nip ? `NIP: ${COMPANY.nip}` : '';
+const regon = COMPANY.regon ? `REGON: ${COMPANY.regon}` : '';
+const hours = COMPANY.openingHoursLabel || '';
+---
+
+<div>
+  <PageHeaderSsg
+    imageSrc="/images/contactus/top.jpg"
+    title={t('pageTitle.contact', 'Kontakt')}
+    height={500}
+  />
+
+  <div class={maxWidthStyles.root} data-max-width-container="true">
+    <BreadcrumbsSsg items={breadcrumbs} />
+
+    <section>
+      <div class={`${homeHeaderStyles.headerWrap} full-width`}>
+        <div class={homeHeaderStyles.productHeader}>{t('contactPage.header.title', 'Informacje kontaktowe')}</div>
+        <div class={homeHeaderStyles.productHeaderSubtitle}>
+          {t('contactPage.header.subtitle', '')}
+        </div>
+      </div>
+
+      <div class={styles.contactContainer}>
+        <div class={styles.formWrap}>
+          <ContactFormIslandWithResources lang={lang} hydrate="load" />
+        </div>
+
+        <div class={styles.directCard} style={{ marginTop: '24px' }}>
+          <p>{t('contactPage.direct.header', 'Skontaktuj się z nami bezpośrednio')}</p>
+
+          <ul class={styles.contactList}>
+            <li class={styles.contactItem}>
+              <div class={styles.contactDetails}>
+                <span class={styles.contactLabel}>{t('contact.email', 'Email')}</span>
+                <a class={styles.contactLink} href={`mailto:${email}`}>{email}</a>
+              </div>
+            </li>
+
+            <li class={styles.contactItem}>
+              <div class={styles.contactDetails}>
+                <span class={styles.contactLabel}>{t('contact.phone', 'Telefon')}</span>
+                <a class={styles.contactLink} href={phoneHref}>{phoneLabel}</a>
+              </div>
+            </li>
+
+            {address ? (
+              <li class={styles.contactItem}>
+                <div class={styles.contactDetails}>
+                  <span class={styles.contactLabel}>{t('contact.address', 'Adres')}</span>
+                  <span class={styles.contactText}>{address}</span>
+                </div>
+              </li>
+            ) : null}
+
+            {nip || regon ? (
+              <li class={styles.contactItem}>
+                <div class={styles.contactDetails}>
+                  <span class={styles.contactLabel}>
+                    {t('contactPage.direct.labels.registrationData', 'Dane rejestrowe')}
+                  </span>
+                  {nip ? <span class={styles.contactText}>{nip}</span> : null}
+                  {regon ? <span class={styles.contactText}>{regon}</span> : null}
+                </div>
+              </li>
+            ) : null}
+
+            {hours ? (
+              <li class={styles.contactItem}>
+                <div class={styles.contactDetails}>
+                  <span class={styles.contactLabel}>{t('contact.hours', 'Godziny otwarcia')}</span>
+                  <span class={styles.contactText}>{hours}</span>
+                </div>
+              </li>
+            ) : null}
+          </ul>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+

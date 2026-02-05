@@ -1,0 +1,58 @@
+---
+// @ts-nocheck
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import { getI18nResources } from '../../../lib/i18n/resources.js';
+import ProductCategorySsg from '../../../components/_astro/ssg/ProductCategorySsg.jsx';
+
+import { productCategories } from '../../../data/products/index.js';
+import { CATEGORY_SLUGS } from '../../../lib/i18n/routing.js';
+import { fetchWindowsListForBuild } from '../../../lib/sanity/build.js';
+import { getProductCategoryMeta } from '../../../lib/seo/productsMeta.js';
+
+const { category } = Astro.params;
+
+// In SSG we can pass build-time fetched data.
+const initialSanityProducts = Astro.props?.initialSanityProducts;
+
+const resources = await getI18nResources('pl');
+
+const meta = getProductCategoryMeta({ lang: 'pl', categorySlug: category });
+
+export async function getStaticPaths() {
+  // PL routes only (no language prefix).
+  // For now we generate category pages based on existing local product category keys.
+  // NOTE: In later steps we will expand this for EN/DE and Sanity-driven categories.
+  const paths = [];
+
+  for (const categoryKey of Object.keys(productCategories || {})) {
+    const categorySlug = CATEGORY_SLUGS?.pl?.[categoryKey] || categoryKey;
+
+    // Build-time Sanity prefetch for Windows category only.
+    const props = {};
+    if (categoryKey === 'okna') {
+      const windows = await fetchWindowsListForBuild('pl');
+      if (windows) props.initialSanityProducts = windows;
+    }
+
+    paths.push({
+      params: { category: categorySlug },
+      props,
+    });
+  }
+
+  return paths;
+}
+---
+
+<SiteLayout
+  lang="pl"
+  title={meta.title}
+  description={meta.description}
+>
+  <ProductCategorySsg
+    lang="pl"
+    resources={resources}
+    category={category}
+    initialSanityProducts={initialSanityProducts}
+  />
+</SiteLayout>

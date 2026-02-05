@@ -58,6 +58,14 @@ export default defineType({
       options: {hotspot: true},
       group: 'basic',
       description: 'Pokazuje się w nagłówku (hero) na stronie detalu produktu.',
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt (tekst alternatywny)',
+          type: 'string',
+          description: 'Opis obrazka dla SEO i dostępności.',
+        }),
+      ],
     }),
     defineField({
       name: 'listImage',
@@ -67,6 +75,14 @@ export default defineType({
       group: 'media',
       description:
         'Obraz używany na liście produktów (np. strona „Okna” pokazująca listę produktów w tej kategorii).',
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt (tekst alternatywny)',
+          type: 'string',
+          description: 'Opis obrazka dla SEO i dostępności.',
+        }),
+      ],
     }),
     defineField({
       name: 'shortDescription',
@@ -84,7 +100,20 @@ export default defineType({
       name: 'gallery',
       title: 'Galeria (slajder zdjęć na detalu)',
       type: 'array',
-      of: [{type: 'image', options: {hotspot: true}}],
+      of: [
+        {
+          type: 'image',
+          options: { hotspot: true },
+          fields: [
+            defineField({
+              name: 'alt',
+              title: 'Alt (tekst alternatywny)',
+              type: 'string',
+              description: 'Opis obrazka dla SEO i dostępności.',
+            }),
+          ],
+        },
+      ],
       group: 'media',
     }),
 

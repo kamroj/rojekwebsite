@@ -1,0 +1,17 @@
+---
+import CompanyPresentationIsland from '../islands/companyPresentation.jsx';
+import { getI18nResources } from '../../../lib/i18n/resources.js';
+
+const { lang = 'pl', viewProps = {}, hydrate = 'visible' } = Astro.props;
+const resources = await getI18nResources(lang);
+---
+
+{
+  hydrate === 'only'
+    ? <CompanyPresentationIsland lang={lang} resources={resources} viewProps={viewProps} client:only="react" />
+    : hydrate === 'idle'
+      ? <CompanyPresentationIsland lang={lang} resources={resources} viewProps={viewProps} client:idle />
+      : hydrate === 'load'
+        ? <CompanyPresentationIsland lang={lang} resources={resources} viewProps={viewProps} client:load />
+        : <CompanyPresentationIsland lang={lang} resources={resources} viewProps={viewProps} client:visible />
+}

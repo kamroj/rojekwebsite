@@ -1,0 +1,19 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import { getI18nResources } from '../../lib/i18n/resources.js';
+import ProductsIndexSsg from '../../components/_astro/ssg/ProductsIndexSsg.jsx';
+
+import { getProductsIndexMeta } from '../../lib/seo/productsMeta.js';
+
+const resources = await getI18nResources('pl');
+
+const meta = getProductsIndexMeta({ lang: 'pl' });
+---
+
+<SiteLayout
+  lang="pl"
+  title={meta.title}
+  description={meta.description}
+>
+  <ProductsIndexSsg lang="pl" resources={resources} />
+</SiteLayout>

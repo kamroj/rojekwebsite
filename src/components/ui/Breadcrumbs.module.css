@@ -1,0 +1,29 @@
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 0;
+  font-size: 1.1rem;
+  color: #6b7280;
+  flex-wrap: wrap;
+}
+
+.link {
+  color: #6b7280;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: #1a5618;
+}
+
+.current {
+  color: #1a5618;
+  font-weight: 500;
+}
+
+.separator {
+  font-size: 0.85rem;
+  color: #9ca3af;
+}

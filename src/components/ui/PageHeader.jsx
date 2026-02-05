@@ -1,110 +1,82 @@
 import React from 'react';
-import styled from 'styled-components';
 import MaxWidthContainer from './MaxWidthContainer';
-
-const HeaderWrapper = styled.section`
-  width: 100%;
-  overflow: hidden;
-`;
-
-const HeaderImageWrapper = styled.div`
-  position: relative;
-  width: 100vw;
-  left: 50%;
-  margin-left: -50vw;
-  margin-right: -50vw;
-  height: ${({ height }) => (height ? `${height}px` : '300px')};
-  overflow: hidden;
-`;
-
-const HeaderImage = styled.img`
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  position: relative;
-  z-index: 0;
-`;
-
-const Overlay = styled.div`
-  position: absolute;
-  inset: 0;
-  background-color: ${({ overlayColor }) => overlayColor || 'rgba(0,0,0,0.65)'};
-  pointer-events: none;
-  z-index: 1;
-`;
-
-const HeaderContentLayer = styled.div`
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 18px;
-  z-index: 2;
-  pointer-events: none;
-
-  ${MaxWidthContainer} {
-    position: relative; /* make container the positioning context */
-    pointer-events: none;
-  }
-`;
-
-const HeaderContent = styled.div`
-    border: 1px solid #016d197d;
-    position: absolute;
-    text-transform: uppercase;
-    bottom: 18px;
-    right: 22px;
-    margin: 0;
-    padding: 12px 24px;
-    background-color: ${({ contentBg }) => contentBg || '#0136002b'};
-    backdrop-filter: blur(3px);
-    color: ${({ contentColor }) => contentColor || '#f8f9fa'};
-    border-radius: 10px;
-    display: inline-block;
-    z-index: 2;
-    pointer-events: auto;
-    white-space: nowrap;
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
-
-  h1 {
-    margin: 0;
-    font-weight: 300;
-    font-size: 2.4rem;
-    color: inherit;
-    line-height: 1;
-    letter-spacing: 1px;
-  }
-
-
-
-  @media (max-width: 900px) {
-    h1 { font-size: 2rem; }
-  }
-`;
-
-const PageHeader = ({ imageSrc, title, height = 300, id, overlayColor, contentBg, contentColor, contentInMaxWidth = false, children }) => {
+import SanityImage from './SanityImage.jsx';
+import styles from './PageHeader.module.css';
+const PageHeader = ({
+  imageSrc,
+  image,
+  title,
+  height = 300,
+  id,
+  overlayColor,
+  contentBg,
+  contentColor,
+  contentInMaxWidth = false,
+  // Performance hints for the header image (often LCP).
+  imgLoading = 'eager',
+  imgDecoding = 'async',
+  imgFetchPriority = 'high',
+  imgSizes = '100vw',
+  children,
+}) => {
   return (
-    <HeaderWrapper id={id}>
-      <HeaderImageWrapper height={height}>
-        <HeaderImage src={imageSrc} alt={title || ''} />
-        <Overlay overlayColor={overlayColor} />
+    <section className={styles.headerWrapper} id={id}>
+      <div className={styles.headerImageWrapper} style={{ height: height ? `${height}px` : '300px' }}>
+        {image ? (
+          <SanityImage
+            className={styles.headerImage}
+            image={image}
+            altFallback={title || ''}
+            loading={imgLoading}
+            decoding={imgDecoding}
+            fetchpriority={imgFetchPriority}
+            sizes={imgSizes}
+            // Full-bleed header typically needs large widths.
+            widths={[640, 800, 1024, 1280, 1600, 2000, 2400]}
+          />
+        ) : (
+          <img
+            className={styles.headerImage}
+            src={imageSrc}
+            alt={title || ''}
+            loading={imgLoading}
+            decoding={imgDecoding}
+            fetchpriority={imgFetchPriority}
+          />
+        )}
+        <div
+          className={styles.overlay}
+          style={{ backgroundColor: overlayColor || 'rgba(0,0,0,0.65)' }}
+        />
         {(title || children) && (
           contentInMaxWidth ? (
-            <HeaderContentLayer>
+            <div className={styles.headerContentLayer}>
               <MaxWidthContainer>
-                <HeaderContent contentBg={contentBg} contentColor={contentColor}>
+                <div
+                  className={styles.headerContent}
+                  style={{
+                    backgroundColor: contentBg || '#0136002b',
+                    color: contentColor || '#f8f9fa',
+                  }}
+                >
                   {children || <h1>{title}</h1>}
-                </HeaderContent>
+                </div>
               </MaxWidthContainer>
-            </HeaderContentLayer>
+            </div>
           ) : (
-            <HeaderContent contentBg={contentBg} contentColor={contentColor}>
+            <div
+              className={styles.headerContent}
+              style={{
+                backgroundColor: contentBg || '#0136002b',
+                color: contentColor || '#f8f9fa',
+              }}
+            >
               {children || <h1>{title}</h1>}
-            </HeaderContent>
+            </div>
           )
         )}
-      </HeaderImageWrapper>
-    </HeaderWrapper>
+      </div>
+    </section>
   );
 };
 

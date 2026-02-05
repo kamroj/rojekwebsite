@@ -2,6 +2,7 @@
 import { getSanityClient } from './client';
 import { urlForImage } from './image';
 import { pickLocale } from './i18n';
+import { SANITY_IMAGE_PROJECTION } from './imageProjection.js';
 
 const WINDOWS_CATEGORY_ID = 'category_okna';
 
@@ -16,7 +17,7 @@ export const fetchWindowProductsList = async (lang, { signal } = {}) => {
         _id,
         name,
         "slug": slug.current,
-        listImage,
+        "listImage": listImage ${SANITY_IMAGE_PROJECTION},
         shortDescription,
         specs{profileThickness, thermalTransmittance, waterTightness}
       }
@@ -31,6 +32,9 @@ export const fetchWindowProductsList = async (lang, { signal } = {}) => {
       slug: p.slug,
       name: p.name,
       description: pickLocale(p.shortDescription, lang) || '',
+      // New canonical shape (preferred by new renderers): full Sanity image object.
+      // Keep `image` URL for backward compatibility for now.
+      listImage: p.listImage || null,
       image: listImageUrl,
       specs: p.specs || {},
 
@@ -49,8 +53,8 @@ export const fetchWindowProductDetail = async (slug, lang, { signal } = {}) => {
       _id,
       name,
       "slug": slug.current,
-      headerImage,
-      gallery,
+      "headerImage": headerImage ${SANITY_IMAGE_PROJECTION},
+      "gallery": gallery[] ${SANITY_IMAGE_PROJECTION},
       shortDescription,
       longDescription,
       specs{profileThickness, thermalTransmittance, waterTightness, video{asset->{url}}},
@@ -99,6 +103,11 @@ export const fetchWindowProductDetail = async (slug, lang, { signal } = {}) => {
     category: 'Okna',
     categoryKey: 'windows',
 
+    // New canonical shapes (preferred by new renderers)
+    headerImageSanity: p.headerImage || null,
+    gallery: Array.isArray(p.gallery) ? p.gallery : [],
+
+    // Backward compatible fields used by existing UI (strings):
     headerImage: headerImageUrl,
     images: galleryUrls,
     video: videoUrl,

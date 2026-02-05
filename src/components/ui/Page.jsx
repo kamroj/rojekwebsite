@@ -1,14 +1,8 @@
 import React from 'react';
-import styled from 'styled-components';
 import PageHeader from './PageHeader';
 import MaxWidthContainer from './MaxWidthContainer';
 import AppBreadcrumbs from './AppBreadcrumbs';
-
-const PageWrapper = styled.div`
-  width: 100%;
-  position: relative;
-  z-index: 1;
-`;
+import styles from './Page.module.css';
 
 /**
  * Reusable Page component
@@ -27,6 +21,7 @@ const PageWrapper = styled.div`
  */
 const Page = ({
     imageSrc,
+    headerImage,
     title,
     height = 500,
     id,
@@ -38,9 +33,10 @@ const Page = ({
     ...rest
 }) => {
     return (
-        <PageWrapper {...rest}>
+        <div className={styles.wrapper} {...rest}>
             <PageHeader
                 imageSrc={imageSrc}
+                image={headerImage}
                 title={title}
                 id={id}
                 height={height}
@@ -54,7 +50,7 @@ const Page = ({
                 <AppBreadcrumbs />
                 {children}
             </MaxWidthContainer>
-        </PageWrapper>
+        </div>
     );
 };
 

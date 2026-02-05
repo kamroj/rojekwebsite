@@ -14,13 +14,39 @@ export default defineType({
   type: 'document',
   fields: [
     // Kategorie są predefiniowane w kodzie (IA + tłumaczenia + slug). W CMS trzymamy tylko media.
-    defineField({name: 'headerImage', title: 'Zdjęcie nagłówkowe', type: 'image', options: {hotspot: true}}),
+    defineField({
+      name: 'headerImage',
+      title: 'Zdjęcie nagłówkowe',
+      type: 'image',
+      options: { hotspot: true },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alt (tekst alternatywny)',
+          type: 'string',
+          description: 'Opis obrazka dla SEO i dostępności.',
+        }),
+      ],
+    }),
     defineField({
       name: 'tile',
       title: 'Kafelek (Home/Produkty)',
       type: 'object',
       fields: [
-        defineField({name: 'backgroundImage', title: 'Obrazek w tle', type: 'image', options: {hotspot: true}}),
+        defineField({
+          name: 'backgroundImage',
+          title: 'Obrazek w tle',
+          type: 'image',
+          options: { hotspot: true },
+          fields: [
+            defineField({
+              name: 'alt',
+              title: 'Alt (tekst alternatywny)',
+              type: 'string',
+              description: 'Opis obrazka dla SEO i dostępności.',
+            }),
+          ],
+        }),
       ],
     }),
     defineField({

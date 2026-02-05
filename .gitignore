@@ -167,6 +167,9 @@ dist/
 # Netlify CLI local state
 .netlify/
 
+# Astro build artifacts / local cache
+.astro/
+
 # FuseBox cache
 .fusebox/
 

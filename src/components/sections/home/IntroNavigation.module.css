@@ -1,0 +1,18 @@
+.nav {
+  display: flex;
+  gap: var(--space-lg);
+  justify-content: center;
+  flex-grow: 1;
+}
+
+.item {
+  text-decoration: none;
+  font-size: 1.4rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  padding: 5px 0;
+  position: relative;
+  color: inherit;
+}

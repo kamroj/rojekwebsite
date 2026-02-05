@@ -1,33 +1,5 @@
 import React from 'react';
-import styled from 'styled-components';
-
-const PaginationWrapper = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin: 20px 0;
-`;
-
-const PageButton = styled.button`
-  background-color: ${({ $active, theme }) => ($active ? theme.colors.bottleGreen : 'transparent')};
-  color: ${({ $active, theme }) => ($active ? theme.colors.textLight : theme.colors.textDark)};
-  border: 1px solid ${({ theme }) => theme.colors.bottleGreen};
-  border-radius: 4px;
-  padding: 6px 12px;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-
-  &:hover:not(:disabled) {
-    background-color: ${({ theme }) => theme.colors.bottleGreen};
-    color: ${({ theme }) => theme.colors.textLight};
-  }
-
-  &:disabled {
-    opacity: 0.5;
-    cursor: default;
-  }
-`;
+import styles from './Pagination.module.css';
 
 const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const handlePrev = () => {
@@ -41,30 +13,41 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
   const renderPageNumbers = () => {
     const pages = [];
     for (let i = 1; i <= totalPages; i++) {
+      const isActive = i === currentPage;
       pages.push(
-        <PageButton
+        <button
           key={i}
-          $active={i === currentPage}
+          className={isActive ? `${styles.button} ${styles.buttonActive}` : styles.button}
           onClick={() => onPageChange(i, { via: 'number' })}
           aria-current={i === currentPage ? 'page' : undefined}
         >
           {i}
-        </PageButton>
+        </button>
       );
     }
     return pages;
   };
 
   return (
-    <PaginationWrapper role="navigation" aria-label="Pagination Navigation">
-      <PageButton onClick={handlePrev} disabled={currentPage === 1} aria-label="Previous Page">
+    <div className={styles.wrapper} role="navigation" aria-label="Pagination Navigation">
+      <button
+        className={styles.button}
+        onClick={handlePrev}
+        disabled={currentPage === 1}
+        aria-label="Previous Page"
+      >
         &lt;
-      </PageButton>
+      </button>
       {renderPageNumbers()}
-      <PageButton onClick={handleNext} disabled={currentPage === totalPages} aria-label="Next Page">
+      <button
+        className={styles.button}
+        onClick={handleNext}
+        disabled={currentPage === totalPages}
+        aria-label="Next Page"
+      >
         &gt;
-      </PageButton>
-    </PaginationWrapper>
+      </button>
+    </div>
   );
 };
 

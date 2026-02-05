@@ -1,0 +1,49 @@
+.notFoundContainer {
+  padding: var(--space-xl) var(--space-sm);
+  text-align: center;
+  min-height: 70vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-width: var(--max-width);
+  margin: 0 auto;
+}
+
+.notFoundContainer h1 {
+  font-size: 3.2rem;
+  color: var(--color-text);
+  margin-bottom: var(--space-sm);
+  font-weight: 600;
+}
+
+.notFoundContainer p {
+  font-size: 1.8rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-lg);
+  line-height: 1.6;
+}
+
+.backButton {
+  display: inline-block;
+  padding: var(--space-sm) var(--space-lg);
+  background-color: var(--color-secondary);
+  color: var(--color-text-light);
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 1.6rem;
+  transition: all var(--transition-default);
+  border: 2px solid var(--color-secondary);
+}
+
+.backButton:hover {
+  background-color: transparent;
+  color: var(--color-secondary);
+  transform: translateY(-2px);
+}
+
+.backButton:focus {
+  outline: 2px solid var(--color-secondary);
+  outline-offset: 2px;
+}

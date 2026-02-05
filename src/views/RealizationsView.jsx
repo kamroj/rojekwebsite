@@ -1,5 +1,4 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-import styled from 'styled-components';
 import { FiChevronDown, FiChevronUp, FiX, FiFilter } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
@@ -7,6 +6,8 @@ import { useResponsive } from '../hooks/useResponsive';
 import RealizationCard from '../components/sections/realizations/RealizationCard';
 import Pagination from '../components/ui/Pagination';
 import Page from '../components/ui/Page';
+
+import styles from './RealizationsView.module.css';
 
 const PAGE_SIZE = 6;
 
@@ -96,513 +97,9 @@ const EXAMPLE_REALIZATIONS = [
   },
 ];
 
-const PageWrapper = styled.div`
-  width: 100%;
-`;
 
-const Content = styled.div`
-  max-width: ${({ theme }) => (theme?.layout?.maxWidth || '1200px')};
-  margin: 0 auto;
-  padding: 20px;
-  position: relative;
-`;
-
-const FiltersRow = styled.div`
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  align-items: center;
-  margin: 12px 0 20px;
-
-  @media (max-width: 720px) {
-    display: none;
-  }
-`;
-
-const DropdownsGroup = styled.div`
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex: 1;
-  gap: 12px;
-`;
-
-const FilterWrapper = styled.div.attrs({ 'data-filter-area': 'true' })`
-  flex: 0 0 170px;
-  max-width: 170px;
-  min-width: 140px;
-  position: relative;
-  box-sizing: border-box;
-
-  @media (max-width: 720px) {
-    flex: 0 0 auto;
-    max-width: 320px;
-    width: min(90%, 320px);
-    margin: 6px auto;
-    position: relative;
-  }
-`;
-
-const FilterControl = styled.button`
-  all: unset;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  background: ${({ theme }) => theme?.colors?.background || '#ffffff'};
-  border: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
-  border-radius: 8px;
-  padding: 8px 12px;
-  cursor: pointer;
-  box-sizing: border-box;
-  box-shadow: ${({ theme }) => theme?.shadows?.small || '0 2px 4px rgba(0, 0, 0, 0.1)'};
-  transition: ${({ theme }) => theme?.transitions?.default || '0.3s ease'};
-  
-  &:hover {
-    border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
-    box-shadow: ${({ theme }) => theme?.shadows?.medium || '0 4px 8px rgba(0, 0, 0, 0.2)'};
-    background: ${({ theme }) => theme?.colors?.backgroundAlt || '#f9fafb'};
-  }
-  
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
-    box-shadow: 0 0 0 3px ${({ theme }) => theme?.colors?.borderAccent || 'rgba(1, 126, 84, 0.25)'};
-  }
-  
-  &:active {
-    outline: none;
-    transform: translateY(1px);
-  }
-`;
-
-const LabelBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-`;
-
-const FilterHeading = styled.span`
-  font-weight: 600;
-  font-size: 1.3rem;
-  color: ${({ theme }) => theme?.colors?.text || '#222'};
-
-  @media (max-width: 720px) {
-    font-size: 1.5rem;
-  }
-`;
-
-const DropdownPanel = styled(motion.div).attrs({ 'data-filter-area': 'true' })`
-  /* Desktop: overlay dropdown on top of content without shifting layout */
-  position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  right: 0;
-  margin: 0;
-  width: 100%;
-  background: ${({ theme }) => theme?.colors?.background || '#ffffff'};
-  border: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
-  border-radius: 10px;
-  box-shadow: ${({ theme }) => theme?.shadows?.medium || '0 4px 8px rgba(0, 0, 0, 0.2)'};
-  z-index: 6000;
-  padding: 6px;
-  box-sizing: border-box;
-
-  /* Mobile: keep absolute positioning (overlays) for small screens */
-  @media (max-width: 720px) {
-    position: absolute;
-    top: calc(100% + 6px);
-    left: 0;
-    right: 0;
-    width: 100%;
-    margin: 0;
-    box-shadow: ${({ theme }) => theme?.shadows?.medium || '0 4px 8px rgba(0, 0, 0, 0.2)'};
-    border: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
-    border-radius: 8px;
-    padding: 0;
-    background: ${({ theme }) => theme?.colors?.background || '#ffffff'};
-    display: block;
-    box-sizing: border-box;
-    z-index: 7000;
-    overflow: hidden;
-  }
-`;
-
-const OptionList = styled.div`
-  max-height: 220px;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  width: 100%;
-  box-sizing: border-box;
-  
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
-    border-radius: 3px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme?.colors?.accent || '#017e54'};
-    border-radius: 3px;
-    
-    &:hover {
-      background: ${({ theme }) => theme?.colors?.accentDark || '#015a3c'};
-    }
-  }
-
-  @media (max-width: 720px) {
-    max-height: 200px;
-    overflow-y: auto;
-    overflow-x: hidden;
-    -webkit-overflow-scrolling: touch;
-    width: 100%;
-    box-sizing: border-box;
-    gap: 0;
-    border: none;
-    border-radius: 0;
-    padding: 0;
-    margin: 0;
-    background: transparent;
-    box-shadow: none;
-  }
-`;
-
-const OptionRow = styled.label`
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 10px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-  width: 100%;
-  box-sizing: border-box;
-  transition: ${({ theme }) => theme?.transitions?.fast || '0.2s ease-in'};
-  
-  &:hover { 
-    background: ${({ theme }) => theme?.colors?.backgroundAlt || '#f9fafb'}; 
-  }
-
-  input[type="checkbox"] {
-    width: 16px;
-    height: 16px;
-    margin: 0;
-    margin-right: 10px;
-    transform: none;
-    accent-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
-    flex-shrink: 0;
-    cursor: pointer;
-    
-    &:checked {
-      background-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
-      border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
-    }
-    
-    &:hover {
-      border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
-    }
-    
-    &:focus {
-      outline: none;
-      box-shadow: 0 0 0 2px ${({ theme }) => theme?.colors?.borderAccent || 'rgba(1, 126, 84, 0.25)'};
-    }
-  }
-
-  span {
-    font-size: 1.3rem;
-    flex: 1;
-    white-space: nowrap;
-    color: ${({ theme }) => theme?.colors?.text || '#212529'};
-  }
-
-  @media (max-width: 720px) {
-    padding: 12px;
-    border-radius: 0;
-    width: 100%;
-    
-    &:not(:last-child) {
-      border-bottom: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
-    }
-
-    &:hover { 
-      background: ${({ theme }) => theme?.colors?.backgroundAlt || '#f9fafb'}; 
-    }
-  }
-
-  @media (max-width: 420px) {
-    input[type="checkbox"] {
-      width: 12px;
-      height: 12px;
-    }
-    span { 
-      font-size: 1.3rem; 
-    }
-  }
-`;
-
-const ResultsTop = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin: 8px 0 16px;
-`;
-
-const ResultsCount = styled.div`
-  flex: 1;
-  min-width: 0;
-  color: ${({ theme }) => theme?.colors?.text || '#222'};
-  font-weight: 500;
-  font-size: 1rem;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: unset;
-
-  @media (min-width: 721px) {
-    font-weight: 600;
-    font-size: 1.5rem;
-    white-space: nowrap;
-    overflow: visible;
-    text-overflow: ellipsis;
-  }
-`;
-
-const Grid = styled.div`
-  display: grid;
-  gap: 32px;
-  grid-template-columns: repeat(3, 1fr);
-  
-  @media (max-width: 1100px) { 
-    grid-template-columns: repeat(2, 1fr); 
-  }
-  
-  @media (max-width: 720px) { 
-    grid-template-columns: 1fr; 
-  }
-`;
-
-const NoResults = styled.div`
-  padding: 30px;
-  text-align: center;
-  background: #fff;
-  border: 1px solid #eee;
-  border-radius: 8px;
-  margin-top: 20px;
-`;
-
-const MobileFiltersButton = styled.button`
-  all: unset;
-  display: none;
-  /* keep in normal flow so ControlsBar height is preserved */
-  position: static;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background: ${({ theme }) => theme?.colors?.background || '#ffffff'};
-  border: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
-  align-items: center;
-  justify-content: center;
-  box-shadow: ${({ theme }) => theme?.shadows?.small || '0 2px 4px rgba(0, 0, 0, 0.1)'};
-  cursor: pointer;
-  transition: ${({ theme }) => theme?.transitions?.default || '0.3s ease'};
-  
-  &:hover {
-    border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
-    box-shadow: ${({ theme }) => theme?.shadows?.medium || '0 4px 8px rgba(0, 0, 0, 0.2)'};
-    background: ${({ theme }) => theme?.colors?.backgroundAlt || '#f9fafb'};
-  }
-  
-  &:focus {
-    outline: none;
-    border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
-    box-shadow: 0 0 0 3px ${({ theme }) => theme?.colors?.borderAccent || 'rgba(1, 126, 84, 0.25)'};
-  }
-  
-  &:active {
-    outline: none;
-    transform: translateY(1px);
-  }
-  
-  svg { 
-    width: 18px; 
-    height: 18px; 
-    color: ${({ theme }) => theme?.colors?.text || '#212529'}; 
-  }
-
-  @media (max-width: 720px) {
-    display: flex;
-  }
-`;
-
-const DesktopFiltersButton = styled.button`
-  all: unset;
-  display: flex;
-  /* position in normal flow inside ControlsBar so it occupies space */
-  position: static;
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
-  background: ${({ theme }) => theme?.colors?.background || '#ffffff'};
-  border: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
-  align-items: center;
-  justify-content: center;
-  box-shadow: ${({ theme }) => theme?.shadows?.small || '0 2px 4px rgba(0, 0, 0, 0.1)'};
-  cursor: pointer;
-  transition: ${({ theme }) => theme?.transitions?.default || '0.3s ease'};
-  z-index: 2000;
-
-  &:hover {
-    border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
-    box-shadow: ${({ theme }) => theme?.shadows?.medium || '0 4px 8px rgba(0, 0, 0, 0.2)'};
-    background: ${({ theme }) => theme?.colors?.backgroundAlt || '#f9fafb'};
-  }
-
-  &:active {
-    outline: none;
-    transform: translateY(1px);
-  }
-
-  svg { 
-    width: 18px; 
-    height: 18px; 
-    color: ${({ theme }) => theme?.colors?.text || '#212529'}; 
-  }
-
-  @media (max-width: 720px) {
-    display: none;
-  }
-`;
-
-const MobilePanel = styled(motion.div).attrs({ 'data-mobile-panel': 'true' })`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  width: 100vw;
-  /* Prefer dynamic viewport height; fallback to VisualViewport CSS var if present */
-  height: var(--vvh, 100dvh);
-  max-height: 100dvh;
-  background: #fff;
-  border: none;
-  border-radius: 0;
-  box-shadow: none;
-  z-index: 9999;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  touch-action: pan-y;
-  overscroll-behavior-x: contain;
-  box-sizing: border-box;
-`;
-
-const MobileHeader = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 12px 14px;
-  border-bottom: 1px solid ${({ theme }) => theme?.colors?.border || '#e6e6e6'};
-`;
-
-const MobileCloseButton = styled.button`
-  all: unset;
-  cursor: pointer;
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-`;
-
-const MobileFooter = styled.div`
-  display: flex;
-  gap: 12px;
-  padding: 12px;
-  /* Ensure footer actions are not obscured by bottom browser UI or iOS home indicator */
-  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-  border-top: 1px solid ${({ theme }) => theme?.colors?.border || '#eee'};
-  background: ${({ theme }) => theme?.colors?.panelBg || '#fff'};
-  justify-content: space-between;
-  box-sizing: border-box;
-`;
-
-const MobileAction = styled.button`
-  all: unset;
-  padding: 10px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  text-align: center;
-  border: 1px solid ${({ primary, theme }) => primary ? (theme?.colors?.primary || '#004605') : (theme?.colors?.border || '#e6e6e6')};
-  color: ${({ primary, theme }) => primary ? '#fff' : (theme?.colors?.text || '#222')};
-  background: ${({ primary, theme }) => primary ? (theme?.colors?.primary || '#003d29') : 'transparent'};
-`;
-
-const MobileFilters = styled.div`
-  flex: 1;
-  overflow: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding: 12px 16px;
-  align-items: center;
-  box-sizing: border-box;
-
-  ${FilterWrapper} {
-    margin: 8px 0;
-  }
-`;
-
-const ClearButton = styled.button`
-  all: unset;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 600;
-  color: ${({ theme }) => theme?.colors?.text || '#222'};
-  background: ${({ theme }) => theme?.colors?.background || '#ffffff'};
-  border: 1px solid ${({ theme }) => theme?.colors?.border || '#dee2e6'};
-  box-shadow: ${({ theme }) => theme?.shadows?.small || '0 2px 4px rgba(0, 0, 0, 0.1)'};
-  transition: ${({ theme }) => theme?.transitions?.default || '0.3s ease'};
-
-  &:hover {
-    border-color: ${({ theme }) => theme?.colors?.secondary || '#017e54'};
-    background: ${({ theme }) => theme?.colors?.backgroundAlt || '#f9fafb'};
-    color: ${({ theme }) => theme?.colors?.text || '#222'};
-  }
-
-  &:active {
-    transform: translateY(1px);
-  }
-
-  svg {
-    width: 16px;
-    height: 16px;
-    color: ${({ theme }) => theme?.colors?.text || '#212529'};
-  }
-`;
-
-/* ControlsBar holds the filter buttons (mobile + desktop) so the filters panel
-   can slide down below the bar instead of overlapping the buttons. */
-const ControlsBar = styled.div`
-  position: relative;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 8px 12px;
-  /* keep enough height for the buttons */
-  min-height: 56px;
-  margin-bottom: 8px;
-`;
+const DropdownPanel = motion.div;
+const MobilePanel = motion.div;
 
 const RealizationsPage = () => {
   const { t } = useTranslation();
@@ -777,9 +274,12 @@ const RealizationsPage = () => {
     currentPage * PAGE_SIZE
   );
 
+  const selectedTypeCount = selectedFilters[FILTER_CATEGORIES.TYPE].size;
+  const selectedColorCount = selectedFilters[FILTER_CATEGORIES.COLOR].size;
+
   useEffect(() => {
     setCurrentPage(1);
-  }, [selectedFilters[FILTER_CATEGORIES.TYPE].size, selectedFilters[FILTER_CATEGORIES.COLOR].size]);
+  }, [selectedTypeCount, selectedColorCount]);
 
   useEffect(() => {
     const handleDocumentClick = (event) => {
@@ -878,49 +378,64 @@ const RealizationsPage = () => {
   return (
     <Page imageSrc="/images/realizations/top.jpg" title={t('realizationsPage.title')}>
 
-      <Content>
+      <div className={styles.content}>
 
         <AnimatePresence>
           {isMobilePanelOpen && (
             <MobilePanel 
               ref={mobilePanelRef}
+              className={styles.mobilePanel}
               role="dialog"
               aria-modal="true"
               aria-labelledby="mobile-filters-title"
+              data-mobile-panel="true"
               initial={{ opacity: 0, y: -8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.22 }}
             >
-              <MobileHeader>
-                <FilterHeading id="mobile-filters-title">
+              <div className={styles.mobileHeader}>
+                <span className={styles.filterHeading} id="mobile-filters-title">
                   {t('realizationsPage.filters.filtersTitle')}
-                </FilterHeading>
-                <MobileCloseButton 
+                </span>
+                <button
+                  type="button"
+                  className={styles.mobileCloseButton}
                   onClick={() => setIsMobilePanelOpen(false)} 
                   aria-label={t('realizationsPage.filters.close')}
                 >
                   <FiX />
-                </MobileCloseButton>
-              </MobileHeader>
+                </button>
+              </div>
 
-              <MobileFilters>
-                <FilterWrapper>
-                  <FilterControl 
+              <div className={styles.mobileFilters}>
+                <div className={styles.filterWrapper} data-filter-area="true">
+                  <button
+                    type="button"
+                    className={styles.filterControl}
                     onClick={(e) => toggleDropdown('doors', e)} 
                     aria-expanded={dropdownsOpen.doors}
                   >
-                    <LabelBlock>
-                      <FilterHeading>{t('realizationsPage.filters.doors')}</FilterHeading>
-                    </LabelBlock>
+                    <div className={styles.labelBlock}>
+                      <span className={styles.filterHeading}>{t('realizationsPage.filters.doors')}</span>
+                    </div>
                     {dropdownsOpen.doors ? <FiChevronUp /> : <FiChevronDown />}
-                  </FilterControl>
+                  </button>
               <AnimatePresence>
               {dropdownsOpen.doors && (
-                <DropdownPanel role="menu" {...(!isMobile ? dropdownMotionProps : {})}>
-                  <OptionList>
+                <DropdownPanel
+                  role="menu"
+                  className={styles.dropdownPanel}
+                  data-filter-area="true"
+                  {...(!isMobile ? dropdownMotionProps : {})}
+                >
+                  <div className={styles.optionList}>
                         {doorTypes.map(type => (
-                          <OptionRow key={type} onClick={(e) => e.stopPropagation()}>
+                          <label
+                            key={type}
+                            className={styles.optionRow}
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <input
                               type="checkbox"
                               checked={mobileTemporaryFilters ? 
@@ -933,30 +448,41 @@ const RealizationsPage = () => {
                               }
                             />
                             <span>{getTranslatedProductType(type)}</span>
-                          </OptionRow>
+                          </label>
                         ))}
-                  </OptionList>
+                  </div>
                 </DropdownPanel>
               )}
             </AnimatePresence>
-                </FilterWrapper>
+                </div>
 
-                <FilterWrapper>
-                  <FilterControl 
+                <div className={styles.filterWrapper} data-filter-area="true">
+                  <button
+                    type="button"
+                    className={styles.filterControl}
                     onClick={(e) => toggleDropdown('windows', e)} 
                     aria-expanded={dropdownsOpen.windows}
                   >
-                    <LabelBlock>
-                      <FilterHeading>{t('realizationsPage.filters.windows')}</FilterHeading>
-                    </LabelBlock>
+                    <div className={styles.labelBlock}>
+                      <span className={styles.filterHeading}>{t('realizationsPage.filters.windows')}</span>
+                    </div>
                     {dropdownsOpen.windows ? <FiChevronUp /> : <FiChevronDown />}
-                  </FilterControl>
+                  </button>
               <AnimatePresence>
               {dropdownsOpen.windows && (
-                <DropdownPanel role="menu" {...(!isMobile ? dropdownMotionProps : {})}>
-                  <OptionList>
+                <DropdownPanel
+                  role="menu"
+                  className={styles.dropdownPanel}
+                  data-filter-area="true"
+                  {...(!isMobile ? dropdownMotionProps : {})}
+                >
+                  <div className={styles.optionList}>
                         {windowTypes.map(type => (
-                          <OptionRow key={type} onClick={(e) => e.stopPropagation()}>
+                          <label
+                            key={type}
+                            className={styles.optionRow}
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <input
                               type="checkbox"
                               checked={mobileTemporaryFilters ? 
@@ -969,30 +495,41 @@ const RealizationsPage = () => {
                               }
                             />
                             <span>{getTranslatedProductType(type)}</span>
-                          </OptionRow>
+                          </label>
                         ))}
-                  </OptionList>
+                  </div>
                 </DropdownPanel>
               )}
             </AnimatePresence>
-                </FilterWrapper>
+                </div>
 
-                <FilterWrapper>
-                  <FilterControl 
+                <div className={styles.filterWrapper} data-filter-area="true">
+                  <button
+                    type="button"
+                    className={styles.filterControl}
                     onClick={(e) => toggleDropdown('color', e)} 
                     aria-expanded={dropdownsOpen.color}
                   >
-                    <LabelBlock>
-                      <FilterHeading>{t('realizationsPage.filters.color')}</FilterHeading>
-                    </LabelBlock>
+                    <div className={styles.labelBlock}>
+                      <span className={styles.filterHeading}>{t('realizationsPage.filters.color')}</span>
+                    </div>
                     {dropdownsOpen.color ? <FiChevronUp /> : <FiChevronDown />}
-                  </FilterControl>
+                  </button>
               <AnimatePresence>
               {dropdownsOpen.color && (
-                <DropdownPanel role="menu" {...(!isMobile ? dropdownMotionProps : {})}>
-                  <OptionList>
+                <DropdownPanel
+                  role="menu"
+                  className={styles.dropdownPanel}
+                  data-filter-area="true"
+                  {...(!isMobile ? dropdownMotionProps : {})}
+                >
+                  <div className={styles.optionList}>
                         {colorOptions.map(color => (
-                          <OptionRow key={color} onClick={(e) => e.stopPropagation()}>
+                          <label
+                            key={color}
+                            className={styles.optionRow}
+                            onClick={(e) => e.stopPropagation()}
+                          >
                             <input
                               type="checkbox"
                               checked={mobileTemporaryFilters ? 
@@ -1005,23 +542,27 @@ const RealizationsPage = () => {
                               }
                             />
                             <span>{getTranslatedColor(color)}</span>
-                          </OptionRow>
+                          </label>
                         ))}
-                  </OptionList>
+                  </div>
                 </DropdownPanel>
               )}
             </AnimatePresence>
-                </FilterWrapper>
-              </MobileFilters>
+                </div>
+              </div>
 
-              <MobileFooter>
-                <MobileAction onClick={clearMobileFilters}>
+              <div className={styles.mobileFooter}>
+                <button type="button" className={styles.mobileAction} onClick={clearMobileFilters}>
                   {t('realizationsPage.filters.clear')}
-                </MobileAction>
-                <MobileAction primary onClick={applyMobileFilters}>
+                </button>
+                <button
+                  type="button"
+                  className={`${styles.mobileAction} ${styles.mobileActionPrimary}`}
+                  onClick={applyMobileFilters}
+                >
                   {t('realizationsPage.filters.apply')}
-                </MobileAction>
-              </MobileFooter>
+                </button>
+              </div>
             </MobilePanel>
           )}
         </AnimatePresence>
@@ -1033,23 +574,27 @@ const RealizationsPage = () => {
             transition={{ duration: 0.12 }}
             style={{ overflow: 'visible', position: 'relative', zIndex: 5000 }}
           >
-        <ResultsTop>
+        <div className={styles.resultsTop}>
 
-          <ControlsBar>
+          <div className={styles.controlsBar}>
             {!isMobilePanelOpen && (
-              <ResultsCount style={{ marginRight: 'auto' }}>
+              <div className={styles.resultsCount} style={{ marginRight: 'auto' }}>
                 {t('realizationsPage.results.found', { count: filteredRealizations.length })}
-              </ResultsCount>
+              </div>
             )}
-            <MobileFiltersButton 
+            <button
+              type="button"
+              className={styles.mobileFiltersButton}
               ref={mobileButtonRef} 
               onClick={openMobilePanel} 
               aria-label={t('realizationsPage.filters.filtersTitle')}
             >
               <FiFilter />
-            </MobileFiltersButton>
+            </button>
 
-                <DesktopFiltersButton
+                <button
+                  type="button"
+                  className={styles.desktopFiltersButton}
                   ref={desktopButtonRef}
                   onClick={() => {
                     setIsDesktopFiltersOpen(prev => {
@@ -1064,9 +609,9 @@ const RealizationsPage = () => {
                   aria-label={t('realizationsPage.filters.filtersTitle')}
                 >
                   <FiFilter />
-                </DesktopFiltersButton>
-              </ControlsBar>
-            </ResultsTop>
+                </button>
+              </div>
+            </div>
 
             <AnimatePresence initial={false}>
             {isDesktopFiltersOpen && (
@@ -1074,114 +619,147 @@ const RealizationsPage = () => {
                 initial={{ height: 0, opacity: 0, y: -8 }}
                 animate={{ height: 'auto', opacity: 1, y: 0, transition: { duration: 0.18, ease: 'easeOut' } }}
                 exit={{ height: 0, opacity: 0, y: -8, transition: { duration: 0.12, ease: 'easeIn' } }}
-                style={{ overflow: 'visible', willChange: 'opacity, transform, height' }}
+                className={styles.filtersExpander}
               >
-                <FiltersRow>
-          <DropdownsGroup>
-            <FilterWrapper ref={doorsRef}>
-              <FilterControl 
+                <div className={styles.filtersRow}>
+          <div className={styles.dropdownsGroup}>
+            <div className={styles.filterWrapper} ref={doorsRef} data-filter-area="true">
+              <button
+                type="button"
+                className={styles.filterControl}
                 onClick={(e) => toggleDropdown('doors', e)} 
                 aria-expanded={dropdownsOpen.doors} 
                 aria-haspopup="menu"
               >
-                <LabelBlock>
-                  <FilterHeading>{t('realizationsPage.filters.doors')}</FilterHeading>
-                </LabelBlock>
+                <div className={styles.labelBlock}>
+                  <span className={styles.filterHeading}>{t('realizationsPage.filters.doors')}</span>
+                </div>
                 {dropdownsOpen.doors ? <FiChevronUp /> : <FiChevronDown />}
-              </FilterControl>
+              </button>
 
               <AnimatePresence>
               {dropdownsOpen.doors && (
-                <DropdownPanel role="menu" {...(!isMobile ? dropdownMotionProps : {})}>
-                  <OptionList>
+                <DropdownPanel
+                  role="menu"
+                  className={styles.dropdownPanel}
+                  data-filter-area="true"
+                  {...(!isMobile ? dropdownMotionProps : {})}
+                >
+                  <div className={styles.optionList}>
                     {doorTypes.map(type => (
-                      <OptionRow key={type} onClick={(e) => e.stopPropagation()}>
+                      <label
+                        key={type}
+                        className={styles.optionRow}
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <input
                           type="checkbox"
                           checked={selectedFilters[FILTER_CATEGORIES.TYPE].has(type)}
                           onChange={(e) => toggleFilter(FILTER_CATEGORIES.TYPE, type, e)}
                         />
                         <span>{getTranslatedProductType(type)}</span>
-                      </OptionRow>
+                      </label>
                     ))}
-                  </OptionList>
+                  </div>
                 </DropdownPanel>
               )}
               </AnimatePresence>
-            </FilterWrapper>
+            </div>
 
-            <FilterWrapper ref={windowsRef}>
-              <FilterControl 
+            <div className={styles.filterWrapper} ref={windowsRef} data-filter-area="true">
+              <button
+                type="button"
+                className={styles.filterControl}
                 onClick={(e) => toggleDropdown('windows', e)} 
                 aria-expanded={dropdownsOpen.windows} 
                 aria-haspopup="menu"
               >
-                <LabelBlock>
-                  <FilterHeading>{t('realizationsPage.filters.windows')}</FilterHeading>
-                </LabelBlock>
+                <div className={styles.labelBlock}>
+                  <span className={styles.filterHeading}>{t('realizationsPage.filters.windows')}</span>
+                </div>
                 {dropdownsOpen.windows ? <FiChevronUp /> : <FiChevronDown />}
-              </FilterControl>
+              </button>
 
               <AnimatePresence>
               {dropdownsOpen.windows && (
-                <DropdownPanel role="menu" {...(!isMobile ? dropdownMotionProps : {})}>
-                  <OptionList>
+                <DropdownPanel
+                  role="menu"
+                  className={styles.dropdownPanel}
+                  data-filter-area="true"
+                  {...(!isMobile ? dropdownMotionProps : {})}
+                >
+                  <div className={styles.optionList}>
                     {windowTypes.map(type => (
-                      <OptionRow key={type} onClick={(e) => e.stopPropagation()}>
+                      <label
+                        key={type}
+                        className={styles.optionRow}
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <input
                           type="checkbox"
                           checked={selectedFilters[FILTER_CATEGORIES.TYPE].has(type)}
                           onChange={(e) => toggleFilter(FILTER_CATEGORIES.TYPE, type, e)}
                         />
                         <span>{getTranslatedProductType(type)}</span>
-                      </OptionRow>
+                      </label>
                     ))}
-                  </OptionList>
+                  </div>
                 </DropdownPanel>
               )}
               </AnimatePresence>
-            </FilterWrapper>
+            </div>
 
-            <FilterWrapper ref={colorRef}>
-              <FilterControl 
+            <div className={styles.filterWrapper} ref={colorRef} data-filter-area="true">
+              <button
+                type="button"
+                className={styles.filterControl}
                 onClick={(e) => toggleDropdown('color', e)} 
                 aria-expanded={dropdownsOpen.color} 
                 aria-haspopup="menu"
               >
-                <LabelBlock>
-                  <FilterHeading>{t('realizationsPage.filters.color')}</FilterHeading>
-                </LabelBlock>
+                <div className={styles.labelBlock}>
+                  <span className={styles.filterHeading}>{t('realizationsPage.filters.color')}</span>
+                </div>
                 {dropdownsOpen.color ? <FiChevronUp /> : <FiChevronDown />}
-              </FilterControl>
+              </button>
 
               <AnimatePresence>
               {dropdownsOpen.color && (
-                <DropdownPanel role="menu" {...(!isMobile ? dropdownMotionProps : {})}>
-                  <OptionList>
+                <DropdownPanel
+                  role="menu"
+                  className={styles.dropdownPanel}
+                  data-filter-area="true"
+                  {...(!isMobile ? dropdownMotionProps : {})}
+                >
+                  <div className={styles.optionList}>
                     {colorOptions.map(color => (
-                      <OptionRow key={color} onClick={(e) => e.stopPropagation()}>
+                      <label
+                        key={color}
+                        className={styles.optionRow}
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         <input
                           type="checkbox"
                           checked={selectedFilters[FILTER_CATEGORIES.COLOR].has(color)}
                           onChange={(e) => toggleFilter(FILTER_CATEGORIES.COLOR, color, e)}
                         />
                         <span>{getTranslatedColor(color)}</span>
-                      </OptionRow>
+                      </label>
                     ))}
-                  </OptionList>
+                  </div>
                 </DropdownPanel>
               )}
               </AnimatePresence>
-            </FilterWrapper>
-          </DropdownsGroup>
+            </div>
+          </div>
 
           <div style={{ marginLeft: '12px', alignSelf: 'center' }}>
-            <ClearButton onClick={clearAllFilters}>
+            <button type="button" className={styles.clearButton} onClick={clearAllFilters}>
               <FiX style={{ transform: 'translateY(2px)' }} />
               {t('realizationsPage.filters.clear')}
-            </ClearButton>
+            </button>
           </div>
-                </FiltersRow>
+                </div>
               </motion.div>
             )}
             </AnimatePresence>
@@ -1189,20 +767,20 @@ const RealizationsPage = () => {
         </AnimatePresence>
 
         <div id="realizations-grid">
-          <Grid>
+          <div className={styles.grid}>
             {currentPageItems.map(({ id, src, title, tags }) => (
               <div key={id}>
                 <RealizationCard id={id} src={src} title={title} tags={tags} />
               </div>
             ))}
-          </Grid>
+          </div>
         </div>
 
         {filteredRealizations.length === 0 && (
-          <NoResults>
+          <div className={styles.noResults}>
             <h3>{t('realizationsPage.results.noResults')}</h3>
             <p>{t('realizationsPage.results.noResultsMessage')}</p>
-          </NoResults>
+          </div>
         )}
 
         <Pagination
@@ -1216,7 +794,7 @@ const RealizationsPage = () => {
             });
           }}
         />
-      </Content>
+      </div>
     </Page>
   );
 };

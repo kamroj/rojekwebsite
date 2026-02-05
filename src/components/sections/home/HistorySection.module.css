@@ -1,0 +1,265 @@
+.pageWrapper {
+  width: 100%;
+  padding: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.headerImageWrapper {
+  position: relative;
+  width: 100vw;
+  height: 400px;
+  margin-bottom: 60px;
+  overflow: hidden;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+.headerImageWrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.7));
+  pointer-events: none;
+  z-index: 1;
+}
+
+.headerImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  position: relative;
+  z-index: 0;
+}
+
+.headerContent {
+  position: absolute;
+  bottom: 60px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 2;
+  max-width: 800px;
+  padding: 0 20px;
+}
+
+.headerTitle {
+  color: var(--color-text-light);
+  font-size: 3.5rem;
+  font-weight: 300;
+  margin: 0 0 1rem 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.headerSubtitle {
+  color: var(--color-text-light);
+  font-size: 1.3rem;
+  font-weight: 400;
+  margin: 0;
+  opacity: 0.9;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.contentSection {
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 20px 80px;
+}
+
+.introText {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 80px;
+}
+
+.introText p {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: var(--color-text);
+  margin-bottom: 1.5rem;
+}
+
+.timelineContainer {
+  position: relative;
+  padding: 40px 0;
+}
+
+.timelineContainer::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--color-bottle-green-light) 10%,
+    var(--color-bottle-green-light) 90%,
+    transparent
+  );
+  transform: translateX(-50%);
+}
+
+.timelineItem {
+  display: flex;
+  padding: 20px 0;
+  position: relative;
+}
+
+.alignLeft {
+  justify-content: flex-start;
+}
+
+.alignRight {
+  justify-content: flex-end;
+}
+
+.timelineCard {
+  background: var(--color-background);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 30px;
+  width: 45%;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.timelineCard:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  transform: translateY(-2px);
+}
+
+.timelineMarker {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background: var(--color-bottle-green);
+  border: 4px solid var(--color-accent);
+  border-radius: 50%;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  box-shadow: 0 0 0 4px rgba(230, 198, 25, 0.2);
+}
+
+.yearBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--color-bottle-green);
+  color: var(--color-text-light);
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  margin-bottom: 15px;
+}
+
+.timelineTitle {
+  color: var(--color-primary);
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 10px 0;
+}
+
+.timelineText {
+  color: var(--color-text);
+  font-size: 1.05rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.ctaSection {
+  background: var(--color-bottle-green);
+  color: var(--color-text-light);
+  padding: 60px 20px;
+  text-align: center;
+  margin-top: 80px;
+  border-radius: 20px;
+  max-width: var(--max-width);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ctaTitle {
+  font-size: 2.5rem;
+  font-weight: 300;
+  margin: 0 0 20px 0;
+}
+
+.ctaText {
+  font-size: 1.2rem;
+  margin: 0 0 30px 0;
+  opacity: 0.9;
+}
+
+.ctaButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--color-accent);
+  color: var(--color-bottle-green);
+  padding: 15px 30px;
+  border-radius: 30px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+}
+
+.ctaButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(230, 198, 25, 0.3);
+  gap: 15px;
+}
+
+@media (--bp-md) {
+  .timelineContainer::before {
+    left: 30px;
+  }
+
+  .timelineItem {
+    justify-content: flex-start;
+    padding-left: 60px;
+  }
+
+  .timelineCard {
+    width: 100%;
+  }
+
+  .timelineMarker {
+    left: 30px;
+  }
+}
+
+@media (--bp-sm) {
+  .headerImageWrapper {
+    height: 300px;
+  }
+
+  .headerContent {
+    bottom: 40px;
+  }
+
+  .headerTitle {
+    font-size: 2.5rem;
+  }
+
+  .headerSubtitle {
+    font-size: 1.1rem;
+  }
+
+  .introText {
+    text-align: left;
+  }
+
+  .ctaTitle {
+    font-size: 2rem;
+  }
+}

@@ -1,0 +1,216 @@
+.sectionTitle {
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: #013613;
+  margin: 0 0 3rem 0;
+  text-align: left;
+}
+
+@media (--bp-sm) {
+  .sectionTitle {
+    font-size: 2.2rem;
+    margin-bottom: 2rem;
+  }
+}
+
+.advantagesSection {
+  padding: 5rem 0 3rem 0;
+}
+
+.advantagesGrid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(6, 1fr);
+}
+
+.advantagesGrid > * {
+  grid-column: span 2;
+}
+
+.advantagesGrid.count1 > * {
+  grid-column: span 6;
+}
+
+.advantagesGrid.count2 > * {
+  grid-column: span 3;
+}
+
+.advantagesGrid.count4 > * {
+  grid-column: span 3;
+}
+
+.advantagesGrid.count5 > *:nth-child(n + 4) {
+  grid-column: span 3;
+}
+
+.advantagesGrid.count7 > *:last-child {
+  grid-column: 3 / span 2;
+}
+
+.advantagesGrid.count8 > *:nth-child(7) {
+  grid-column: 2 / span 2;
+}
+
+.advantagesGrid.count8 > *:nth-child(8) {
+  grid-column: 4 / span 2;
+}
+
+@media (--bp-lg) {
+  .advantagesGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .advantagesGrid > * {
+    grid-column: span 1 !important;
+  }
+
+  /* odd count: last tile spans full row */
+  .advantagesGrid.oddCount > *:last-child {
+    grid-column: span 2 !important;
+  }
+}
+
+@media (--bp-sm) {
+  .advantagesGrid > * {
+    grid-column: span 1 !important;
+  }
+}
+
+.advantageCard {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+  border: 1px solid #0d6b035e;
+  transition: all 0.3s ease;
+}
+
+.advantageCard:hover {
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
+  transform: translateY(-5px);
+}
+
+.advantageTitle {
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #013613;
+  margin: 0 0 0.75rem 0;
+}
+
+.advantageDescription {
+  font-size: 1.2rem;
+  color: #6b7280;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.warrantySection {
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 3.5rem 4rem;
+  display: flex;
+  align-items: center;
+  gap: 4rem;
+  box-shadow: 0 4px 25px rgba(0, 0, 0, 0.06);
+  border: 1px solid #0d6b035e;
+  margin-top: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (--bp-lg) {
+  .warrantySection {
+    flex-direction: column;
+    gap: 2.5rem;
+    padding: 3rem 2.5rem;
+    text-align: center;
+  }
+}
+
+@media (--bp-sm) {
+  .warrantySection {
+    padding: 2.5rem 1.5rem;
+  }
+}
+
+.warrantyBadge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.warrantyImage {
+  width: 350px;
+  height: auto;
+}
+
+@media (--bp-md) {
+  .warrantyImage {
+    width: 250px;
+  }
+}
+
+.warrantyContent {
+  flex: 1;
+}
+
+.warrantyTitle {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #013613;
+  margin: 0 0 1rem 0;
+}
+
+@media (--bp-sm) {
+  .warrantyTitle {
+    font-size: 1.5rem;
+  }
+}
+
+.warrantyText {
+  font-size: 1.3rem;
+  color: #4b5563;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.warrantyText strong {
+  color: #013613;
+  font-weight: 600;
+}
+
+@media (--bp-sm) {
+  .warrantyText {
+    font-size: 1.2rem;
+  }
+}
+
+.warrantyHighlight {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(135deg, #e8f5e8 0%, #d4ecd4 100%);
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  margin-top: 1.5rem;
+}
+
+.warrantyHighlight svg {
+  color: #1a5618;
+  font-size: 1.3rem;
+}
+
+.warrantyHighlight span {
+  font-size: 1.15rem;
+  color: #1a5618;
+  font-weight: 600;
+}
+
+@media (--bp-sm) {
+  .warrantyHighlight {
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+  }
+}

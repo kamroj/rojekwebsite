@@ -1,0 +1,54 @@
+/* src/styles/tokens.css */
+
+:root {
+  /* Layout */
+  --header-height: 80px;
+  --max-width: 1200px;
+
+  /* Typography */
+  --font-main: "Quicksand", sans-serif;
+  --font-heading: "Quicksand", sans-serif;
+
+  /* Colors (from src/styles/theme.js) */
+  --color-primary: #004605;
+  --color-secondary: #017e54;
+  --color-accent: #e6c619;
+
+  --color-background: #ffffff;
+  --color-background-alt: #f9fafb;
+  --color-text: #000000ff;
+  --color-text-dark: #000000ff;
+  --color-text-light: #f8f9fa;
+  --color-text-muted: #555;
+
+  --color-border: #dee2e6;
+  --color-border-accent: #017e543f;
+  --color-overlay: rgba(0, 0, 0, 0.85);
+  --color-gallery-overlay: rgba(0, 0, 0, 0.65);
+  --color-video-background: #e0e0e0;
+  --color-bottle-green: #001308;
+  --color-bottle-green-light: #074120;
+
+  /* Spacing */
+  --space-xxs: 0.4rem;
+  --space-xs: 0.8rem;
+  --space-sm: 1.6rem;
+  --space-lg: 3.2rem;
+  --space-xl: 6.4rem;
+
+  /* Shadows */
+  --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
+  --shadow-lg: 0 4px 12px rgba(30, 62, 44, 0.73);
+
+  /* Transitions */
+  --transition-default: 0.3s ease;
+  --transition-slow: 0.5s ease-out;
+  --transition-fast: 0.2s ease-in;
+}
+
+/* Breakpoints as custom media (supported by modern tooling; safe as documentation too) */
+@custom-media --bp-xs (max-width: 480px);
+@custom-media --bp-sm (max-width: 768px);
+@custom-media --bp-md (max-width: 992px);
+@custom-media --bp-lg (max-width: 1200px);

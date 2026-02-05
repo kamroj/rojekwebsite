@@ -1,6 +1,5 @@
 // src/components/home/PartnersSection.jsx
 import React from 'react';
-import styled from 'styled-components';
 import { useTranslation } from 'react-i18next';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
@@ -10,119 +9,7 @@ import 'swiper/css';
 import 'swiper/css/autoplay';
 import MaxWidthContainer from '../../ui/MaxWidthContainer';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../../views/HomeView';
-
-const PartnersGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: ${({ theme }) => theme.spacings.large};
-  align-items: center;
-  justify-items: center;
-  margin-bottom: ${({ theme }) => theme.spacings.xlarge};
-  margin-top: ${({ theme }) => theme.spacings.large};
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    display: none;
-  }
-`;
-
-// Kontener dla Swiper na mobile
-const MobileSwiperContainer = styled.div`
-  display: none;
-  margin-bottom: ${({ theme }) => theme.spacings.large};
-  
-  @media (max-width: ${({ theme }) => theme.breakpoints.md}) {
-    display: block;
-    width: 100%;
-    padding: ${({ theme }) => theme.spacings.medium} 0;
-    
-    .swiper {
-      width: 100%;
-      height: auto;
-      overflow: visible;
-    }
-    
-    .swiper-slide {
-      width: auto !important;
-      height: auto;
-    }
-  }
-`;
-
-// Kontener dla pojedynczego partnera - desktop
-const PartnerItem = styled.a`
-  display: block;
-  width: 100%;
-  max-width: 280px;
-  height: 200px;
-  padding: ${({ theme }) => theme.spacings.large};
-  transition: transform ${({ theme }) => theme.transitions.default},
-              box-shadow ${({ theme }) => theme.transitions.default},
-              border-color ${({ theme }) => theme.transitions.default};
-  cursor: pointer;
-  text-decoration: none;
-  
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  box-shadow: rgb(0 0 0 / 14%) 0px 2px 18px 0px;
-  border: 1px solid #003d2988;
-  border-radius: 4px;
-  
-  &:hover {
-    transform: translateY(-8px);
-    box-shadow: ${({ theme }) => theme.shadows.large};
-    border-color: ${({ theme }) => theme.colors.bottleGreen};
-  }
-  
-  &:active {
-    transform: translateY(-4px);
-  }
-`;
-
-// Kontener dla mobilnej wersji partnera
-const MobilePartnerItem = styled.a`
-  display: block;
-  width: 220px;
-  height: 140px;
-  border: 1px solid #003d2988;
-  border-radius: 4px;
-  padding: ${({ theme }) => theme.spacings.medium};
-  background-color: ${({ theme }) => theme.colors.background};
-  cursor: pointer;
-  text-decoration: none;
-  flex-shrink: 0;
-  transition: all ${({ theme }) => theme.transitions.default};
-  margin-right: ${({ theme }) => theme.spacings.medium};
-  
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  box-shadow: rgb(0 0 0 / 14%) 0px 2px 18px 0px;
-  
-  &:hover {
-    box-shadow: rgb(0 0 0 / 20%) 0px 4px 24px 0px;
-    border-color: ${({ theme }) => theme.colors.bottleGreenLight};
-    transform: scale(1.02);
-  }
-`;
-
-// Obrazek partnera
-const PartnerLogo = styled.img`
-  width: 90%;
-  height: 90%;
-  object-fit: contain;
-  transition: transform ${({ theme }) => theme.transitions.default};
-  
-  ${PartnerItem}:hover & {
-    transform: scale(1.05);
-  }
-  
-  ${MobilePartnerItem}:hover & {
-    transform: scale(1.03);
-  }
-`;
+import styles from './PartnersSection.module.css';
 
 // Dane partnerów
 const partnersData = [
@@ -159,65 +46,64 @@ const partnersData = [
 const PartnersSection = () => {
   const { t } = useTranslation();
 
+  const handleLogoError = (e, partnerName) => {
+    // Avoid innerHTML injection. Replace the <img> with a simple text fallback.
+    const img = e.currentTarget;
+    const parent = img.parentElement;
+    if (!parent) return;
+    img.remove();
+
+    const fallback = document.createElement('div');
+    fallback.textContent = partnerName;
+    fallback.style.display = 'flex';
+    fallback.style.alignItems = 'center';
+    fallback.style.justifyContent = 'center';
+    fallback.style.width = '100%';
+    fallback.style.height = '100%';
+    fallback.style.color = '#666';
+    fallback.style.textAlign = 'center';
+    fallback.style.fontWeight = '500';
+    fallback.style.fontSize = '1.4rem';
+    parent.appendChild(fallback);
+  };
+
   const renderDesktopPartner = (partner) => (
-    <PartnerItem
+    <a
       key={partner.id}
+      className={styles.partnerItem}
       href={partner.website}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={t('partners.visitWebsite', { name: partner.name }, `Odwiedź stronę ${partner.name}`)}
     >
-      <PartnerLogo
+      <img
+        className={styles.logo}
         src={partner.logo}
         alt={partner.alt}
         loading="lazy"
-        onError={(e) => {
-          e.target.style.display = 'none';
-          e.target.parentElement.innerHTML = `<div style="
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-            color: #666;
-            font-size: 1.6rem;
-            text-align: center;
-            font-weight: 500;
-          ">${partner.name}</div>`;
-        }}
+        onError={(e) => handleLogoError(e, partner.name)}
       />
-    </PartnerItem>
+    </a>
   );
 
   // Funkcja renderująca partnera dla mobile
   const renderMobilePartner = (partner) => (
-    <MobilePartnerItem
+    <a
       key={partner.id}
+      className={styles.mobilePartnerItem}
       href={partner.website}
       target="_blank"
       rel="noopener noreferrer"
       aria-label={t('partners.visitWebsite', { name: partner.name }, `Odwiedź stronę ${partner.name}`)}
     >
-      <PartnerLogo
+      <img
+        className={styles.logo}
         src={partner.logo}
         alt={partner.alt}
         loading="lazy"
-        onError={(e) => {
-          e.target.style.display = 'none';
-          e.target.parentElement.innerHTML = `<div style="
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-            color: #666;
-            font-size: 1.4rem;
-            text-align: center;
-            font-weight: 500;
-          ">${partner.name}</div>`;
-        }}
+        onError={(e) => handleLogoError(e, partner.name)}
       />
-    </MobilePartnerItem>
+    </a>
   );
 
   return (
@@ -228,12 +114,12 @@ const PartnersSection = () => {
           </ProductHeader>
           <ProductHeaderSubtitle>{t('partners.subtitle', 'Firmy, z którymi współpracujemy')}</ProductHeaderSubtitle>
         </HeaderWrap>
-        <PartnersGrid>
+        <div className={styles.partnersGrid}>
           {partnersData.map(renderDesktopPartner)}
-        </PartnersGrid>
+        </div>
 
         {/* Mobile version - Swiper carousel */}
-        <MobileSwiperContainer>
+        <div className={styles.mobileSwiper}>
           <Swiper
             modules={[Autoplay]}
             spaceBetween={10}
@@ -272,7 +158,7 @@ const PartnersSection = () => {
               </SwiperSlide>
             ))}
           </Swiper>
-        </MobileSwiperContainer>
+        </div>
       </MaxWidthContainer>
   );
 };

@@ -13,6 +13,7 @@
   },
   "pageTitle": {
     "home": "Strona Główna",
+    "products": "Produkty",
     "realizations": "Realizacje",
     "about": "O Firmie",
     "contact": "Kontakt",
@@ -22,7 +23,46 @@
     "rolety": "Rolety"
   },
   "hsConfigurator": {
-    "title": "Konfigurator HS"
+    "loading": "Ładowanie konfiguratora…",
+    "title": "Konfigurator HS",
+    "header": "Konfigurator HS",
+    "subtitle": "Stwórz swoje wymarzone okno przesuwne",
+    "sections": {
+      "elements": "Elementy",
+      "dimensions": "Wymiary",
+      "preview": "PODGLĄD"
+    },
+    "labels": {
+      "frameMaterial": "Materiał ramy:",
+      "handleColor": "Kolor klamki:",
+      "type": "Typ:",
+      "thresholdColor": "Kolor progu:",
+      "width": "Szerokość okna:",
+      "height": "Wysokość okna:"
+    },
+    "warnings": {
+      "animationOnlyDefault": "Animacja dostępna tylko przy domyślnych wymiarach"
+    },
+    "buttons": {
+      "resetDimensions": "RESETUJ WYMIARY",
+      "open": "OTWÓRZ",
+      "close": "ZAMKNIJ"
+    },
+    "options": {
+      "textures": {
+        "natur": "Natur",
+        "honeyPine": "Miodowa sosna"
+      },
+      "handleTextures": {
+        "silver": "Srebrna",
+        "gold": "Złota"
+      },
+      "thresholds": {
+        "silver": "Srebrny",
+        "black": "Czarny",
+        "gold": "Złoty"
+      }
+    }
   },
   "footer": {
     "copy": "© {{year}} ROJEK okna i drzwi. Wszelkie prawa zastrzeżone."
@@ -48,6 +88,7 @@
     "contactUs": "Skontaktuj się z nami",
     "warranty": "Gwarancja",
     "viewMore": "Zobacz więcej",
+    "learnMore": "Dowiedz się więcej",
     "seeAll": "Zobacz wszystkie"
   },
   "sections": {
@@ -65,7 +106,80 @@
   "products": {
     "windows": {
       "name": "Okna",
-      "description": "Drewniane i drewniano-aluminiowe systemy okienne"
+      "description": "Drewniane i drewniano-aluminiowe systemy okienne",
+      "benefits": [
+        "Najwyższej jakości drewno",
+        "Świetna izolacja termiczna i akustyczna",
+        "Trwałość i estetyka na lata",
+        "Możliwość personalizacji kolorów i wykończeń",
+        "Rozwiązania dopasowane do projektu"
+      ]
+    },
+    "woodAlu": {
+      "name": "Okna drewniano‑aluminiowe",
+      "description": "Połączenie ciepła drewna od środka i trwałej osłony aluminiowej od zewnątrz.",
+      "benefits": [
+        "Drewno wewnątrz, aluminium na zewnątrz",
+        "Wysoka odporność na warunki atmosferyczne",
+        "Mniejsze wymagania konserwacyjne",
+        "Bardzo dobre parametry izolacyjne",
+        "Szeroka paleta kolorów okładzin"
+      ]
+    },
+    "exteriorDoors": {
+      "name": "Drzwi zewnętrzne",
+      "description": "Solidne i dopracowane drzwi wejściowe łączące bezpieczeństwo z estetyką.",
+      "benefits": [
+        "Stabilna konstrukcja i bezpieczeństwo",
+        "Wysoka izolacja cieplna",
+        "Odporność na pogodę i użytkowanie",
+        "Możliwość dopasowania wzoru i okuć",
+        "Rozwiązania pod wymiar"
+      ]
+    },
+    "fireDoors": {
+      "name": "Drzwi przeciwpożarowe",
+      "description": "Rozwiązania o podwyższonej odporności ogniowej do obiektów wymagających certyfikacji.",
+      "benefits": [
+        "Klasy odporności EI30 / EI60 (w zależności od systemu)",
+        "Zwiększenie bezpieczeństwa pożarowego",
+        "Trwała konstrukcja",
+        "Możliwość doposażenia w okucia i akcesoria",
+        "Dopasowanie do projektu"
+      ]
+    },
+    "interiorDoors": {
+      "name": "Drzwi wewnętrzne",
+      "description": "Drzwi do wnętrz łączące funkcjonalność z eleganckim wyglądem.",
+      "benefits": [
+        "Estetyczne wzory",
+        "Możliwość dopasowania kolorów",
+        "Dobre tłumienie dźwięków",
+        "Trwałe materiały",
+        "Szeroki wybór okuć"
+      ]
+    },
+    "sliding": {
+      "name": "Systemy przesuwne (HS)",
+      "description": "Nowoczesne przeszklenia i wygodne wyjście na taras dzięki systemom HS.",
+      "benefits": [
+        "Duże przeszklenia i więcej światła",
+        "Wygodna obsługa",
+        "Nowoczesny wygląd",
+        "Dobre parametry szczelności",
+        "Opcja niskiego progu"
+      ]
+    },
+    "psk": {
+      "name": "Systemy PSK",
+      "description": "Praktyczne połączenie funkcji uchylania i przesuwu dla dużych przeszkleń.",
+      "benefits": [
+        "Uchylanie + przesuw w jednym systemie",
+        "Bezpieczne wietrzenie",
+        "Wygoda użytkowania",
+        "Dobre parametry izolacyjne",
+        "Możliwość dopasowania do projektu"
+      ]
     },
     "doors": {
       "name": "Drzwi zewnętrzne",
@@ -238,7 +352,8 @@
   },
   "partners": {
     "title": "Współpracujemy z najlepszymi",
-    "subtitle": "Firmy, z którymi współpracujemy"
+    "subtitle": "Firmy, z którymi współpracujemy",
+    "visitWebsite": "Odwiedź stronę {{name}}"
   },
   "aboutPage": {
     "headers": {
@@ -282,7 +397,8 @@
   "loading.resources": "zasobów",
   "navigation": {
     "previous": "Poprzedni",
-    "next": "Następny"
+    "next": "Następny",
+    "goToSlide": "Przejdź do slajdu"
   },
   "realizationsPage": {
     "title": "Realizacje",

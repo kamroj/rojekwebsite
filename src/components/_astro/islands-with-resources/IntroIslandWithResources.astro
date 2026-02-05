@@ -1,0 +1,22 @@
+---
+import IntroIsland from '../islands/intro.jsx';
+import { getI18nResources } from '../../../lib/i18n/resources.js';
+
+const {
+  lang = 'pl',
+  viewProps = {},
+  hydrate = 'load',
+} = Astro.props;
+
+const resources = await getI18nResources(lang);
+---
+
+{
+  hydrate === 'only'
+    ? <IntroIsland lang={lang} resources={resources} viewProps={viewProps} client:only="react" />
+    : hydrate === 'idle'
+      ? <IntroIsland lang={lang} resources={resources} viewProps={viewProps} client:idle />
+      : hydrate === 'visible'
+        ? <IntroIsland lang={lang} resources={resources} viewProps={viewProps} client:visible />
+        : <IntroIsland lang={lang} resources={resources} viewProps={viewProps} client:load />
+}

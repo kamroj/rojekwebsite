@@ -1,0 +1,337 @@
+.configuratorContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.controlPanel {
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  gap: 0;
+}
+
+.controlSection {
+  flex: 1;
+  padding: 24px;
+}
+
+.controlSectionFirst {
+  border-right: 1px solid #e0e0e0;
+}
+
+.sectionHeader {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 20px 0;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #0041074e;
+  letter-spacing: 0.5px;
+}
+
+.controlGroup {
+  margin-bottom: 20px;
+}
+
+.controlGroup:last-child {
+  margin-bottom: 0;
+}
+
+.label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
+  margin-bottom: 8px;
+}
+
+.select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.select:hover {
+  border-color: #015508;
+  background: #fafafa;
+}
+
+.select:focus {
+  outline: none;
+  border-color: #015508;
+  box-shadow: 0 0 0 3px rgba(1, 85, 8, 0.1);
+}
+
+.rangeContainer {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.rangeInput {
+  flex: 1;
+  cursor: pointer;
+  height: 6px;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: transparent;
+  outline: none;
+}
+
+.rangeInput::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  border: none;
+}
+
+.rangeInput::-moz-range-track {
+  width: 100%;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  border: none;
+}
+
+.rangeInput::-ms-track {
+  width: 100%;
+  height: 4px;
+  background: transparent;
+  border-color: transparent;
+  color: transparent;
+}
+
+.rangeInput::-ms-fill-lower {
+  background: #e0e0e0;
+  border-radius: 2px;
+}
+
+.rangeInput::-ms-fill-upper {
+  background: #e0e0e0;
+  border-radius: 2px;
+}
+
+.rangeInput::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #013a06;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  margin-top: -8px;
+  transition: all 0.15s ease-in-out;
+}
+
+.rangeInput::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  background: #015508;
+}
+
+.rangeInput::-webkit-slider-thumb:active {
+  transform: scale(0.95);
+}
+
+.rangeInput::-moz-range-thumb {
+  -moz-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #013a06;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  transition: all 0.15s ease-in-out;
+}
+
+.rangeInput::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  background: #015508;
+}
+
+.rangeInput::-moz-range-thumb:active {
+  transform: scale(0.95);
+}
+
+.rangeInput::-ms-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #013a06;
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  margin-top: 0;
+  transition: all 0.15s ease-in-out;
+}
+
+.rangeInput::-ms-thumb:hover {
+  transform: scale(1.1);
+  background: #015508;
+}
+
+.rangeInput::-ms-thumb:active {
+  transform: scale(0.95);
+}
+
+.rangeInput:focus::-webkit-slider-runnable-track {
+  background: #e0e0e0;
+}
+
+@supports not ((-webkit-appearance: none) or (-moz-appearance: none)) {
+  .rangeInput {
+    height: 20px;
+    background: #e0e0e0;
+    border-radius: 10px;
+  }
+}
+
+.rangeValue {
+  min-width: 60px;
+  text-align: right;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.viewerWrap {
+  position: relative;
+  width: 100%;
+  height: 90vh;
+  background: #fffefe;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+  margin-bottom: 40px;
+}
+
+.canvasFallback {
+  min-height: 520px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  font-size: 1.6rem;
+  color: rgba(0, 0, 0, 0.65);
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 12px;
+}
+
+.previewLabel {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 10;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: var(--preview-color, #f8f9fa);
+  background-color: var(--preview-bg, #66590f5e);
+  border: 1px solid #e6c7197d;
+  padding: 6px 12px;
+  border-radius: 4px;
+  backdrop-filter: blur(3px);
+  pointer-events: none;
+  user-select: none;
+}
+
+.animationButton {
+  position: absolute;
+  line-height: 1.6;
+  bottom: 20px;
+  right: 20px;
+  z-index: 10;
+  padding: 6px 12px;
+  background: var(--button-bg, #013a06bd);
+  color: var(--button-color, #f8f9fa);
+  border: 1px solid var(--button-border, #01790bb2);
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 500;
+  backdrop-filter: blur(3px);
+  transition: all 0.3s ease;
+  cursor: var(--button-cursor, pointer);
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.animationButton:focus-visible {
+  outline: 2px solid var(--button-outline, #01790b);
+  outline-offset: 2px;
+}
+
+.dimensionWarning {
+  position: absolute;
+  right: 20px;
+  bottom: 64px;
+  z-index: 10;
+  font-size: 11px;
+  color: #666;
+  font-style: italic;
+  pointer-events: none;
+  user-select: none;
+  max-width: 320px;
+  text-align: right;
+  line-height: 1.3;
+}
+
+.dimensionWarning::before {
+  content: '*';
+  color: #0c065cba;
+  font-weight: bold;
+  margin-right: 2px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .animationButton:hover {
+    background: var(--button-hover-bg, #013a06);
+  }
+}
+
+@media (--bp-md) {
+  .controlPanel {
+    flex-direction: column;
+  }
+
+  .controlSectionFirst {
+    border-right: none;
+    border-bottom: 1px solid #e0e0e0;
+  }
+
+  .viewerWrap {
+    height: 60vh;
+  }
+
+  .previewLabel {
+    font-size: 12px;
+    padding: 4px 10px;
+    top: 15px;
+    left: 15px;
+  }
+
+  .animationButton {
+    bottom: 15px;
+    right: 15px;
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+
+  .dimensionWarning {
+    right: 15px;
+    bottom: 52px;
+    font-size: 10px;
+    max-width: 200px;
+  }
+}

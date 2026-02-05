@@ -1,0 +1,115 @@
+---
+// @ts-nocheck
+import SiteLayout from '../../../../layouts/SiteLayout.astro';
+import { getI18nResources } from '../../../../lib/i18n/resources.js';
+import ProductDetailSsg from '../../../../components/_astro/ssg/ProductDetailSsg.jsx';
+
+import { productCategories, productDetailsByType } from '../../../../data/products/index.js';
+import { CATEGORY_SLUGS } from '../../../../lib/i18n/routing.js';
+import { fetchWindowDetailForBuild, fetchWindowsListForBuild } from '../../../../lib/sanity/build.js';
+import { getProductDetailMeta } from '../../../../lib/seo/productsMeta.js';
+import { getFaqPageJsonLd, getProductJsonLd } from '../../../../lib/seo/structuredData.js';
+import { getCategoryKeyFromSlug, getProductDetailPath } from '../../../../lib/i18n/routing.js';
+import { DOOR_FAQ_FALLBACK, WINDOW_FAQ_FALLBACK } from '../../../../data/products/faqFallback.js';
+
+const { category, productId } = Astro.params;
+
+const initialSanityProduct = Astro.props?.initialSanityProduct;
+
+const resources = await getI18nResources('de');
+
+const meta = getProductDetailMeta({
+  lang: 'de',
+  categorySlug: category,
+  productId,
+  initialSanityProduct,
+});
+
+// --- Structured data (JSON-LD): Product + FAQPage
+const categoryKey = getCategoryKeyFromSlug('de', category) || category;
+const detailType = productCategories?.[categoryKey]?.detailType;
+const productFromLocal = detailType ? productDetailsByType?.[detailType]?.[productId] : undefined;
+const product = initialSanityProduct || productFromLocal;
+
+const faqItems = Array.isArray(product?.faq) && product.faq.length > 0
+  ? product.faq
+  : (detailType === 'doors' ? DOOR_FAQ_FALLBACK : WINDOW_FAQ_FALLBACK);
+
+const canonicalUrl = Astro.site
+  ? new URL(getProductDetailPath('de', categoryKey, productId), Astro.site).toString()
+  : undefined;
+
+const productJsonLd = getProductJsonLd({
+  product,
+  site: Astro.site,
+  canonicalUrl,
+  categoryName: productCategories?.[categoryKey]?.pageTitle,
+});
+
+const faqJsonLd = getFaqPageJsonLd({
+  items: faqItems,
+  canonicalUrl,
+});
+
+const structuredData = [productJsonLd, faqJsonLd].filter(Boolean);
+
+export async function getStaticPaths() {
+  const paths = [];
+
+  for (const [categoryKey, c] of Object.entries(productCategories || {})) {
+    const categorySlug = CATEGORY_SLUGS?.de?.[categoryKey] || categoryKey;
+
+    const detailType = c?.detailType;
+    const details = detailType ? (productDetailsByType?.[detailType] || null) : null;
+
+    const productIds = details
+      ? Object.keys(details)
+      : (c?.products || [])
+          .map((p) => (typeof p === 'string' ? p : (p?.slug || p?.id)))
+          .filter(Boolean);
+
+    // Include all Sanity window slugs in SSG to avoid 404 for non-mocked products.
+    let allIds = productIds;
+    if (detailType === 'windows') {
+      const sanityList = await fetchWindowsListForBuild('de');
+      const sanitySlugs = (sanityList || []).map((p) => p?.slug).filter(Boolean);
+      allIds = Array.from(new Set([...(productIds || []), ...sanitySlugs]));
+    }
+
+    for (const pid of allIds) {
+      const props = {};
+      if (detailType === 'windows') {
+        const detail = await fetchWindowDetailForBuild(pid, 'de');
+        if (detail) props.initialSanityProduct = detail;
+      }
+      paths.push({ params: { category: categorySlug, productId: pid }, props });
+    }
+  }
+
+  return paths;
+}
+---
+
+<SiteLayout
+  lang="de"
+  title={meta.title}
+  description={meta.description}
+>
+  {
+    structuredData.length ? (
+      <slot slot="head" name="head">
+        {structuredData.map((obj) => (
+          <script type="application/ld+json" set:html={JSON.stringify(obj)} />
+        ))}
+      </slot>
+    ) : null
+  }
+  <ProductDetailSsg
+    lang="de"
+    resources={resources}
+    category={category}
+    productId={productId}
+    initialSanityProduct={initialSanityProduct}
+    client:visible
+  />
+</SiteLayout>

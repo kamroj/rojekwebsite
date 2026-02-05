@@ -1,0 +1,113 @@
+.presentationWrapper {
+  width: 100%;
+  background-color: #000;
+  position: relative;
+  margin-bottom: 20px;
+}
+
+.videoContainer {
+  position: relative;
+  width: 100%;
+  height: 0;
+  padding-bottom: 56.25%; /* 16:9 aspect ratio */
+  background-color: #000;
+  overflow: hidden;
+}
+
+/* Większa wysokość na dużych ekranach */
+@media (min-width: 1200px) {
+  .videoContainer {
+    padding-bottom: 50%;
+    max-height: 70vh;
+  }
+}
+
+.videoFrame {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.videoPlaceholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #000;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.videoPlaceholder::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  transition: background-color 0.3s ease;
+}
+
+.videoPlaceholder:hover::before {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.playButtonContainer {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+}
+
+.playButton {
+  appearance: none;
+  margin: 0;
+  padding: 0;
+
+  width: 56px;
+  height: 56px;
+  border: 1px solid #07be56;
+  border-radius: 50%;
+  background-color: rgb(3 84 0 / 58%);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #fff;
+  font-size: 2.2rem;
+  cursor: pointer;
+  outline: none;
+  transition: opacity var(--transition-default);
+  opacity: 0.8;
+
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.playButton:hover {
+  opacity: 1;
+}
+
+@media (max-width: 768px) {
+  .playButton {
+    width: 52px;
+    height: 52px;
+    font-size: 2rem;
+  }
+}
+
+.playButton svg {
+  margin-left: 5px; /* Centrowanie wizualne ikony play */
+}

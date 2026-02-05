@@ -1,6 +1,5 @@
 // src/components/gallery/RealizationsGallery.jsx
 import React, { useEffect, useRef } from 'react';
-import styled, { keyframes } from 'styled-components';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 
@@ -9,152 +8,11 @@ import 'swiper/css';
 import 'swiper/css/autoplay';
 import MaxWidthContainer from '../../ui/MaxWidthContainer';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../../views/HomeView';
-import { t } from 'i18next';
-
-// --- Styled Components ---
-const StyledSwiperContainer = styled.div`
-  max-width: ${({ theme }) => theme.layout.maxWidth};
-  margin: 40px auto;
-  position: relative;
-
-  .swiper {
-    width: 100%;
-    height: auto;
-    padding: 10px 0px;
-    box-sizing: border-box;
-  }
-
-  /* --- Default slide style (resting state) --- */
-  .swiper-slide {
-    height: auto;
-    cursor: grab;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transform: scale(0.88);
-    transition: transform 0.4s ease;
-
-    &:active { 
-      cursor: grabbing; 
-    }
-  }
-
-  /* Active slide style (resting state) */
-  .swiper-slide-active {
-    transform: scale(1.05);
-    z-index: 1;
-  }
-
-  /* --- Default inner wrapper style (resting state) --- */
-  .slide-content-wrapper {
-    position: relative;
-    overflow: hidden;
-    border-radius: 4px;
-    height: 100%;
-    width: 100%;
-    transition: box-shadow 0.3s ease;
-    display: block;
-
-    /* Overlay */
-    &::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      border-radius: 4px;
-      pointer-events: none;
-      z-index: 1;
-      background-color: ${({ theme }) => theme.colors.galleryOverlay};
-      transition: background-color 0.4s ease;
-    }
-
-    /* Hover effects */
-    &:hover::after { 
-      background-color: rgba(0, 0, 0, 0); 
-    }
-    
-    &:hover img { 
-      transform: scale(1.05); 
-    }
-  }
-
-  /* Active slide overlay (resting state) */
-  .swiper-slide-active .slide-content-wrapper::after {
-    background-color: rgba(0, 0, 0, 0);
-  }
-
-  /* Shadow for active slide (resting state) */
-  .swiper-slide-active .slide-content-wrapper {
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
-  }
-
-  /* --- Rules during dragging (.swiper-dragging) --- */
-  .swiper-dragging {
-    /* Disable CSS animations during dragging */
-    .swiper-slide {
-      transition: none !important;
-      transform: scale(0.9) !important;
-      
-      .slide-content-wrapper::after {
-        transition: none !important;
-        background-color: ${({ theme }) => theme.colors.galleryOverlay} !important;
-      }
-      
-      .slide-content-wrapper {
-        transition: none !important;
-        box-shadow: none !important;
-      }
-    }
-    
-    /* Special class for the currently grabbed slide */
-    .swiper-slide-grabbed {
-      transform: scale(1.05) !important;
-      z-index: 10 !important;
-      
-      .slide-content-wrapper::after {
-        background-color: rgba(0, 0, 0, 0) !important;
-      }
-      
-      .slide-content-wrapper {
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35) !important;
-      }
-    }
-  }
-`;
-
-const GalleryImage = styled.img`
-  display: block;
-  width: 100%;
-  height: 450px;
-  object-fit: cover;
-  user-select: none;
-  transition: transform 0.3s ease;
-  -webkit-user-drag: none;
-  user-drag: none;
-  border-radius: 4px;
-`;
-
-const GalleryImageTitle = styled.div`
-  position: absolute;
-  bottom: 10px;
-  right: 10px;
-  background-color: #012904;
-  color: ${({ theme }) => theme.colors.textLight};
-  padding: 5px 12px;
-  border-radius: 3px;
-  font-size: 1.3rem;
-  font-weight: 500;
-  z-index: 2;
-  pointer-events: none;
-  max-width: calc(100% - 20px);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-`;
+import { useTranslation } from 'react-i18next';
+import styles from './RealizationsGallery.module.css';
 
 const RealizationsGallery = ({ images, options = {} }) => {
+  const { t } = useTranslation();
   const totalImages = images?.length || 0;
   const swiperRef = useRef(null);
 
@@ -179,41 +37,7 @@ const RealizationsGallery = ({ images, options = {} }) => {
     pauseOnMouseEnter: true,
   };
 
-  // Fallback for too few images
-  if (!images || totalImages < config.slidesPerViewDesktop) {
-    return (
-      <div style={{
-        display: 'flex',
-        justifyContent: 'center',
-        gap: '15px',
-        flexWrap: 'wrap',
-        marginTop: '20px',
-        padding: '0 20px'
-      }}>
-        {images?.map((imgData, i) => (
-          <div
-            key={imgData.id || i}
-            style={{
-              borderRadius: '4px',
-              overflow: 'hidden',
-              boxShadow: '0 4px 8px rgba(0,0,0,0.3)'
-            }}
-          >
-            <img
-              src={imgData.src}
-              alt={imgData.title || `Realizacja ${i + 1}`}
-              style={{
-                display: 'block',
-                height: '250px',
-                width: 'auto',
-                maxWidth: '300px'
-              }}
-            />
-          </div>
-        ))}
-      </div>
-    );
-  }
+  const shouldRenderFallback = !images || totalImages < config.slidesPerViewDesktop;
 
   // Handle drag interactions for proper styling
   const handleDragStart = (swiper, event) => {
@@ -242,6 +66,8 @@ const RealizationsGallery = ({ images, options = {} }) => {
 
   // Setup drag tracking
   useEffect(() => {
+    if (shouldRenderFallback) return;
+
     // Safety check
     if (!swiperRef.current) return;
 
@@ -269,17 +95,37 @@ const RealizationsGallery = ({ images, options = {} }) => {
       }
       document.removeEventListener('mouseup', mouseUpHandler);
     };
-  }, []);
+  }, [shouldRenderFallback]);
+
+  // Fallback for too few images
+  if (shouldRenderFallback) {
+    return (
+      <div className={styles.fallbackWrapper}>
+        {images?.map((imgData, i) => (
+          <div
+            key={imgData.id || i}
+            className={styles.fallbackCard}
+          >
+            <img
+              src={imgData.src}
+              alt={imgData.title || `Realizacja ${i + 1}`}
+              className={styles.fallbackImage}
+            />
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   return (
     <MaxWidthContainer>
-      <HeaderWrap className='full-width' $reversed>
-        <ProductHeader $bg="#e6c61942" $reversed>
+      <HeaderWrap className='full-width' reversed>
+        <ProductHeader className={styles.headerBgLight}>
           {t('sections.realizations')}
         </ProductHeader>
-        <ProductHeaderSubtitle $bg="#706a0026;" $blackBackground>{t('realizations.subtitle', 'Zobacz nasze realizacje')}</ProductHeaderSubtitle>
+        <ProductHeaderSubtitle blackBackground>{t('realizations.subtitle', 'Zobacz nasze realizacje')}</ProductHeaderSubtitle>
       </HeaderWrap>
-      <StyledSwiperContainer>
+      <div className={styles.swiperContainer}>
         <Swiper
           ref={swiperRef}
           modules={[Autoplay]}
@@ -306,17 +152,18 @@ const RealizationsGallery = ({ images, options = {} }) => {
           {images.map((item) => (
             <SwiperSlide key={item.id}>
               <div className="slide-content-wrapper">
-                <GalleryImage
+                <img
+                  className={styles.galleryImage}
                   src={item.src}
                   alt={item.title}
                   draggable="false"
                 />
-                <GalleryImageTitle>{item.title}</GalleryImageTitle>
+                <div className={styles.galleryImageTitle}>{item.title}</div>
               </div>
             </SwiperSlide>
           ))}
         </Swiper>
-      </StyledSwiperContainer>
+      </div>
     </MaxWidthContainer>
 
   );

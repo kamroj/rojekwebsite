@@ -1,11 +1,16 @@
-import styled from 'styled-components';
+import React from 'react';
+import styles from './MaxWidthContainer.module.css';
 
-const MaxWidthContainer = styled.div`
-  width: 100%;
-  max-width: ${({ theme }) => theme.layout.maxWidth};
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0 15px;
-`;
-
-export default MaxWidthContainer;
+/**
+ * MaxWidthContainer
+ *
+ * Note: keeps `className` passthrough for compatibility during migration.
+ */
+export default function MaxWidthContainer({ className = '', children, ...rest }) {
+  const cls = className ? `${styles.root} ${className}` : styles.root;
+  return (
+    <div className={cls} data-max-width-container="true" {...rest}>
+      {children}
+    </div>
+  );
+}

@@ -1,40 +1,46 @@
-// src/components/common/Section.jsx
 import React from 'react';
-import styled, { css } from 'styled-components';
+import styles from './Section.module.css';
 
-const SectionWrapper = styled.section`
-  position: relative;
-  color: ${({ theme, $dark }) => $dark ? theme.colors.textLight : 'inherit'};
-  ${({ $customStyles }) => $customStyles && css`${$customStyles}`}
-  background-color: ${({ $dark, theme }) => $dark ? "black" : 'inherit'};
-  margin-bottom: ${({$noMarginBottom}) => $noMarginBottom ? "none" : "4rem"};
-`;
-
-const ContentContainer = styled.div`
-  width: 100%;
-  text-align: ${({ align }) => align || 'left'};
-`;
-
-// Combined Section component with label and content
-const Section = ({
+/**
+ * Section
+ *
+ * CSS Modules replacement for the previous styled-components implementation.
+ * Keeps prop API largely compatible.
+ */
+export default function Section({
   children,
-  label,
-  labelPosition = 'right',
+  label: _label, // legacy (unused)
+  labelPosition: _labelPosition = 'right', // legacy (unused)
   dark = false,
   align,
-  noPadding,
-  customStyles,
-  $noInset,
+  noPadding: _noPadding, // legacy (unused)
+  customStyles, // legacy (deprecated) - use `style` prop instead
   noMarginBottom = false,
+  className = '',
+  style,
   ...props
-}) => {
-  return (
-    <SectionWrapper $dark={dark} $customStyles={customStyles} $noMarginBottom={noMarginBottom}>
-      <ContentContainer align={align} $noPadding={noPadding}>
-        {children}
-      </ContentContainer>
-    </SectionWrapper>
-  );
-};
+}) {
+  // Backwards-compat: if some callsite still passes `customStyles` (CSS declarations as string),
+  // we can't reliably parse it into a style object without risking regressions.
+  // Prefer `style` prop.
+  if (customStyles) {
+    console.warn('[Section] `customStyles` prop is deprecated. Use `style={{...}}` instead.');
+  }
 
-export default Section;
+  const cls = [
+    styles.section,
+    dark ? styles.dark : '',
+    noMarginBottom ? styles.noMarginBottom : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
+  return (
+    <section className={cls} style={style} {...props}>
+      <div className={styles.content} style={{ textAlign: align || 'left' }}>
+        {children}
+      </div>
+    </section>
+  );
+}

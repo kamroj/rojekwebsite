@@ -1,31 +1,6 @@
 import React, { createContext, useContext, useRef, useState, useCallback } from 'react';
 
-// Typy zasobów
-export const RESOURCE_TYPES = {
-  IMAGE: 'image',
-  VIDEO: 'video',
-  AUDIO: 'audio'
-};
-
-// Funkcja do określenia typu zasobu na podstawie rozszerzenia
-const getResourceType = (url) => {
-  const extension = url.split('.').pop().toLowerCase();
-
-  if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp'].includes(extension)) {
-    return RESOURCE_TYPES.IMAGE;
-  }
-
-  if (['mp4', 'webm', 'ogg', 'avi', 'mov'].includes(extension)) {
-    return RESOURCE_TYPES.VIDEO;
-  }
-
-  if (['mp3', 'wav', 'ogg', 'aac'].includes(extension)) {
-    return RESOURCE_TYPES.AUDIO;
-  }
-
-  // Domyślnie traktujemy jako obraz
-  return RESOURCE_TYPES.IMAGE;
-};
+import { RESOURCE_TYPES, getResourceType } from '../utils/resourceTypes.js';
 
 // Funkcja do ładowania pojedynczego zasobu
 const loadResource = (url, type) => {
@@ -148,7 +123,23 @@ const loadResource = (url, type) => {
   });
 };
 
-const ResourceCollectorContext = createContext();
+// Default value makes this context OPTIONAL.
+// This is useful for SSR/SSG renders where resource preloading is not needed.
+const ResourceCollectorContext = createContext({
+  resources: [],
+  addResources: () => {},
+  resetResources: () => {},
+  resourcesLoaded: true,
+  loadedCount: 0,
+  totalCount: 0,
+  progress: 100,
+  loadedResources: [],
+  failedResources: [],
+
+  pendingTasks: 0,
+  beginTask: () => {},
+  endTask: () => {},
+});
 
 export const ResourceCollectorProvider = ({ children }) => {
   const [resources, setResources] = useState([]); // [{url, type}]

@@ -1,0 +1,32 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px 0;
+}
+
+.button {
+  background-color: transparent;
+  color: var(--color-text-dark);
+  border: 1px solid var(--color-bottle-green);
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.buttonActive {
+  background-color: var(--color-bottle-green);
+  color: var(--color-text-light);
+}
+
+.button:hover:not(:disabled) {
+  background-color: var(--color-bottle-green);
+  color: var(--color-text-light);
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}

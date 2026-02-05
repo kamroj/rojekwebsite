@@ -1,0 +1,534 @@
+.content {
+  max-width: var(--max-width, 1200px);
+  margin: 0 auto;
+  padding: 20px;
+  position: relative;
+}
+
+.filtersRow {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin: 12px 0 20px;
+}
+
+@media (max-width: 720px) {
+  .filtersRow {
+    display: none;
+  }
+}
+
+.dropdownsGroup {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex: 1;
+  gap: 12px;
+}
+
+.filterWrapper {
+  flex: 0 0 170px;
+  max-width: 170px;
+  min-width: 140px;
+  position: relative;
+  box-sizing: border-box;
+}
+
+@media (max-width: 720px) {
+  .filterWrapper {
+    flex: 0 0 auto;
+    max-width: 320px;
+    width: min(90%, 320px);
+    margin: 6px auto;
+    position: relative;
+  }
+}
+
+.filterControl {
+  all: unset;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: var(--color-background, #ffffff);
+  border: 1px solid var(--color-border, #dee2e6);
+  border-radius: 8px;
+  padding: 8px 12px;
+  cursor: pointer;
+  box-sizing: border-box;
+  box-shadow: var(--shadow-sm, 0 2px 4px rgba(0, 0, 0, 0.1));
+  transition: var(--transition-default, 0.3s ease);
+}
+
+.filterControl:hover {
+  border-color: var(--color-secondary, #017e54);
+  box-shadow: var(--shadow-md, 0 4px 8px rgba(0, 0, 0, 0.2));
+  background: var(--color-background-alt, #f9fafb);
+}
+
+.filterControl:focus {
+  outline: none;
+  border-color: var(--color-secondary, #017e54);
+  box-shadow: 0 0 0 3px var(--color-border-accent, rgba(1, 126, 84, 0.25));
+}
+
+.filterControl:active {
+  outline: none;
+  transform: translateY(1px);
+}
+
+.labelBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.filterHeading {
+  font-weight: 600;
+  font-size: 1.3rem;
+  color: var(--color-text, #222);
+}
+
+@media (max-width: 720px) {
+  .filterHeading {
+    font-size: 1.5rem;
+  }
+}
+
+.dropdownPanel {
+  /* Desktop: overlay dropdown on top of content without shifting layout */
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  width: 100%;
+  background: var(--color-background, #ffffff);
+  border: 1px solid var(--color-border, #dee2e6);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md, 0 4px 8px rgba(0, 0, 0, 0.2));
+  z-index: 6000;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 720px) {
+  .dropdownPanel {
+    position: absolute;
+    top: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    width: 100%;
+    margin: 0;
+    box-shadow: var(--shadow-md, 0 4px 8px rgba(0, 0, 0, 0.2));
+    border: 1px solid var(--color-border, #dee2e6);
+    border-radius: 8px;
+    padding: 0;
+    background: var(--color-background, #ffffff);
+    display: block;
+    box-sizing: border-box;
+    z-index: 7000;
+    overflow: hidden;
+  }
+}
+
+.optionList {
+  max-height: 220px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.optionList::-webkit-scrollbar {
+  width: 6px;
+}
+
+.optionList::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.optionList::-webkit-scrollbar-thumb {
+  background: var(--color-accent, #017e54);
+  border-radius: 3px;
+}
+
+.optionList::-webkit-scrollbar-thumb:hover {
+  /* keep a darken fallback; we don't have a token for accentDark */
+  background: #015a3c;
+}
+
+@media (max-width: 720px) {
+  .optionList {
+    max-height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    width: 100%;
+    box-sizing: border-box;
+    gap: 0;
+    border: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+}
+
+.optionRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  transition: var(--transition-fast, 0.2s ease-in);
+}
+
+.optionRow:hover {
+  background: var(--color-background-alt, #f9fafb);
+}
+
+.optionRow input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  margin-right: 10px;
+  transform: none;
+  accent-color: var(--color-secondary, #017e54);
+  flex-shrink: 0;
+  cursor: pointer;
+}
+
+.optionRow input[type="checkbox"]:checked {
+  background-color: var(--color-secondary, #017e54);
+  border-color: var(--color-secondary, #017e54);
+}
+
+.optionRow input[type="checkbox"]:hover {
+  border-color: var(--color-secondary, #017e54);
+}
+
+.optionRow input[type="checkbox"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-border-accent, rgba(1, 126, 84, 0.25));
+}
+
+.optionRow span {
+  font-size: 1.3rem;
+  flex: 1;
+  white-space: nowrap;
+  color: var(--color-text, #212529);
+}
+
+@media (max-width: 720px) {
+  .optionRow {
+    padding: 12px;
+    border-radius: 0;
+    width: 100%;
+  }
+
+  .optionRow:not(:last-child) {
+    border-bottom: 1px solid var(--color-border, #dee2e6);
+  }
+
+  .optionRow:hover {
+    background: var(--color-background-alt, #f9fafb);
+  }
+}
+
+@media (max-width: 420px) {
+  .optionRow input[type="checkbox"] {
+    width: 12px;
+    height: 12px;
+  }
+  .optionRow span {
+    font-size: 1.3rem;
+  }
+}
+
+.resultsTop {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 16px;
+}
+
+.resultsCount {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text, #222);
+  font-weight: 500;
+  font-size: 1rem;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+}
+
+@media (min-width: 721px) {
+  .resultsCount {
+    font-weight: 600;
+    font-size: 1.5rem;
+    white-space: nowrap;
+    overflow: visible;
+    text-overflow: ellipsis;
+  }
+}
+
+.grid {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 1100px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 720px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.noResults {
+  padding: 30px;
+  text-align: center;
+  background: #fff;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-top: 20px;
+}
+
+.mobileFiltersButton {
+  all: unset;
+  display: none;
+  /* keep in normal flow so ControlsBar height is preserved */
+  position: static;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--color-background, #ffffff);
+  border: 1px solid var(--color-border, #dee2e6);
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm, 0 2px 4px rgba(0, 0, 0, 0.1));
+  cursor: pointer;
+  transition: var(--transition-default, 0.3s ease);
+}
+
+.mobileFiltersButton:hover {
+  border-color: var(--color-secondary, #017e54);
+  box-shadow: var(--shadow-md, 0 4px 8px rgba(0, 0, 0, 0.2));
+  background: var(--color-background-alt, #f9fafb);
+}
+
+.mobileFiltersButton:focus {
+  outline: none;
+  border-color: var(--color-secondary, #017e54);
+  box-shadow: 0 0 0 3px var(--color-border-accent, rgba(1, 126, 84, 0.25));
+}
+
+.mobileFiltersButton:active {
+  outline: none;
+  transform: translateY(1px);
+}
+
+.mobileFiltersButton svg {
+  width: 18px;
+  height: 18px;
+  color: var(--color-text, #212529);
+}
+
+@media (max-width: 720px) {
+  .mobileFiltersButton {
+    display: flex;
+  }
+}
+
+.desktopFiltersButton {
+  all: unset;
+  display: flex;
+  /* position in normal flow inside ControlsBar so it occupies space */
+  position: static;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--color-background, #ffffff);
+  border: 1px solid var(--color-border, #dee2e6);
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-sm, 0 2px 4px rgba(0, 0, 0, 0.1));
+  cursor: pointer;
+  transition: var(--transition-default, 0.3s ease);
+  z-index: 2000;
+}
+
+.desktopFiltersButton:hover {
+  border-color: var(--color-secondary, #017e54);
+  box-shadow: var(--shadow-md, 0 4px 8px rgba(0, 0, 0, 0.2));
+  background: var(--color-background-alt, #f9fafb);
+}
+
+.desktopFiltersButton:active {
+  outline: none;
+  transform: translateY(1px);
+}
+
+.desktopFiltersButton svg {
+  width: 18px;
+  height: 18px;
+  color: var(--color-text, #212529);
+}
+
+@media (max-width: 720px) {
+  .desktopFiltersButton {
+    display: none;
+  }
+}
+
+.mobilePanel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  /* Prefer dynamic viewport height; fallback to VisualViewport CSS var if present */
+  height: var(--vvh, 100dvh);
+  max-height: 100dvh;
+  background: #fff;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  z-index: 9999;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  touch-action: pan-y;
+  overscroll-behavior-x: contain;
+  box-sizing: border-box;
+}
+
+.mobileHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--color-border, #e6e6e6);
+}
+
+.mobileCloseButton {
+  all: unset;
+  cursor: pointer;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+}
+
+.mobileFooter {
+  display: flex;
+  gap: 12px;
+  padding: 12px;
+  /* Ensure footer actions are not obscured by bottom browser UI or iOS home indicator */
+  padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+  border-top: 1px solid var(--color-border, #eee);
+  background: #fff;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+.mobileAction {
+  all: unset;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  text-align: center;
+  border: 1px solid var(--color-border, #e6e6e6);
+  color: var(--color-text, #222);
+  background: transparent;
+}
+
+.mobileActionPrimary {
+  border-color: var(--color-primary, #004605);
+  color: #fff;
+  background: var(--color-primary, #003d29);
+}
+
+.mobileFilters {
+  flex: 1;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px 16px;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.mobileFilters .filterWrapper {
+  margin: 8px 0;
+}
+
+.clearButton {
+  all: unset;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-text, #222);
+  background: var(--color-background, #ffffff);
+  border: 1px solid var(--color-border, #dee2e6);
+  box-shadow: var(--shadow-sm, 0 2px 4px rgba(0, 0, 0, 0.1));
+  transition: var(--transition-default, 0.3s ease);
+}
+
+.clearButton:hover {
+  border-color: var(--color-secondary, #017e54);
+  background: var(--color-background-alt, #f9fafb);
+  color: var(--color-text, #222);
+}
+
+.clearButton:active {
+  transform: translateY(1px);
+}
+
+.clearButton svg {
+  width: 16px;
+  height: 16px;
+  color: var(--color-text, #212529);
+}
+
+.controlsBar {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 8px 12px;
+  /* keep enough height for the buttons */
+  min-height: 56px;
+  margin-bottom: 8px;
+}
+
+.filtersExpander {
+  overflow: visible;
+  will-change: opacity, transform, height;
+}

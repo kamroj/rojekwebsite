@@ -1,59 +1,63 @@
-# Struktura projektu
+# Project Structure
 
-Ten repozytorium zawiera aplikację **Astro + React + styled-components** z:
+This repository contains a production website built with **Astro + React (islands) + CSS Modules / scoped CSS**.
 
-- routingiem po stronie Astro (folder `src/pages/`),
-- „widokami” (React) w `src/views/`,
-- komponentami współdzielonymi/UI/sekcjami w `src/components/`,
-- integracją runtime Sanity (frontend) w `src/lib/sanity/`,
-- helperami i18n/routingu w `src/lib/i18n/`,
-- Netlify Functions w `netlify/functions/`,
-- assetami statycznymi w `public/`.
+Key areas:
 
-## Najważniejsze zasady
+- Astro routing: `src/pages/`
+- React “views” (legacy SPA views, used as islands): `src/views/`
+- Shared components / UI primitives / sections: `src/components/`
+- Sanity frontend integration: `src/lib/sanity/`
+- i18n + routing helpers: `src/lib/i18n/`
+- Netlify Functions: `netlify/functions/`
+- Static assets: `public/`
 
-### 1) Routing Astro
+## Core Rules
 
-- `src/pages/` zawiera **wyłącznie** pliki `.astro` (oraz ewentualne endpointy Astro).
-- Reactowe strony **nie** znajdują się w `src/pages/`.
+### 1) Astro routing
 
-### 2) React „strony”
+- `src/pages/` contains **only** `.astro` files (and optionally Astro endpoints).
+- React pages **must not** live in `src/pages/`.
 
-Reactowe strony/widoki aplikacji znajdują się w:
+### 2) React “views”
 
-- `src/views/` (np. `HomeView.jsx`, `ProductDetailView.jsx`)
+Legacy React pages/views live in:
 
-### 3) Komponenty
+- `src/views/` (e.g. `HomeView.jsx`, `ProductDetailView.jsx`)
 
-Komponenty React zostały uporządkowane w:
+In Astro they are rendered as **islands** via the bridge components.
 
-- `src/components/shared/` – elementy współdzielone (header/footer/nawigacja, itp.)
-- `src/components/ui/` – komponenty UI (Section, Page, Pagination, itp.)
-- `src/components/portable/` – komponenty związane z PortableText (Sanity)
-- `src/components/sections/**` – większe fragmenty strony (sekcje home, realizacje, detale produktów)
+### 3) Components
+
+React components are organized in:
+
+- `src/components/shared/` – shared elements (Header/Footer/Navigation, etc.)
+- `src/components/ui/` – UI primitives (Section, Page, Pagination, etc.)
+- `src/components/portable/` – Sanity PortableText rendering
+- `src/components/sections/**` – larger page sections (home sections, realizations, product detail sections)
 
 ### 4) Sanity (frontend runtime)
 
-Integracja runtime Sanity (czyli kod używany przez frontend do pobierania danych) jest w:
+Frontend Sanity integration (data fetching, helpers) lives in:
 
 - `src/lib/sanity/`
 
-> Uwaga: folder `sanity/` w root repo traktujemy jako Sanity Studio i nie przebudowujemy jego struktury.
+Note: the top-level `sanity/` directory is **Sanity Studio** and should not be restructured unless explicitly requested.
 
-### 5) i18n / routing helpery
+### 5) i18n / routing helpers
 
-Helpery routingu i18n są w:
+i18n routing helpers live in:
 
 - `src/lib/i18n/routing.js`
 
-Plik `src/i18n.js` pozostaje entry pointem konfiguracji i18next.
+`src/i18n.js` remains the i18next entry point.
 
 ### 6) Netlify Functions
 
-- Funkcje Netlify trzymamy w `netlify/functions/`.
-- Endpointy funkcji są dostępne standardowo pod `/.netlify/functions/<name>`.
+- Netlify Functions live in `netlify/functions/`.
+- Endpoints are available under `/.netlify/functions/<name>`.
 
 ### 7) Assets
 
-- Statyczne assets są w `public/` i są dostępne pod ścieżkami typu `/images/...`, `/videos/...`, `/models/...`, `/locales/...`.
-- `dist/` jest **wyłącznie** outputem builda (nie jest źródłem zasobów).
+- Static assets live in `public/` and are referenced via absolute paths like `/images/...`, `/videos/...`, `/models/...`, `/locales/...`.
+- `dist/` is **build output only** (never treat it as a source of assets).

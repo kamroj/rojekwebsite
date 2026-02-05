@@ -1,0 +1,264 @@
+.standardSectionWrapper {
+  position: relative;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.sectionHeader {
+  text-align: center;
+  padding: 4rem 2rem 3rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+}
+
+.sectionHeader::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50%;
+  height: 1px;
+  background-color: #065e0d6c;
+}
+
+.headerOverline {
+  display: inline-block;
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #4c4c4c;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1.2rem;
+}
+
+.headerTitle {
+  text-transform: uppercase;
+  font-size: 3.2rem;
+  font-weight: 500;
+  color: #0f591a;
+  line-height: 1.1;
+  margin-bottom: 1.2rem;
+}
+
+.headerSubtitle {
+  letter-spacing: 0.1em;
+  font-size: 1.6rem;
+  color: #5a6b5f;
+  margin: 0;
+  font-weight: 400;
+}
+
+.blockWrapper {
+  position: relative;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.contentGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5rem;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+.contentGridReversed {
+  grid-template-columns: 1.1fr 1fr;
+}
+
+.contentGridWithPadding {
+  padding: 4rem 2rem;
+}
+
+.textContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 0;
+}
+
+.textContentWithPadding {
+  padding: 3rem;
+}
+
+.titleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.overline {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #4c4c4c;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.blockTitle {
+  font-size: 3rem;
+  font-weight: 400;
+  color: #104818;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.blockSubtitle {
+  font-size: 1.6rem;
+  font-weight: 400;
+  color: #4a5f4e;
+  margin: 0;
+  margin-top: 0.25rem;
+}
+
+.description {
+  font-size: 1.4rem;
+  color: #4a5c50;
+  line-height: 1.75;
+  margin: 0;
+  max-width: 520px;
+}
+
+.featuresList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+
+.featureItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.featureIconBox {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(26, 86, 24, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.featureIconBox svg {
+  width: 26px;
+  height: 26px;
+  color: #1a5618;
+}
+
+.featureTextBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding-top: 0.25rem;
+}
+
+.featureTitle {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: #1a2e1f;
+}
+
+.featureDesc {
+  font-size: 1.3rem;
+  color: #5a6b5f;
+  line-height: 1.5;
+}
+
+.imageContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 520px;
+}
+
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.glowEffect {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    rgb(10 96 8 / 19%) 0%,
+    rgb(43 186 39 / 5%) 40%,
+    #00000000 70%
+  );
+  z-index: 0;
+}
+
+.productImage {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  max-height: 480px;
+  object-fit: contain;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.productImage:hover {
+  transform: scale(1.02) translateY(-5px);
+}
+
+@media (--bp-lg) {
+  .sectionHeader::after {
+    width: 60%;
+  }
+
+  .contentGrid {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+
+  .contentGridWithPadding {
+    padding: 3rem 1.5rem;
+  }
+
+  .textContent {
+    order: 2;
+  }
+
+  .textContentWithPadding {
+    padding: 2rem 1.5rem;
+  }
+
+  .blockSubtitle {
+    font-size: 1.4rem;
+  }
+
+  .featureTitle {
+    font-size: 1.3rem;
+  }
+
+  .featureDesc {
+    font-size: 1.2rem;
+  }
+
+  .imageContainer {
+    min-height: 400px;
+    order: 1;
+  }
+
+  .productImage {
+    max-height: 380px;
+  }
+}

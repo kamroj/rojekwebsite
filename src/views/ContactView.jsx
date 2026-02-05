@@ -1,211 +1,11 @@
 import { useTranslation } from 'react-i18next';
-import { useRef, useState } from 'react';
-import styled from 'styled-components';
-import ReCAPTCHA from 'react-google-recaptcha';
+import { useEffect, useRef, useState } from 'react';
 import Page from '../components/ui/Page';
+import Section from '../components/ui/Section';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomeView';
 import { verifyRecaptcha } from '../services/recaptcha';
 
-const ContactContainer = styled.div`
-  display: flex;
-  width: 100%;
-  gap: 36px;
-  margin-top: 24px;
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    flex-direction: column;
-  }
-`;
-
-const FormWrap = styled.div`
-  max-width: 700px;
-  width: 100%;
-`;
-
-const Form = styled.form`
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-`;
-
-const Field = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-`;
-
-const Label = styled.label`
-  font-weight: 400;
-`;
-
-const Input = styled.input`
-  padding: 12px 14px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 16px;
-  outline: none;
-  transition: border-color 0.2s ease;
-  &:focus {
-    border-color: #94a3b8;
-  }
-  &::placeholder {
-    color: #9ca3afb7;
-    font-weight: 100;
-  }
-`;
-
-const Textarea = styled.textarea`
-  padding: 12px 14px;
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 16px;
-  font-family: inherit;
-  min-height: 140px;
-  resize: vertical;
-  outline: none;
-  transition: border-color 0.2s ease;
-  &:focus {
-    border-color: #94a3b8;
-  }
-  &::placeholder {
-    color: #9ca3afb7;
-    font-weight: 400;
-  }
-`;
-
-const ErrorText = styled.div`
-  color: #a82218;
-  font-size: 0.9rem;
-`;
-
-const SubmitRow = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
-
-const Button = styled.button`
-  align-self: flex-start;
-  padding: 12px 32px;
-  background: #004710;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: 400;
-  transition: transform 0.06s ease, opacity 0.2s ease;
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-  &:active {
-    transform: scale(0.98);
-  }
-`;
-
-const SuccessBox = styled.div`
-  background: #ecfdf3;
-  border: 1px solid #abefc6;
-  color: #067647;
-  padding: 12px;
-  border-radius: 8px;
-`;
-
-const FormInfo = styled.p`
-  margin-top: 16px;
-  font-size: 0.9rem;
-  color: #6b7280;
-`;
-
-const DirectCard = styled.div`
-  position: relative;
-  isolation: isolate;
-  overflow: hidden;
-  flex: 1;
-  background: #fcfcfc;
-  border: 1px solid #006326;
-  border-radius: 12px;
-  padding: 20px;
-  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
-  height: fit-content;
-
-  &::after {
-    content: '';
-    position: absolute;
-    right: 12px;
-    bottom: 12px;
-    width: 180px;
-    height: 180px;
-    background: url('/images/phone.png') no-repeat center / contain;
-    opacity: 0.5;
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  > * {
-    position: relative;
-    z-index: 1;
-  }
-
-  @media (max-width: ${({ theme }) => theme.breakpoints.lg}) {
-    width: 100%;
-    &::after {
-      width: 120px;
-      height: 120px;
-      right: 8px;
-      bottom: 8px;
-    }
-  }
-`;
-
-const ContactList = styled.ul`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-`;
-
-const ContactItem = styled.li`
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-`;
-
-const IconWrap = styled.span`
-  width: 28px;
-  height: 28px;
-  flex: 0 0 28px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #003d16;
-`;
-
-const ContactDetails = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-`;
-
-const ContactLabel = styled.span`
-  font-size: 12px;
-  color: #595f6b;
-`;
-
-const ContactLink = styled.a`
-  color: #111827;
-  text-decoration: none;
-  font-weight: 400;
-  &:hover {
-    text-decoration: underline;
-  }
-`;
-
-const ContactText = styled.span`
-  color: #111827;
-`;
+import styles from './ContactView.module.css';
 
 const MailIcon = () => (
   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -246,8 +46,28 @@ const RECAPTCHA_SITE_KEY =
   import.meta.env.VITE_RECAPTCHA_SITE_KEY ||
   (import.meta.env.DEV ? '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' : '');
 
-const ContactPage = () => {
+const ContactPage = ({ viewProps } = {}) => {
   const { t } = useTranslation();
+
+  // `react-google-recaptcha` is browser-only (touches `window` / DOM).
+  // To keep the Contact page SSR-friendly (SEO), we lazy-load it on the client.
+  const [RecaptchaComponent, setRecaptchaComponent] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+    import('react-google-recaptcha')
+      .then((m) => {
+        if (!mounted) return;
+        // Store as component type
+        setRecaptchaComponent(() => m.default);
+      })
+      .catch((e) => {
+        console.warn('Failed to load ReCAPTCHA component', e);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -272,7 +92,9 @@ const ContactPage = () => {
     if (!message.trim()) {
       next.message = t('contactPage.errors.messageRequired');
     }
-    if (!recaptchaToken) {
+    if (!RecaptchaComponent) {
+      next.recaptcha = t('contactPage.errors.recaptchaLoading', 'Ładowanie reCAPTCHA...');
+    } else if (!recaptchaToken) {
       next.recaptcha = t('contactPage.errors.recaptchaRequired');
     }
     setErrors(next);
@@ -312,8 +134,13 @@ const ContactPage = () => {
     }
   };
 
+  const isSsgMode = !!viewProps?.ssgMode;
+  const showDirectCard = !viewProps?.hideDirectCard;
+
   return (
-    <Page imageSrc="/images/contactus/top.jpg" title={t('pageTitle.contact', 'Kontakt')}>
+    <>
+      {!isSsgMode && (
+        <Page imageSrc="/images/contactus/top.jpg" title={t('pageTitle.contact', 'Kontakt')}>
       <Section>
         <HeaderWrap>
           <ProductHeader>{t('contactPage.header.title')}</ProductHeader>
@@ -322,14 +149,15 @@ const ContactPage = () => {
           </ProductHeaderSubtitle>
         </HeaderWrap>
 
-        <ContactContainer>
-          <FormWrap>
+        <div className={styles.contactContainer}>
+          <div className={styles.formWrap}>
             <p>{t('contactPage.form.useForm')}</p>
 
-            <Form onSubmit={onSubmit} noValidate>
-              <Field>
-                <Label htmlFor="name">{t('contactPage.form.nameLabel')}</Label>
-                <Input
+            <form className={styles.form} onSubmit={onSubmit} noValidate>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="name">{t('contactPage.form.nameLabel')}</label>
+                <input
+                  className={styles.input}
                   id="name"
                   name="name"
                   type="text"
@@ -338,11 +166,12 @@ const ContactPage = () => {
                   onChange={(e) => setName(e.target.value)}
                   autoComplete="name"
                 />
-              </Field>
+              </div>
 
-              <Field>
-                <Label htmlFor="email">{t('contactPage.form.emailLabel')} *</Label>
-                <Input
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="email">{t('contactPage.form.emailLabel')} *</label>
+                <input
+                  className={styles.input}
                   id="email"
                   name="email"
                   type="email"
@@ -353,12 +182,13 @@ const ContactPage = () => {
                   required
                   aria-invalid={!!errors.email}
                 />
-                {errors.email && <ErrorText>{errors.email}</ErrorText>}
-              </Field>
+                {errors.email && <div className={styles.errorText}>{errors.email}</div>}
+              </div>
 
-              <Field>
-                <Label htmlFor="phone">{t('contactPage.form.phoneLabel')}</Label>
-                <Input
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="phone">{t('contactPage.form.phoneLabel')}</label>
+                <input
+                  className={styles.input}
                   id="phone"
                   name="phone"
                   type="tel"
@@ -368,11 +198,12 @@ const ContactPage = () => {
                   autoComplete="tel"
                   inputMode="tel"
                 />
-              </Field>
+              </div>
 
-              <Field>
-                <Label htmlFor="message">{t('contactPage.form.messageLabel')} *</Label>
-                <Textarea
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="message">{t('contactPage.form.messageLabel')} *</label>
+                <textarea
+                  className={styles.textarea}
                   id="message"
                   name="message"
                   placeholder={t('contactPage.form.messagePlaceholder')}
@@ -381,82 +212,199 @@ const ContactPage = () => {
                   required
                   aria-invalid={!!errors.message}
                 />
-                {errors.message && <ErrorText>{errors.message}</ErrorText>}
-              </Field>
+                {errors.message && <div className={styles.errorText}>{errors.message}</div>}
+              </div>
 
-              <Field>
-                <ReCAPTCHA
-                  ref={recaptchaRef}
-                  sitekey={RECAPTCHA_SITE_KEY}
-                  onChange={(token) => {
-                    setRecaptchaToken(token);
-                    if (errors.recaptcha) setErrors((p) => ({ ...p, recaptcha: '' }));
-                  }}
-                />
-                {errors.recaptcha && <ErrorText>{errors.recaptcha}</ErrorText>}
-              </Field>
+              <div className={styles.field}>
+                {RecaptchaComponent ? (
+                  <RecaptchaComponent
+                    ref={recaptchaRef}
+                    sitekey={RECAPTCHA_SITE_KEY}
+                    onChange={(token) => {
+                      setRecaptchaToken(token);
+                      if (errors.recaptcha) setErrors((p) => ({ ...p, recaptcha: '' }));
+                    }}
+                  />
+                ) : (
+                  // SSR placeholder – prevents layout shift.
+                  <div style={{ height: 78 }} aria-hidden="true" />
+                )}
+                {errors.recaptcha && <div className={styles.errorText}>{errors.recaptcha}</div>}
+              </div>
 
-              <SubmitRow>
-                <Button type="submit" disabled={submitting}>
+              <div className={styles.submitRow}>
+                <button className={styles.button} type="submit" disabled={submitting}>
                   {submitting ? t('contactPage.actions.sending') : t('contactPage.actions.send')}
-                </Button>
-                {sent && <SuccessBox>{t('contactPage.success')}</SuccessBox>}
-              </SubmitRow>
-            </Form>
+                </button>
+                {sent && <div className={styles.successBox}>{t('contactPage.success')}</div>}
+              </div>
+            </form>
 
-            <FormInfo>
+            <p className={styles.formInfo}>
               {t('contactPage.gdpr.notice')}
-            </FormInfo>
-          </FormWrap>
-          <DirectCard style={{ marginTop: 24 }}>
-            <p>{t('contactPage.direct.header')}</p>
+            </p>
+          </div>
+          {showDirectCard && (
+            <div className={styles.directCard} style={{ marginTop: 24 }}>
+              <p>{t('contactPage.direct.header')}</p>
 
-            <ContactList>
-              <ContactItem>
-                <IconWrap aria-hidden="true"><MailIcon /></IconWrap>
-                <ContactDetails>
-                  <ContactLabel>{t('contact.email')}</ContactLabel>
-                  <ContactLink href={`mailto:${t('contactPage.direct.values.email')}`}>{t('contactPage.direct.values.email')}</ContactLink>
-                </ContactDetails>
-              </ContactItem>
+              <ul className={styles.contactList}>
+                <li className={styles.contactItem}>
+                  <span className={styles.iconWrap} aria-hidden="true"><MailIcon /></span>
+                  <div className={styles.contactDetails}>
+                    <span className={styles.contactLabel}>{t('contact.email')}</span>
+                    <a className={styles.contactLink} href={`mailto:${t('contactPage.direct.values.email')}`}>{t('contactPage.direct.values.email')}</a>
+                  </div>
+                </li>
 
-              <ContactItem>
-                <IconWrap aria-hidden="true"><PhoneIcon /></IconWrap>
-                <ContactDetails>
-                  <ContactLabel>{t('contact.phone')}</ContactLabel>
-                  <ContactLink href={`tel:${t('contactPage.direct.values.phone').replace(/\s/g, '')}`}>{t('contactPage.direct.values.phone')}</ContactLink>
-                </ContactDetails>
-              </ContactItem>
+                <li className={styles.contactItem}>
+                  <span className={styles.iconWrap} aria-hidden="true"><PhoneIcon /></span>
+                  <div className={styles.contactDetails}>
+                    <span className={styles.contactLabel}>{t('contact.phone')}</span>
+                    <a className={styles.contactLink} href={`tel:${t('contactPage.direct.values.phone').replace(/\s/g, '')}`}>{t('contactPage.direct.values.phone')}</a>
+                  </div>
+                </li>
 
-              <ContactItem>
-                <IconWrap aria-hidden="true"><LocationIcon /></IconWrap>
-                <ContactDetails>
-                  <ContactLabel>{t('contact.address')}</ContactLabel>
-                  <ContactText>{t('contactPage.direct.values.address')}</ContactText>
-                </ContactDetails>
-              </ContactItem>
+                <li className={styles.contactItem}>
+                  <span className={styles.iconWrap} aria-hidden="true"><LocationIcon /></span>
+                  <div className={styles.contactDetails}>
+                    <span className={styles.contactLabel}>{t('contact.address')}</span>
+                    <span className={styles.contactText}>{t('contactPage.direct.values.address')}</span>
+                  </div>
+                </li>
 
-              <ContactItem>
-                <IconWrap aria-hidden="true"><IdIcon /></IconWrap>
-                <ContactDetails>
-                  <ContactLabel>{t('contactPage.direct.labels.registrationData')}</ContactLabel>
-                  <ContactText>{t('contactPage.direct.values.nip')}</ContactText>
-                  <ContactText>{t('contactPage.direct.values.regon')}</ContactText>
-                </ContactDetails>
-              </ContactItem>
+                <li className={styles.contactItem}>
+                  <span className={styles.iconWrap} aria-hidden="true"><IdIcon /></span>
+                  <div className={styles.contactDetails}>
+                    <span className={styles.contactLabel}>{t('contactPage.direct.labels.registrationData')}</span>
+                    <span className={styles.contactText}>{t('contactPage.direct.values.nip')}</span>
+                    <span className={styles.contactText}>{t('contactPage.direct.values.regon')}</span>
+                  </div>
+                </li>
 
-              <ContactItem>
-                <IconWrap aria-hidden="true"><ClockIcon /></IconWrap>
-                <ContactDetails>
-                  <ContactLabel>{t('contact.hours')}</ContactLabel>
-                  <ContactText>{t('contactPage.direct.values.hours')}</ContactText>
-                </ContactDetails>
-              </ContactItem>
-            </ContactList>
-          </DirectCard>
-        </ContactContainer>
+                <li className={styles.contactItem}>
+                  <span className={styles.iconWrap} aria-hidden="true"><ClockIcon /></span>
+                  <div className={styles.contactDetails}>
+                    <span className={styles.contactLabel}>{t('contact.hours')}</span>
+                    <span className={styles.contactText}>{t('contactPage.direct.values.hours')}</span>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
       </Section>
-    </Page>
+        </Page>
+      )}
+
+      {isSsgMode && (
+        <Section>
+          <HeaderWrap>
+            <ProductHeader>{t('contactPage.header.title')}</ProductHeader>
+            <ProductHeaderSubtitle>
+              {t('contactPage.header.subtitle')}
+            </ProductHeaderSubtitle>
+          </HeaderWrap>
+
+          <div className={styles.contactContainer}>
+            <div className={styles.formWrap}>
+              <p>{t('contactPage.form.useForm')}</p>
+
+              <form className={styles.form} onSubmit={onSubmit} noValidate>
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="name">{t('contactPage.form.nameLabel')}</label>
+                  <input
+                    className={styles.input}
+                    id="name"
+                    name="name"
+                    type="text"
+                    placeholder={t('contactPage.form.namePlaceholder')}
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    autoComplete="name"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="email">{t('contactPage.form.emailLabel')} *</label>
+                  <input
+                    className={styles.input}
+                    id="email"
+                    name="email"
+                    type="email"
+                    placeholder={t('contactPage.form.emailPlaceholder')}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    autoComplete="email"
+                    required
+                    aria-invalid={!!errors.email}
+                  />
+                  {errors.email && <div className={styles.errorText}>{errors.email}</div>}
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="phone">{t('contactPage.form.phoneLabel')}</label>
+                  <input
+                    className={styles.input}
+                    id="phone"
+                    name="phone"
+                    type="tel"
+                    placeholder={t('contactPage.form.phonePlaceholder')}
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    autoComplete="tel"
+                    inputMode="tel"
+                  />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label} htmlFor="message">{t('contactPage.form.messageLabel')} *</label>
+                  <textarea
+                    className={styles.textarea}
+                    id="message"
+                    name="message"
+                    placeholder={t('contactPage.form.messagePlaceholder')}
+                    value={message}
+                    onChange={(e) => setMessage(e.target.value)}
+                    required
+                    aria-invalid={!!errors.message}
+                  />
+                  {errors.message && <div className={styles.errorText}>{errors.message}</div>}
+                </div>
+
+                <div className={styles.field}>
+                  {RecaptchaComponent ? (
+                    <RecaptchaComponent
+                      ref={recaptchaRef}
+                      sitekey={RECAPTCHA_SITE_KEY}
+                      onChange={(token) => {
+                        setRecaptchaToken(token);
+                        if (errors.recaptcha) setErrors((p) => ({ ...p, recaptcha: '' }));
+                      }}
+                    />
+                  ) : (
+                    // SSR placeholder – prevents layout shift.
+                    <div style={{ height: 78 }} aria-hidden="true" />
+                  )}
+                  {errors.recaptcha && <div className={styles.errorText}>{errors.recaptcha}</div>}
+                </div>
+
+                <div className={styles.submitRow}>
+                  <button className={styles.button} type="submit" disabled={submitting}>
+                    {submitting ? t('contactPage.actions.sending') : t('contactPage.actions.send')}
+                  </button>
+                  {sent && <div className={styles.successBox}>{t('contactPage.success')}</div>}
+                </div>
+              </form>
+
+              <p className={styles.formInfo}>
+                {t('contactPage.gdpr.notice')}
+              </p>
+            </div>
+          </div>
+        </Section>
+      )}
+    </>
   );
 };
 

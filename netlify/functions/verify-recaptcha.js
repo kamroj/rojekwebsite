@@ -35,7 +35,7 @@ exports.handler = async (event) => {
   try {
     const body = JSON.parse(event.body || '{}');
     token = body.token;
-  } catch (e) {
+  } catch {
     return {
       statusCode: 400,
       headers: corsHeaders,

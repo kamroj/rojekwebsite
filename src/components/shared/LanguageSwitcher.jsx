@@ -1,147 +1,34 @@
 import React, { useState, useEffect, useRef } from 'react';
-import styled, { css } from 'styled-components';
 import { useTranslation } from 'react-i18next';
-import { useLocation, useNavigate } from 'react-router-dom';
-import ReactCountryFlag from 'react-country-flag';
-import { COUNTRY_CODES, SUPPORTED_LANGUAGES } from '../../constants';
+// `react-country-flag` is a bit tricky with ESM/CJS interop.
+// In some bundlers the default import becomes an object, not a component.
+// We normalize it to a React component for SSR safety.
+import ReactCountryFlagImport from 'react-country-flag';
+import { COUNTRY_CODES, SUPPORTED_LANGUAGES } from '../../constants/index.js';
 import { getValidLanguage, handleKeyboardNavigation } from '../../utils';
 import { translatePathname } from '../../lib/i18n/routing';
+import RouterAgnosticLink from '../_astro/RouterAgnosticLink.jsx';
+import styles from './LanguageSwitcher.module.css';
 
-const SwitcherWrapper = styled.div`
-  position: relative;
-  z-index: 11;
-  
-  ${props => props.$isMobile && css`
-    width: 100%;
-    
-    .language-label {
-      display: block;
-      font-size: 1.6rem;
-      font-weight: 500;
-      margin-bottom: 1rem;
-      color: ${({ theme }) => theme.colors.text};
-    }
-  `}
-`;
+const cn = (...classes) => classes.filter(Boolean).join(' ');
 
-const CurrentLanguageButton = styled.button`
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  line-height: 0;
-  transition: opacity ${({ theme }) => theme.transitions.default};
-  
-  .flag-container {
-    border-radius: 2px;
-    overflow: hidden;
-    border: 1px solid ${({ $isPastThreshold }) => 
-      $isPastThreshold ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.7)'};
-    line-height: 0;
-    transition: opacity ${({ theme }) => theme.transitions.default};
-  }
-  
-  .flag-icon {
-    width: 28px !important;
-    height: auto;
-  }
-  
-  &:hover .flag-container {
-    opacity: 0.8;
-  }
-`;
+const ReactCountryFlag =
+  ReactCountryFlagImport?.ReactCountryFlag || ReactCountryFlagImport?.default || ReactCountryFlagImport;
 
-const DropdownMenu = styled.div`
-  position: absolute;
-  top: 100%;
-  right: 0;
-  background-color: rgba(40, 40, 40, 0.9);
-  border-radius: 4px;
-  padding: 2px;
-  margin-top: 10px;
-  min-width: auto;
-  box-shadow: ${({ theme }) => theme.shadows.medium};
-  display: ${({ $isOpen }) => ($isOpen ? 'flex' : 'none')};
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacings.small};
-  z-index: 12;
-  
-  ${props => props.$isMobile && css`
-    position: relative;
-    background-color: transparent;
-    box-shadow: none;
-    padding: ${({ theme }) => theme.spacings.medium} 0;
-    margin-top: 1.5rem;
-    width: 100%;
-    flex-direction: row;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    gap: ${({ theme }) => theme.spacings.medium};
-  `}
-`;
-
-const LanguageOption = styled.button`
-  background: none;
-  border: none;
-  padding: ${props => props.$isMobile ? '6px 10px' : '0'};
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  line-height: 0;
-  position: relative;
-  opacity: ${({ $isActive }) => ($isActive ? 1 : 0.7)};
-  border-radius: 3px;
-  transition: opacity ${({ theme }) => theme.transitions.default}, 
-              background-color ${({ theme }) => theme.transitions.default};
-
-  ${props => props.$isMobile && css`
-    background-color: ${props => props.$isActive ? 'rgba(1, 126, 84, 0.1)' : 'transparent'};
-    
-    .lang-name {
-      margin-left: 0.8rem;
-      font-size: 1.6rem;
-      font-weight: 500;
-      color: ${({ theme, $isActive }) => $isActive ? theme.colors.bottleGreen : theme.colors.text};
-    }
-  `}
-
-  .flag-container {
-    border-radius: 2px;
-    overflow: hidden;
-    border: 1px solid ${({ $isDropdown }) => 
-      $isDropdown ? 'rgba(255, 255, 255, 0.7)' : 'rgba(0, 0, 0, 0.5)'};
-    line-height: 0;
-  }
-  
-  .dropdown-flag-icon {
-    width: 100% !important;
-    height: auto;
-  }
-
-  &:hover {
-    opacity: 1;
-    background-color: ${props => props.$isMobile ? 'rgba(1, 126, 84, 0.05)' : 'transparent'};
-  }
-
-
-  &:disabled {
-    cursor: default;
-    opacity: 1;
-  }
-`;
-
-const LanguageSwitcher = ({ isMobile = false, isPastThreshold = false }) => {
+// Internal router-agnostic UI.
+function LanguageSwitcherUI({ isMobile = false, isPastThreshold = false, pathname, onSelectLanguage }) {
   const { i18n, t } = useTranslation();
-  const location = useLocation();
-  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const wrapperRef = useRef(null);
 
+  // Hydration-safe: avoid reading window.location during render.
+  // We get `pathname` from Header (SSR) and update it on the client in the parent when needed.
+  const currentPathname = pathname || '/';
+
   const currentLanguage = getValidLanguage(i18n.language);
   const displayLanguages = SUPPORTED_LANGUAGES.filter(lang => lang !== 'cimode');
+
+  const listboxId = isMobile ? undefined : 'language-switcher-listbox';
 
   const getLanguageName = (code) => {
     return t(`language.${code}`, code.toUpperCase());
@@ -153,24 +40,18 @@ const LanguageSwitcher = ({ isMobile = false, isPastThreshold = false }) => {
     }
   };
 
-  const changeLanguage = (langCode) => {
-    i18n.changeLanguage(langCode);
+  const getNextPath = (langCode) => translatePathname(currentPathname, langCode);
 
-    // Keep the current page, translate the whole URL (prefix + localized slugs).
-    const nextPath = translatePathname(location.pathname, langCode);
-    if (nextPath !== location.pathname) {
-      navigate(nextPath, { replace: true });
-    }
-    if (!isMobile) {
-      setIsOpen(false);
-    }
+  const closeDropdown = () => {
+    if (!isMobile) setIsOpen(false);
   };
 
   const handleKeyDown = (event, langCode) => {
+    const nextPath = getNextPath(langCode);
     handleKeyboardNavigation(
       event,
-      () => changeLanguage(langCode),
-      () => changeLanguage(langCode)
+      () => onSelectLanguage(langCode, nextPath),
+      () => onSelectLanguage(langCode, nextPath)
     );
   };
 
@@ -211,85 +92,71 @@ const LanguageSwitcher = ({ isMobile = false, isPastThreshold = false }) => {
   };
 
   return (
-    <SwitcherWrapper ref={wrapperRef} $isMobile={isMobile}>
+    <div ref={wrapperRef} className={cn(styles.wrapper, isMobile && styles.mobile)}>
       {isMobile && (
-        <div className="language-label">
-          {t('language.switcher.label', 'Language')}
-        </div>
+        <div className={styles.languageLabel}>{t('language.switcher.label', 'Language')}</div>
       )}
       
       {isMobile ? (
-        <DropdownMenu $isOpen={true} $isMobile={true}>
-          {displayLanguages.map((langCode) => (
-            <LanguageOption
-              key={langCode}
-              onClick={() => changeLanguage(langCode)}
-              onKeyDown={(e) => handleKeyDown(e, langCode)}
-              disabled={currentLanguage === langCode}
-              $isActive={currentLanguage === langCode}
-              $isMobile={true}
-              $isPastThreshold={true}
-              aria-label={getAltText(langCode)}
-              tabIndex={0}
-            >
-              <div className="flag-container">
-                <ReactCountryFlag
-                  countryCode={COUNTRY_CODES[langCode]}
-                  svg
-                  style={{
-                    width: '1.4em',
-                    height: 'auto',
-                    display: 'block',
-                  }}
-                  aria-label={getAltText(langCode)}
-                />
-              </div>
-              <span className="lang-name">{getLanguageName(langCode)}</span>
-            </LanguageOption>
-          ))}
-        </DropdownMenu>
-      ) : (
-        <>
-          <CurrentLanguageButton 
-            onClick={toggleDropdown}
-            onKeyDown={handleToggleKeyDown}
-            aria-label={t('language.switcher.changeLanguage', 'Change language')}
-            aria-expanded={isOpen}
-            aria-haspopup="listbox"
-            $isMobile={isMobile}
-            $isPastThreshold={isPastThreshold}
-            tabIndex={0}
-          >
-            <div className="flag-container">
-              <ReactCountryFlag
-                countryCode={COUNTRY_CODES[currentLanguage]}
-                svg
-                style={{
-                  width: '1.4em',
-                  height: 'auto',
-                }}
-                className="flag-icon"
-                aria-label={getAltText(currentLanguage)}
-              />
-            </div>
-          </CurrentLanguageButton>
+        <div className={cn(styles.dropdownMenu, styles.dropdownMenuMobile)}>
+          {displayLanguages.map((langCode) => {
+            const nextPath = getNextPath(langCode);
+            const isActive = currentLanguage === langCode;
 
-          <DropdownMenu $isOpen={isOpen} $isMobile={false} role="listbox">
-            {displayLanguages.map((langCode) => (
-              <LanguageOption
+            const optionClassName = cn(
+              styles.option,
+              styles.optionMobile,
+              isActive && styles.optionActive,
+              isActive && styles.optionMobileActive
+            );
+
+            const langNameClassName = cn(
+              styles.langName,
+              isActive && styles.langNameActive
+            );
+
+            if (isActive) {
+              return (
+                <button
+                  key={langCode}
+                  onKeyDown={(e) => handleKeyDown(e, langCode)}
+                  disabled
+                  aria-label={getAltText(langCode)}
+                  tabIndex={0}
+                  className={optionClassName}
+                >
+                  <div className={styles.optionFlagContainer}>
+                    <ReactCountryFlag
+                      countryCode={COUNTRY_CODES[langCode]}
+                      svg
+                      style={{
+                        width: '1.4em',
+                        height: 'auto',
+                        display: 'block',
+                      }}
+                      aria-label={getAltText(langCode)}
+                    />
+                  </div>
+                  <span className={langNameClassName}>{getLanguageName(langCode)}</span>
+                </button>
+              );
+            }
+
+            return (
+              <RouterAgnosticLink
                 key={langCode}
-                onClick={() => changeLanguage(langCode)}
+                href={nextPath}
+                onClick={(e) => {
+                  e.preventDefault();
+                  closeDropdown();
+                  onSelectLanguage(langCode, nextPath);
+                }}
                 onKeyDown={(e) => handleKeyDown(e, langCode)}
-                disabled={currentLanguage === langCode}
-                $isActive={currentLanguage === langCode}
-                $isMobile={false}
-                $isDropdown={true}
                 aria-label={getAltText(langCode)}
-                role="option"
-                aria-selected={currentLanguage === langCode}
                 tabIndex={0}
+                className={optionClassName}
               >
-                <div className="flag-container">
+                <div className={styles.optionFlagContainer}>
                   <ReactCountryFlag
                     countryCode={COUNTRY_CODES[langCode]}
                     svg
@@ -298,17 +165,148 @@ const LanguageSwitcher = ({ isMobile = false, isPastThreshold = false }) => {
                       height: 'auto',
                       display: 'block',
                     }}
-                    className="dropdown-flag-icon"
                     aria-label={getAltText(langCode)}
                   />
                 </div>
-              </LanguageOption>
-            ))}
-          </DropdownMenu>
+                <span className={langNameClassName}>{getLanguageName(langCode)}</span>
+              </RouterAgnosticLink>
+            );
+          })}
+        </div>
+      ) : (
+        <>
+          <button
+            onClick={toggleDropdown}
+            onKeyDown={handleToggleKeyDown}
+            aria-label={t('language.switcher.changeLanguage', 'Change language')}
+            aria-expanded={isOpen}
+            aria-haspopup="listbox"
+            aria-controls={listboxId}
+            tabIndex={0}
+            className={styles.currentButton}
+          >
+            <div
+              className={cn(
+                styles.flagContainer,
+                isPastThreshold ? styles.borderPastThreshold : styles.borderBeforeThreshold
+              )}
+            >
+              <ReactCountryFlag
+                countryCode={COUNTRY_CODES[currentLanguage]}
+                svg
+                style={{
+                  width: '1.4em',
+                  height: 'auto',
+                }}
+                className={styles.flagIcon}
+                aria-label={getAltText(currentLanguage)}
+              />
+            </div>
+          </button>
+
+          <div
+            id={listboxId}
+            className={cn(styles.dropdownMenu, isOpen && styles.open)}
+            role="listbox"
+            aria-label={t('language.switcher.label', 'Language')}
+          >
+            {displayLanguages.map((langCode) => {
+              const nextPath = getNextPath(langCode);
+              const isActive = currentLanguage === langCode;
+
+              const optionClassName = cn(styles.option, isActive && styles.optionActive);
+              const optionFlagClassName = cn(
+                styles.optionFlagContainer,
+                styles.optionFlagContainerDropdown
+              );
+
+              if (isActive) {
+                return (
+                  <button
+                    key={langCode}
+                    onKeyDown={(e) => handleKeyDown(e, langCode)}
+                    disabled
+                    aria-label={getAltText(langCode)}
+                    role="option"
+                    aria-selected={true}
+                    tabIndex={0}
+                    className={optionClassName}
+                  >
+                    <div className={optionFlagClassName}>
+                      <ReactCountryFlag
+                        countryCode={COUNTRY_CODES[langCode]}
+                        svg
+                        style={{
+                          width: '1.4em',
+                          height: 'auto',
+                          display: 'block',
+                        }}
+                        className={styles.dropdownFlagIcon}
+                        aria-label={getAltText(langCode)}
+                      />
+                    </div>
+                  </button>
+                );
+              }
+
+              return (
+                <RouterAgnosticLink
+                  key={langCode}
+                  href={nextPath}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    closeDropdown();
+                    onSelectLanguage(langCode, nextPath);
+                  }}
+                  onKeyDown={(e) => handleKeyDown(e, langCode)}
+                  aria-label={getAltText(langCode)}
+                  role="option"
+                  aria-selected={false}
+                  tabIndex={0}
+                  className={optionClassName}
+                >
+                  <div className={optionFlagClassName}>
+                    <ReactCountryFlag
+                      countryCode={COUNTRY_CODES[langCode]}
+                      svg
+                      style={{
+                        width: '1.4em',
+                        height: 'auto',
+                        display: 'block',
+                      }}
+                      className={styles.dropdownFlagIcon}
+                      aria-label={getAltText(langCode)}
+                    />
+                  </div>
+                </RouterAgnosticLink>
+              );
+            })}
+          </div>
         </>
       )}
-    </SwitcherWrapper>
+    </div>
   );
-};
+}
 
-export default LanguageSwitcher;
+/**
+ * Public LanguageSwitcher
+ * - In SPA (React Router): uses client-side navigation (useNavigate)
+ * - In Astro / no Router: falls back to full navigation (location.assign)
+ */
+export default function LanguageSwitcher(props) {
+  // Astro owns routing (SSG). We always do full navigation.
+  const { i18n } = useTranslation();
+  // Hydration-safe: do not read window.location during render.
+  // In Astro SSR, Header should pass `pathname` down when needed.
+  const currentPathname = props.pathname || '/';
+
+  const onSelectLanguage = (langCode, nextPathFromUi) => {
+    i18n.changeLanguage(langCode);
+    const nextPath = nextPathFromUi || translatePathname(currentPathname, langCode);
+    if (typeof window !== 'undefined') {
+      window.location.assign(nextPath);
+    }
+  };
+
+  return <LanguageSwitcherUI {...props} pathname={currentPathname} onSelectLanguage={onSelectLanguage} />;
+}

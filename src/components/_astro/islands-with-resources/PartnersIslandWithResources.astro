@@ -1,0 +1,17 @@
+---
+import PartnersIsland from '../islands/partners.jsx';
+import { getI18nResources } from '../../../lib/i18n/resources.js';
+
+const { lang = 'pl', viewProps = {}, hydrate = 'visible' } = Astro.props;
+const resources = await getI18nResources(lang);
+---
+
+{
+  hydrate === 'only'
+    ? <PartnersIsland lang={lang} resources={resources} viewProps={viewProps} client:only="react" />
+    : hydrate === 'idle'
+      ? <PartnersIsland lang={lang} resources={resources} viewProps={viewProps} client:idle />
+      : hydrate === 'load'
+        ? <PartnersIsland lang={lang} resources={resources} viewProps={viewProps} client:load />
+        : <PartnersIsland lang={lang} resources={resources} viewProps={viewProps} client:visible />
+}

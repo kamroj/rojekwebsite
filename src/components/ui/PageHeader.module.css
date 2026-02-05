@@ -1,0 +1,75 @@
+.headerWrapper {
+  width: 100%;
+  overflow: hidden;
+}
+
+.headerImageWrapper {
+  position: relative;
+  width: 100vw;
+  left: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  overflow: hidden;
+}
+
+.headerImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  position: relative;
+  z-index: 0;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.headerContentLayer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 18px;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.headerContentLayer [data-max-width-container='true'] {
+  position: relative; /* make container the positioning context */
+  pointer-events: none;
+}
+
+.headerContent {
+  border: 1px solid #016d197d;
+  position: absolute;
+  text-transform: uppercase;
+  bottom: 18px;
+  right: 22px;
+  margin: 0;
+  padding: 12px 24px;
+  backdrop-filter: blur(3px);
+  border-radius: 10px;
+  display: inline-block;
+  z-index: 2;
+  pointer-events: auto;
+  white-space: nowrap;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+}
+
+.headerContent h1 {
+  margin: 0;
+  font-weight: 300;
+  font-size: 2.4rem;
+  color: inherit;
+  line-height: 1;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 900px) {
+  .headerContent h1 {
+    font-size: 2rem;
+  }
+}

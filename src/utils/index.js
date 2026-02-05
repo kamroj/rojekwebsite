@@ -1,4 +1,4 @@
-import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from '../constants';
+import { SUPPORTED_LANGUAGES, DEFAULT_LANGUAGE } from '../constants/index.js';
 
 /**
  * Validates if a language code is supported
@@ -91,7 +91,7 @@ export const throttle = (func, limit) => {
  * @param {number} width - Screen width
  * @returns {boolean} - Whether device is mobile
  */
-export const isMobileDevice = (width = window.innerWidth) => {
+export const isMobileDevice = (width = (typeof window !== 'undefined' ? window.innerWidth : 1024)) => {
   return width < 768;
 };
 
@@ -100,7 +100,7 @@ export const isMobileDevice = (width = window.innerWidth) => {
  * @param {number} width - Screen width
  * @returns {boolean} - Whether device is tablet
  */
-export const isTabletDevice = (width = window.innerWidth) => {
+export const isTabletDevice = (width = (typeof window !== 'undefined' ? window.innerWidth : 1024)) => {
   return width >= 768 && width < 992;
 };
 
@@ -109,7 +109,7 @@ export const isTabletDevice = (width = window.innerWidth) => {
  * @param {number} width - Screen width
  * @returns {string} - Device type: 'mobile', 'tablet', or 'desktop'
  */
-export const getDeviceType = (width = window.innerWidth) => {
+export const getDeviceType = (width = (typeof window !== 'undefined' ? window.innerWidth : 1024)) => {
   if (width < 768) return 'mobile';
   if (width < 992) return 'tablet';
   return 'desktop';
