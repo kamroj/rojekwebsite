@@ -81,7 +81,8 @@ export default function SanityImage({
       alt={resolvedAlt}
       loading={imgProps.loading}
       decoding={imgProps.decoding}
-      fetchpriority={imgProps.fetchpriority}
+      // React DOM prop casing is `fetchPriority` (but the HTML attribute is `fetchpriority`).
+      fetchPriority={imgProps.fetchpriority}
       style={finalStyle}
       onLoad={onLoad}
     />

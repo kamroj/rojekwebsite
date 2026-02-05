@@ -1,5 +1,6 @@
 import React from 'react';
 import { PortableText } from '@portabletext/react';
+import SanityImage from '../ui/SanityImage.jsx';
 
 // NOTE:
 // This renderer is intentionally **styled-components free**.
@@ -29,6 +30,24 @@ const SanityPortableText = ({ value, variant = 'default' }) => {
   const gap = variant === 'compact' ? '0' : '0.9em';
 
   const components = {
+    types: {
+      // PortableText image block. We expect it to be projected from GROQ with:
+      // asset->{url, metadata{dimensions,lqip,blurHash,palette}}, crop, hotspot, alt.
+      image: ({ value: img }) => {
+        // For rich text we default to full-width images within the prose column.
+        return (
+          <SanityImage
+            image={img}
+            altFallback=""
+            sizes="(max-width: 900px) 100vw, 800px"
+            widths={[320, 480, 640, 800, 1024, 1280]}
+            loading="lazy"
+            decoding="async"
+            style={{ width: '100%', height: 'auto' }}
+          />
+        );
+      },
+    },
     block: {
       normal: ({ children, value: blockValue }) => {
         if (isEmptyBlock(blockValue)) {
@@ -51,5 +70,6 @@ const SanityPortableText = ({ value, variant = 'default' }) => {
 };
 
 export default SanityPortableText;
+
 
 

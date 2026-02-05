@@ -48,8 +48,10 @@
  *
  * - `alt` should come from Studio.
  * - If `alt` is missing, we will fallback in rendering helpers.
+ * - When this is a PortableText node, it can also include `_type: "image"`.
  *
  * @typedef {Object} SanityImage
+ * @property {string=} _type
  * @property {string=} alt
  * @property {SanityImageAsset=} asset
  * @property {SanityImageCrop=} crop
@@ -60,6 +62,7 @@
 export {}; // ensure this file is treated as a module
 
 /** @typedef {SanityImage} _SanityImageExportHack */
+
 
 
 

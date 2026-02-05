@@ -1,7 +1,10 @@
 // src/services/sanity/windows.js
 import { getSanityClient } from './client';
 import { pickLocale } from './i18n';
-import { SANITY_IMAGE_PROJECTION } from './imageProjection.js';
+import {
+  SANITY_IMAGE_PROJECTION,
+  SANITY_LOCALIZED_BLOCK_CONTENT_PROJECTION,
+} from './imageProjection.js';
 
 const WINDOWS_CATEGORY_ID = 'category_okna';
 
@@ -55,7 +58,7 @@ export const fetchWindowProductDetail = async (slug, lang, { signal } = {}) => {
       "headerImage": headerImage ${SANITY_IMAGE_PROJECTION},
       "gallery": gallery[] ${SANITY_IMAGE_PROJECTION},
       shortDescription,
-      longDescription,
+      longDescription ${SANITY_LOCALIZED_BLOCK_CONTENT_PROJECTION},
       specs{profileThickness, thermalTransmittance, waterTightness, video{asset->{url}}},
       features,
       advantages[]{

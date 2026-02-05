@@ -7,6 +7,27 @@ import { urlForImage } from './image.js';
 
 const DEFAULT_WIDTHS = [320, 480, 640, 800, 1024, 1280, 1600];
 
+const clamp01 = (n) => Math.min(1, Math.max(0, n));
+
+/**
+ * Sanity `crop` is stored as fractions of the original image.
+ * Example: {top: 0.1, bottom: 0.2, left: 0.05, right: 0.05}
+ */
+const getCroppedDimensions = (dimensions, crop) => {
+  if (!dimensions?.width || !dimensions?.height) return null;
+  if (!crop) return { width: dimensions.width, height: dimensions.height };
+
+  const top = clamp01(crop.top || 0);
+  const bottom = clamp01(crop.bottom || 0);
+  const left = clamp01(crop.left || 0);
+  const right = clamp01(crop.right || 0);
+
+  const width = Math.max(1, Math.round(dimensions.width * (1 - left - right)));
+  const height = Math.max(1, Math.round(dimensions.height * (1 - top - bottom)));
+
+  return { width, height };
+};
+
 /**
  * Ensure we don't request widths larger than the original asset.
  * (Sanity will generally serve them, but it's wasteful.)
@@ -75,6 +96,8 @@ export const getSanityImageProps = (image, opts = {}) => {
   const alt = typeof image.alt === 'string' ? image.alt : altFallback;
   const dimensions = image?.asset?.metadata?.dimensions;
 
+  const cropped = getCroppedDimensions(dimensions, image?.crop);
+
   const baseBuilder = urlForImage(image);
   if (!baseBuilder) {
     // If builder is not available, we can still try to use the raw asset URL.
@@ -116,10 +139,11 @@ export const getSanityImageProps = (image, opts = {}) => {
 
   // CLS prevention: if we have dimensions, derive width/height for the chosen src.
   // Use aspectRatio for stability.
+  // IMPORTANT: if `crop` is set, the effective ratio changes.
   let width;
   let height;
-  if (dimensions?.width && dimensions?.height) {
-    const ratio = dimensions.aspectRatio || (dimensions.width / dimensions.height);
+  if (cropped?.width && cropped?.height) {
+    const ratio = cropped.width / cropped.height;
     width = defaultSrcWidth;
     height = Math.round(defaultSrcWidth / ratio);
   }
