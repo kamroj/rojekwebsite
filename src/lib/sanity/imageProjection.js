@@ -17,6 +17,8 @@ export const SANITY_IMAGE_ASSET_PROJECTION = `asset->{
 // By convention we store alt text under `alt` on the image object.
 // (If some schemas do not have alt yet, we will add fallbacks in the renderer.)
 export const SANITY_IMAGE_PROJECTION = `{
+  // Present when this image is an item in an array (e.g. gallery[])
+  _key,
   alt,
   ${SANITY_IMAGE_ASSET_PROJECTION},
   crop,

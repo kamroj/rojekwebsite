@@ -1,6 +1,5 @@
 // src/services/sanity/windows.js
 import { getSanityClient } from './client';
-import { urlForImage } from './image';
 import { pickLocale } from './i18n';
 import { SANITY_IMAGE_PROJECTION } from './imageProjection.js';
 
@@ -26,7 +25,6 @@ export const fetchWindowProductsList = async (lang, { signal } = {}) => {
   const items = await sanityClient.fetch(query, { categoryId: WINDOWS_CATEGORY_ID }, { signal });
 
   return (items || []).map((p) => {
-    const listImageUrl = p?.listImage ? urlForImage(p.listImage)?.width(1200)?.quality(80)?.url() : null;
     return {
       id: p._id,
       slug: p.slug,
@@ -35,11 +33,12 @@ export const fetchWindowProductsList = async (lang, { signal } = {}) => {
       // New canonical shape (preferred by new renderers): full Sanity image object.
       // Keep `image` URL for backward compatibility for now.
       listImage: p.listImage || null,
-      image: listImageUrl,
+      // NOTE: this string URL is legacy and should be removed once all UIs use <SanityImage/>.
+      image: null,
       specs: p.specs || {},
 
       // Assets to preload
-      _assetUrls: [listImageUrl].filter(Boolean),
+      _assetUrls: [p?.listImage?.asset?.url].filter(Boolean),
     };
   });
 };
@@ -73,11 +72,6 @@ export const fetchWindowProductDetail = async (slug, lang, { signal } = {}) => {
   const p = await sanityClient.fetch(query, { slug }, { signal });
   if (!p) return null;
 
-  const headerImageUrl = p?.headerImage ? urlForImage(p.headerImage)?.width(2000)?.quality(80)?.url() : null;
-  const galleryUrls = (p?.gallery || [])
-    .map((img) => (img ? urlForImage(img)?.width(2000)?.quality(80)?.url() : null))
-    .filter(Boolean);
-
   const videoUrl = p?.specs?.video?.asset?.url || null;
 
   const advantages = (p?.advantages || []).map((a) => ({
@@ -108,8 +102,10 @@ export const fetchWindowProductDetail = async (slug, lang, { signal } = {}) => {
     gallery: Array.isArray(p.gallery) ? p.gallery : [],
 
     // Backward compatible fields used by existing UI (strings):
-    headerImage: headerImageUrl,
-    images: galleryUrls,
+    // NOTE: string URLs are legacy; keep them null so old <img> fallbacks don't silently drop metadata.
+    // Prefer using `headerImageSanity` + `gallery` everywhere.
+    headerImage: null,
+    images: [],
     video: videoUrl,
     specs: p.specs || {},
 
@@ -120,6 +116,7 @@ export const fetchWindowProductDetail = async (slug, lang, { signal } = {}) => {
     faq,
 
     // Assets to preload
-    _assetUrls: [headerImageUrl, ...galleryUrls, videoUrl].filter(Boolean),
+    _assetUrls: [p?.headerImage?.asset?.url, ...(p?.gallery || []).map((img) => img?.asset?.url), videoUrl]
+      .filter(Boolean),
   };
 };
