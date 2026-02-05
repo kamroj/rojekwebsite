@@ -13,7 +13,14 @@ export default function ContactFormIsland({ lang = 'pl', resources, viewProps })
       lang={lang}
       resources={resources}
       View={ContactView}
-      viewProps={{ ...(viewProps || {}), ssgMode: true, hideDirectCard: true }}
+      // IMPORTANT:
+      // `AstroIslandView` spreads `viewProps` into the React View as plain props.
+      // `ContactView` expects a *single* prop called `viewProps`.
+      // If we pass `{ ssgMode: true }` at top-level, ContactView won't see it and will
+      // render the full page layout again (duplicating header + hero + directCard).
+      viewProps={{
+        viewProps: { ...(viewProps || {}), ssgMode: true, hideDirectCard: true },
+      }}
     />
   );
 }

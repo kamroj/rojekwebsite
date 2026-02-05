@@ -46,7 +46,16 @@ const RECAPTCHA_SITE_KEY =
   import.meta.env.VITE_RECAPTCHA_SITE_KEY ||
   (import.meta.env.DEV ? '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' : '');
 
-const ContactPage = ({ viewProps } = {}) => {
+// NOTE: This view is used in two modes:
+// - SPA mode (React Router): rendered as a full page with <Page /> wrapper.
+// - SSG mode (Astro): rendered as a small island (just the form), with the outer
+//   layout provided by `ContactPageSsg.astro`.
+//
+// Because Astro islands spread props (`<View {...viewProps} />`), it's easy to
+// accidentally pass `ssgMode` at the top-level instead of inside `viewProps`.
+// To be resilient, we support BOTH shapes.
+const ContactPage = (props = {}) => {
+  const { viewProps, ssgMode, hideDirectCard } = props;
   const { t } = useTranslation();
 
   // `react-google-recaptcha` is browser-only (touches `window` / DOM).
@@ -134,8 +143,109 @@ const ContactPage = ({ viewProps } = {}) => {
     }
   };
 
-  const isSsgMode = !!viewProps?.ssgMode;
-  const showDirectCard = !viewProps?.hideDirectCard;
+  const isSsgMode = !!(viewProps?.ssgMode || ssgMode);
+  const showDirectCard = !(viewProps?.hideDirectCard || hideDirectCard);
+
+  // In SSG mode (Astro page), the outer layout (header + two-column container)
+  // is rendered in `ContactPageSsg.astro`. This React island should render ONLY
+  // the form content, otherwise we end up with nested containers/sections and the
+  // layout breaks on desktop/mobile.
+  const renderForm = () => (
+    <>
+      <p>{t('contactPage.form.useForm')}</p>
+
+      <form className={styles.form} onSubmit={onSubmit} noValidate>
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="name">{t('contactPage.form.nameLabel')}</label>
+          <input
+            className={styles.input}
+            id="name"
+            name="name"
+            type="text"
+            placeholder={t('contactPage.form.namePlaceholder')}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            autoComplete="name"
+          />
+        </div>
+
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="email">{t('contactPage.form.emailLabel')} *</label>
+          <input
+            className={styles.input}
+            id="email"
+            name="email"
+            type="email"
+            placeholder={t('contactPage.form.emailPlaceholder')}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            autoComplete="email"
+            required
+            aria-invalid={!!errors.email}
+          />
+          {errors.email && <div className={styles.errorText}>{errors.email}</div>}
+        </div>
+
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="phone">{t('contactPage.form.phoneLabel')}</label>
+          <input
+            className={styles.input}
+            id="phone"
+            name="phone"
+            type="tel"
+            placeholder={t('contactPage.form.phonePlaceholder')}
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            autoComplete="tel"
+            inputMode="tel"
+          />
+        </div>
+
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor="message">{t('contactPage.form.messageLabel')} *</label>
+          <textarea
+            className={styles.textarea}
+            id="message"
+            name="message"
+            placeholder={t('contactPage.form.messagePlaceholder')}
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            required
+            aria-invalid={!!errors.message}
+          />
+          {errors.message && <div className={styles.errorText}>{errors.message}</div>}
+        </div>
+
+        <div className={styles.field}>
+          {RecaptchaComponent ? (
+            <RecaptchaComponent
+              ref={recaptchaRef}
+              sitekey={RECAPTCHA_SITE_KEY}
+              onChange={(token) => {
+                setRecaptchaToken(token);
+                if (errors.recaptcha) setErrors((p) => ({ ...p, recaptcha: '' }));
+              }}
+            />
+          ) : (
+            // SSR placeholder – prevents layout shift.
+            <div style={{ height: 78 }} aria-hidden="true" />
+          )}
+          {errors.recaptcha && <div className={styles.errorText}>{errors.recaptcha}</div>}
+        </div>
+
+        <div className={styles.submitRow}>
+          <button className={styles.button} type="submit" disabled={submitting}>
+            {submitting ? t('contactPage.actions.sending') : t('contactPage.actions.send')}
+          </button>
+          {sent && <div className={styles.successBox}>{t('contactPage.success')}</div>}
+        </div>
+      </form>
+
+      <p className={styles.formInfo}>
+        {t('contactPage.gdpr.notice')}
+      </p>
+    </>
+  );
 
   return (
     <>
@@ -151,98 +261,7 @@ const ContactPage = ({ viewProps } = {}) => {
 
         <div className={styles.contactContainer}>
           <div className={styles.formWrap}>
-            <p>{t('contactPage.form.useForm')}</p>
-
-            <form className={styles.form} onSubmit={onSubmit} noValidate>
-              <div className={styles.field}>
-                <label className={styles.label} htmlFor="name">{t('contactPage.form.nameLabel')}</label>
-                <input
-                  className={styles.input}
-                  id="name"
-                  name="name"
-                  type="text"
-                  placeholder={t('contactPage.form.namePlaceholder')}
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  autoComplete="name"
-                />
-              </div>
-
-              <div className={styles.field}>
-                <label className={styles.label} htmlFor="email">{t('contactPage.form.emailLabel')} *</label>
-                <input
-                  className={styles.input}
-                  id="email"
-                  name="email"
-                  type="email"
-                  placeholder={t('contactPage.form.emailPlaceholder')}
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  autoComplete="email"
-                  required
-                  aria-invalid={!!errors.email}
-                />
-                {errors.email && <div className={styles.errorText}>{errors.email}</div>}
-              </div>
-
-              <div className={styles.field}>
-                <label className={styles.label} htmlFor="phone">{t('contactPage.form.phoneLabel')}</label>
-                <input
-                  className={styles.input}
-                  id="phone"
-                  name="phone"
-                  type="tel"
-                  placeholder={t('contactPage.form.phonePlaceholder')}
-                  value={phone}
-                  onChange={(e) => setPhone(e.target.value)}
-                  autoComplete="tel"
-                  inputMode="tel"
-                />
-              </div>
-
-              <div className={styles.field}>
-                <label className={styles.label} htmlFor="message">{t('contactPage.form.messageLabel')} *</label>
-                <textarea
-                  className={styles.textarea}
-                  id="message"
-                  name="message"
-                  placeholder={t('contactPage.form.messagePlaceholder')}
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  required
-                  aria-invalid={!!errors.message}
-                />
-                {errors.message && <div className={styles.errorText}>{errors.message}</div>}
-              </div>
-
-              <div className={styles.field}>
-                {RecaptchaComponent ? (
-                  <RecaptchaComponent
-                    ref={recaptchaRef}
-                    sitekey={RECAPTCHA_SITE_KEY}
-                    onChange={(token) => {
-                      setRecaptchaToken(token);
-                      if (errors.recaptcha) setErrors((p) => ({ ...p, recaptcha: '' }));
-                    }}
-                  />
-                ) : (
-                  // SSR placeholder – prevents layout shift.
-                  <div style={{ height: 78 }} aria-hidden="true" />
-                )}
-                {errors.recaptcha && <div className={styles.errorText}>{errors.recaptcha}</div>}
-              </div>
-
-              <div className={styles.submitRow}>
-                <button className={styles.button} type="submit" disabled={submitting}>
-                  {submitting ? t('contactPage.actions.sending') : t('contactPage.actions.send')}
-                </button>
-                {sent && <div className={styles.successBox}>{t('contactPage.success')}</div>}
-              </div>
-            </form>
-
-            <p className={styles.formInfo}>
-              {t('contactPage.gdpr.notice')}
-            </p>
+            {renderForm()}
           </div>
           {showDirectCard && (
             <div className={styles.directCard} style={{ marginTop: 24 }}>
@@ -298,111 +317,9 @@ const ContactPage = ({ viewProps } = {}) => {
       )}
 
       {isSsgMode && (
-        <Section>
-          <HeaderWrap>
-            <ProductHeader>{t('contactPage.header.title')}</ProductHeader>
-            <ProductHeaderSubtitle>
-              {t('contactPage.header.subtitle')}
-            </ProductHeaderSubtitle>
-          </HeaderWrap>
-
-          <div className={styles.contactContainer}>
-            <div className={styles.formWrap}>
-              <p>{t('contactPage.form.useForm')}</p>
-
-              <form className={styles.form} onSubmit={onSubmit} noValidate>
-                <div className={styles.field}>
-                  <label className={styles.label} htmlFor="name">{t('contactPage.form.nameLabel')}</label>
-                  <input
-                    className={styles.input}
-                    id="name"
-                    name="name"
-                    type="text"
-                    placeholder={t('contactPage.form.namePlaceholder')}
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    autoComplete="name"
-                  />
-                </div>
-
-                <div className={styles.field}>
-                  <label className={styles.label} htmlFor="email">{t('contactPage.form.emailLabel')} *</label>
-                  <input
-                    className={styles.input}
-                    id="email"
-                    name="email"
-                    type="email"
-                    placeholder={t('contactPage.form.emailPlaceholder')}
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    autoComplete="email"
-                    required
-                    aria-invalid={!!errors.email}
-                  />
-                  {errors.email && <div className={styles.errorText}>{errors.email}</div>}
-                </div>
-
-                <div className={styles.field}>
-                  <label className={styles.label} htmlFor="phone">{t('contactPage.form.phoneLabel')}</label>
-                  <input
-                    className={styles.input}
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    placeholder={t('contactPage.form.phonePlaceholder')}
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    autoComplete="tel"
-                    inputMode="tel"
-                  />
-                </div>
-
-                <div className={styles.field}>
-                  <label className={styles.label} htmlFor="message">{t('contactPage.form.messageLabel')} *</label>
-                  <textarea
-                    className={styles.textarea}
-                    id="message"
-                    name="message"
-                    placeholder={t('contactPage.form.messagePlaceholder')}
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    required
-                    aria-invalid={!!errors.message}
-                  />
-                  {errors.message && <div className={styles.errorText}>{errors.message}</div>}
-                </div>
-
-                <div className={styles.field}>
-                  {RecaptchaComponent ? (
-                    <RecaptchaComponent
-                      ref={recaptchaRef}
-                      sitekey={RECAPTCHA_SITE_KEY}
-                      onChange={(token) => {
-                        setRecaptchaToken(token);
-                        if (errors.recaptcha) setErrors((p) => ({ ...p, recaptcha: '' }));
-                      }}
-                    />
-                  ) : (
-                    // SSR placeholder – prevents layout shift.
-                    <div style={{ height: 78 }} aria-hidden="true" />
-                  )}
-                  {errors.recaptcha && <div className={styles.errorText}>{errors.recaptcha}</div>}
-                </div>
-
-                <div className={styles.submitRow}>
-                  <button className={styles.button} type="submit" disabled={submitting}>
-                    {submitting ? t('contactPage.actions.sending') : t('contactPage.actions.send')}
-                  </button>
-                  {sent && <div className={styles.successBox}>{t('contactPage.success')}</div>}
-                </div>
-              </form>
-
-              <p className={styles.formInfo}>
-                {t('contactPage.gdpr.notice')}
-              </p>
-            </div>
-          </div>
-        </Section>
+        <>
+          {renderForm()}
+        </>
       )}
     </>
   );

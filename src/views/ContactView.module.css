@@ -5,7 +5,9 @@
   margin-top: 24px;
 }
 
-@media (--bp-lg) {
+/* NOTE: `@media (--bp-*)` requires postcss-custom-media.
+   Astro/Vite doesn't expand it by default, so use standard media queries here. */
+@media (max-width: 1200px) {
   .contactContainer {
     flex-direction: column;
   }
@@ -148,7 +150,7 @@
   z-index: 1;
 }
 
-@media (--bp-lg) {
+@media (max-width: 1200px) {
   .directCard {
     width: 100%;
   }
