@@ -6,7 +6,7 @@ import { ROUTES } from '../../constants/index.js';
 import { productCategories } from '../../data/products/index.js';
 import { getProductCategoryPath, getProductDetailPath, getSectionPath } from '../../lib/i18n/routing';
 import { isSanityConfigured } from '../../lib/sanity/config';
-import { fetchWindowProductsList } from '../../lib/sanity/windows';
+import { fetchProductsListByCategory, fetchWindowProductsList } from '../../lib/sanity/windows';
 import styles from './Navigation.module.css';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
@@ -85,10 +85,13 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
   const [activeCategoryKey, setActiveCategoryKey] = useState(null);
   const [activeProductKey, setActiveProductKey] = useState(null);
 
-  // Sanity (dynamic list for okna)
+  // Sanity (dynamic list for okna/drzwi)
   const [sanityWindows, setSanityWindows] = useState(null);
   const [sanityWindowsLoaded, setSanityWindowsLoaded] = useState(false);
   const windowsFetchAbortRef = useRef(null);
+  const [sanityDoors, setSanityDoors] = useState(null);
+  const [sanityDoorsLoaded, setSanityDoorsLoaded] = useState(false);
+  const doorsFetchAbortRef = useRef(null);
 
   // Lazy-load: pobieramy listę okien z Sanity dopiero przy pierwszym otwarciu mega menu.
   useEffect(() => {
@@ -120,6 +123,36 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
     return () => controller.abort();
   }, [isMegaOpen, lang, sanityWindowsLoaded, variant]);
 
+  // Lazy-load: pobieramy listę drzwi z Sanity dopiero przy pierwszym otwarciu mega menu.
+  useEffect(() => {
+    if (variant !== 'header') return;
+    if (!isMegaOpen) return;
+    if (sanityDoorsLoaded) return;
+    if (!isSanityConfigured()) {
+      setSanityDoors(null);
+      setSanityDoorsLoaded(true);
+      return;
+    }
+
+    const controller = new AbortController();
+    doorsFetchAbortRef.current = controller;
+
+    fetchProductsListByCategory('category_drzwi_zewnetrzne', lang, { signal: controller.signal })
+      .then((items) => {
+        if (controller.signal.aborted) return;
+        setSanityDoors(Array.isArray(items) ? items : []);
+        setSanityDoorsLoaded(true);
+      })
+      .catch((e) => {
+        if (controller.signal.aborted) return;
+        console.warn('Sanity doors list fetch failed (mega menu)', e);
+        setSanityDoors([]);
+        setSanityDoorsLoaded(true);
+      });
+
+    return () => controller.abort();
+  }, [isMegaOpen, lang, sanityDoorsLoaded, variant]);
+
   // Po zmianie języka chcemy odświeżyć listę (bo opisy są lokalizowane)
   useEffect(() => {
     setSanityWindows(null);
@@ -127,6 +160,12 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
     if (windowsFetchAbortRef.current) {
       windowsFetchAbortRef.current.abort();
       windowsFetchAbortRef.current = null;
+    }
+    setSanityDoors(null);
+    setSanityDoorsLoaded(false);
+    if (doorsFetchAbortRef.current) {
+      doorsFetchAbortRef.current.abort();
+      doorsFetchAbortRef.current = null;
     }
   }, [lang]);
 
@@ -186,7 +225,9 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
         const products =
           key === 'okna' && Array.isArray(sanityWindows) && sanityWindows.length > 0
             ? sanityWindows
-            : localProducts;
+            : key === 'drzwi' && Array.isArray(sanityDoors) && sanityDoors.length > 0
+              ? sanityDoors
+              : localProducts;
 
         return ({
         key,
@@ -196,7 +237,7 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
       });
       })
       .filter((c) => c.products.length > 0);
-  }, [sanityWindows, t]);
+  }, [sanityDoors, sanityWindows, t]);
 
   const specItemsForMegaMenu = useMemo(() => ([
     { key: 'profileThickness', label: t('productSpecs.short.profileThickness', 'profil') },
@@ -230,8 +271,11 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
 
   const resolvedActiveProductImage = useMemo(() => {
     // W danych lokalnych obrazek siedzi w `image`, czasem bywa też `images[0]`.
-    // Dla sanity możemy tu później podpiąć urlForImage(...) - ale na razie trzymamy się danych, które już są używane w UI.
-    return resolvedActiveProduct?.image || resolvedActiveProduct?.images?.[0] || null;
+    // Dla sanity `image` jest ustawiane jako URL z listImage w fetcherze.
+    return resolvedActiveProduct?.image
+      || resolvedActiveProduct?.listImage?.asset?.url
+      || resolvedActiveProduct?.images?.[0]
+      || null;
   }, [resolvedActiveProduct]);
 
   // Kiedy otwieramy mega menu, ustawiamy domyślny produkt (pierwszy z aktywnej kategorii)

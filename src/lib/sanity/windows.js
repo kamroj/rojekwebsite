@@ -8,7 +8,7 @@ import {
 
 const WINDOWS_CATEGORY_ID = 'category_okna';
 
-export const fetchWindowProductsList = async (lang, { signal } = {}) => {
+export const fetchProductsListByCategory = async (categoryId, lang, { signal } = {}) => {
   const sanityClient = getSanityClient();
   if (!sanityClient) return [];
 
@@ -25,7 +25,7 @@ export const fetchWindowProductsList = async (lang, { signal } = {}) => {
       }
   `;
 
-  const items = await sanityClient.fetch(query, { categoryId: WINDOWS_CATEGORY_ID }, { signal });
+  const items = await sanityClient.fetch(query, { categoryId }, { signal });
 
   return (items || []).map((p) => {
     return {
@@ -37,13 +37,17 @@ export const fetchWindowProductsList = async (lang, { signal } = {}) => {
       // Keep `image` URL for backward compatibility for now.
       listImage: p.listImage || null,
       // NOTE: this string URL is legacy and should be removed once all UIs use <SanityImage/>.
-      image: null,
+      image: p?.listImage?.asset?.url || null,
       specs: p.specs || {},
 
       // Assets to preload
       _assetUrls: [p?.listImage?.asset?.url].filter(Boolean),
     };
   });
+};
+
+export const fetchWindowProductsList = async (lang, { signal } = {}) => {
+  return fetchProductsListByCategory(WINDOWS_CATEGORY_ID, lang, { signal });
 };
 
 export const fetchWindowProductDetail = async (slug, lang, { signal } = {}) => {

@@ -20,7 +20,7 @@
 
 .productHeader {
   font-size: 3rem;
-  font-weight: 300;
+  font-weight: 400;
   line-height: 1.2;
 }
 
@@ -39,6 +39,10 @@
 
 .productHeaderSubtitleBlackBackground {
   color: #259108c5;
+}
+
+.productHeaderLight {
+  color: var(--color-text-light);
 }
 
 @media (--bp-lg) {

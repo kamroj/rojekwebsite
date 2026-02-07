@@ -8,6 +8,7 @@ import 'swiper/css';
 import 'swiper/css/autoplay';
 import MaxWidthContainer from '../../ui/MaxWidthContainer';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../../views/HomeView';
+import homeStyles from '../../../views/HomeView.module.css';
 import { useTranslation } from 'react-i18next';
 import styles from './RealizationsGallery.module.css';
 
@@ -120,7 +121,7 @@ const RealizationsGallery = ({ images, options = {} }) => {
   return (
     <MaxWidthContainer>
       <HeaderWrap className='full-width' reversed>
-        <ProductHeader className={styles.headerBgLight}>
+        <ProductHeader className={homeStyles.productHeaderLight}>
           {t('sections.realizations')}
         </ProductHeader>
         <ProductHeaderSubtitle blackBackground>{t('realizations.subtitle', 'Zobacz nasze realizacje')}</ProductHeaderSubtitle>
