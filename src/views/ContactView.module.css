@@ -78,6 +78,15 @@
   font-size: 0.9rem;
 }
 
+.recaptchaPlaceholder {
+  padding: 12px 14px;
+  border: 1px dashed #e5e7eb;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: #6b7280;
+  background: #f9fafb;
+}
+
 .submitRow {
   display: flex;
   flex-direction: column;
@@ -159,6 +168,12 @@
     height: 120px;
     right: 8px;
     bottom: 8px;
+  }
+}
+
+@media (max-width: 768px) {
+  .directCard {
+    margin-bottom: 24px;
   }
 }
 

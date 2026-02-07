@@ -45,6 +45,7 @@ const ClockIcon = () => (
 const RECAPTCHA_SITE_KEY =
   import.meta.env.VITE_RECAPTCHA_SITE_KEY ||
   (import.meta.env.DEV ? '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' : '');
+const RECAPTCHA_ENABLED = Boolean(RECAPTCHA_SITE_KEY);
 
 // NOTE: This view is used in two modes:
 // - SPA mode (React Router): rendered as a full page with <Page /> wrapper.
@@ -101,7 +102,9 @@ const ContactPage = (props = {}) => {
     if (!message.trim()) {
       next.message = t('contactPage.errors.messageRequired');
     }
-    if (!RecaptchaComponent) {
+    if (!RECAPTCHA_ENABLED) {
+      next.recaptcha = t('contactPage.errors.recaptchaMissing', 'ReCAPTCHA nie jest skonfigurowana.');
+    } else if (!RecaptchaComponent) {
       next.recaptcha = t('contactPage.errors.recaptchaLoading', 'Ładowanie reCAPTCHA...');
     } else if (!recaptchaToken) {
       next.recaptcha = t('contactPage.errors.recaptchaRequired');
@@ -217,7 +220,7 @@ const ContactPage = (props = {}) => {
         </div>
 
         <div className={styles.field}>
-          {RecaptchaComponent ? (
+          {RecaptchaComponent && RECAPTCHA_ENABLED ? (
             <RecaptchaComponent
               ref={recaptchaRef}
               sitekey={RECAPTCHA_SITE_KEY}
@@ -226,6 +229,10 @@ const ContactPage = (props = {}) => {
                 if (errors.recaptcha) setErrors((p) => ({ ...p, recaptcha: '' }));
               }}
             />
+          ) : !RECAPTCHA_ENABLED ? (
+            <div className={styles.recaptchaPlaceholder} role="note">
+              {t('contactPage.errors.recaptchaMissing', 'ReCAPTCHA nie jest skonfigurowana.')}
+            </div>
           ) : (
             // SSR placeholder – prevents layout shift.
             <div style={{ height: 78 }} aria-hidden="true" />
@@ -234,7 +241,7 @@ const ContactPage = (props = {}) => {
         </div>
 
         <div className={styles.submitRow}>
-          <button className={styles.button} type="submit" disabled={submitting}>
+          <button className={styles.button} type="submit" disabled={submitting || !RECAPTCHA_ENABLED}>
             {submitting ? t('contactPage.actions.sending') : t('contactPage.actions.send')}
           </button>
           {sent && <div className={styles.successBox}>{t('contactPage.success')}</div>}
