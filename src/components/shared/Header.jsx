@@ -33,7 +33,8 @@ const cn = (...classes) => classes.filter(Boolean).join(' ');
 
 function HeaderUI({ pathname = '/' }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
+  const [mobileMenuView, setMobileMenuView] = useState('main');
+  const [mobileMenuDirection, setMobileMenuDirection] = useState('forward');
   const [mobileActiveCategoryKey, setMobileActiveCategoryKey] = useState(null);
   const mobileMenuId = 'mobile-menu';
   const restoreOverflowTimeoutRef = useRef(null);
@@ -62,7 +63,7 @@ function HeaderUI({ pathname = '/' }) {
 
   const closeMobileMenu = useCallback(() => {
     setIsMobileMenuOpen(false);
-    setMobileProductsOpen(false);
+    setMobileMenuView('main');
     setMobileActiveCategoryKey(null);
   }, []);
 
@@ -71,17 +72,25 @@ function HeaderUI({ pathname = '/' }) {
   }, []);
 
   const openMobileProducts = useCallback(() => {
-    setMobileProductsOpen(true);
-    if (!mobileActiveCategoryKey) {
-      const first = Object.entries(productCategories || {}).find(
-        ([, c]) => Array.isArray(c?.products) && c.products.length > 0
-      );
-      if (first) setMobileActiveCategoryKey(first[0]);
-    }
-  }, [mobileActiveCategoryKey]);
+    setMobileMenuDirection('forward');
+    setMobileMenuView('products');
+    setMobileActiveCategoryKey(null);
+  }, []);
+
+  const openMobileCategory = useCallback((categoryKey) => {
+    setMobileMenuDirection('forward');
+    setMobileActiveCategoryKey(categoryKey);
+    setMobileMenuView('category');
+  }, []);
+
+  const closeMobileCategory = useCallback(() => {
+    setMobileMenuDirection('back');
+    setMobileMenuView('products');
+  }, []);
 
   const closeMobileProducts = useCallback(() => {
-    setMobileProductsOpen(false);
+    setMobileMenuDirection('back');
+    setMobileMenuView('main');
     setMobileActiveCategoryKey(null);
   }, []);
 
@@ -135,7 +144,9 @@ function HeaderUI({ pathname = '/' }) {
 
     const onKeyDown = (event) => {
       if (event.key === 'Escape') {
-        if (mobileProductsOpen) {
+        if (mobileMenuView === 'category') {
+          closeMobileCategory();
+        } else if (mobileMenuView === 'products') {
           closeMobileProducts();
         } else {
           closeMobileMenu();
@@ -154,7 +165,7 @@ function HeaderUI({ pathname = '/' }) {
         restoreOverflowTimeoutRef.current = null;
       }, MENU_ANIMATION_MS);
     };
-  }, [closeMobileMenu, closeMobileProducts, isMobileMenuOpen, mobileProductsOpen]);
+  }, [closeMobileCategory, closeMobileMenu, closeMobileProducts, isMobileMenuOpen, mobileMenuView]);
 
   const navItems = useMemo(() => NAV_ITEMS, []);
 
@@ -237,107 +248,119 @@ function HeaderUI({ pathname = '/' }) {
           </div>
 
           <nav className={styles.mobileNavigation} role="navigation" aria-label={t('nav.mobileNavigation', 'Mobile navigation')}>
-            {!mobileProductsOpen ? (
-              <>
-                {navItems.map((item, index) => {
-                  if (item.key === 'products') {
+            <div
+              key={`${mobileMenuView}-${mobileActiveCategoryKey || 'root'}`}
+              className={cn(
+                styles.mobileMenuPanel,
+                mobileMenuDirection === 'forward'
+                  ? styles.mobileMenuPanelForward
+                  : styles.mobileMenuPanelBack
+              )}
+            >
+              {mobileMenuView === 'main' && (
+                <>
+                  {navItems.map((item, index) => {
+                    if (item.key === 'products') {
+                      return (
+                        <button
+                          key={item.key}
+                          onClick={openMobileProducts}
+                          aria-haspopup="true"
+                          aria-expanded={mobileMenuView !== 'main'}
+                          className={styles.mobileNavButton}
+                          style={{ animationDelay: `${index * 0.05}s` }}
+                        >
+                          <span>{t(item.label)}</span>
+                          <IoIosArrowForward aria-hidden="true" />
+                        </button>
+                      );
+                    }
+
                     return (
-                      <button
+                      <RouterAgnosticLink
                         key={item.key}
-                        onClick={openMobileProducts}
-                        aria-haspopup="true"
-                        aria-expanded={mobileProductsOpen}
-                        className={styles.mobileNavButton}
+                        to={
+                          item.path === ROUTES.HOME
+                            ? getSectionPath(lang, 'home')
+                            : item.path === ROUTES.PRODUCTS
+                              ? getSectionPath(lang, 'products')
+                              : item.path === ROUTES.REALIZATIONS
+                                ? getSectionPath(lang, 'realizations')
+                                : item.path === ROUTES.ABOUT
+                                  ? getSectionPath(lang, 'about')
+                                  : item.path === ROUTES.CONTACT
+                                    ? getSectionPath(lang, 'contact')
+                                    : item.path === ROUTES.HS_CONFIGURATOR
+                                      ? getSectionPath(lang, 'hsConfigurator')
+                                      : getSectionPath(lang, 'home')
+                        }
+                        onClick={closeMobileMenu}
+                        className={cn(
+                          styles.mobileNavItem,
+                          isActive(item.path) && styles.mobileNavItemActive
+                        )}
                         style={{ animationDelay: `${index * 0.05}s` }}
+                        aria-current={isActive(item.path) ? 'page' : undefined}
                       >
-                        <span>{t(item.label)}</span>
-                        <IoIosArrowForward aria-hidden="true" />
-                      </button>
+                        {t(item.label)}
+                      </RouterAgnosticLink>
                     );
-                  }
+                  })}
+                </>
+              )}
 
-                  return (
-                    <RouterAgnosticLink
-                      key={item.key}
-                      to={
-                        item.path === ROUTES.HOME
-                          ? getSectionPath(lang, 'home')
-                          : item.path === ROUTES.PRODUCTS
-                            ? getSectionPath(lang, 'products')
-                            : item.path === ROUTES.REALIZATIONS
-                              ? getSectionPath(lang, 'realizations')
-                              : item.path === ROUTES.ABOUT
-                                ? getSectionPath(lang, 'about')
-                                : item.path === ROUTES.CONTACT
-                                  ? getSectionPath(lang, 'contact')
-                                  : item.path === ROUTES.HS_CONFIGURATOR
-                                    ? getSectionPath(lang, 'hsConfigurator')
-                                    : getSectionPath(lang, 'home')
-                      }
-                      onClick={closeMobileMenu}
-                      className={cn(
-                        styles.mobileNavItem,
-                        isActive(item.path) && styles.mobileNavItemActive
-                      )}
-                      style={{ animationDelay: `${index * 0.05}s` }}
-                      aria-current={isActive(item.path) ? 'page' : undefined}
-                    >
-                      {t(item.label)}
-                    </RouterAgnosticLink>
-                  );
-                })}
-              </>
-            ) : (
-              <>
-                <button className={styles.mobileBackButton} onClick={closeMobileProducts}>
-                  {'‹'} {t('buttons.backToHome', 'Wróć')}
-                </button>
+              {mobileMenuView === 'products' && (
+                <>
+                  <button className={styles.mobileBackButton} onClick={closeMobileProducts}>
+                    {'‹'} {t('buttons.backToMainMenu', 'Wróć do menu głównego')}
+                  </button>
 
-                {mobileCategories.map((c, idx) => (
-                  <React.Fragment key={c.key}>
+                  {mobileCategories.map((c, idx) => (
                     <button
-                      onClick={() => setMobileActiveCategoryKey((prev) => (prev === c.key ? null : c.key))}
-                      aria-expanded={mobileActiveCategoryKey === c.key}
+                      key={c.key}
+                      onClick={() => openMobileCategory(c.key)}
+                      aria-haspopup="true"
+                      aria-expanded={mobileMenuView === 'category' && mobileActiveCategoryKey === c.key}
                       className={styles.mobileNavButton}
                       style={{ animationDelay: `${idx * 0.05}s` }}
                     >
                       <span>{c.title}</span>
-                      <IoIosArrowForward
-                        aria-hidden="true"
-                        style={{
-                          transform: mobileActiveCategoryKey === c.key ? 'rotate(90deg)' : 'rotate(0deg)',
-                          transition: 'transform 180ms ease',
-                        }}
-                      />
+                      <IoIosArrowForward aria-hidden="true" />
                     </button>
+                  ))}
+                </>
+              )}
 
-                    {mobileActiveCategoryKey === c.key && (
-                      <div className={styles.mobileSubList}>
-                        {(c.products || []).map((p) => (
-                          <RouterAgnosticLink
-                            key={p.slug || p.id}
-                            to={getProductDetailPath(lang, c.key, p.slug || p.id)}
-                            onClick={closeMobileMenu}
-                            className={styles.mobileNavItem}
-                            style={{ animationDelay: '0s' }}
-                          >
-                            {p.name}
-                          </RouterAgnosticLink>
-                        ))}
-                        <RouterAgnosticLink
-                          to={getProductCategoryPath(lang, c.key)}
-                          onClick={closeMobileMenu}
-                          className={styles.mobileNavItem}
-                          style={{ animationDelay: '0s' }}
-                        >
-                          {t('common.seeAll', 'Zobacz wszystkie')}
-                        </RouterAgnosticLink>
-                      </div>
-                    )}
-                  </React.Fragment>
-                ))}
-              </>
-            )}
+              {mobileMenuView === 'category' && mobileActiveCategoryKey && (
+                <>
+                  <button className={styles.mobileBackButton} onClick={closeMobileCategory}>
+                    {'‹'} {t('buttons.backToProducts', 'Wróć do produktów')}
+                  </button>
+
+                  <div className={styles.mobileSubList}>
+                    {(mobileCategories.find((c) => c.key === mobileActiveCategoryKey)?.products || []).map((p) => (
+                      <RouterAgnosticLink
+                        key={p.slug || p.id}
+                        to={getProductDetailPath(lang, mobileActiveCategoryKey, p.slug || p.id)}
+                        onClick={closeMobileMenu}
+                        className={styles.mobileNavItem}
+                        style={{ animationDelay: '0s' }}
+                      >
+                        {p.name}
+                      </RouterAgnosticLink>
+                    ))}
+                    <RouterAgnosticLink
+                      to={getProductCategoryPath(lang, mobileActiveCategoryKey)}
+                      onClick={closeMobileMenu}
+                      className={styles.mobileNavItem}
+                      style={{ animationDelay: '0s' }}
+                    >
+                      {t('common.seeAll', 'Zobacz wszystkie')}
+                    </RouterAgnosticLink>
+                  </div>
+                </>
+              )}
+            </div>
           </nav>
 
           <div className={styles.mobileLangSwitcher}>

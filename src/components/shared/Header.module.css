@@ -265,6 +265,9 @@
   flex-direction: column;
   align-items: flex-start;
   margin-top: var(--space-lg);
+  width: 100%;
+  position: relative;
+  overflow: hidden;
 }
 
 @media (min-height: 700px) {
@@ -349,6 +352,21 @@
   opacity: 0;
 }
 
+.mobileMenuPanel {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.mobileMenuPanelForward {
+  animation: mobilePanelSlideIn 0.28s ease both;
+}
+
+.mobileMenuPanelBack {
+  animation: mobilePanelSlideBack 0.28s ease both;
+}
+
 @media (min-height: 700px) {
   .mobileNavButton {
     padding: var(--space-sm) 0;
@@ -371,6 +389,7 @@
   flex-direction: column;
   gap: 0;
   margin-bottom: 10px;
+  animation: fadeSlideIn 0.28s ease both;
 }
 
 .mobileBackButton {
@@ -445,6 +464,39 @@
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+@keyframes mobilePanelSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes mobilePanelSlideBack {
+  from {
+    opacity: 0;
+    transform: translateX(-16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

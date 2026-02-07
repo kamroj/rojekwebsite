@@ -76,7 +76,9 @@
   },
   "buttons": {
     "details": "Details ansehen",
-    "backToHome": "Zurück zur Startseite",
+    "backToHome": "Zurück zum Hauptmenü",
+    "backToMainMenu": "Zurück zum Hauptmenü",
+    "backToProducts": "Zurück zu den Produkten",
     "contact": "Kontaktieren Sie uns",
     "viewMore": "Mehr anzeigen",
     "close": "Schließen",
