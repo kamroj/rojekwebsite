@@ -2,7 +2,7 @@
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
+  width: 100%;  /* Zostaw dla desktop */
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -25,6 +25,13 @@
   border-bottom-color: rgba(5, 156, 78, 0.35);
 
   color: var(--color-text-light);
+}
+
+@media (max-width: 992px) {
+  .wrapper {
+    width: auto;
+    right: 0;
+  }
 }
 
 .pastThreshold {
@@ -117,13 +124,10 @@
   cursor: pointer;
   padding: 8px;
   margin: -8px;
-  /*
-    Keep hamburger above overlay + sliding panel.
-    Without this, the panel can cover the button and it appears to "blink"/disappear.
-  */
   position: fixed;
   top: calc((var(--header-height) - 2.4rem) / 2);
   right: 15px;
+  /* Bez width - pozycjonowanie przez top/right wystarczy */
   z-index: 3002;
   transition: color 0.3s ease, transform 0.3s ease;
   color: var(--color-text-light);
@@ -168,8 +172,9 @@
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
+  right: 0;  /* DODAJ */
   bottom: 0;
+  /* Usuń width/height jeśli są - left/right/top/bottom wystarczą */
   background-color: rgba(0, 0, 0, 0.6);
   z-index: 3000;
 
