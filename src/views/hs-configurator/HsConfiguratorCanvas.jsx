@@ -87,8 +87,7 @@ function updateDimensions(scene, width, height) {
         const originalWidth = origSize.x * origScale.x;
         const newWidth = originalWidth + halfWidthDiff;
         const newScale = newWidth / originalWidth;
-        obj.scale.x = origScale.x * newScale;
-        obj.position.x = origPos.x + halfWidthDiff / 2;
+        obj.scale.x = origScale.x + halfWidthDiff / 2;
       }
     }
 
@@ -454,8 +453,9 @@ function FrontFit({ modelRef }) {
   return null;
 }
 
-// Preload (helps avoid hitches on first interaction)
-useGLTF.preload('/models/example3.glb');
+// USUNIĘTY TOP-LEVEL SIDE EFFECT:
+// useGLTF.preload('/models/example3.glb');
+// Preload jest teraz wywołany wewnątrz komponentu przy użyciu useEffect
 
 export default function HsConfiguratorCanvas({
   selectedTexture,
@@ -469,6 +469,11 @@ export default function HsConfiguratorCanvas({
   modelResetKey,
 }) {
   const modelRef = useRef();
+
+  // Preload modelu - bezpieczne dla SSR, wykonuje się tylko w przeglądarce
+  useEffect(() => {
+    useGLTF.preload('/models/example3.glb');
+  }, []);
 
   return (
     <Canvas

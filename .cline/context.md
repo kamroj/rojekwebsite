@@ -1,7 +1,3 @@
-Jasne — poniżej masz **czysty tekst Markdown**, **bez code blocków**, **bez potrójnych backticków**, tak żeby **nic się nie „psuło” w widoku** i żebyś mógł to wkleić bezpośrednio jako plik `.md`.
-
----
-
 # Global Project Context (Must Always Be Respected)
 
 This repository is a production-grade company website built with
