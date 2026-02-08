@@ -73,7 +73,13 @@ const useHoverIntent = (delay = 1) => {
   return { isHovered, handleMouseEnter, handleMouseLeave };
 };
 
-const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = true, pathname = '/' }) => {
+const Navigation = ({
+  variant = 'header',
+  isPastThreshold,
+  isHeaderVisible = true,
+  pathname = '/',
+  initialSanityProductsByCategory = {},
+}) => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
 
@@ -91,9 +97,18 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
   const [activeProductKey, setActiveProductKey] = useState(null);
 
   // Sanity (dynamic lists for supported categories in mega menu)
-  const [sanityProductsByCategory, setSanityProductsByCategory] = useState({});
-  const [sanityLoadedByCategory, setSanityLoadedByCategory] = useState({});
+  const [sanityProductsByCategory, setSanityProductsByCategory] = useState(
+    () => initialSanityProductsByCategory || {}
+  );
+  const [sanityLoadedByCategory, setSanityLoadedByCategory] = useState(() => {
+    const initial = initialSanityProductsByCategory || {};
+    return Object.keys(initial).reduce((acc, key) => {
+      acc[key] = true;
+      return acc;
+    }, {});
+  });
   const categoryFetchAbortRef = useRef({});
+  const didInitLangEffectRef = useRef(false);
 
   // Lazy-load: fetch category products from Sanity on first mega menu open.
   useEffect(() => {
@@ -172,6 +187,11 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
 
   // On language change we refresh all localized lists.
   useEffect(() => {
+    if (!didInitLangEffectRef.current) {
+      didInitLangEffectRef.current = true;
+      return;
+    }
+
     Object.values(categoryFetchAbortRef.current).forEach((controller) => controller?.abort());
     categoryFetchAbortRef.current = {};
     setSanityProductsByCategory({});
@@ -266,19 +286,11 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
     if (!activeCategory?.key) return [];
     const isSanityMappedCategory = Boolean(SANITY_CATEGORY_IDS_BY_KEY[activeCategory.key]?.length);
     if (isSanityMappedCategory) {
-      const sanityItems = sanityProductsByCategory[activeCategory.key] || [];
-      if (sanityItems.length > 0) return sanityItems;
-
-      // Safety fallback: if Sanity request completed but returned nothing
-      // (or failed for all mapped category IDs), keep menu usable via local data.
-      if (sanityLoadedByCategory[activeCategory.key]) {
-        return activeCategory?.localProducts || [];
-      }
-
-      return [];
+      // For mapped categories we intentionally use only Sanity data.
+      return sanityProductsByCategory[activeCategory.key] || [];
     }
     return activeCategory?.localProducts || [];
-  }, [activeCategory, sanityLoadedByCategory, sanityProductsByCategory]);
+  }, [activeCategory, sanityProductsByCategory]);
 
   const isActiveCategorySanityMapped = Boolean(
     activeCategory?.key && (SANITY_CATEGORY_IDS_BY_KEY[activeCategory.key] || []).length

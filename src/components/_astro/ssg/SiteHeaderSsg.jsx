@@ -9,10 +9,18 @@ import Header from '../../shared/Header.jsx';
  * SSR/SSG-rendered Header with i18n context available.
  * Kept separate from Footer so Astro can place it before <main>.
  */
-export default function SiteHeaderSsg({ lang = 'pl', resources, pathname = '/' }) {
+export default function SiteHeaderSsg({
+  lang = 'pl',
+  resources,
+  pathname = '/',
+  initialSanityProductsByCategory = {},
+}) {
   return (
     <I18nBoundary lang={lang} resources={resources}>
-      <Header pathname={pathname} />
+      <Header
+        pathname={pathname}
+        initialSanityProductsByCategory={initialSanityProductsByCategory}
+      />
     </I18nBoundary>
   );
 }

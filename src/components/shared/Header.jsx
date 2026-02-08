@@ -33,7 +33,7 @@ const NAV_ITEMS = [
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
-function HeaderUI({ pathname = '/' }) {
+function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mobileMenuView, setMobileMenuView] = useState('main');
   const [mobileMenuDirection, setMobileMenuDirection] = useState('forward');
@@ -207,6 +207,7 @@ function HeaderUI({ pathname = '/' }) {
             isPastThreshold={isPastThreshold}
             isHeaderVisible={true}
             pathname={pathname}
+            initialSanityProductsByCategory={initialSanityProductsByCategory}
           />
         </div>
 
@@ -384,7 +385,7 @@ function HeaderInRouter() {
   return <HeaderNoRouter />;
 }
 
-function HeaderNoRouter() {
+function HeaderNoRouter({ initialSanityProductsByCategory = {} }) {
   // Hydration-safe: do not read window.location during render.
   const [pathname, setPathname] = useState('/');
 
@@ -397,13 +398,23 @@ function HeaderNoRouter() {
     return () => window.removeEventListener('popstate', onPop);
   }, []);
 
-  return <HeaderUI pathname={pathname} />;
+  return (
+    <HeaderUI
+      pathname={pathname}
+      initialSanityProductsByCategory={initialSanityProductsByCategory}
+    />
+  );
 }
 
-export default function Header({ pathname }) {
+export default function Header({ pathname, initialSanityProductsByCategory = {} }) {
   // If a pathname is passed (e.g. from Astro SSR), we can render deterministically.
   if (typeof pathname === 'string') {
-    return <HeaderUI pathname={pathname} />;
+    return (
+      <HeaderUI
+        pathname={pathname}
+        initialSanityProductsByCategory={initialSanityProductsByCategory}
+      />
+    );
   }
-  return <HeaderNoRouter />;
+  return <HeaderNoRouter initialSanityProductsByCategory={initialSanityProductsByCategory} />;
 }

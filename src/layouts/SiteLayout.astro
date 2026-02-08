@@ -5,8 +5,47 @@
 import BaseLayout from './BaseLayout.astro';
 
 import { getI18nResources } from '../lib/i18n/resources.js';
+import { fetchProductsListByCategory } from '../lib/sanity/windows.js';
 import SiteHeaderSsg from '../components/_astro/ssg/SiteHeaderSsg.jsx';
 import SiteFooterSsg from '../components/_astro/ssg/SiteFooterSsg.jsx';
+
+const SANITY_CATEGORY_IDS_BY_KEY = {
+  okna: ['category_okna', 'category_okna_przesuwne'],
+  drzwi: ['category_drzwi_zewnetrzne', 'category_ppoz'],
+};
+
+const headerMegaMenuCache = new Map();
+
+const getHeaderMegaMenuData = async (lang) => {
+  const cacheKey = String(lang || 'pl');
+  if (headerMegaMenuCache.has(cacheKey)) {
+    return headerMegaMenuCache.get(cacheKey);
+  }
+
+  const entries = await Promise.all(
+    Object.entries(SANITY_CATEGORY_IDS_BY_KEY).map(async ([key, categoryIds]) => {
+      const results = await Promise.allSettled(
+        categoryIds.map((categoryId) => fetchProductsListByCategory(categoryId, cacheKey))
+      );
+
+      const merged = results
+        .filter((r) => r.status === 'fulfilled')
+        .flatMap((r) => r.value || []);
+
+      const deduped = merged.filter((item, index, arr) => {
+        const itemKey = item?.slug || item?.id;
+        if (!itemKey) return false;
+        return arr.findIndex((x) => (x?.slug || x?.id) === itemKey) === index;
+      });
+
+      return [key, deduped];
+    })
+  );
+
+  const payload = Object.fromEntries(entries);
+  headerMegaMenuCache.set(cacheKey, payload);
+  return payload;
+};
 
 const {
   lang = 'pl',
@@ -15,6 +54,7 @@ const {
 } = Astro.props;
 
 const resources = await getI18nResources(lang);
+const initialSanityProductsByCategory = await getHeaderMegaMenuData(lang);
 ---
 
 <BaseLayout lang={lang} title={title} description={description}>
@@ -26,6 +66,7 @@ const resources = await getI18nResources(lang);
     lang={lang}
     resources={resources}
     pathname={Astro.url?.pathname || '/'}
+    initialSanityProductsByCategory={initialSanityProductsByCategory}
     client:visible
   />
 
