@@ -29,12 +29,25 @@
   height: 100%;
 }
 
+/* Compact desktop mode for medium-wide screens.
+   Keeps current max-width while giving nav items more room. */
+@media (min-width: 993px) and (max-width: 1280px) {
+  .headerNavContainer {
+    gap: var(--space-sm);
+  }
+
+  .headerNavItem {
+    font-size: 1.15rem;
+    letter-spacing: 0.45px;
+  }
+}
+
 .baseNavItem:hover {
   color: var(--color-accent);
 }
 
 .pastThreshold {
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .beforeThreshold {
@@ -46,7 +59,7 @@
 }
 
 .pastThreshold.active {
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .active::after {

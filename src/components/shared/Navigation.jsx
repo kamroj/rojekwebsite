@@ -182,7 +182,8 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
   const NavItem = variant === 'intro' ? IntroNavItem : HeaderNavItem;
   
   const navItems = [
-    { key: 'home', path: ROUTES.HOME, label: 'nav.home' },
+    // On desktop header we skip "home" because logo links to homepage.
+    ...(variant === 'header' ? [] : [{ key: 'home', path: ROUTES.HOME, label: 'nav.home' }]),
     { key: 'products', path: ROUTES.PRODUCTS, label: 'nav.products' },
     // Articles exist only in Polish for now.
     ...(lang === 'pl' ? [{ key: 'articles', path: '/artykuly', label: 'nav.articles' }] : []),
