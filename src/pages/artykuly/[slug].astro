@@ -10,7 +10,7 @@ import {
   fetchAllArticleSlugs, 
   fetchRelatedArticles 
 } from '../../lib/sanity/articles.js';
-import { getArticleDetailPath, getArticlesIndexPath, getSectionPath } from '../../lib/i18n/routing.js';
+import { getArticleDetailPath, getArticlesIndexPath, getArticlesTagPath, getSectionPath } from '../../lib/i18n/routing.js';
 
 // Generate static paths for all articles
 export async function getStaticPaths() {
@@ -145,7 +145,7 @@ const jsonLd = {
               <div class="tags">
                 <span class="tags-label">Tagi:</span>
                 {article.tags.map((tag) => (
-                  <span class="tag">{tag}</span>
+                  <a class="tag" href={getArticlesTagPath(lang, tag)}>{tag}</a>
                 ))}
               </div>
             </footer>
@@ -268,6 +268,13 @@ const jsonLd = {
     line-height: 1;
     letter-spacing: 0.2px;
     white-space: nowrap;
+    text-decoration: none;
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+  }
+
+  .tag:hover {
+    background: rgba(2, 99, 3, 0.16);
+    border-color: rgba(2, 99, 3, 0.35);
   }
 
   /* Back link */
@@ -295,7 +302,7 @@ const jsonLd = {
   /* Responsive */
   @media (max-width: 768px) {
     .article-meta {
-      flex-direction: column;
+      flex-direction: row;
       gap: var(--space-sm);
     }
   }

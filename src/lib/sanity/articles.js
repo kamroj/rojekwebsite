@@ -115,6 +115,8 @@ const normalizeTagRefs = (tagRefs) => {
   return tagRefs.filter((tagRef) => typeof tagRef === 'string' && tagRef.trim().length > 0);
 };
 
+const normalizeTagValue = (value) => String(value || '').trim().toLowerCase();
+
 /**
  * Fetch paginated list of articles.
  * @param {Object} options
@@ -554,6 +556,24 @@ export const fetchAllArticleSlugs = async ({ signal } = {}) => {
   if (import.meta.env.DEV && slugs.length === 0) return mockArticleSlugs;
 
   return slugs;
+};
+
+/**
+ * Fetch all articles for a given tag label (case-insensitive).
+ * Filtering is done in JS for consistency between Sanity and mock fallback.
+ * @param {string} tag
+ * @param {Object} options
+ * @param {AbortSignal} options.signal
+ * @returns {Promise<Array>}
+ */
+export const fetchArticlesByTag = async (tag, { signal } = {}) => {
+  const normalizedTag = normalizeTagValue(tag);
+  if (!normalizedTag) return [];
+
+  const allArticles = await fetchAllArticles({ signal });
+  return allArticles.filter((article) =>
+    (article.tags || []).some((articleTag) => normalizeTagValue(articleTag) === normalizedTag)
+  );
 };
 
 /**

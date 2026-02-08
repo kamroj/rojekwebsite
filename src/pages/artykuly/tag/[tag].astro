@@ -1,0 +1,148 @@
+---
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import Section from '../../../components/ui/Section.jsx';
+import MaxWidthContainer from '../../../components/ui/MaxWidthContainer.jsx';
+import PageHeader from '../../../components/ui/PageHeader.jsx';
+import { ArticleCard } from '../../../components/sections/articles/index.js';
+import { fetchAllArticles, fetchArticlesByTag, fetchArticlesPageSettings } from '../../../lib/sanity/articles.js';
+import { getArticlesIndexPath, getArticlesTagPath } from '../../../lib/i18n/routing.js';
+
+export async function getStaticPaths() {
+  const articles = await fetchAllArticles();
+  const tagsMap = new Map();
+
+  for (const article of articles) {
+    for (const tag of article.tags || []) {
+      const normalized = String(tag || '').trim().toLowerCase();
+      if (!normalized) continue;
+      if (!tagsMap.has(normalized)) tagsMap.set(normalized, String(tag).trim());
+    }
+  }
+
+  return Array.from(tagsMap.values()).map((tag) => ({
+    params: { tag },
+  }));
+}
+
+const lang = 'pl';
+const rawTag = Astro.params.tag || '';
+const tag = decodeURIComponent(rawTag).trim();
+
+if (!tag) {
+  return Astro.redirect(getArticlesIndexPath(lang));
+}
+
+const [articles, pageSettings] = await Promise.all([
+  fetchArticlesByTag(tag),
+  fetchArticlesPageSettings(),
+]);
+
+const title = `${tag} | Artykuły | ROJEK`;
+const description = `Artykuły oznaczone tagiem „${tag}”.`;
+const canonicalUrl = getArticlesTagPath(lang, tag);
+---
+
+<SiteLayout
+  lang={lang}
+  title={title}
+  description={description}
+  canonicalUrl={canonicalUrl}
+>
+  <PageHeader
+    image={pageSettings.headerImage}
+    imageSrc="/images/contactus/top.jpg"
+    title={pageSettings.headerTitle?.toUpperCase() || 'ARTYKUŁY'}
+    height={420}
+    overlayColor="rgba(0,0,0,0.55)"
+    imgLoading="eager"
+    imgFetchPriority="high"
+    imgSizes="100vw"
+  />
+
+  <Section>
+    <MaxWidthContainer>
+      <div class="top-row">
+        <p class="result-label">
+          Znalezione artykuły dla tagu <span class="tag-badge">{tag}</span>: {articles.length}
+        </p>
+      </div>
+
+      {articles.length > 0 ? (
+        <div class="articles-list">
+          {articles.map((article) => (
+            <ArticleCard article={article} lang={lang} />
+          ))}
+        </div>
+      ) : (
+        <div class="empty-state">
+          <p>Brak artykułów dla tagu „{tag}”.</p>
+        </div>
+      )}
+
+      <div class="bottom-row">
+        <a href={getArticlesIndexPath(lang)} class="back-link">← Wszystkie artykuły</a>
+      </div>
+    </MaxWidthContainer>
+  </Section>
+</SiteLayout>
+
+<style>
+  .top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--space-md);
+    margin-bottom: var(--space-lg);
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .result-label {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 0.95rem;
+  }
+
+  .tag-badge {
+    display: inline-flex;
+    align-items: baseline;
+    padding: 4px 8px;
+    border-radius: 3px;
+    background: rgba(2, 99, 3, 0.1);
+    border: 1px solid rgba(2, 99, 3, 0.25);
+    color: rgba(11, 90, 42, 0.95);
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+    margin: 0 2px;
+  }
+
+  .articles-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .back-link {
+    color: var(--color-primary);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+
+  .bottom-row {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-lg);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: var(--space-2xl);
+    color: var(--color-text-muted);
+  }
+</style>

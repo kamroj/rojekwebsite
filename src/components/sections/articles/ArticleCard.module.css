@@ -1,21 +1,23 @@
-.cardLink {
-  display: block;
-  text-decoration: none;
-  color: inherit;
-}
-
-.cardLink + .cardLink {
-  margin-top: var(--space-lg);
-}
-
 .card {
+  position: relative;
   display: flex;
   gap: var(--space-lg);
   padding: var(--space-md);
-  border: 1px solid #0b3d2e;
+  border: 1px solid #0c45347a;
   border-radius: 8px;
   background-color: var(--color-background, #fff);
   transition: background-color 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.cardLinkOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  border-radius: 8px;
+}
+
+.card + .card {
+  margin-top: var(--space-lg);
 }
 
 .card:hover {
@@ -31,12 +33,9 @@
   }
 }
 
-.imageLink {
-  flex-shrink: 0;
-  display: block;
-}
-
 .imageContainer {
+  position: relative;
+  z-index: 0;
   width: 300px;
   height: 200px;
   overflow: hidden;
@@ -75,6 +74,8 @@
 }
 
 .content {
+  position: relative;
+  z-index: 0;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -116,11 +117,6 @@
   flex-shrink: 0;
 }
 
-.titleLink {
-  text-decoration: none;
-  color: inherit;
-}
-
 .title {
   font-size: clamp(1.4rem, 2.4vw, 1.65rem);
   font-weight: 700;
@@ -130,13 +126,13 @@
   transition: color 0.2s ease;
 }
 
-.titleLink:hover .title {
+.card:hover .title {
   color: #026303;
 }
 
 .excerpt {
-  font-size: 1.08rem;
-  line-height: 1.75;
+  font-size: 1.4rem;
+  line-height: 1.4;
   color: var(--color-text-muted);
   margin: 0;
   display: -webkit-box;
@@ -158,6 +154,8 @@
 }
 
 .tag {
+  position: relative;
+  z-index: 2;
   display: inline-flex;
   align-items: baseline;
   padding: 6px 10px;
@@ -170,4 +168,11 @@
   line-height: 1;
   letter-spacing: 0.2px;
   white-space: nowrap;
+  text-decoration: none;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.tag:hover {
+  background: rgba(2, 99, 3, 0.16);
+  border-color: rgba(2, 99, 3, 0.35);
 }

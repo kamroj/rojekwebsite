@@ -147,6 +147,11 @@ export const getProductsIndexPath = (lang) => getSectionPath(lang, 'products')
 // Keep Polish (default) without prefix: `/artykuly/...`
 export const getArticlesIndexPath = (lang) => withLangPrefix(lang, '/artykuly')
 
+export const getArticlesTagPath = (lang, tag) => {
+  const value = tag ? encodeURIComponent(String(tag).trim()) : ''
+  return withLangPrefix(lang, `/artykuly/tag/${value}`)
+}
+
 export const getArticleDetailPath = (lang, slug) => {
   const s = slug ? String(slug) : ''
   return withLangPrefix(lang, `/artykuly/${s}`)
