@@ -14,7 +14,6 @@ import styles from './RealizationsGallery.module.css';
 
 const RealizationsGallery = ({ images, options = {} }) => {
   const { t } = useTranslation();
-  const totalImages = images?.length || 0;
   const swiperRef = useRef(null);
 
   const defaultConfig = {
@@ -31,6 +30,22 @@ const RealizationsGallery = ({ images, options = {} }) => {
   // Merge defaults with provided options
   const config = { ...defaultConfig, ...options };
 
+  const sourceImages = Array.isArray(images) ? images.filter(Boolean) : [];
+  const normalizedImages = [...sourceImages];
+  const minSlidesForSmoothLoop = sourceImages.length > 1
+    ? config.slidesPerViewDesktop + 2
+    : config.slidesPerViewDesktop;
+
+  while (sourceImages.length > 0 && normalizedImages.length < minSlidesForSmoothLoop) {
+    const cloneSource = sourceImages[normalizedImages.length % sourceImages.length];
+    normalizedImages.push({
+      ...cloneSource,
+      _cloneIndex: normalizedImages.length,
+    });
+  }
+
+  const totalImages = normalizedImages.length;
+
   // Autoplay settings
   const autoplayOptions = {
     delay: config.delay,
@@ -38,7 +53,12 @@ const RealizationsGallery = ({ images, options = {} }) => {
     pauseOnMouseEnter: true,
   };
 
-  const shouldRenderFallback = !images || totalImages < config.slidesPerViewDesktop;
+  const shouldRenderFallback = !images || totalImages === 0;
+  const canSlide = totalImages > 1;
+
+  const slidesPerViewMobile = Math.max(1, Math.min(config.slidesPerViewMobile, totalImages || 1));
+  const slidesPerViewTablet = Math.max(1, Math.min(config.slidesPerViewTablet, totalImages || 1));
+  const slidesPerViewDesktop = Math.max(1, Math.min(config.slidesPerViewDesktop, totalImages || 1));
 
   // Handle drag interactions for proper styling
   const handleDragStart = (swiper, event) => {
@@ -102,7 +122,7 @@ const RealizationsGallery = ({ images, options = {} }) => {
   if (shouldRenderFallback) {
     return (
       <div className={styles.fallbackWrapper}>
-        {images?.map((imgData, i) => (
+        {normalizedImages?.map((imgData, i) => (
           <div
             key={imgData.id || i}
             className={styles.fallbackCard}
@@ -130,28 +150,29 @@ const RealizationsGallery = ({ images, options = {} }) => {
         <Swiper
           ref={swiperRef}
           modules={[Autoplay]}
-          loop={config.loop}
-          slidesPerView={config.slidesPerViewMobile}
+          loop={canSlide ? config.loop : false}
+          loopAdditionalSlides={slidesPerViewDesktop}
+          slidesPerView={slidesPerViewMobile}
           spaceBetween={config.spaceBetween}
-          autoplay={autoplayOptions}
+          autoplay={canSlide ? autoplayOptions : false}
           grabCursor={true}
           centeredSlides={config.centeredSlides}
           speed={config.speed}
           watchSlidesProgress={true}
           breakpoints={{
             577: {
-              slidesPerView: config.slidesPerViewTablet,
+              slidesPerView: slidesPerViewTablet,
               spaceBetween: config.spaceBetween,
             },
             993: {
-              slidesPerView: config.slidesPerViewDesktop,
+              slidesPerView: slidesPerViewDesktop,
               spaceBetween: config.spaceBetween + 5,
             },
           }}
           className="my-interactive-swiper"
         >
-          {images.map((item) => (
-            <SwiperSlide key={item.id}>
+          {normalizedImages.map((item, idx) => (
+            <SwiperSlide key={`${item.id || 'realization'}-${item._cloneIndex ?? idx}`}>
               <div className="slide-content-wrapper">
                 <img
                   className={styles.galleryImage}
