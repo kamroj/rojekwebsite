@@ -14,6 +14,9 @@ import realization from './realization'
 import faqItem from './faqItem'
 
 import {localizedString, localizedText, localizedBlockContent, blockContent} from './l10n'
+import article from './article'
+import articleTag from './articleTag'
+import articlesPage from './articlesPage'
 
 export const schemaTypes = [
   // localized field types
@@ -34,5 +37,8 @@ export const schemaTypes = [
   partner,
   teamMember,
   tag,
+  articleTag,
+  articlesPage,
   realization,
+  article
 ]

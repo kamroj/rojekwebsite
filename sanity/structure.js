@@ -21,8 +21,6 @@ export const structure = (S) =>
           S.list()
             .title('Produkty')
             .items([
-              // Kategorie są predefiniowane i mają stałe documentId.
-              // Dzięki temu panel wygląda jak strona: Okna / Okna przesuwne / Drzwi zewnętrzne / Ppoż.
               categorySection(S, {
                 id: 'category_okna',
                 title: 'Okna',
@@ -43,24 +41,46 @@ export const structure = (S) =>
                 title: 'Okna i Drzwi przeciwpożarowe',
                 initialSlug: 'okna-i-drzwi-przeciwpozarowe',
               }),
-
-              // Jeśli kiedyś będziesz chciał dodać kolejne kategorie, możemy:
-              // - dopisać tu kolejną sekcję,
-              // - albo przywrócić listę „Kategorie produktów”.
             ])
         ),
 
       // --- Realizacje ---
       S.listItem().title('Realizacje').child(S.documentTypeList('realization').title('Realizacje')),
 
+      // --- Artykuły ---
+      S.listItem()
+        .title('Artykuły')
+        .child(
+          S.list()
+            .title('Artykuły')
+            .items([
+              S.listItem()
+                .title('Ustawienia artykułów')
+                .child(
+                  S.document()
+                    .schemaType('articlesPage')
+                    .documentId('articlesPage')
+                    .title('Ustawienia artykułów')
+                ),
+              S.divider(),
+              S.listItem()
+                .title('Wszystkie artykuły')
+                .child(
+                  S.documentTypeList('article')
+                    .title('Artykuły')
+                    .defaultOrdering([{ field: 'publishedAt', direction: 'desc' }])
+                ),
+            ])
+        ),
+
+      // --- Tagi artykułów ---
+      S.listItem().title('Tagi artykułów').child(S.documentTypeList('articleTag').title('Tagi artykułów')),
+
       // --- O firmie ---
       S.listItem().title('O firmie').child(S.document().schemaType('aboutPage').documentId('aboutPage').title('O firmie')),
 
       // --- Kontakt ---
       S.listItem().title('Kontakt').child(S.document().schemaType('contactPage').documentId('contactPage').title('Kontakt')),
-
-      // Intencjonalnie: na start pokazujemy tylko 5 głównych pozycji,
-      // żeby panel był maksymalnie prosty.
     ])
 
 /**
@@ -93,8 +113,6 @@ function categorySection(S, cfg) {
                 .schemaType('product')
                 .filter('_type == "product" && category._ref == $categoryId')
                 .params({categoryId: cfg.id})
-                // IMPORTANT: here we must pass InitialValueTemplateItem objects,
-                // not Desk list item nodes.
                 .initialValueTemplates([
                   {
                     templateId: 'productInCategory',

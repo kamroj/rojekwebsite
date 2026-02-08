@@ -1,0 +1,73 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Section from '../../components/ui/Section.jsx';
+import MaxWidthContainer from '../../components/ui/MaxWidthContainer.jsx';
+import PageHeader from '../../components/ui/PageHeader.jsx';
+import { ArticleCard } from '../../components/sections/articles/index.js';
+import { fetchAllArticles, fetchArticlesPageSettings } from '../../lib/sanity/articles.js';
+import { getArticlesIndexPath } from '../../lib/i18n/routing.js';
+import homeHeaderStyles from '../../views/HomeView.module.css';
+
+const lang = 'pl';
+const articles = await fetchAllArticles();
+const pageSettings = await fetchArticlesPageSettings();
+
+// SEO
+const title = 'Artykuły | ROJEK – Okna i Drzwi';
+const description = 'Przeczytaj nasze artykuły o oknach, drzwiach, montażu i trendach w stolarce budowlanej. Porady ekspertów i aktualności branżowe.';
+const canonicalUrl = getArticlesIndexPath(lang);
+---
+
+<SiteLayout
+  lang={lang}
+  title={title}
+  description={description}
+  canonicalUrl={canonicalUrl}
+>
+  <PageHeader
+    image={pageSettings.headerImage}
+    imageSrc="/images/contactus/top.jpg"
+    title={pageSettings.headerTitle?.toUpperCase() || 'ARTYKUŁY'}
+    height={420}
+    overlayColor="rgba(0,0,0,0.55)"
+    imgLoading="eager"
+    imgFetchPriority="high"
+    imgSizes="100vw"
+  />
+
+  <Section>
+    <MaxWidthContainer>
+      <div class={`${homeHeaderStyles.headerWrap} full-width`}>
+        <div class={homeHeaderStyles.productHeader}>{pageSettings.headerTitle || 'ARTYKUŁY'}</div>
+        <div class={homeHeaderStyles.productHeaderSubtitle}>
+          {pageSettings.headerSubtitle || 'Wiedza i inspiracje ze świata stolarki budowlanej'}
+        </div>
+      </div>
+
+      {articles.length > 0 ? (
+        <div class="articles-list">
+          {articles.map((article) => (
+            <ArticleCard article={article} lang={lang} />
+          ))}
+        </div>
+      ) : (
+        <div class="empty-state">
+          <p>Brak artykułów do wyświetlenia.</p>
+        </div>
+      )}
+    </MaxWidthContainer>
+  </Section>
+</SiteLayout>
+
+<style>
+  .articles-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: var(--space-2xl);
+    color: var(--color-text-muted);
+  }
+</style>

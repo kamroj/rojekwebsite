@@ -12,12 +12,12 @@ export default function Section({
   label: _label, // legacy (unused)
   labelPosition: _labelPosition = 'right', // legacy (unused)
   dark = false,
-  align,
-  noPadding: _noPadding, // legacy (unused)
-  customStyles, // legacy (deprecated) - use `style` prop instead
+  align = undefined,
+  noPadding: _noPadding = undefined, // legacy (unused)
+  customStyles = undefined, // legacy (deprecated) - use `style` prop instead
   noMarginBottom = false,
   className = '',
-  style,
+  style = undefined,
   ...props
 }) {
   // Backwards-compat: if some callsite still passes `customStyles` (CSS declarations as string),

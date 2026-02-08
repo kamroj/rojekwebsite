@@ -3,14 +3,16 @@ import MaxWidthContainer from './MaxWidthContainer';
 import SanityImage from './SanityImage.jsx';
 import styles from './PageHeader.module.css';
 const PageHeader = ({
-  imageSrc,
-  image,
-  title,
+  imageSrc = undefined,
+  image = undefined,
+  title = undefined,
   height = 300,
-  id,
-  overlayColor,
-  contentBg,
-  contentColor,
+  id = undefined,
+  overlayColor = undefined,
+  contentBg = undefined,
+  contentColor = undefined,
+  contentMaxWidth = '',
+  contentMobileCentered = false,
   contentInMaxWidth = false,
   // Performance hints for the header image (often LCP).
   imgLoading = 'eager',
@@ -53,10 +55,11 @@ const PageHeader = ({
             <div className={styles.headerContentLayer}>
               <MaxWidthContainer>
                 <div
-                  className={styles.headerContent}
+                  className={`${styles.headerContent} ${contentMobileCentered ? styles.headerContentMobileCentered : ''}`.trim()}
                   style={{
                     backgroundColor: contentBg || '#0136002b',
                     color: contentColor || '#f8f9fa',
+                    maxWidth: contentMaxWidth || undefined,
                   }}
                 >
                   {children || <h1>{title}</h1>}
@@ -65,10 +68,11 @@ const PageHeader = ({
             </div>
           ) : (
             <div
-              className={styles.headerContent}
+              className={`${styles.headerContent} ${contentMobileCentered ? styles.headerContentMobileCentered : ''}`.trim()}
               style={{
                 backgroundColor: contentBg || '#0136002b',
                 color: contentColor || '#f8f9fa',
+                maxWidth: contentMaxWidth || undefined,
               }}
             >
               {children || <h1>{title}</h1>}

@@ -143,6 +143,15 @@ export const getSectionPath = (lang, sectionKey) => {
 
 export const getProductsIndexPath = (lang) => getSectionPath(lang, 'products')
 
+// Articles (blog)
+// Keep Polish (default) without prefix: `/artykuly/...`
+export const getArticlesIndexPath = (lang) => withLangPrefix(lang, '/artykuly')
+
+export const getArticleDetailPath = (lang, slug) => {
+  const s = slug ? String(slug) : ''
+  return withLangPrefix(lang, `/artykuly/${s}`)
+}
+
 export const getCategoryKeyFromSlug = (lang, categorySlug) => {
   const l = normalizeLang(lang)
   return CATEGORY_SLUGS_INV?.[l]?.[categorySlug]

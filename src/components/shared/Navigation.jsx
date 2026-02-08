@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import RouterAgnosticLink from '../_astro/RouterAgnosticLink.jsx';
 import { ROUTES } from '../../constants/index.js';
 import { productCategories } from '../../data/products/index.js';
-import { getProductCategoryPath, getProductDetailPath, getSectionPath } from '../../lib/i18n/routing';
+import { getArticlesIndexPath, getProductCategoryPath, getProductDetailPath, getSectionPath } from '../../lib/i18n/routing';
 import { isSanityConfigured } from '../../lib/sanity/config';
 import { fetchProductsListByCategory, fetchWindowProductsList } from '../../lib/sanity/windows';
 import styles from './Navigation.module.css';
@@ -184,6 +184,8 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
   const navItems = [
     { key: 'home', path: ROUTES.HOME, label: 'nav.home' },
     { key: 'products', path: ROUTES.PRODUCTS, label: 'nav.products' },
+    // Articles exist only in Polish for now.
+    ...(lang === 'pl' ? [{ key: 'articles', path: '/artykuly', label: 'nav.articles' }] : []),
     { key: 'realizations', path: ROUTES.REALIZATIONS, label: 'nav.realizations' },
     { key: 'about', path: ROUTES.ABOUT, label: 'nav.about' },
     { key: 'hs', path: ROUTES.HS_CONFIGURATOR, label: 'nav.hsConfigurator' },
@@ -194,6 +196,7 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
     const routeMap = {
       [ROUTES.HOME]: getSectionPath(lang, 'home'),
       [ROUTES.PRODUCTS]: getSectionPath(lang, 'products'),
+      ['/artykuly']: getArticlesIndexPath(lang),
       [ROUTES.REALIZATIONS]: getSectionPath(lang, 'realizations'),
       [ROUTES.ABOUT]: getSectionPath(lang, 'about'),
       [ROUTES.CONTACT]: getSectionPath(lang, 'contact'),
@@ -308,6 +311,7 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
     const pathMap = {
       [ROUTES.HOME]: getSectionPath(lang, 'home'),
       [ROUTES.PRODUCTS]: getSectionPath(lang, 'products'),
+      ['/artykuly']: getArticlesIndexPath(lang),
       [ROUTES.REALIZATIONS]: getSectionPath(lang, 'realizations'),
       [ROUTES.ABOUT]: getSectionPath(lang, 'about'),
       [ROUTES.CONTACT]: getSectionPath(lang, 'contact'),

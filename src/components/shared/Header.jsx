@@ -14,7 +14,7 @@ import { productCategories } from '../../data/products/index.js';
 const logoWhite = '/images/logo.png';
 const logoBlack = '/images/logo-black.png';
 import MaxWidthContainer from '../ui/MaxWidthContainer.jsx';
-import { getProductCategoryPath, getProductDetailPath, getSectionPath } from '../../lib/i18n/routing';
+import { getArticlesIndexPath, getProductCategoryPath, getProductDetailPath, getSectionPath } from '../../lib/i18n/routing';
 import RouterAgnosticLink from '../_astro/RouterAgnosticLink.jsx';
 import styles from './Header.module.css';
 
@@ -23,6 +23,8 @@ const MENU_ANIMATION_MS = 300;
 const NAV_ITEMS = [
   { key: 'home', path: ROUTES.HOME, label: 'nav.home' },
   { key: 'products', path: ROUTES.PRODUCTS, label: 'nav.products' },
+  // Articles exist only in Polish for now.
+  { key: 'articles', path: '/artykuly', label: 'nav.articles', onlyLang: 'pl' },
   { key: 'realizations', path: ROUTES.REALIZATIONS, label: 'nav.realizations' },
   { key: 'about', path: ROUTES.ABOUT, label: 'nav.about' },
   { key: 'hs', path: ROUTES.HS_CONFIGURATOR, label: 'nav.hsConfigurator' },
@@ -49,6 +51,7 @@ function HeaderUI({ pathname = '/' }) {
       const routeMap = {
         [ROUTES.HOME]: getSectionPath(lang, 'home'),
         [ROUTES.PRODUCTS]: getSectionPath(lang, 'products'),
+        ['/artykuly']: getArticlesIndexPath(lang),
         [ROUTES.REALIZATIONS]: getSectionPath(lang, 'realizations'),
         [ROUTES.ABOUT]: getSectionPath(lang, 'about'),
         [ROUTES.CONTACT]: getSectionPath(lang, 'contact'),
@@ -260,6 +263,7 @@ function HeaderUI({ pathname = '/' }) {
               {mobileMenuView === 'main' && (
                 <>
                   {navItems.map((item, index) => {
+                    if (item.onlyLang && item.onlyLang !== lang) return null;
                     if (item.key === 'products') {
                       return (
                         <button
@@ -284,6 +288,8 @@ function HeaderUI({ pathname = '/' }) {
                             ? getSectionPath(lang, 'home')
                             : item.path === ROUTES.PRODUCTS
                               ? getSectionPath(lang, 'products')
+                              : item.path === '/artykuly'
+                                ? getArticlesIndexPath(lang)
                               : item.path === ROUTES.REALIZATIONS
                                 ? getSectionPath(lang, 'realizations')
                                 : item.path === ROUTES.ABOUT

@@ -1,0 +1,302 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import Section from '../../components/ui/Section.jsx';
+import MaxWidthContainer from '../../components/ui/MaxWidthContainer.jsx';
+import PageHeader from '../../components/ui/PageHeader.jsx';
+import BreadcrumbsSsg from '../../components/_astro/ssg/BreadcrumbsSsg.astro';
+import { ArticleContent, RelatedArticles } from '../../components/sections/articles/index.js';
+import { 
+  fetchArticleBySlug, 
+  fetchAllArticleSlugs, 
+  fetchRelatedArticles 
+} from '../../lib/sanity/articles.js';
+import { getArticleDetailPath, getArticlesIndexPath, getSectionPath } from '../../lib/i18n/routing.js';
+
+// Generate static paths for all articles
+export async function getStaticPaths() {
+  const slugs = await fetchAllArticleSlugs();
+  return slugs.map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const lang = 'pl';
+
+const article = await fetchArticleBySlug(slug);
+
+if (!article) {
+  return Astro.redirect('/404');
+}
+
+const relatedArticles = await fetchRelatedArticles(slug, article.tagRefs, 4);
+
+/** @type {Array<{ label: string, to?: string }>} */
+const breadcrumbs = [
+  { label: 'Strona główna', to: getSectionPath(lang, 'home') },
+  { label: 'Artykuły', to: getArticlesIndexPath(lang) },
+  { label: article.title },
+];
+
+// SEO
+const title = `${article.seoTitle || article.title} | ROJEK`;
+const description = article.seoDescription || article.excerpt;
+const canonicalUrl = getArticleDetailPath(lang, slug);
+const ogImage = article.featuredImage?.asset?.url;
+
+// JSON-LD Article schema
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: article.title,
+  description: article.excerpt,
+  image: ogImage,
+  author: {
+    '@type': 'Person',
+    name: article.author,
+  },
+  publisher: {
+    '@type': 'Organization',
+    name: 'ROJEK Okna i Drzwi',
+    logo: {
+      '@type': 'ImageObject',
+      url: `${Astro.site}images/logo.png`,
+    },
+  },
+  datePublished: article.publishedAt,
+  dateModified: article.publishedAt,
+  mainEntityOfPage: {
+    '@type': 'WebPage',
+    '@id': canonicalUrl,
+  },
+};
+---
+
+<SiteLayout
+  lang={lang}
+  title={title}
+  description={description}
+  canonicalUrl={canonicalUrl}
+  ogImage={ogImage}
+  ogType="article"
+>
+  <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} slot="head" />
+
+  <article class="article">
+    <!-- Hero -->
+    <header class="article-header">
+      <PageHeader
+        image={article.featuredImage}
+        title={article.title}
+        height={420}
+        overlayColor="rgba(0,0,0,0.55)"
+        contentBg="#0136002b"
+        contentMaxWidth="min(100%, 42rem)"
+        contentMobileCentered
+        contentInMaxWidth
+        imgLoading="eager"
+        imgFetchPriority="high"
+        imgSizes="100vw"
+      >
+        <div class="header-content">
+          <h1 class="article-title">{article.title}</h1>
+          <div class="article-meta">
+            <span class="meta-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                <line x1="16" y1="2" x2="16" y2="6"></line>
+                <line x1="8" y1="2" x2="8" y2="6"></line>
+                <line x1="3" y1="10" x2="21" y2="10"></line>
+              </svg>
+              {article.publishedAtFormatted}
+            </span>
+            <span class="meta-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 16 14"></polyline>
+              </svg>
+              {article.readingTime} min czytania
+            </span>
+            <span class="meta-item">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              {article.author}
+            </span>
+          </div>
+        </div>
+      </PageHeader>
+    </header>
+
+    <MaxWidthContainer>
+      <div class="breadcrumbs-wrap">
+        <BreadcrumbsSsg items={breadcrumbs} />
+      </div>
+    </MaxWidthContainer>
+
+    <!-- Content -->
+    <Section>
+      <MaxWidthContainer>
+        <div class="article-body">
+          <ArticleContent content={article.content} client:idle />
+
+          <!-- Tags -->
+          {article.tags?.length > 0 && (
+            <footer class="article-footer">
+              <div class="tags">
+                <span class="tags-label">Tagi:</span>
+                {article.tags.map((tag) => (
+                  <span class="tag">{tag}</span>
+                ))}
+              </div>
+            </footer>
+          )}
+
+          <!-- Related Articles -->
+          <RelatedArticles 
+            articles={relatedArticles} 
+            lang={lang}
+            title="Inne artykuły"
+            client:visible
+          />
+
+          <!-- Back link -->
+          <div class="back-link-container">
+            <a href={getArticlesIndexPath(lang)} class="back-link">
+              ← Wszystkie artykuły
+            </a>
+          </div>
+        </div>
+      </MaxWidthContainer>
+    </Section>
+  </article>
+</SiteLayout>
+
+<style>
+  .article {
+    --article-max-width: 800px;
+  }
+
+  .breadcrumbs-wrap {
+    padding-top: 0;
+    margin-bottom: var(--space-lg);
+  }
+
+  /* Header / Hero */
+  .article-header {
+    margin-bottom: var(--space-md);
+    margin-top: 0;
+  }
+
+  .header-content {
+    position: relative;
+    display: block;
+    width: 100%;
+    max-width: min(100%, 42rem);
+    white-space: normal;
+    text-transform: none;
+  }
+
+  .article-title {
+    font-size: clamp(1.7rem, 3.8vw, 2.6rem);
+    font-weight: 200;
+    line-height: 1.25;
+    color: white;
+    margin: 0 0 var(--space-md);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    text-transform: none;
+    letter-spacing: normal;
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    column-gap: var(--space-lg);
+    row-gap: var(--space-sm);
+    margin-top: var(--space-sm);
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1rem;
+  }
+
+  .meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .meta-item svg {
+    opacity: 0.8;
+  }
+
+  /* Body */
+  .article-body {
+    max-width: var(--article-max-width);
+    margin: 0 auto;
+  }
+
+  /* Footer / Tags */
+  .article-footer {
+    margin-top: var(--space-xl);
+    padding: 1rem 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs);
+  }
+
+  .tags-label {
+    font-size: 0.875rem;
+    color: var(--color-text-muted);
+    margin-right: var(--space-xs);
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: baseline;
+    padding: 6px 10px;
+    border-radius: 3px;
+    background: rgba(2, 99, 3, 0.1);
+    border: 1px solid rgba(2, 99, 3, 0.25);
+    color: rgba(11, 90, 42, 0.95);
+    font-size: 0.82rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.2px;
+    white-space: nowrap;
+  }
+
+  /* Back link */
+  .back-link-container {
+    margin-top: var(--space-xl);
+    padding-top: var(--space-lg);
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-xs);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .back-link:hover {
+    color: var(--color-primary-dark);
+    text-decoration: underline;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .article-meta {
+      flex-direction: column;
+      gap: var(--space-sm);
+    }
+  }
+</style>

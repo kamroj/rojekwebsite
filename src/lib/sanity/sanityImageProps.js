@@ -96,12 +96,32 @@ export const getSanityImageProps = (image, opts = {}) => {
   const alt = typeof image.alt === 'string' ? image.alt : altFallback;
   const dimensions = image?.asset?.metadata?.dimensions;
 
+  // Local/mock images support:
+  // If we have an explicit `asset.url` that is NOT a Sanity CDN url and there's no `_ref`,
+  // we must NOT run it through Sanity's image-url builder.
+  // (The builder expects a valid Sanity asset id and will throw.)
+  const rawUrl = image?.asset?.url;
+  const assetRef = image?.asset?._ref;
+  const isSanityCdnUrl = typeof rawUrl === 'string'
+    && /^https?:\/\/cdn\.sanity\.io\/images\//.test(rawUrl);
+  const isLocalOrMock = Boolean(rawUrl) && !assetRef && !isSanityCdnUrl;
+  if (isLocalOrMock) {
+    return {
+      src: rawUrl,
+      alt,
+      width: dimensions?.width,
+      height: dimensions?.height,
+      loading,
+      decoding,
+      fetchpriority,
+    };
+  }
+
   const cropped = getCroppedDimensions(dimensions, image?.crop);
 
   const baseBuilder = urlForImage(image);
   if (!baseBuilder) {
     // If builder is not available, we can still try to use the raw asset URL.
-    const rawUrl = image?.asset?.url;
     if (!rawUrl) return null;
     return {
       src: rawUrl,
