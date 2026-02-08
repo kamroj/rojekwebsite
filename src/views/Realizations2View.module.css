@@ -1,45 +1,122 @@
 .filterContainer {
-  padding: 3.2rem 1.6rem 1.6rem 1.6rem;
+  padding: 2.4rem 1.6rem 1.8rem 1.6rem;
+  display: grid;
+  gap: 14px;
+  border-bottom: 1px solid var(--color-border);
+  background: linear-gradient(180deg, #ffffff, #fbfdfb);
+  border-radius: 10px;
+  margin-top: 8px;
+}
+
+.filterHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.filterContainer :global(.react-select-container) {
-  min-width: 380px;
-  z-index: 5;
+  gap: 12px;
 }
 
 @media (--bp-sm) {
-  .filterContainer {
-    flex-direction: column-reverse;
+  .filterHeader {
+    flex-direction: column;
     align-items: stretch;
-  }
-
-  .filterContainer :global(.react-select-container) {
-    width: 100%;
-    min-width: unset;
   }
 }
 
 .filterCounter {
-  display: flex;
-  align-items: end;
-  justify-content: end;
-  margin-right: auto;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 1.4rem;
-  align-self: end;
   color: var(--color-text);
+}
+
+.filterControls {
+  display: grid;
+  gap: 12px;
+}
+
+.filterLabel {
+  margin: 0;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #224b2f;
+}
+
+.filterGroups {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.filterGroup {
+  border: 1px solid #dbe8dd;
+  background: #fff;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.filterGroupTitle {
+  margin: 0 0 8px;
+  font-size: 1.25rem;
+  color: #21462f;
+}
+
+.filterOptions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filterChip {
+  border: 1px solid #c6d9ca;
+  background: #f6fbf7;
+  color: #23462f;
+  border-radius: 999px;
+  padding: 7px 12px;
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterChip:hover {
+  background: #eaf6ed;
+  border-color: #9dc8a8;
+}
+
+.filterChip:global(.is-active) {
+  background: #0f5a2c;
+  color: #fff;
+  border-color: #0f5a2c;
+  box-shadow: 0 4px 10px rgba(15, 90, 44, 0.25);
+}
+
+.filterResetButton {
+  align-self: flex-start;
+  border: 1px solid #0f5a2c;
+  background: #fff;
+  color: #0f5a2c;
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterResetButton:hover {
+  background: #0f5a2c;
+  color: #fff;
 }
 
 @media (--bp-sm) {
   .filterCounter {
     font-size: 1.2rem;
-    margin: 0;
-    justify-content: start;
+  }
+
+  .filterGroups {
+    grid-template-columns: 1fr;
+  }
+
+  .filterChip {
+    font-size: 1.1rem;
   }
 }
 
@@ -72,6 +149,22 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
   border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.singleRealizationContainer:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+}
+
+.singleRealizationContainer:focus-visible {
+  outline: 2px solid #0f5a2c;
+  outline-offset: 2px;
+}
+
+.singleRealizationContainer:global(.realization-hidden-by-filter) {
+  display: none;
 }
 
 @media (--bp-sm) {
@@ -127,6 +220,184 @@
   white-space: nowrap;
   font-weight: 500;
   text-transform: capitalize;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  display: none;
+}
+
+.lightbox[aria-hidden='false'] {
+  display: block;
+}
+
+.lightboxBackdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(10, 16, 12, 0.78);
+  backdrop-filter: blur(2px);
+}
+
+.lightboxDialog {
+  position: relative;
+  z-index: 1;
+  margin: 2vh auto;
+  width: min(1200px, 94vw);
+  height: 96vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  outline: none;
+}
+
+.lightboxFigure {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  background: #0c0f0d;
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.lightboxImage {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  background: #0c0f0d;
+  opacity: 1;
+  transform: scale(1);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+}
+
+.lightboxImage:global(.is-switching) {
+  opacity: 0;
+  transform: scale(0.985);
+}
+
+.lightboxTags {
+  display: none;
+}
+
+.lightboxClose,
+.lightboxNavPrev,
+.lightboxNavNext {
+  position: absolute;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  background: rgb(36 96 2 / 30%);
+  backdrop-filter: blur(0.4rem);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(42, 228, 36, 0.3);
+}
+
+.lightboxClose:hover,
+.lightboxNavPrev:hover,
+.lightboxNavNext:hover {
+  background: rgb(16 44 1 / 40%);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.lightboxClose {
+  top: 12px;
+  right: 12px;
+}
+
+.lightboxNavPrev,
+.lightboxNavNext {
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.lightboxClose svg,
+.lightboxNavPrev svg,
+.lightboxNavNext svg {
+  display: block;
+}
+
+.lightboxClose svg {
+  width: 20px;
+  height: 20px;
+}
+
+.lightboxNavPrev svg,
+.lightboxNavNext svg {
+  width: 26px;
+  height: 26px;
+}
+
+.lightboxNavPrev {
+  left: 12px;
+}
+
+.lightboxNavNext {
+  right: 12px;
+}
+
+@media (--bp-sm) {
+  .lightboxDialog {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .lightboxFigure {
+    border-radius: 0;
+  }
+
+  .lightboxTags {
+    display: none;
+  }
+
+  .lightboxNavPrev,
+  .lightboxNavNext {
+    width: 44px;
+    height: 44px;
+    top: auto;
+    bottom: 14px;
+    transform: none;
+  }
+
+  .lightboxNavPrev svg,
+  .lightboxNavNext svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .lightboxNavPrev {
+    left: 14px;
+  }
+
+  .lightboxNavNext {
+    right: 14px;
+  }
+
+  .lightboxClose {
+    width: 44px;
+    height: 44px;
+    top: 10px;
+    right: 10px;
+  }
+
+  .lightboxClose svg {
+    width: 22px;
+    height: 22px;
+  }
 }
 
 .paginate {

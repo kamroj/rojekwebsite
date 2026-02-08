@@ -45,7 +45,19 @@ export const structure = (S) =>
         ),
 
       // --- Realizacje ---
-      S.listItem().title('Realizacje').child(S.documentTypeList('realization').title('Realizacje')),
+      S.listItem()
+        .title('Realizacje')
+        .child(
+          S.list()
+            .title('Realizacje')
+            .items([
+              S.listItem().title('Wszystkie realizacje').child(S.documentTypeList('realization').title('Realizacje')),
+              S.divider(),
+              S.listItem()
+                .title('Klucze tagów realizacji')
+                .child(S.documentTypeList('realizationTagKey').title('Klucze tagów realizacji')),
+            ])
+        ),
 
       // --- Artykuły ---
       S.listItem()

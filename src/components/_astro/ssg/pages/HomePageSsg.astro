@@ -13,10 +13,37 @@ import { PRODUCT_TYPES, REALIZATION_IMAGES, GALLERY_CONFIG } from '../../../../c
 import { getProductCategoryPath, getSectionPath } from '../../../../lib/i18n/routing.js';
 import { loadTranslationJson } from '../../../../lib/i18n/resources.js';
 import { t as tt } from '../../../../lib/i18n/t.js';
+import { fetchHomePageIntro, fetchHomePageRealizations } from '../../../../lib/sanity/homePage.js';
+import { IoIosArrowForward } from 'react-icons/io';
 
 const { lang = 'pl' } = Astro.props;
 const tr = await loadTranslationJson(lang);
 const t = (key, def = '') => tt(tr, key, def);
+
+let introMedia = {
+  videoSrc: null,
+  posterSrc: null,
+  posterLqip: null,
+};
+
+let homeRealizations = [];
+
+try {
+  const intro = await fetchHomePageIntro();
+  introMedia = {
+    videoSrc: intro?.backgroundVideoUrl || null,
+    posterSrc: intro?.backgroundPoster?.asset?.url || null,
+    posterLqip: intro?.backgroundPoster?.asset?.metadata?.lqip || null,
+  };
+} catch (e) {
+  console.warn('[sanity][home] intro media fetch failed', e);
+}
+
+try {
+  homeRealizations = await fetchHomePageRealizations({ lang });
+} catch (e) {
+  console.warn('[sanity][home] realizations fetch failed', e);
+}
 
 const productData = {
   [PRODUCT_TYPES.WINDOWS]: {
@@ -47,14 +74,29 @@ const productData = {
 
 const productIds = Object.keys(productData);
 
-const realizationsData = REALIZATION_IMAGES.map((img, idx) => ({
+const fallbackRealizations = REALIZATION_IMAGES.map((img, idx) => ({
   ...img,
+  alt: '',
   title: t(`realizations.items.${idx}.title`, `Realization ${idx + 1}`),
 }));
+
+const sourceRealizations = homeRealizations?.length ? homeRealizations : fallbackRealizations;
+
+const realizationsData = sourceRealizations.map((img, idx) => {
+  const fallbackTitle = t(`realizations.items.${idx}.title`, `Realization ${idx + 1}`);
+  const safeAlt = typeof img?.alt === 'string' ? img.alt : '';
+  const safeTitle = typeof img?.title === 'string' ? img.title : '';
+
+  return {
+    ...img,
+    alt: safeAlt,
+    title: safeTitle || safeAlt || fallbackTitle,
+  };
+});
 ---
 
 <!-- HERO (interactive) -->
-<IntroIslandWithResources lang={lang} hydrate="load" />
+<IntroIslandWithResources lang={lang} hydrate="load" viewProps={{ introMedia }} />
 
 <!-- PRODUCTS (SSG) -->
 <section class={productStyles.section} aria-labelledby="products-heading">
@@ -83,7 +125,9 @@ const realizationsData = REALIZATION_IMAGES.map((img, idx) => ({
                   <p class={productStyles.description}>{p.description}</p>
                   <div class={productStyles.footer}>
                     <span class={productStyles.linkText}>{t('common.learnMore', 'Dowiedz się więcej')}</span>
-                    <span class={productStyles.arrowWrapper} aria-hidden="true">→</span>
+                    <span class={productStyles.arrowWrapper} aria-hidden="true">
+                      <IoIosArrowForward className={productStyles.arrowIcon} />
+                    </span>
                   </div>
                 </div>
               </a>

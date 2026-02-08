@@ -14,13 +14,22 @@ export default defineType({
       type: 'object',
       fields: [
         defineField({name: 'backgroundVideo', title: 'Wideo w tle', type: 'file'}),
+        defineField({
+          name: 'backgroundPoster',
+          title: 'Poster tła (LQIP)',
+          description:
+            'Obraz używany jako placeholder zanim załaduje się film. Sanity wygeneruje z niego LQIP automatycznie.',
+          type: 'image',
+          options: {hotspot: true},
+          fields: [
+            defineField({
+              name: 'alt',
+              title: 'Alt',
+              type: 'string',
+            }),
+          ],
+        }),
       ],
-    }),
-    defineField({
-      name: 'productTiles',
-      title: 'Kafelki produktów (kolejność)',
-      type: 'array',
-      of: [{type: 'reference', to: [{type: 'productCategory'}]}],
     }),
     defineField({
       name: 'realizations',
@@ -28,75 +37,6 @@ export default defineType({
       description: 'Lista zdjęć do galerii na stronie głównej. To tylko obraz + opcjonalne tagi.',
       type: 'array',
       of: [{type: 'reference', to: [{type: 'realization'}]}],
-    }),
-    defineField({
-      name: 'whyUs',
-      title: 'Dlaczego my',
-      description:
-        'Kafelki są predefiniowane (ikony są w kodzie). W CMS edytujesz tylko teksty dla każdego kafelka.',
-      type: 'object',
-      fields: [
-        defineField({
-          name: 'tradition',
-          title: 'Tradycja i doświadczenie (ikona: okno)',
-          type: 'object',
-          fields: [
-            defineField({name: 'title', title: 'Tytuł', type: 'localizedString'}),
-            defineField({name: 'description', title: 'Opis', type: 'localizedText'}),
-          ],
-        }),
-        defineField({
-          name: 'individual',
-          title: 'Indywidualne podejście (ikona: współpraca)',
-          type: 'object',
-          fields: [
-            defineField({name: 'title', title: 'Tytuł', type: 'localizedString'}),
-            defineField({name: 'description', title: 'Opis', type: 'localizedText'}),
-          ],
-        }),
-        defineField({
-          name: 'ecological',
-          title: 'Ekologiczne materiały (ikona: liść)',
-          type: 'object',
-          fields: [
-            defineField({name: 'title', title: 'Tytuł', type: 'localizedString'}),
-            defineField({name: 'description', title: 'Opis', type: 'localizedText'}),
-          ],
-        }),
-        defineField({
-          name: 'precision',
-          title: 'Precyzja wykonania (ikona: narzędzia)',
-          type: 'object',
-          fields: [
-            defineField({name: 'title', title: 'Tytuł', type: 'localizedString'}),
-            defineField({name: 'description', title: 'Opis', type: 'localizedText'}),
-          ],
-        }),
-        defineField({
-          name: 'warranty',
-          title: 'Gwarancja i serwis (ikona: tarcza)',
-          type: 'object',
-          fields: [
-            defineField({name: 'title', title: 'Tytuł', type: 'localizedString'}),
-            defineField({name: 'description', title: 'Opis', type: 'localizedText'}),
-          ],
-        }),
-        defineField({
-          name: 'delivery',
-          title: 'Terminowość dostaw (ikona: zegar)',
-          type: 'object',
-          fields: [
-            defineField({name: 'title', title: 'Tytuł', type: 'localizedString'}),
-            defineField({name: 'description', title: 'Opis', type: 'localizedText'}),
-          ],
-        }),
-      ],
-    }),
-    defineField({
-      name: 'partners',
-      title: 'Partnerzy (loga)',
-      type: 'array',
-      of: [{type: 'reference', to: [{type: 'partner'}]}],
     }),
   ],
   preview: {

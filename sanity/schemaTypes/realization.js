@@ -16,16 +16,50 @@ export default defineType({
         defineField({
           name: 'alt',
           title: 'Alt (tekst alternatywny)',
-          type: 'string',
-          description: 'Opis obrazka dla SEO i dostępności.',
+          type: 'localizedString',
+          description: 'Opis obrazka dla SEO i dostępności (PL/EN/DE).',
         }),
       ],
     }),
     defineField({
       name: 'tags',
-      title: 'Tagi',
+      title: 'Tagi realizacji',
       type: 'array',
-      of: [{type: 'reference', to: [{type: 'tag'}]}],
+      of: [
+        {
+          type: 'object',
+          name: 'realizationTagItem',
+          title: 'Tag',
+          fields: [
+            defineField({
+              name: 'key',
+              title: 'Klucz tagu',
+              type: 'reference',
+              to: [{type: 'realizationTagKey'}],
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'value',
+              title: 'Wartość (PL/EN/DE)',
+              type: 'localizedString',
+              validation: (Rule) => Rule.required(),
+            }),
+          ],
+          preview: {
+            select: {
+              value: 'value.pl',
+              keyLabel: 'key.label.pl',
+              key: 'key.key',
+            },
+            prepare({value, keyLabel, key}) {
+              return {
+                title: value || '(brak wartości)',
+                subtitle: keyLabel || key || '(brak klucza)',
+              }
+            },
+          },
+        },
+      ],
     }),
   ],
   preview: {

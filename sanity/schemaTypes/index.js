@@ -8,8 +8,8 @@ import product from './product'
 import partner from './partner'
 import teamMember from './teamMember'
 
-import tag from './tag'
 import realization from './realization'
+import realizationTagKey from './realizationTagKey'
 
 import faqItem from './faqItem'
 
@@ -36,7 +36,7 @@ export const schemaTypes = [
   product,
   partner,
   teamMember,
-  tag,
+  realizationTagKey,
   articleTag,
   articlesPage,
   realization,

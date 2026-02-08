@@ -12,9 +12,6 @@ export const collectHomePageResources = (productData) => {
   // Logo w LoadingScreen
   resources.push('/images/logo.png');
 
-  // Video z IntroSection
-  resources.push(VIDEO_SOURCES.BACKGROUND);
-
   // Wszystkie filmy z ProductSection
   if (productData) {
     Object.values(productData).forEach(product => {
@@ -164,7 +161,6 @@ export const collectComponentResources = (componentName, props = {}) => {
       break;
 
     case 'IntroSection':
-      resources.push(VIDEO_SOURCES.BACKGROUND);
       break;
 
     default:

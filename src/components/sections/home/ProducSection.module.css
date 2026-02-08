@@ -215,39 +215,34 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: rgba(0, 77, 20, 0.05);
-  transition: all 0.3s ease;
+  color: #000;
+  transition: transform 0.3s ease, color 0.3s ease;
 }
 
 .card:hover .arrowWrapper {
-  background: var(--color-bottle-green);
   transform: translateX(2px);
+  color: var(--color-bottle-green);
 }
 
 @media (--bp-sm) {
   .arrowWrapper {
-    width: 24px;
-    height: 24px;
+    transform: none;
+    color: var(--color-bottle-green);
   }
 }
 
 .arrowIcon {
-  color: var(--color-bottle-green);
+  color: currentColor;
   font-size: 2rem;
-  transition: transform 0.3s ease, color 0.3s ease;
+  transition: transform 0.3s ease;
 }
 
 .card:hover .arrowIcon {
   transform: translateX(4px);
-  color: var(--color-text-light);
 }
 
 @media (--bp-sm) {
   .arrowIcon {
     font-size: 1.6rem;
-    color: #014e01;
   }
 }

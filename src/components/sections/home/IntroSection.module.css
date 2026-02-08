@@ -28,6 +28,26 @@
   z-index: 1;
 }
 
+.videoElement {
+  opacity: 0;
+  transition: opacity 360ms ease;
+}
+
+.videoLoaded {
+  opacity: 1;
+}
+
+.videoPoster {
+  z-index: 0;
+  filter: blur(16px);
+  transform: scale(1.02);
+  transition: opacity 320ms ease;
+}
+
+.posterHidden {
+  opacity: 0;
+}
+
 .videoOverlay {
   position: absolute;
   top: 0;

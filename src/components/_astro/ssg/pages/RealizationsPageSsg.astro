@@ -8,8 +8,8 @@ import styles from '../../../../views/Realizations2View.module.css';
 import { loadTranslationJson } from '../../../../lib/i18n/resources.js';
 import { t as tt } from '../../../../lib/i18n/t.js';
 import { getSectionPath } from '../../../../lib/i18n/routing.js';
-
-import { REALIZATIONS_DATA } from '../../../../data/realizations.js';
+import { fetchRealizationsPageData } from '../../../../lib/sanity/realizations.js';
+import { getSanityImageProps } from '../../../../lib/sanity/sanityImageProps.js';
 
 const { lang = 'pl' } = Astro.props;
 
@@ -21,8 +21,41 @@ const breadcrumbs = [
   { label: t('breadcrumbs.realizations', 'Realizations') },
 ];
 
-// Centralized dataset used by both React and SSG.
-const realizations = REALIZATIONS_DATA;
+const realizations = await fetchRealizationsPageData({ lang });
+
+const resultsTemplate =
+  t('realizationsPage.results.found', 'Znaleziono {{count}} realizacji') ||
+  'Znaleziono {{count}} realizacji';
+const initialResultsText = resultsTemplate.replace('{{count}}', String(realizations.length));
+
+const filterGroupsMap = /** @type {Map<string, { key: string, label: string, options: Map<string, { key: string, label: string }> }>} */ (new Map());
+for (const realization of realizations) {
+  for (const tag of realization.tags || []) {
+    if (!filterGroupsMap.has(tag.categoryKey)) {
+      filterGroupsMap.set(tag.categoryKey, {
+        key: tag.categoryKey,
+        label: tag.categoryLabel,
+        options: new Map(),
+      });
+    }
+    const group = filterGroupsMap.get(tag.categoryKey);
+    if (!group.options.has(tag.valueKey)) {
+      group.options.set(tag.valueKey, {
+        key: tag.valueKey,
+        label: tag.valueLabel,
+      });
+    }
+  }
+}
+
+const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
+  const options = Array.from(group.options.values());
+
+  return {
+    ...group,
+    options,
+  };
+});
 ---
 
 <div>
@@ -36,32 +69,343 @@ const realizations = REALIZATIONS_DATA;
     <BreadcrumbsSsg items={breadcrumbs} />
 
     <div class={styles.filterContainer}>
-      <div class={styles.filterCounter}>
-        {t('realizationsPage.results.found', '').replace('{{count}}', String(realizations.length)) || `Znaleziono ${realizations.length} realizacji`}
+      <div class={styles.filterHeader}>
+        <div class={styles.filterCounter} data-counter-template={resultsTemplate}>
+          {initialResultsText}
+        </div>
+        <button id="realizations-filter-reset" type="button" class={styles.filterResetButton}>
+          {t('realizationsPage.filters.clear', 'Wyczyść')}
+        </button>
       </div>
-      <!-- We keep filters as a later enhancement (island). For now: fully indexable list. -->
+      <div class={styles.filterControls}>
+        <p class={styles.filterLabel}>{t('realizationsPage.filters.filtersTitle', 'Filtry')}</p>
+        <div class={styles.filterGroups}>
+          {filterGroups.map((group) => (
+            <section class={styles.filterGroup}>
+              <h3 class={styles.filterGroupTitle}>{group.label}</h3>
+              <div class={styles.filterOptions}>
+                {group.options.map((option) => (
+                  <button
+                    type="button"
+                    class={styles.filterChip}
+                    data-filter-value={`${group.key}::${option.key}`}
+                    aria-pressed="false"
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
+      </div>
     </div>
 
-    <div class={styles.realizationsContainer}>
+    <div class={styles.realizationsContainer} id="realizations-grid">
       {realizations.map((item, idx) => (
-        <div class={styles.singleRealizationContainer}>
-          <img
-            class={styles.realizationImage}
-            src={item.img}
-            alt={`${t('realizationsPage.title', 'Realizacje')} ${idx + 1}`}
-            loading="lazy"
-          />
+        <div
+          class={styles.singleRealizationContainer}
+          data-tag-pairs={(item.tagPairs || []).join(',')}
+          data-realization-card
+          role="button"
+          tabindex="0"
+          aria-label={t('realizationsPage.filters.openImage', 'Powiększ realizację')}
+        >
+          {(() => {
+            const imageProps = getSanityImageProps(item.image, {
+              widths: [420, 640, 960],
+              sizes: '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
+              loading: 'lazy',
+              altFallback: `${t('realizationsPage.title', 'Realizacje')} ${idx + 1}`,
+            });
+
+            return imageProps ? (
+              <img
+                class={styles.realizationImage}
+                src={imageProps.src}
+                srcset={imageProps.srcset}
+                sizes={imageProps.sizes}
+                width={imageProps.width}
+                height={imageProps.height}
+                alt={item.alt || imageProps.alt}
+                loading={imageProps.loading}
+                decoding={imageProps.decoding}
+                fetchpriority={imageProps.fetchpriority}
+                style={item?.image?.asset?.metadata?.lqip
+                  ? `background-image:url(${item.image.asset.metadata.lqip});background-size:cover;background-position:center;`
+                  : undefined}
+              />
+            ) : null;
+          })()}
           <div class={styles.realizationTags}>
-            {Object.entries(item.tags).flatMap(([category, values]) =>
-              values.map((val, i) => (
-                <span class={styles.tag}>
-                  {t(`tags.categories.${category}`, category)}: {val}
-                </span>
-              ))
-            )}
+            {(item.tags || []).map((tag) => (
+              <span class={styles.tag}>{tag.categoryLabel}: {tag.valueLabel}</span>
+            ))}
           </div>
         </div>
       ))}
     </div>
+
+    <div id="realization-lightbox" class={styles.lightbox} aria-hidden="true">
+      <div class={styles.lightboxBackdrop} data-lightbox-close></div>
+      <div
+        id="realization-lightbox-dialog"
+        class={styles.lightboxDialog}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('realizationsPage.filters.openImage', 'Podgląd realizacji')}
+        tabindex="-1"
+      >
+        <button
+          id="lightbox-close"
+          type="button"
+          class={styles.lightboxClose}
+          aria-label={t('realizationsPage.filters.close', 'Zamknij')}
+        >
+          <svg class={styles.lightboxCloseIcon} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M18.3 5.71a1 1 0 0 0-1.42 0L12 10.59 7.12 5.7a1 1 0 0 0-1.41 1.42L10.59 12l-4.9 4.88a1 1 0 1 0 1.42 1.42L12 13.41l4.88 4.9a1 1 0 0 0 1.42-1.42L13.41 12l4.9-4.88a1 1 0 0 0-.01-1.41Z" fill="currentColor" />
+          </svg>
+        </button>
+
+        <button
+          id="lightbox-prev"
+          type="button"
+          class={styles.lightboxNavPrev}
+          aria-label={t('realizationsPage.filters.prev', 'Poprzednia')}
+        >
+          <svg class={styles.lightboxNavIcon} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M15.41 7.41 10.83 12l4.58 4.59L14 18l-6-6 6-6z" fill="currentColor" />
+          </svg>
+        </button>
+
+        <figure id="lightbox-image-frame" class={styles.lightboxFigure}>
+          <img id="lightbox-image" class={styles.lightboxImage} alt="" />
+          <figcaption id="lightbox-tags" class={styles.lightboxTags}></figcaption>
+        </figure>
+
+        <button
+          id="lightbox-next"
+          type="button"
+          class={styles.lightboxNavNext}
+          aria-label={t('realizationsPage.filters.next', 'Następna')}
+        >
+          <svg class={styles.lightboxNavIcon} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="m8.59 16.59 4.58-4.59-4.58-4.59L10 6l6 6-6 6z" fill="currentColor" />
+          </svg>
+        </button>
+      </div>
+    </div>
   </div>
 </div>
+
+<script is:inline>
+  const filterButtons = Array.from(document.querySelectorAll('[data-filter-value]'));
+  const resetButton = document.getElementById('realizations-filter-reset');
+  const cards = Array.from(document.querySelectorAll('[data-realization-card]'));
+  const counter = document.querySelector('[class*="filterCounter"]');
+  const selectedByCategory = new Map();
+
+  const lightbox = document.getElementById('realization-lightbox');
+  const lightboxDialog = document.getElementById('realization-lightbox-dialog');
+  const lightboxImage = document.getElementById('lightbox-image');
+  const lightboxTags = document.getElementById('lightbox-tags');
+  const lightboxClose = document.getElementById('lightbox-close');
+  const lightboxPrev = document.getElementById('lightbox-prev');
+  const lightboxNext = document.getElementById('lightbox-next');
+  const lightboxBackdrop = document.querySelector('[data-lightbox-close]');
+  const lightboxFrame = document.getElementById('lightbox-image-frame');
+
+  let visibleCards = [];
+  let activeCardIndex = -1;
+  let touchStartX = 0;
+  let imageSwitchTimeout;
+
+  const isLightboxOpen = () => lightbox?.getAttribute('aria-hidden') === 'false';
+  const getVisibleCards = () => cards.filter((card) => !card.classList.contains('realization-hidden-by-filter'));
+
+  const fillLightboxFromCard = (card) => {
+    const image = card.querySelector('img');
+    const tags = card.querySelector('[class*="realizationTags"]');
+    if (!image || !lightboxImage) return;
+
+    lightboxImage.setAttribute('src', image.getAttribute('src') || '');
+
+    const srcset = image.getAttribute('srcset');
+    const sizes = image.getAttribute('sizes');
+    if (srcset) lightboxImage.setAttribute('srcset', srcset);
+    else lightboxImage.removeAttribute('srcset');
+    if (sizes) lightboxImage.setAttribute('sizes', sizes);
+    else lightboxImage.removeAttribute('sizes');
+
+    lightboxImage.setAttribute('alt', image.getAttribute('alt') || '');
+    if (lightboxTags) lightboxTags.innerHTML = tags ? tags.innerHTML : '';
+  };
+
+  const renderLightboxWithTransition = () => {
+    if (!visibleCards.length || activeCardIndex < 0 || !lightboxImage) return;
+
+    lightboxImage.classList.add('is-switching');
+    clearTimeout(imageSwitchTimeout);
+
+    imageSwitchTimeout = window.setTimeout(() => {
+      fillLightboxFromCard(visibleCards[activeCardIndex]);
+      requestAnimationFrame(() => {
+        lightboxImage.classList.remove('is-switching');
+      });
+    }, 120);
+  };
+
+  const renderLightbox = () => {
+    if (!visibleCards.length || activeCardIndex < 0) return;
+    fillLightboxFromCard(visibleCards[activeCardIndex]);
+  };
+
+  const moveLightbox = (step) => {
+    if (!visibleCards.length) return;
+    activeCardIndex = (activeCardIndex + step + visibleCards.length) % visibleCards.length;
+    renderLightboxWithTransition();
+  };
+
+  const closeLightbox = () => {
+    if (!lightbox) return;
+    lightbox.setAttribute('aria-hidden', 'true');
+    document.body.style.overflow = '';
+    activeCardIndex = -1;
+    visibleCards = [];
+  };
+
+  const openLightbox = (card) => {
+    visibleCards = getVisibleCards();
+    if (!visibleCards.length) return;
+
+    activeCardIndex = visibleCards.indexOf(card);
+    if (activeCardIndex < 0) activeCardIndex = 0;
+
+    renderLightbox();
+
+    if (!lightbox || !lightboxDialog) return;
+    lightbox.setAttribute('aria-hidden', 'false');
+    document.body.style.overflow = 'hidden';
+    lightboxDialog.focus();
+  };
+
+  const toggleFilter = (pair) => {
+    const [category, value] = String(pair || '').split('::');
+    if (!category || !value) return;
+
+    if (!selectedByCategory.has(category)) {
+      selectedByCategory.set(category, new Set());
+    }
+
+    const values = selectedByCategory.get(category);
+    if (values.has(value)) {
+      values.delete(value);
+      if (!values.size) selectedByCategory.delete(category);
+    } else {
+      values.add(value);
+    }
+  };
+
+  const applyFilters = () => {
+    let visibleCount = 0;
+
+    for (const card of cards) {
+      const rawPairs = (card.getAttribute('data-tag-pairs') || '').split(',').filter(Boolean);
+      const itemMap = new Map();
+
+      for (const pair of rawPairs) {
+        const [category, value] = pair.split('::');
+        if (!category || !value) continue;
+        if (!itemMap.has(category)) itemMap.set(category, new Set());
+        itemMap.get(category).add(value);
+      }
+
+      let matches = true;
+      for (const [category, wantedValues] of selectedByCategory.entries()) {
+        const itemValues = itemMap.get(category);
+        const hasAny = itemValues && Array.from(wantedValues).some((value) => itemValues.has(value));
+        if (!hasAny) {
+          matches = false;
+          break;
+        }
+      }
+
+      card.classList.toggle('realization-hidden-by-filter', !matches);
+      if (matches) visibleCount += 1;
+    }
+
+    if (counter) {
+      const template = counter.getAttribute('data-counter-template') || 'Znaleziono {{count}} realizacji';
+      counter.textContent = template.replace('{{count}}', String(visibleCount));
+    }
+
+    if (isLightboxOpen()) {
+      const nextVisibleCards = getVisibleCards();
+      if (!nextVisibleCards.length) {
+        closeLightbox();
+      } else {
+        const currentCard = visibleCards[activeCardIndex];
+        visibleCards = nextVisibleCards;
+        activeCardIndex = Math.max(0, visibleCards.indexOf(currentCard));
+        renderLightbox();
+      }
+    }
+  };
+
+  filterButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const pair = button.getAttribute('data-filter-value') || '';
+      toggleFilter(pair);
+
+      const [category, value] = pair.split('::');
+      const isActive = Boolean(selectedByCategory.get(category)?.has(value));
+      button.classList.toggle('is-active', isActive);
+      button.setAttribute('aria-pressed', String(isActive));
+
+      applyFilters();
+    });
+  });
+
+  resetButton?.addEventListener('click', () => {
+    selectedByCategory.clear();
+    filterButtons.forEach((button) => {
+      button.classList.remove('is-active');
+      button.setAttribute('aria-pressed', 'false');
+    });
+    applyFilters();
+  });
+
+  cards.forEach((card) => {
+    card.addEventListener('click', () => openLightbox(card));
+    card.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openLightbox(card);
+      }
+    });
+  });
+
+  lightboxClose?.addEventListener('click', closeLightbox);
+  lightboxBackdrop?.addEventListener('click', closeLightbox);
+  lightboxPrev?.addEventListener('click', () => moveLightbox(-1));
+  lightboxNext?.addEventListener('click', () => moveLightbox(1));
+
+  lightboxFrame?.addEventListener('touchstart', (event) => {
+    touchStartX = event.changedTouches?.[0]?.clientX || 0;
+  }, { passive: true });
+
+  lightboxFrame?.addEventListener('touchend', (event) => {
+    const touchEndX = event.changedTouches?.[0]?.clientX || 0;
+    const delta = touchEndX - touchStartX;
+    if (Math.abs(delta) < 50) return;
+    if (delta < 0) moveLightbox(1);
+    if (delta > 0) moveLightbox(-1);
+  }, { passive: true });
+
+  document.addEventListener('keydown', (event) => {
+    if (!isLightboxOpen()) return;
+    if (event.key === 'Escape') closeLightbox();
+    if (event.key === 'ArrowLeft') moveLightbox(-1);
+    if (event.key === 'ArrowRight') moveLightbox(1);
+  });
+</script>
