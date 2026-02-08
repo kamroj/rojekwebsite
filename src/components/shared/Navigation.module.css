@@ -223,6 +223,22 @@
   display: block;
 }
 
+.megaMenuImageBlurPlaceholder {
+  filter: blur(10px);
+  transform: scale(1.06);
+  opacity: 0.8;
+  animation: megaMenuImageLoadingPulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes megaMenuImageLoadingPulse {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 0.9;
+  }
+}
+
 .megaTitle {
   font-size: 1.05rem;
   text-transform: uppercase;

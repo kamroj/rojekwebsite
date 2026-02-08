@@ -1,5 +1,6 @@
 // src/services/sanity/windows.js
 import { getSanityClient } from './client';
+import { sanityConfig } from './config';
 import { pickLocale } from './i18n';
 import {
   SANITY_IMAGE_PROJECTION,
@@ -7,6 +8,27 @@ import {
 } from './imageProjection.js';
 
 const WINDOWS_CATEGORY_ID = 'category_okna';
+
+const fetchViaDevProxy = async (query, vars = {}, { signal } = {}) => {
+  if (!(import.meta.env.DEV && typeof window !== 'undefined')) return null;
+
+  const params = new URLSearchParams({ query });
+  Object.entries(vars || {}).forEach(([key, value]) => {
+    params.set(`$${key}`, String(value));
+  });
+
+  const apiVersion = sanityConfig.apiVersion || '2025-01-01';
+  const dataset = sanityConfig.dataset || 'production';
+  const url = `/api/sanity/v${apiVersion}/data/query/${dataset}?${params.toString()}`;
+
+  const res = await fetch(url, { signal });
+  if (!res.ok) {
+    throw new Error(`Sanity dev proxy failed: ${res.status}`);
+  }
+
+  const json = await res.json();
+  return json?.result || [];
+};
 
 export const fetchProductsListByCategory = async (categoryId, lang, { signal } = {}) => {
   const sanityClient = getSanityClient();
@@ -25,7 +47,16 @@ export const fetchProductsListByCategory = async (categoryId, lang, { signal } =
       }
   `;
 
-  const items = await sanityClient.fetch(query, { categoryId }, { signal });
+  let items;
+  try {
+    items = await sanityClient.fetch(query, { categoryId }, { signal });
+  } catch (e) {
+    // DEV fallback: if browser/client-side fetch hits CORS or apiHost mismatch,
+    // retry through local Vite/Astro proxy endpoint.
+    const viaProxy = await fetchViaDevProxy(query, { categoryId }, { signal });
+    if (!viaProxy) throw e;
+    items = viaProxy;
+  }
 
   return (items || []).map((p) => {
     return {

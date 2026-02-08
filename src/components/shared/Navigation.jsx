@@ -6,10 +6,15 @@ import { ROUTES } from '../../constants/index.js';
 import { productCategories } from '../../data/products/index.js';
 import { getArticlesIndexPath, getProductCategoryPath, getProductDetailPath, getSectionPath } from '../../lib/i18n/routing';
 import { isSanityConfigured } from '../../lib/sanity/config';
-import { fetchProductsListByCategory, fetchWindowProductsList } from '../../lib/sanity/windows';
+import { fetchProductsListByCategory } from '../../lib/sanity/windows';
 import styles from './Navigation.module.css';
 
 const cn = (...classes) => classes.filter(Boolean).join(' ');
+
+const SANITY_CATEGORY_IDS_BY_KEY = {
+  okna: ['category_okna', 'category_okna_przesuwne'],
+  drzwi: ['category_drzwi_zewnetrzne', 'category_ppoz'],
+};
 
 const BaseNavContainer = ({ className, ...props }) => (
   <nav {...props} className={cn(styles.baseNavContainer, className)} />
@@ -85,88 +90,92 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
   const [activeCategoryKey, setActiveCategoryKey] = useState(null);
   const [activeProductKey, setActiveProductKey] = useState(null);
 
-  // Sanity (dynamic list for okna/drzwi)
-  const [sanityWindows, setSanityWindows] = useState(null);
-  const [sanityWindowsLoaded, setSanityWindowsLoaded] = useState(false);
-  const windowsFetchAbortRef = useRef(null);
-  const [sanityDoors, setSanityDoors] = useState(null);
-  const [sanityDoorsLoaded, setSanityDoorsLoaded] = useState(false);
-  const doorsFetchAbortRef = useRef(null);
+  // Sanity (dynamic lists for supported categories in mega menu)
+  const [sanityProductsByCategory, setSanityProductsByCategory] = useState({});
+  const [sanityLoadedByCategory, setSanityLoadedByCategory] = useState({});
+  const categoryFetchAbortRef = useRef({});
 
-  // Lazy-load: pobieramy listę okien z Sanity dopiero przy pierwszym otwarciu mega menu.
+  // Lazy-load: fetch category products from Sanity on first mega menu open.
   useEffect(() => {
     if (variant !== 'header') return;
     if (!isMegaOpen) return;
-    if (sanityWindowsLoaded) return;
     if (!isSanityConfigured()) {
-      setSanityWindows(null);
-      setSanityWindowsLoaded(true);
+      setSanityLoadedByCategory((prev) => {
+        let changed = false;
+        const next = { ...prev };
+
+        Object.keys(SANITY_CATEGORY_IDS_BY_KEY).forEach((key) => {
+          if (!next[key]) {
+            next[key] = true;
+            changed = true;
+          }
+        });
+
+        // IMPORTANT: when nothing changed, return previous object reference
+        // to avoid an infinite re-render loop in this effect.
+        return changed ? next : prev;
+      });
       return;
     }
 
-    const controller = new AbortController();
-    windowsFetchAbortRef.current = controller;
+    const tasks = Object.entries(SANITY_CATEGORY_IDS_BY_KEY)
+      .filter(([key, categoryIds]) => categoryIds.length > 0 && !sanityLoadedByCategory[key]);
 
-    fetchWindowProductsList(lang, { signal: controller.signal })
-      .then((items) => {
-        if (controller.signal.aborted) return;
-        setSanityWindows(Array.isArray(items) ? items : []);
-        setSanityWindowsLoaded(true);
-      })
-      .catch((e) => {
-        if (controller.signal.aborted) return;
-        console.warn('Sanity windows list fetch failed (mega menu)', e);
-        setSanityWindows([]);
-        setSanityWindowsLoaded(true);
-      });
+    if (!tasks.length) return;
 
-    return () => controller.abort();
-  }, [isMegaOpen, lang, sanityWindowsLoaded, variant]);
+    tasks.forEach(([key]) => {
+      if (categoryFetchAbortRef.current[key]) {
+        categoryFetchAbortRef.current[key].abort();
+      }
 
-  // Lazy-load: pobieramy listę drzwi z Sanity dopiero przy pierwszym otwarciu mega menu.
+      const controller = new AbortController();
+      categoryFetchAbortRef.current[key] = controller;
+
+      Promise.allSettled(
+        SANITY_CATEGORY_IDS_BY_KEY[key].map((categoryId) =>
+          fetchProductsListByCategory(categoryId, lang, { signal: controller.signal })
+        )
+      )
+        .then((results) => {
+          if (controller.signal.aborted) return;
+
+          const fulfilledGroups = (results || [])
+            .filter((r) => r.status === 'fulfilled')
+            .map((r) => r.value || []);
+
+          const rejectedGroups = (results || []).filter((r) => r.status === 'rejected');
+          if (rejectedGroups.length > 0) {
+            console.warn(`Sanity ${key} partial list fetch failed (mega menu)`, rejectedGroups);
+          }
+
+          const merged = fulfilledGroups.flat();
+          const deduped = merged.filter((item, index, arr) => {
+            const itemKey = item?.slug || item?.id;
+            if (!itemKey) return false;
+            return arr.findIndex((x) => (x?.slug || x?.id) === itemKey) === index;
+          });
+
+          setSanityProductsByCategory((prev) => ({
+            ...prev,
+            [key]: deduped,
+          }));
+          setSanityLoadedByCategory((prev) => ({ ...prev, [key]: true }));
+        })
+        .catch((e) => {
+          if (controller.signal.aborted) return;
+          console.warn(`Sanity ${key} list fetch failed (mega menu)`, e);
+          setSanityProductsByCategory((prev) => ({ ...prev, [key]: [] }));
+          setSanityLoadedByCategory((prev) => ({ ...prev, [key]: true }));
+        });
+    });
+  }, [isMegaOpen, lang, sanityLoadedByCategory, variant]);
+
+  // On language change we refresh all localized lists.
   useEffect(() => {
-    if (variant !== 'header') return;
-    if (!isMegaOpen) return;
-    if (sanityDoorsLoaded) return;
-    if (!isSanityConfigured()) {
-      setSanityDoors(null);
-      setSanityDoorsLoaded(true);
-      return;
-    }
-
-    const controller = new AbortController();
-    doorsFetchAbortRef.current = controller;
-
-    fetchProductsListByCategory('category_drzwi_zewnetrzne', lang, { signal: controller.signal })
-      .then((items) => {
-        if (controller.signal.aborted) return;
-        setSanityDoors(Array.isArray(items) ? items : []);
-        setSanityDoorsLoaded(true);
-      })
-      .catch((e) => {
-        if (controller.signal.aborted) return;
-        console.warn('Sanity doors list fetch failed (mega menu)', e);
-        setSanityDoors([]);
-        setSanityDoorsLoaded(true);
-      });
-
-    return () => controller.abort();
-  }, [isMegaOpen, lang, sanityDoorsLoaded, variant]);
-
-  // Po zmianie języka chcemy odświeżyć listę (bo opisy są lokalizowane)
-  useEffect(() => {
-    setSanityWindows(null);
-    setSanityWindowsLoaded(false);
-    if (windowsFetchAbortRef.current) {
-      windowsFetchAbortRef.current.abort();
-      windowsFetchAbortRef.current = null;
-    }
-    setSanityDoors(null);
-    setSanityDoorsLoaded(false);
-    if (doorsFetchAbortRef.current) {
-      doorsFetchAbortRef.current.abort();
-      doorsFetchAbortRef.current = null;
-    }
+    Object.values(categoryFetchAbortRef.current).forEach((controller) => controller?.abort());
+    categoryFetchAbortRef.current = {};
+    setSanityProductsByCategory({});
+    setSanityLoadedByCategory({});
   }, [lang]);
 
   // Jeśli header znika (scroll w dół), to natychmiast chowamy MegaMenu.
@@ -224,24 +233,16 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
     return entries
       .map(([key, c]) => {
         const localProducts = Array.isArray(c?.products) ? c.products : [];
-
-        // Okna: preferuj Sanity (jeśli są dane), inaczej lokalny fallback.
-        const products =
-          key === 'okna' && Array.isArray(sanityWindows) && sanityWindows.length > 0
-            ? sanityWindows
-            : key === 'drzwi' && Array.isArray(sanityDoors) && sanityDoors.length > 0
-              ? sanityDoors
-              : localProducts;
-
         return ({
-        key,
-        title: t(`breadcrumbs.categories.${key}`, c?.pageTitle || key),
-        icon: iconByKey[key] || '/images/icons/tools-icon.png',
-        products,
-      });
+          key,
+          title: t(`breadcrumbs.categories.${key}`, c?.pageTitle || key),
+          icon: iconByKey[key] || '/images/icons/tools-icon.png',
+          hasSanitySource: Boolean((SANITY_CATEGORY_IDS_BY_KEY[key] || []).length),
+          localProducts,
+        });
       })
-      .filter((c) => c.products.length > 0);
-  }, [sanityDoors, sanityWindows, t]);
+      .filter((c) => c.hasSanitySource || c.localProducts.length > 0);
+  }, [t]);
 
   const specItemsForMegaMenu = useMemo(() => ([
     { key: 'profileThickness', label: t('productSpecs.short.profileThickness', 'profil') },
@@ -250,7 +251,9 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
   ]), [t]);
 
   const resolvedActiveCategoryKey = useMemo(() => {
-    if (activeCategoryKey) return activeCategoryKey;
+    if (activeCategoryKey && menuCategories.some((c) => c.key === activeCategoryKey)) {
+      return activeCategoryKey;
+    }
     return menuCategories?.[0]?.key || null;
   }, [activeCategoryKey, menuCategories]);
 
@@ -259,15 +262,40 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
     return menuCategories.find((c) => c.key === resolvedActiveCategoryKey) || null;
   }, [menuCategories, resolvedActiveCategoryKey]);
 
+  const activeCategoryProducts = useMemo(() => {
+    if (!activeCategory?.key) return [];
+    const isSanityMappedCategory = Boolean(SANITY_CATEGORY_IDS_BY_KEY[activeCategory.key]?.length);
+    if (isSanityMappedCategory) {
+      const sanityItems = sanityProductsByCategory[activeCategory.key] || [];
+      if (sanityItems.length > 0) return sanityItems;
+
+      // Safety fallback: if Sanity request completed but returned nothing
+      // (or failed for all mapped category IDs), keep menu usable via local data.
+      if (sanityLoadedByCategory[activeCategory.key]) {
+        return activeCategory?.localProducts || [];
+      }
+
+      return [];
+    }
+    return activeCategory?.localProducts || [];
+  }, [activeCategory, sanityLoadedByCategory, sanityProductsByCategory]);
+
+  const isActiveCategorySanityMapped = Boolean(
+    activeCategory?.key && (SANITY_CATEGORY_IDS_BY_KEY[activeCategory.key] || []).length
+  );
+
+  const isActiveCategoryLoading =
+    isActiveCategorySanityMapped && !sanityLoadedByCategory[activeCategory.key];
+
   const resolvedActiveProduct = useMemo(() => {
-    const products = activeCategory?.products || [];
+    const products = activeCategoryProducts;
     if (!products.length) return null;
 
     if (activeProductKey) {
       return products.find((p) => (p.slug || p.id) === activeProductKey) || null;
     }
     return products[0] || null;
-  }, [activeCategory?.products, activeProductKey]);
+  }, [activeCategoryProducts, activeProductKey]);
 
   const resolvedActiveProductSpecs = useMemo(() => {
     return resolvedActiveProduct?.specs || null;
@@ -282,21 +310,27 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
       || null;
   }, [resolvedActiveProduct]);
 
+  const loadingPreviewImage = useMemo(() => {
+    // While Sanity list is still loading, use first local product image as a
+    // blurred placeholder so image area doesn't look empty.
+    return activeCategory?.localProducts?.[0]?.image || null;
+  }, [activeCategory]);
+
   // Kiedy otwieramy mega menu, ustawiamy domyślny produkt (pierwszy z aktywnej kategorii)
   useEffect(() => {
     if (variant !== 'header') return;
     if (!isMegaOpen) return;
-    const products = activeCategory?.products || [];
+    const products = activeCategoryProducts;
     const first = products[0];
     if (!first) return;
     const firstKey = first.slug || first.id;
     setActiveProductKey((prev) => prev || firstKey);
-  }, [activeCategory?.products, isMegaOpen, variant]);
+  }, [activeCategoryProducts, isMegaOpen, variant]);
 
   // Jeśli zmienimy kategorię, a aktywny produkt nie należy do tej kategorii,
   // to przestawiamy go na pierwszą pozycję (żeby podgląd zawsze miał sens).
   useEffect(() => {
-    const products = activeCategory?.products || [];
+    const products = activeCategoryProducts;
     if (!products.length) {
       setActiveProductKey(null);
       return;
@@ -306,7 +340,7 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
       const first = products[0];
       setActiveProductKey(first?.slug || first?.id || null);
     }
-  }, [activeCategory?.products, activeProductKey]);
+  }, [activeCategoryProducts, activeProductKey]);
 
   const getLocalizedPath = (path) => {
     const pathMap = {
@@ -380,18 +414,24 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
                 {t('products.selectProduct', 'Wybierz produkt')}
               </div>
               <div className={styles.productList}>
-                {(activeCategory?.products || []).map((p) => (
-                  <RouterAgnosticLink
-                    key={p.slug || p.id}
-                    to={getProductDetailPath(lang, activeCategory.key, p.slug || p.id)}
-                    role="menuitem"
-                    onMouseEnter={() => setActiveProductKey(p.slug || p.id)}
-                    onFocus={() => setActiveProductKey(p.slug || p.id)}
-                    className={styles.productLink}
-                  >
-                    {p.name}
-                  </RouterAgnosticLink>
-                ))}
+                {isActiveCategoryLoading ? (
+                  <span className={styles.productLink}>{t('common.loading', 'Ładowanie...')}</span>
+                ) : activeCategoryProducts.length > 0 ? (
+                  activeCategoryProducts.map((p) => (
+                    <RouterAgnosticLink
+                      key={p.slug || p.id}
+                      to={getProductDetailPath(lang, activeCategory.key, p.slug || p.id)}
+                      role="menuitem"
+                      onMouseEnter={() => setActiveProductKey(p.slug || p.id)}
+                      onFocus={() => setActiveProductKey(p.slug || p.id)}
+                      className={styles.productLink}
+                    >
+                      {p.name}
+                    </RouterAgnosticLink>
+                  ))
+                ) : (
+                  <span className={styles.productLink}>{t('products.noProducts', 'Brak produktów')}</span>
+                )}
               </div>
             </div>
 
@@ -399,6 +439,13 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
               <div className={styles.megaMenuImageWrapper}>
                 {resolvedActiveProductImage ? (
                   <img className={styles.megaMenuImage} src={resolvedActiveProductImage} alt="" loading="lazy" />
+                ) : isActiveCategoryLoading && loadingPreviewImage ? (
+                  <img
+                    className={cn(styles.megaMenuImage, styles.megaMenuImageBlurPlaceholder)}
+                    src={loadingPreviewImage}
+                    alt=""
+                    loading="lazy"
+                  />
                 ) : null}
               </div>
 
@@ -442,8 +489,7 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
                     setActiveCategoryKey(menuCategories[0].key);
                   }
                   // Domyślne zdjęcie: pierwsza kategoria -> pierwszy produkt
-                  const firstCat = menuCategories?.[0];
-                  const firstProd = firstCat?.products?.[0];
+                  const firstProd = activeCategoryProducts?.[0];
                   if (!activeProductKey && firstProd) {
                     setActiveProductKey(firstProd.slug || firstProd.id);
                   }
@@ -454,8 +500,7 @@ const Navigation = ({ variant = 'header', isPastThreshold, isHeaderVisible = tru
                   if (!activeCategoryKey && menuCategories?.[0]?.key) {
                     setActiveCategoryKey(menuCategories[0].key);
                   }
-                  const firstCat = menuCategories?.[0];
-                  const firstProd = firstCat?.products?.[0];
+                  const firstProd = activeCategoryProducts?.[0];
                   if (!activeProductKey && firstProd) {
                     setActiveProductKey(firstProd.slug || firstProd.id);
                   }
