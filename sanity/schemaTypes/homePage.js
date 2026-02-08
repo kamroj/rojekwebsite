@@ -34,9 +34,47 @@ export default defineType({
     defineField({
       name: 'realizations',
       title: 'Galeria (Strona główna)',
-      description: 'Lista zdjęć do galerii na stronie głównej. To tylko obraz + opcjonalne tagi.',
+      description:
+        'Lista realizacji na stronę główną. Dla każdej pozycji możesz dodać własny krótki opis wyświetlany na slajdzie (nie są to tagi).',
       type: 'array',
-      of: [{type: 'reference', to: [{type: 'realization'}]}],
+      of: [
+        {
+          type: 'object',
+          name: 'homeRealizationItem',
+          title: 'Pozycja galerii',
+          fields: [
+            defineField({
+              name: 'realization',
+              title: 'Realizacja',
+              type: 'reference',
+              to: [{type: 'realization'}],
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'title',
+              title: 'Opis na slajdzie (PL/EN/DE)',
+              description:
+                'Krótki tekst widoczny na stronie głównej w sliderze realizacji. Niezależny od tagów realizacji.',
+              type: 'localizedString',
+            }),
+          ],
+          preview: {
+            select: {
+              titlePl: 'title.pl',
+              titleEn: 'title.en',
+              titleDe: 'title.de',
+              media: 'realization.image',
+            },
+            prepare({titlePl, titleEn, titleDe, media}) {
+              return {
+                title: titlePl || titleEn || titleDe || 'Pozycja galerii (bez opisu)',
+                subtitle: 'Strona główna → realizacje',
+                media,
+              }
+            },
+          },
+        },
+      ],
     }),
   ],
   preview: {

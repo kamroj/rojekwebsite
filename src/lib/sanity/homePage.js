@@ -14,7 +14,10 @@ export const fetchHomePageIntro = async ({ signal } = {}) => {
   if (!sanityClient) return null;
 
   const query = `
-    *[_type == "homePage" && _id == "homePage"][0]{
+    coalesce(
+      *[_type == "homePage" && _id == "drafts.homePage"][0],
+      *[_type == "homePage" && _id == "homePage"][0]
+    ){
       intro {
         "backgroundVideoUrl": backgroundVideo.asset->url,
         "backgroundPoster": backgroundPoster ${SANITY_IMAGE_PROJECTION}
@@ -43,10 +46,30 @@ export const fetchHomePageRealizations = async ({ lang = 'pl', signal } = {}) =>
   if (!sanityClient) return [];
 
   const query = `
-    *[_type == "homePage" && _id == "homePage"][0]{
-      realizations[]->{
-        _id,
-        "image": image ${SANITY_IMAGE_PROJECTION}
+    coalesce(
+      *[_type == "homePage" && _id == "drafts.homePage"][0],
+      *[_type == "homePage" && _id == "homePage"][0]
+    ){
+      realizations[]{
+        _type,
+        _ref,
+        title,
+        "itemRealization": select(
+          defined(realization) => realization->{
+            _id,
+            "image": image ${SANITY_IMAGE_PROJECTION}
+          },
+          defined(@._ref) => @->{
+            _id,
+            "image": image ${SANITY_IMAGE_PROJECTION}
+          }
+        ),
+        "legacyRealization": select(
+          defined(@._ref) => @->{
+            _id,
+            "image": image ${SANITY_IMAGE_PROJECTION}
+          }
+        )
       }
     }
   `;
@@ -55,10 +78,14 @@ export const fetchHomePageRealizations = async ({ lang = 'pl', signal } = {}) =>
   const items = Array.isArray(res?.realizations) ? res.realizations : [];
 
   return items
-    .map((item, index) => ({
-      id: item?._id || `realization-${index + 1}`,
-      src: item?.image?.asset?.url || null,
-      alt: pickLocale(item?.image?.alt, lang) || '',
-    }))
+    .map((item, index) => {
+      const realization = item?.itemRealization || item?.legacyRealization || null;
+      return {
+        id: realization?._id || `realization-${index + 1}`,
+        src: realization?.image?.asset?.url || null,
+        alt: pickLocale(realization?.image?.alt, lang) || '',
+        title: pickLocale(item?.title, lang) || '',
+      };
+    })
     .filter((item) => Boolean(item.src));
 };

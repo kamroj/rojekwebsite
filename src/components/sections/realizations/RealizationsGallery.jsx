@@ -1,5 +1,5 @@
 // src/components/gallery/RealizationsGallery.jsx
-import React, { useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Autoplay } from 'swiper/modules';
 
@@ -31,20 +31,15 @@ const RealizationsGallery = ({ images, options = {} }) => {
   const config = { ...defaultConfig, ...options };
 
   const sourceImages = Array.isArray(images) ? images.filter(Boolean) : [];
-  const normalizedImages = [...sourceImages];
-  const minSlidesForSmoothLoop = sourceImages.length > 1
-    ? config.slidesPerViewDesktop + 2
-    : config.slidesPerViewDesktop;
+  const totalImages = sourceImages.length;
 
-  while (sourceImages.length > 0 && normalizedImages.length < minSlidesForSmoothLoop) {
-    const cloneSource = sourceImages[normalizedImages.length % sourceImages.length];
-    normalizedImages.push({
-      ...cloneSource,
-      _cloneIndex: normalizedImages.length,
-    });
-  }
-
-  const totalImages = normalizedImages.length;
+  const galleryImages = totalImages > 1
+    ? [
+      { ...sourceImages[totalImages - 1], _edgeClone: 'head' },
+      ...sourceImages,
+      { ...sourceImages[0], _edgeClone: 'tail' },
+    ]
+    : sourceImages;
 
   // Autoplay settings
   const autoplayOptions = {
@@ -60,69 +55,11 @@ const RealizationsGallery = ({ images, options = {} }) => {
   const slidesPerViewTablet = Math.max(1, Math.min(config.slidesPerViewTablet, totalImages || 1));
   const slidesPerViewDesktop = Math.max(1, Math.min(config.slidesPerViewDesktop, totalImages || 1));
 
-  // Handle drag interactions for proper styling
-  const handleDragStart = (swiper, event) => {
-    if (!swiper || !event) return;
-
-    const slideEl = event.target.closest('.swiper-slide');
-    if (slideEl && swiper.slides) {
-      // Clear class from all slides first
-      Array.from(swiper.slides).forEach(slide => {
-        slide.classList.remove('swiper-slide-grabbed');
-      });
-      // Add class to the clicked slide
-      slideEl.classList.add('swiper-slide-grabbed');
-    }
-  };
-
-  const handleDragEnd = (swiper) => {
-    // Fix: Check if swiper and swiper.slides exist before calling forEach
-    if (!swiper || !swiper.slides || !swiper.slides.length) return;
-
-    // Use Array.from to ensure we have an array we can iterate over
-    Array.from(swiper.slides).forEach(slide => {
-      slide.classList.remove('swiper-slide-grabbed');
-    });
-  };
-
-  // Setup drag tracking
-  useEffect(() => {
-    if (shouldRenderFallback) return;
-
-    // Safety check
-    if (!swiperRef.current) return;
-
-    const swiperInstance = swiperRef.current.swiper;
-    if (!swiperInstance) return;
-
-    // Add event listeners
-    const touchStartHandler = (_, event) => handleDragStart(swiperInstance, event);
-    const touchEndHandler = () => handleDragEnd(swiperInstance);
-    const mouseDownHandler = (event) => handleDragStart(swiperInstance, event);
-    const mouseUpHandler = () => handleDragEnd(swiperInstance);
-
-    swiperInstance.on('touchStart', touchStartHandler);
-    swiperInstance.on('touchEnd', touchEndHandler);
-    swiperInstance.on('mousedown', mouseDownHandler);
-    document.addEventListener('mouseup', mouseUpHandler);
-
-    // Cleanup on unmount
-    return () => {
-      // Check if swiper instance still exists before removing listeners
-      if (swiperInstance && typeof swiperInstance.off === 'function') {
-        swiperInstance.off('touchStart', touchStartHandler);
-        swiperInstance.off('touchEnd', touchEndHandler);
-        swiperInstance.off('mousedown', mouseDownHandler);
-      }
-      document.removeEventListener('mouseup', mouseUpHandler);
-    };
-  }, [shouldRenderFallback]);
-
   // Fallback for too few images
   if (shouldRenderFallback) {
     return (
       <div className={styles.fallbackWrapper}>
-        {normalizedImages?.map((imgData, i) => (
+        {sourceImages?.map((imgData, i) => (
           <div
             key={imgData.id || i}
             className={styles.fallbackCard}
@@ -150,15 +87,33 @@ const RealizationsGallery = ({ images, options = {} }) => {
         <Swiper
           ref={swiperRef}
           modules={[Autoplay]}
-          loop={canSlide ? config.loop : false}
-          loopAdditionalSlides={slidesPerViewDesktop}
+          loop={false}
+          rewind={canSlide}
+          initialSlide={canSlide ? 1 : 0}
+          watchOverflow={false}
           slidesPerView={slidesPerViewMobile}
           spaceBetween={config.spaceBetween}
           autoplay={canSlide ? autoplayOptions : false}
+          allowTouchMove={canSlide}
+          simulateTouch={canSlide}
           grabCursor={true}
           centeredSlides={config.centeredSlides}
           speed={config.speed}
           watchSlidesProgress={true}
+          onSlideChange={(swiper) => {
+            if (!canSlide) return;
+
+            const firstRealIndex = 1;
+            const lastRealIndex = totalImages;
+            const firstCloneIndex = 0;
+            const lastCloneIndex = totalImages + 1;
+
+            if (swiper.activeIndex === firstCloneIndex) {
+              swiper.slideTo(lastRealIndex, 0, false);
+            } else if (swiper.activeIndex === lastCloneIndex) {
+              swiper.slideTo(firstRealIndex, 0, false);
+            }
+          }}
           breakpoints={{
             577: {
               slidesPerView: slidesPerViewTablet,
@@ -171,13 +126,13 @@ const RealizationsGallery = ({ images, options = {} }) => {
           }}
           className="my-interactive-swiper"
         >
-          {normalizedImages.map((item, idx) => (
-            <SwiperSlide key={`${item.id || 'realization'}-${item._cloneIndex ?? idx}`}>
+          {galleryImages.map((item, idx) => (
+            <SwiperSlide key={`${item.id || 'realization'}-${item._edgeClone || idx}`}>
               <div className="slide-content-wrapper">
                 <img
                   className={styles.galleryImage}
                   src={item.src}
-                  alt={item.title}
+                  alt={item.alt || item.title || `Realization ${idx + 1}`}
                   draggable="false"
                 />
                 <div className={styles.galleryImageTitle}>{item.title}</div>
