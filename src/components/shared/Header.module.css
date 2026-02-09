@@ -413,7 +413,6 @@
 .mobileLangSwitcher {
   margin-top: auto;
   padding-top: var(--space-lg);
-  border-top: 1px solid var(--color-border);
   animation: fadeIn 0.3s forwards;
   animation-delay: 0.3s;
   opacity: 0;

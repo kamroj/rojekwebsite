@@ -31,6 +31,8 @@ const NAV_ITEMS = [
   { key: 'contact', path: ROUTES.CONTACT, label: 'nav.contact' }
 ];
 
+const SANITY_MENU_CATEGORY_KEYS = new Set(['okna', 'drzwi']);
+
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
 function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
@@ -177,12 +179,20 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
     const entries = Object.entries(productCategories || {});
     return entries
       .map(([key, c]) => ({
+        // Keep mobile menu aligned with desktop mega menu:
+        // - for Sanity-driven categories (okna/drzwi) use build-time payload from Astro
+        // - for other categories keep local data source
+        // `hasOwnProperty` is intentional so empty Sanity arrays are still treated as the source of truth.
+        products:
+          SANITY_MENU_CATEGORY_KEYS.has(key)
+            && Object.prototype.hasOwnProperty.call(initialSanityProductsByCategory || {}, key)
+            ? (initialSanityProductsByCategory?.[key] || [])
+            : (Array.isArray(c?.products) ? c.products : []),
         key,
         title: t(`breadcrumbs.categories.${key}`, c?.pageTitle || key),
-        products: Array.isArray(c?.products) ? c.products : [],
       }))
       .filter((c) => c.products.length > 0);
-  }, [t]);
+  }, [initialSanityProductsByCategory, t]);
 
   return (
     <header
