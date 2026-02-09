@@ -141,9 +141,9 @@ const realizationsData = sourceRealizations.map((img, idx) => {
 
 <!-- REALIZATIONS (slider island) -->
 <section style="background: rgb(15 15 15 / var(--tw-bg-opacity, 1)); padding: 0; margin: 0;">
-  <RealizationsGalleryIslandWithResources
+<RealizationsGalleryIslandWithResources
     lang={lang}
-    hydrate="visible"
+    hydrate="load"
     viewProps={{
       images: realizationsData,
       options: {
@@ -162,10 +162,10 @@ const realizationsData = sourceRealizations.map((img, idx) => {
 </section>
 
 <!-- WHY US (island) -->
-<WhyUsIslandWithResources lang={lang} hydrate="visible" />
+<WhyUsIslandWithResources lang={lang} hydrate="load" />
 
 <!-- COMPANY PRESENTATION (island; youtube iframe on click) -->
-<CompanyPresentationIslandWithResources lang={lang} hydrate="visible" />
+<CompanyPresentationIslandWithResources lang={lang} hydrate="load" />
 
 <!-- PARTNERS (island; mobile swiper) -->
-<PartnersIslandWithResources lang={lang} hydrate="visible" />
+<PartnersIslandWithResources lang={lang} hydrate="load" />

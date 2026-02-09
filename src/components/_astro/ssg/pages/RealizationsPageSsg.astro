@@ -218,7 +218,6 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
   let visibleCards = [];
   let activeCardIndex = -1;
   let touchStartX = 0;
-  let imageSwitchTimeout;
 
   const isLightboxOpen = () => lightbox?.getAttribute('aria-hidden') === 'false';
   const getVisibleCards = () => cards.filter((card) => !card.classList.contains('realization-hidden-by-filter'));
@@ -241,20 +240,6 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
     if (lightboxTags) lightboxTags.innerHTML = tags ? tags.innerHTML : '';
   };
 
-  const renderLightboxWithTransition = () => {
-    if (!visibleCards.length || activeCardIndex < 0 || !lightboxImage) return;
-
-    lightboxImage.classList.add('is-switching');
-    clearTimeout(imageSwitchTimeout);
-
-    imageSwitchTimeout = window.setTimeout(() => {
-      fillLightboxFromCard(visibleCards[activeCardIndex]);
-      requestAnimationFrame(() => {
-        lightboxImage.classList.remove('is-switching');
-      });
-    }, 120);
-  };
-
   const renderLightbox = () => {
     if (!visibleCards.length || activeCardIndex < 0) return;
     fillLightboxFromCard(visibleCards[activeCardIndex]);
@@ -263,7 +248,7 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
   const moveLightbox = (step) => {
     if (!visibleCards.length) return;
     activeCardIndex = (activeCardIndex + step + visibleCards.length) % visibleCards.length;
-    renderLightboxWithTransition();
+    renderLightbox();
   };
 
   const closeLightbox = () => {

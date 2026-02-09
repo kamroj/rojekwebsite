@@ -1,11 +1,5 @@
 // src/components/gallery/RealizationsGallery.jsx
-import React, { useRef } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay } from 'swiper/modules';
-
-// Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/autoplay';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import MaxWidthContainer from '../../ui/MaxWidthContainer';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../../views/HomeView';
 import homeStyles from '../../../views/HomeView.module.css';
@@ -14,48 +8,82 @@ import styles from './RealizationsGallery.module.css';
 
 const RealizationsGallery = ({ images, options = {} }) => {
   const { t } = useTranslation();
-  const swiperRef = useRef(null);
+  const dragStartXRef = useRef(0);
+  const dragDeltaRef = useRef(0);
 
   const defaultConfig = {
-    slidesPerViewMobile: 1,
-    slidesPerViewTablet: 2,
-    slidesPerViewDesktop: 3,
-    spaceBetween: 25,
     delay: 3500,
-    loop: true,
-    centeredSlides: true,
-    speed: 600,
+    speed: 420,
   };
 
-  // Merge defaults with provided options
   const config = { ...defaultConfig, ...options };
 
   const sourceImages = Array.isArray(images) ? images.filter(Boolean) : [];
   const totalImages = sourceImages.length;
-
-  const galleryImages = totalImages > 1
-    ? [
-      { ...sourceImages[totalImages - 1], _edgeClone: 'head' },
-      ...sourceImages,
-      { ...sourceImages[0], _edgeClone: 'tail' },
-    ]
-    : sourceImages;
-
-  // Autoplay settings
-  const autoplayOptions = {
-    delay: config.delay,
-    disableOnInteraction: false,
-    pauseOnMouseEnter: true,
-  };
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(null);
+  const [isPointerDown, setIsPointerDown] = useState(false);
 
   const shouldRenderFallback = !images || totalImages === 0;
   const canSlide = totalImages > 1;
+  const canDesktopThree = totalImages >= 3;
 
-  const slidesPerViewMobile = Math.max(1, Math.min(config.slidesPerViewMobile, totalImages || 1));
-  const slidesPerViewTablet = Math.max(1, Math.min(config.slidesPerViewTablet, totalImages || 1));
-  const slidesPerViewDesktop = Math.max(1, Math.min(config.slidesPerViewDesktop, totalImages || 1));
+  const mod = (n, length) => ((n % length) + length) % length;
 
-  // Fallback for too few images
+  const slideWindow = useMemo(() => {
+    if (totalImages === 0) return [];
+    return [-2, -1, 0, 1, 2].map((baseSlot) => ({
+      baseSlot,
+      visualSlot:
+        direction === 'next'
+          ? baseSlot - 1
+          : direction === 'prev'
+            ? baseSlot + 1
+            : baseSlot,
+      item: sourceImages[mod(currentIndex + baseSlot, totalImages)],
+    }));
+  }, [currentIndex, direction, sourceImages, totalImages]);
+
+  const step = (dir) => {
+    if (!canSlide || direction) return;
+
+    setDirection(dir);
+    window.setTimeout(() => {
+      setCurrentIndex((prev) => mod(prev + (dir === 'next' ? 1 : -1), totalImages));
+      setDirection(null);
+    }, config.speed);
+  };
+
+  useEffect(() => {
+    if (!canSlide || isPointerDown || direction) return;
+
+    const timer = window.setInterval(() => step('next'), config.delay);
+    return () => window.clearInterval(timer);
+  }, [canSlide, isPointerDown, direction, config.delay]);
+
+  const handlePointerDown = (event) => {
+    if (!canSlide) return;
+    setIsPointerDown(true);
+    dragStartXRef.current = event.clientX;
+    dragDeltaRef.current = 0;
+  };
+
+  const handlePointerMove = (event) => {
+    if (!isPointerDown) return;
+    dragDeltaRef.current = event.clientX - dragStartXRef.current;
+  };
+
+  const handlePointerUp = () => {
+    if (!isPointerDown) return;
+
+    const threshold = 35;
+    const delta = dragDeltaRef.current;
+
+    setIsPointerDown(false);
+    if (delta > threshold) step('prev');
+    else if (delta < -threshold) step('next');
+  };
+
   if (shouldRenderFallback) {
     return (
       <div className={styles.fallbackWrapper}>
@@ -84,62 +112,35 @@ const RealizationsGallery = ({ images, options = {} }) => {
         <ProductHeaderSubtitle blackBackground>{t('realizations.subtitle', 'Zobacz nasze realizacje')}</ProductHeaderSubtitle>
       </HeaderWrap>
       <div className={styles.swiperContainer}>
-        <Swiper
-          ref={swiperRef}
-          modules={[Autoplay]}
-          loop={false}
-          rewind={canSlide}
-          initialSlide={canSlide ? 1 : 0}
-          watchOverflow={false}
-          slidesPerView={slidesPerViewMobile}
-          spaceBetween={config.spaceBetween}
-          autoplay={canSlide ? autoplayOptions : false}
-          allowTouchMove={canSlide}
-          simulateTouch={canSlide}
-          grabCursor={true}
-          centeredSlides={config.centeredSlides}
-          speed={config.speed}
-          watchSlidesProgress={true}
-          onSlideChange={(swiper) => {
-            if (!canSlide) return;
-
-            const firstRealIndex = 1;
-            const lastRealIndex = totalImages;
-            const firstCloneIndex = 0;
-            const lastCloneIndex = totalImages + 1;
-
-            if (swiper.activeIndex === firstCloneIndex) {
-              swiper.slideTo(lastRealIndex, 0, false);
-            } else if (swiper.activeIndex === lastCloneIndex) {
-              swiper.slideTo(firstRealIndex, 0, false);
-            }
-          }}
-          breakpoints={{
-            577: {
-              slidesPerView: slidesPerViewTablet,
-              spaceBetween: config.spaceBetween,
-            },
-            993: {
-              slidesPerView: slidesPerViewDesktop,
-              spaceBetween: config.spaceBetween + 5,
-            },
-          }}
-          className="my-interactive-swiper"
+        <div
+          className={styles.carouselViewport}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerCancel={handlePointerUp}
+          onPointerLeave={handlePointerUp}
         >
-          {galleryImages.map((item, idx) => (
-            <SwiperSlide key={`${item.id || 'realization'}-${item._edgeClone || idx}`}>
-              <div className="slide-content-wrapper">
+          {slideWindow.map(({ baseSlot, visualSlot, item }) => (
+            <article
+              key={`slot-${baseSlot}-${item?.id || visualSlot}`}
+              className={`${styles.card} ${styles[`slot${visualSlot}`] || ''} ${!canDesktopThree ? styles.cardFallback : ''}`}
+              style={{
+                '--slot': visualSlot,
+                '--transition-duration': `${config.speed}ms`,
+              }}
+            >
+              <div className={styles.slideContentWrapper}>
                 <img
                   className={styles.galleryImage}
                   src={item.src}
-                  alt={item.alt || item.title || `Realization ${idx + 1}`}
-                  draggable="false"
+                  alt={item.alt || item.title || 'Realization'}
+                  draggable={false}
                 />
                 <div className={styles.galleryImageTitle}>{item.title}</div>
               </div>
-            </SwiperSlide>
+            </article>
           ))}
-        </Swiper>
+        </div>
       </div>
     </MaxWidthContainer>
 

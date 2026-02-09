@@ -81,6 +81,38 @@ export default function IntroSection({ id, introMedia }) {
     setIsVideoLoaded(false);
   }, [videoSrc]);
 
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video || !videoSrc) return;
+
+    const markLoaded = () => setIsVideoLoaded(true);
+
+    // Gdy event `loadeddata` poleci przed hydracją React,
+    // nie dostaniemy callbacka JSX i video może zostać "niewidoczne".
+    if (video.readyState >= 2) {
+      markLoaded();
+    }
+
+    // Dodatkowe zabezpieczenia na różne przeglądarki/warunki sieci.
+    video.addEventListener('loadeddata', markLoaded);
+    video.addEventListener('canplay', markLoaded);
+    video.addEventListener('playing', markLoaded);
+
+    // Wymuś próbę autoplay po hydracji (muted + playsInline powinno przejść).
+    const playAttempt = video.play();
+    if (playAttempt?.catch) {
+      playAttempt.catch(() => {
+        // Ciche niepowodzenie — user może ręcznie kliknąć play.
+      });
+    }
+
+    return () => {
+      video.removeEventListener('loadeddata', markLoaded);
+      video.removeEventListener('canplay', markLoaded);
+      video.removeEventListener('playing', markLoaded);
+    };
+  }, [videoSrc]);
+
   const introLinks = {
     'intro.text1': 'realizations',
     'intro.text2': 'about',
