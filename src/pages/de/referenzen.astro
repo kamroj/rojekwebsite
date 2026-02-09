@@ -1,6 +1,16 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import RealizationsPageSsg from '../../components/_astro/ssg/pages/RealizationsPageSsg.astro';
+import { fetchRealizationsPageData } from '../../lib/sanity/realizations.js';
+import { paginateRealizations, getRealizationsPagination } from '../../lib/realizationsPagination.js';
+
+const allRealizations = await fetchRealizationsPageData({ lang: 'de' });
+const pageData = paginateRealizations(allRealizations, 1);
+const pagination = getRealizationsPagination({
+  lang: 'de',
+  currentPage: pageData.currentPage,
+  totalItems: pageData.totalItems,
+});
 ---
 
 <SiteLayout
@@ -8,5 +18,5 @@ import RealizationsPageSsg from '../../components/_astro/ssg/pages/RealizationsP
   title="Referenzen – ROJEK | Unsere Projekte"
   description="Projektgalerie von ROJEK: Fenster, Türen und Schiebesysteme. Beispiele für Montage und Ausführung."
 >
-  <RealizationsPageSsg lang="de" />
+  <RealizationsPageSsg lang="de" realizations={pageData.items} pagination={pagination} />
 </SiteLayout>

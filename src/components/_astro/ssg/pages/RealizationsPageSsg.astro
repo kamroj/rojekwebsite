@@ -10,8 +10,13 @@ import { t as tt } from '../../../../lib/i18n/t.js';
 import { getSectionPath } from '../../../../lib/i18n/routing.js';
 import { fetchRealizationsPageData } from '../../../../lib/sanity/realizations.js';
 import { getSanityImageProps } from '../../../../lib/sanity/sanityImageProps.js';
+import { IoIosArrowForward } from 'react-icons/io';
 
-const { lang = 'pl' } = Astro.props;
+const {
+  lang = 'pl',
+  realizations: realizationsProp,
+  pagination,
+} = Astro.props;
 
 const tr = await loadTranslationJson(lang);
 const t = (key, def = '') => tt(tr, key, def);
@@ -21,7 +26,34 @@ const breadcrumbs = [
   { label: t('breadcrumbs.realizations', 'Realizations') },
 ];
 
-const realizations = await fetchRealizationsPageData({ lang });
+const realizations = Array.isArray(realizationsProp)
+  ? realizationsProp
+  : await fetchRealizationsPageData({ lang });
+
+/** @type {(number | 'ellipsis-left' | 'ellipsis-right')[]} */
+const paginationItems = [];
+if (pagination?.totalPages >= 1) {
+  const currentPage = Math.max(1, Number(pagination.currentPage || 1));
+  const totalPages = Math.max(1, Number(pagination.totalPages || 1));
+
+  paginationItems.push(1);
+
+  const windowStart = Math.max(2, currentPage - 1);
+  const windowEnd = Math.min(totalPages - 1, currentPage + 1);
+
+  if (windowStart > 2) paginationItems.push('ellipsis-left');
+  for (let p = windowStart; p <= windowEnd; p += 1) paginationItems.push(p);
+  if (windowEnd < totalPages - 1) paginationItems.push('ellipsis-right');
+
+  if (totalPages > 1) paginationItems.push(totalPages);
+}
+
+const getPageHref = (page) => {
+  if (!pagination) return '#';
+  const basePath = String(pagination.basePath || '/');
+  const pagedPrefix = String(pagination.pagedPrefix || basePath);
+  return page <= 1 ? basePath : `${pagedPrefix}/${page}`;
+};
 
 const resultsTemplate =
   t('realizationsPage.results.found', 'Znaleziono {{count}} realizacji') ||
@@ -186,6 +218,51 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
       ))}
     </div>
 
+    {pagination?.totalPages >= 1 && (
+      <nav class={styles.paginate} aria-label={t('pagination.navigation', 'Pagination')}>
+        <a
+          href={getPageHref(Math.max(1, pagination.currentPage - 1))}
+          class:list={[
+            styles.paginateArrow,
+            styles.paginateArrowPrev,
+            pagination.currentPage <= 1 && styles.paginateDisabled,
+          ]}
+          aria-disabled={pagination.currentPage <= 1 ? 'true' : 'false'}
+        >
+          <span class={styles.paginateArrowWrapper} aria-hidden="true">
+            <IoIosArrowForward className={`${styles.paginateArrowIcon} ${styles.paginateArrowIconPrev}`} />
+          </span>
+        </a>
+
+        {paginationItems.map((item) => (
+          item === 'ellipsis-left' || item === 'ellipsis-right' ? (
+            <span class={styles.paginateDots} aria-hidden="true">…</span>
+          ) : (
+            <a
+              href={getPageHref(item)}
+              class:list={[styles.paginateItem, item === pagination.currentPage && styles.paginateActive]}
+              aria-current={item === pagination.currentPage ? 'page' : undefined}
+            >
+              {item}
+            </a>
+          )
+        ))}
+
+        <a
+          href={getPageHref(Math.min(pagination.totalPages, pagination.currentPage + 1))}
+          class:list={[
+            styles.paginateArrow,
+            pagination.currentPage >= pagination.totalPages && styles.paginateDisabled,
+          ]}
+          aria-disabled={pagination.currentPage >= pagination.totalPages ? 'true' : 'false'}
+        >
+          <span class={styles.paginateArrowWrapper} aria-hidden="true">
+            <IoIosArrowForward className={styles.paginateArrowIcon} />
+          </span>
+        </a>
+      </nav>
+    )}
+
     <div id="realization-lightbox" class={styles.lightbox} aria-hidden="true">
       <div class={styles.lightboxBackdrop} data-lightbox-close></div>
       <div
@@ -265,6 +342,47 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
   let activeCardIndex = -1;
   let touchStartX = 0;
   let mobileZoomRafId = 0;
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const LIGHTBOX_SWITCH_MS = prefersReducedMotion ? 0 : 180;
+  const LIGHTBOX_ENTER_MS = prefersReducedMotion ? 0 : 220;
+  let lightboxSwitchTimeoutId = 0;
+  let lightboxEnterTimeoutId = 0;
+
+  const clearLightboxTransitionClasses = () => {
+    if (!lightboxImage) return;
+    lightboxImage.classList.remove(
+      'is-switching-next',
+      'is-switching-prev',
+      'is-entering-next',
+      'is-entering-prev',
+      'is-enter-active'
+    );
+  };
+
+  const setupScrollReveal = () => {
+    cards.forEach((card, index) => {
+      card.classList.add('reveal-on-scroll');
+      card.style.transitionDelay = `${Math.min(index * 40, 220)}ms`;
+    });
+
+    if (prefersReducedMotion || !('IntersectionObserver' in window)) {
+      cards.forEach((card) => card.classList.add('is-visible'));
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries, obs) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add('is-visible');
+          obs.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.15, rootMargin: '0px 0px -8% 0px' }
+    );
+
+    cards.forEach((card) => observer.observe(card));
+  };
 
   const isLightboxOpen = () => lightbox?.getAttribute('aria-hidden') === 'false';
   const getVisibleCards = () => cards.filter((card) => !card.classList.contains('realization-hidden-by-filter'));
@@ -331,19 +449,74 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
     if (lightboxTags) lightboxTags.innerHTML = tags ? tags.innerHTML : '';
   };
 
-  const renderLightbox = () => {
+  const renderLightbox = ({ instant = false, direction = 1 } = {}) => {
     if (!visibleCards.length || activeCardIndex < 0) return;
-    fillLightboxFromCard(visibleCards[activeCardIndex]);
+
+    const nextCard = visibleCards[activeCardIndex];
+    if (!nextCard || !lightboxImage) return;
+
+    if (lightboxSwitchTimeoutId) {
+      window.clearTimeout(lightboxSwitchTimeoutId);
+      lightboxSwitchTimeoutId = 0;
+    }
+    if (lightboxEnterTimeoutId) {
+      window.clearTimeout(lightboxEnterTimeoutId);
+      lightboxEnterTimeoutId = 0;
+    }
+
+    if (instant || LIGHTBOX_SWITCH_MS === 0) {
+      fillLightboxFromCard(nextCard);
+      clearLightboxTransitionClasses();
+      return;
+    }
+
+    const movingNext = direction >= 0;
+    const exitClass = movingNext ? 'is-switching-next' : 'is-switching-prev';
+    const enterClass = movingNext ? 'is-entering-next' : 'is-entering-prev';
+
+    clearLightboxTransitionClasses();
+    lightboxImage.classList.add(exitClass);
+
+    lightboxSwitchTimeoutId = window.setTimeout(() => {
+      fillLightboxFromCard(nextCard);
+
+      lightboxImage.classList.remove(exitClass);
+      lightboxImage.classList.add(enterClass);
+
+      // Wymuszamy repaint, żeby klasa wejścia została na pewno zastosowana
+      // przed jej zdjęciem (stabilniejszy kierunek fade-in na różnych przeglądarkach).
+      void lightboxImage.offsetWidth;
+
+      window.requestAnimationFrame(() => {
+        lightboxImage.classList.add('is-enter-active');
+      });
+
+      lightboxEnterTimeoutId = window.setTimeout(() => {
+        lightboxImage.classList.remove(enterClass, 'is-enter-active');
+        lightboxEnterTimeoutId = 0;
+      }, LIGHTBOX_ENTER_MS);
+
+      lightboxSwitchTimeoutId = 0;
+    }, LIGHTBOX_SWITCH_MS);
   };
 
   const moveLightbox = (step) => {
     if (!visibleCards.length) return;
     activeCardIndex = (activeCardIndex + step + visibleCards.length) % visibleCards.length;
-    renderLightbox();
+    renderLightbox({ direction: step });
   };
 
   const closeLightbox = () => {
     if (!lightbox) return;
+    if (lightboxSwitchTimeoutId) {
+      window.clearTimeout(lightboxSwitchTimeoutId);
+      lightboxSwitchTimeoutId = 0;
+    }
+    if (lightboxEnterTimeoutId) {
+      window.clearTimeout(lightboxEnterTimeoutId);
+      lightboxEnterTimeoutId = 0;
+    }
+    clearLightboxTransitionClasses();
     lightbox.setAttribute('aria-hidden', 'true');
     document.body.style.overflow = '';
     activeCardIndex = -1;
@@ -357,7 +530,7 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
     activeCardIndex = visibleCards.indexOf(card);
     if (activeCardIndex < 0) activeCardIndex = 0;
 
-    renderLightbox();
+    renderLightbox({ instant: true });
 
     if (!lightbox || !lightboxDialog) return;
     lightbox.setAttribute('aria-hidden', 'false');
@@ -492,6 +665,7 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
 
   syncInputsFromSelection();
   applyFilterSearch();
+  setupScrollReveal();
   scheduleMobileActiveUpdate();
 
   window.addEventListener('scroll', scheduleMobileActiveUpdate, { passive: true });

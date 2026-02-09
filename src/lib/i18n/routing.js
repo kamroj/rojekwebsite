@@ -143,6 +143,22 @@ export const getSectionPath = (lang, sectionKey) => {
 
 export const getProductsIndexPath = (lang) => getSectionPath(lang, 'products')
 
+export const REALIZATIONS_PAGE_SEGMENT = {
+  pl: 'strona',
+  en: 'page',
+  de: 'seite',
+}
+
+export const getRealizationsPagePath = (lang, page = 1) => {
+  const base = getSectionPath(lang, 'realizations')
+  const safePage = Number.isFinite(page) ? Math.max(1, Math.trunc(page)) : Number.parseInt(String(page || '1'), 10) || 1
+  if (safePage <= 1) return base
+
+  const l = normalizeLang(lang)
+  const segment = REALIZATIONS_PAGE_SEGMENT[l] || 'page'
+  return `${base}/${segment}/${safePage}`
+}
+
 // Articles (blog)
 // Keep Polish (default) without prefix: `/artykuly/...`
 export const getArticlesIndexPath = (lang) => withLangPrefix(lang, '/artykuly')
@@ -221,6 +237,15 @@ export const translatePathname = (pathname, targetLang) => {
     }
     // Products index
     return getProductsIndexPath(toLang)
+  }
+
+  if (fromSectionKey === 'realizations') {
+    const pageSegment = parts[1]
+    const pageNum = Number.parseInt(parts[2] || '', 10)
+    const fromSegment = REALIZATIONS_PAGE_SEGMENT[fromLang]
+    if (pageSegment === fromSegment && Number.isFinite(pageNum) && pageNum > 1) {
+      return getRealizationsPagePath(toLang, pageNum)
+    }
   }
 
   // Normal top-level section

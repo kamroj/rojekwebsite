@@ -180,14 +180,13 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
     return entries
       .map(([key, c]) => ({
         // Keep mobile menu aligned with desktop mega menu:
-        // - for Sanity-driven categories (okna/drzwi) use build-time payload from Astro
+        // - for Sanity-driven categories (okna/drzwi) use ONLY build-time payload from Astro/Sanity
         // - for other categories keep local data source
-        // `hasOwnProperty` is intentional so empty Sanity arrays are still treated as the source of truth.
-        products:
-          SANITY_MENU_CATEGORY_KEYS.has(key)
-            && Object.prototype.hasOwnProperty.call(initialSanityProductsByCategory || {}, key)
-            ? (initialSanityProductsByCategory?.[key] || [])
-            : (Array.isArray(c?.products) ? c.products : []),
+        // We intentionally do not fallback to local data for Sanity categories,
+        // so mobile always uses the same source of truth as desktop.
+        products: SANITY_MENU_CATEGORY_KEYS.has(key)
+          ? (initialSanityProductsByCategory?.[key] || [])
+          : (Array.isArray(c?.products) ? c.products : []),
         key,
         title: t(`breadcrumbs.categories.${key}`, c?.pageTitle || key),
       }))

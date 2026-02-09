@@ -1,6 +1,16 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
 import RealizationsPageSsg from '../components/_astro/ssg/pages/RealizationsPageSsg.astro';
+import { fetchRealizationsPageData } from '../lib/sanity/realizations.js';
+import { paginateRealizations, getRealizationsPagination } from '../lib/realizationsPagination.js';
+
+const allRealizations = await fetchRealizationsPageData({ lang: 'pl' });
+const pageData = paginateRealizations(allRealizations, 1);
+const pagination = getRealizationsPagination({
+  lang: 'pl',
+  currentPage: pageData.currentPage,
+  totalItems: pageData.totalItems,
+});
 ---
 
 <SiteLayout
@@ -8,5 +18,5 @@ import RealizationsPageSsg from '../components/_astro/ssg/pages/RealizationsPage
   title="Realizacje – ROJEK | Zobacz nasze realizacje"
   description="Galeria realizacji ROJEK: okna, drzwi i rozwiązania przesuwne. Zobacz przykłady montażu i wykończeń."
 >
-  <RealizationsPageSsg lang="pl" />
+  <RealizationsPageSsg lang="pl" realizations={pageData.items} pagination={pagination} />
 </SiteLayout>

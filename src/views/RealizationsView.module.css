@@ -272,6 +272,17 @@
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
+.singleRealizationContainer:global(.reveal-on-scroll) {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity 0.55s ease, transform 0.55s ease, box-shadow 0.25s ease;
+}
+
+.singleRealizationContainer:global(.reveal-on-scroll.is-visible) {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .singleRealizationContainer:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
@@ -289,6 +300,14 @@
 @media (--bp-sm) {
   .singleRealizationContainer {
     max-width: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .singleRealizationContainer:global(.reveal-on-scroll) {
+    opacity: 1;
+    transform: none;
+    transition: none;
   }
 }
 
@@ -411,9 +430,33 @@
   transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
-.lightboxImage:global(.is-switching) {
+.lightboxImage:global(.is-switching-next) {
   opacity: 0;
-  transform: scale(0.985);
+  transform: translateX(-72px) scale(0.985);
+}
+
+.lightboxImage:global(.is-switching-prev) {
+  opacity: 0;
+  transform: translateX(72px) scale(0.985);
+}
+
+.lightboxImage:global(.is-entering-next) {
+  opacity: 0;
+  transform: translateX(72px) scale(0.985);
+  transition: none;
+}
+
+.lightboxImage:global(.is-entering-prev) {
+  opacity: 0;
+  transform: translateX(-72px) scale(0.985);
+  transition: none;
+}
+
+.lightboxImage:global(.is-entering-next.is-enter-active),
+.lightboxImage:global(.is-entering-prev.is-enter-active) {
+  opacity: 1;
+  transform: translateX(0) scale(1);
+  transition: opacity 0.22s ease, transform 0.22s ease;
 }
 
 .lightboxTags {
@@ -541,43 +584,83 @@
   align-items: center;
   gap: 12px;
   margin: 20px 0;
-  list-style: none;
   padding: 0;
 }
 
-.paginate li {
+.paginateItem,
+.paginateArrow {
   display: inline-flex;
-}
-
-.paginate a {
+  justify-content: center;
+  align-items: center;
   text-align: center;
   border-radius: 50%;
-
   width: 28px;
   height: 28px;
   color: #212529;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: border-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
   text-decoration: none;
+  border: 1px solid #1f3e2a66;
+  background: transparent;
 }
 
-.paginate li.selected a {
-  background-color: #003f1b;
-  color: var(--color-text-light);
+.paginateActive {
+  border-color: #003f1b;
+  color: #003f1b;
+  background: transparent;
+  font-weight: 600;
 }
 
-.paginate li.disabled a {
+.paginateDisabled {
   opacity: 0.5;
-  cursor: default;
+  cursor: not-allowed;
   border-color: #1e1e1e94;
+  pointer-events: none;
 }
 
-.paginate li.disabled a:hover {
+.paginateDisabled:hover {
   background-color: transparent;
   color: var(--color-text);
 }
 
-.paginate a:hover {
-  background-color: #003f1b;
-  color: var(--color-text-light);
+.paginateItem:hover,
+.paginateArrow:hover {
+  border-color: #015123;
+  color: #015123;
+}
+
+.paginateArrowWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.paginateArrowIcon {
+  color: currentColor;
+  font-size: 2rem;
+  transition: transform 0.3s ease;
+}
+
+.paginateArrow:hover .paginateArrowWrapper {
+  transform: translateX(2px);
+  color: var(--color-bottle-green);
+}
+
+.paginateArrow:hover .paginateArrowIcon {
+  transform: translateX(4px);
+}
+
+.paginateArrowIconPrev {
+  transform: rotate(180deg) translateX(0);
+}
+
+.paginateArrowPrev:hover .paginateArrowIconPrev {
+  transform: rotate(180deg) translateX(-4px);
+}
+
+.paginateDots {
+  color: #4a4a4a;
+  user-select: none;
 }

@@ -1,0 +1,38 @@
+---
+// @ts-nocheck
+import SiteLayout from '../../../../layouts/SiteLayout.astro';
+import RealizationsPageSsg from '../../../../components/_astro/ssg/pages/RealizationsPageSsg.astro';
+import { fetchRealizationsPageData } from '../../../../lib/sanity/realizations.js';
+import { paginateRealizations, getRealizationsPagination } from '../../../../lib/realizationsPagination.js';
+
+const { page } = Astro.params;
+const currentPage = Number.parseInt(String(page || '1'), 10) || 1;
+
+const allRealizations = await fetchRealizationsPageData({ lang: 'de' });
+const pageData = paginateRealizations(allRealizations, currentPage);
+
+export async function getStaticPaths() {
+  const allRealizations = await fetchRealizationsPageData({ lang: 'de' });
+  const firstPageData = paginateRealizations(allRealizations, 1);
+
+  const paths = [];
+  for (let p = 2; p <= firstPageData.totalPages; p += 1) {
+    paths.push({ params: { page: String(p) } });
+  }
+  return paths;
+}
+
+const pagination = getRealizationsPagination({
+  lang: 'de',
+  currentPage: pageData.currentPage,
+  totalItems: pageData.totalItems,
+});
+---
+
+<SiteLayout
+  lang="de"
+  title="Referenzen – ROJEK | Unsere Projekte"
+  description="Projektgalerie von ROJEK: Fenster, Türen und Schiebesysteme. Beispiele für Montage und Ausführung."
+>
+  <RealizationsPageSsg lang="de" realizations={pageData.items} pagination={pagination} />
+</SiteLayout>
