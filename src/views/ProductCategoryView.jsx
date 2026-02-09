@@ -175,6 +175,7 @@ function ProductCategoryPageBase({ category, initialSanityProducts }) {
                     <SanityImage
                       className={styles.productImage}
                       image={product.listImage}
+                      placeholder="none"
                       altFallback={product.name}
                       loading="lazy"
                       sizes="(max-width: 900px) 100vw, 520px"

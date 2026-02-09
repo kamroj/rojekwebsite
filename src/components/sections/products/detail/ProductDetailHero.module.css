@@ -24,7 +24,7 @@
 
 .productCategory {
   white-space: nowrap;
-  font-size: clamp(0.85rem, 1.35vw, 1.4rem);
+  font-size: clamp(1.4rem, 1.35vw, 1.4rem);
   letter-spacing: clamp(0.8px, 0.25vw, 2px);
   color: #000000;
   font-weight: 500;
