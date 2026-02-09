@@ -312,8 +312,23 @@
   .realizationImage:hover {
     transform: scale(1);
   }
-  .realizationImageActive {
+
+  .singleRealizationContainer[data-mobile-active='true'] .realizationImage {
     transform: scale(1.06);
+  }
+
+  .singleRealizationContainer[data-mobile-active='true'] {
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+  }
+}
+
+@media (max-width: 767px) {
+  .singleRealizationContainer[data-mobile-active='true'] .realizationImage {
+    transform: scale(1.06);
+  }
+
+  .singleRealizationContainer[data-mobile-active='true'] {
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
   }
 }
 

@@ -238,7 +238,7 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
   </div>
 </div>
 
-<script is:inline>
+<script is:inline data-astro-rerun>
   const filtersToggleButton = document.getElementById('realizations-filters-toggle');
   const filtersAccordion = document.getElementById('realizations-filters-accordion');
   const filtersPanel = document.getElementById('realizations-filters-panel');
@@ -264,9 +264,54 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
   let visibleCards = [];
   let activeCardIndex = -1;
   let touchStartX = 0;
+  let mobileZoomRafId = 0;
 
   const isLightboxOpen = () => lightbox?.getAttribute('aria-hidden') === 'false';
   const getVisibleCards = () => cards.filter((card) => !card.classList.contains('realization-hidden-by-filter'));
+
+  const clearMobileActiveCard = () => {
+    cards.forEach((card) => card.removeAttribute('data-mobile-active'));
+  };
+
+  const updateMobileActiveCard = () => {
+    const visible = getVisibleCards();
+    if (!visible.length) {
+      clearMobileActiveCard();
+      return;
+    }
+
+    const viewportCenterY = window.innerHeight / 2;
+    let bestCard = null;
+    let bestDistance = Number.POSITIVE_INFINITY;
+
+    for (const card of visible) {
+      const rect = card.getBoundingClientRect();
+      const cardCenterY = rect.top + rect.height / 2;
+      const distance = Math.abs(cardCenterY - viewportCenterY);
+
+      if (distance < bestDistance) {
+        bestDistance = distance;
+        bestCard = card;
+      }
+    }
+
+    cards.forEach((card) => {
+      const shouldActivate = bestCard === card;
+      if (shouldActivate) {
+        card.setAttribute('data-mobile-active', 'true');
+      } else {
+        card.removeAttribute('data-mobile-active');
+      }
+    });
+  };
+
+  const scheduleMobileActiveUpdate = () => {
+    if (mobileZoomRafId) return;
+    mobileZoomRafId = window.requestAnimationFrame(() => {
+      mobileZoomRafId = 0;
+      updateMobileActiveCard();
+    });
+  };
 
   const fillLightboxFromCard = (card) => {
     const image = card.querySelector('img');
@@ -406,6 +451,8 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
         renderLightbox();
       }
     }
+
+    scheduleMobileActiveUpdate();
   };
 
   filterInputs.forEach((input) => {
@@ -445,6 +492,12 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
 
   syncInputsFromSelection();
   applyFilterSearch();
+  scheduleMobileActiveUpdate();
+
+  window.addEventListener('scroll', scheduleMobileActiveUpdate, { passive: true });
+  document.addEventListener('scroll', scheduleMobileActiveUpdate, true);
+  window.addEventListener('resize', scheduleMobileActiveUpdate);
+  window.setTimeout(scheduleMobileActiveUpdate, 0);
 
   cards.forEach((card) => {
     card.addEventListener('click', () => openLightbox(card));
