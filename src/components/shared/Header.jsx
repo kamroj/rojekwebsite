@@ -44,7 +44,8 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
 
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
-  const { isPastThreshold } = useScrollPosition(5);
+  // Change header style as soon as the user starts scrolling.
+  const { isPastThreshold } = useScrollPosition(0);
 
   const isActive = useCallback(
     (path) => {

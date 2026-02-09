@@ -29,8 +29,8 @@
 
 @media (max-width: 992px) {
   .wrapper {
-    width: auto;
-    right: 0;
+    width: 100%;
+    right: auto;
   }
 }
 

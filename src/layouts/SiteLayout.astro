@@ -67,7 +67,7 @@ const initialSanityProductsByCategory = await getHeaderMegaMenuData(lang);
     resources={resources}
     pathname={Astro.url?.pathname || '/'}
     initialSanityProductsByCategory={initialSanityProductsByCategory}
-    client:visible
+    client:load
   />
 
   <main>
