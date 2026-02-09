@@ -11,7 +11,7 @@
 .filterHeader {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
 }
 
@@ -28,72 +28,183 @@
   color: var(--color-text);
 }
 
-.filterControls {
-  display: grid;
-  gap: 12px;
+.filterToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
 }
 
-.filterLabel {
-  margin: 0;
+.filtersAccordion {
+  border: 1px solid #9fbea8;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.filterToggleButton {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: none;
+  background: #f6fbf8;
+  color: #2e5a3c;
+  border-radius: 0;
+  padding: 10px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filterToggleButton:hover {
+  background: #edf6f0;
+  color: #244a31;
+}
+
+.filterToggleLabel {
   font-size: 1.3rem;
-  font-weight: 600;
-  color: #224b2f;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.filterToggleDivider {
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.35;
+}
+
+.filterToggleIcon {
+  font-size: 1.2rem;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+
+.filterToggleButton[aria-expanded='true'] .filterToggleIcon {
+  transform: rotate(180deg);
+}
+
+.filterPanel {
+  background: inherit;
+  border-top: 0;
+  padding: 0 12px;
+  display: grid;
+  gap: 12px;
+  max-height: 0;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  overflow: hidden;
+  transition: max-height 0.5s ease, opacity 0.5s ease, padding 0.5s ease, border-top-color 0.5s ease, visibility 0s linear 0.5s;
+}
+
+.filtersAccordion[data-open='true'] .filterPanel {
+  border-top: 1px solid #dbe8dd;
+  padding: 12px;
+  max-height: 1200px;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transition: max-height 0.5s ease, opacity 0.5s ease, padding 0.5s ease, border-top-color 0.5s ease, visibility 0s linear 0s;
+}
+
+.filterPanelTop {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filterSearchInput {
+  flex: 1;
+  min-width: 0;
+  border: 1px solid #c9dbce;
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 1.3rem;
+  background: #fff;
+}
+
+.filterSearchInput:focus {
+  outline: 2px solid rgba(46, 90, 60, 0.18);
+  border-color: #5a7f63;
 }
 
 .filterGroups {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 12px;
+  max-height: min(52vh, 500px);
+  overflow: auto;
+  padding-right: 4px;
 }
 
 .filterGroup {
-  border: 1px solid #dbe8dd;
-  background: #fff;
+  border: 1px solid #deebe1;
+  background: #ffffff;
   border-radius: 10px;
-  padding: 10px;
+  overflow: hidden;
+}
+
+.filterGroupTitleBar {
+  width: 100%;
+  border-bottom: 1px solid #ecf3ee;
+  background: #f4f9f6;
+  text-align: left;
+  padding: 9px 10px;
 }
 
 .filterGroupTitle {
-  margin: 0 0 8px;
-  font-size: 1.25rem;
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 700;
   color: #21462f;
 }
 
-.filterOptions {
+.filterGroupBody {
+  padding: 8px;
+}
+
+.filterOptionsList {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  max-height: 86px;
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.filterOption {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 8px;
-}
-
-.filterChip {
-  border: 1px solid #c6d9ca;
-  background: #f6fbf7;
-  color: #23462f;
-  border-radius: 999px;
-  padding: 7px 12px;
-  font-size: 1.2rem;
-  line-height: 1;
+  border: 1px solid #ebf2ec;
+  border-radius: 8px;
+  padding: 7px 8px;
+  background: #fff;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
-.filterChip:hover {
-  background: #eaf6ed;
-  border-color: #9dc8a8;
+.filterOption:hover {
+  background: #f2f8f4;
+  border-color: #cfe1d4;
 }
 
-.filterChip:global(.is-active) {
-  background: #0f5a2c;
-  color: #fff;
-  border-color: #0f5a2c;
-  box-shadow: 0 4px 10px rgba(15, 90, 44, 0.25);
+.filterOptionInput {
+  margin: 0;
+  accent-color: #0f5a2c;
+}
+
+.filterOptionText {
+  font-size: 1.2rem;
+  color: #23462f;
 }
 
 .filterResetButton {
-  align-self: flex-start;
-  border: 1px solid #0f5a2c;
+  align-self: center;
+  border: 1px solid #7aa486;
   background: #fff;
-  color: #0f5a2c;
+  color: #2f5e3f;
   border-radius: 999px;
   padding: 7px 14px;
   font-weight: 600;
@@ -102,21 +213,29 @@
 }
 
 .filterResetButton:hover {
-  background: #0f5a2c;
-  color: #fff;
+  background: #eff7f1;
+  color: #244a31;
 }
 
 @media (--bp-sm) {
   .filterCounter {
     font-size: 1.2rem;
+    font-weight: 100;
+  }
+
+  .filterPanelTop {
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .filterGroups {
     grid-template-columns: 1fr;
+    max-height: 46vh;
   }
 
-  .filterChip {
-    font-size: 1.1rem;
+  .filterOptionsList {
+    grid-template-columns: 1fr;
+    max-height: 128px;
   }
 }
 

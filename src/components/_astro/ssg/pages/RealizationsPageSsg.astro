@@ -48,14 +48,21 @@ for (const realization of realizations) {
   }
 }
 
+/**
+ * @param {{ key: string }} a
+ * @param {{ key: string }} b
+ */
+const sortByKey = (a, b) =>
+  String(a.key || '').localeCompare(String(b.key || ''), 'pl', { sensitivity: 'base' });
+
 const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
-  const options = Array.from(group.options.values());
+  const options = Array.from(group.options.values()).sort(sortByKey);
 
   return {
     ...group,
     options,
   };
-});
+}).sort(sortByKey);
 ---
 
 <div>
@@ -73,32 +80,70 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
         <div class={styles.filterCounter} data-counter-template={resultsTemplate}>
           {initialResultsText}
         </div>
-        <button id="realizations-filter-reset" type="button" class={styles.filterResetButton}>
-          {t('realizationsPage.filters.clear', 'Wyczyść')}
-        </button>
       </div>
-      <div class={styles.filterControls}>
-        <p class={styles.filterLabel}>{t('realizationsPage.filters.filtersTitle', 'Filtry')}</p>
-        <div class={styles.filterGroups}>
-          {filterGroups.map((group) => (
-            <section class={styles.filterGroup}>
-              <h3 class={styles.filterGroupTitle}>{group.label}</h3>
-              <div class={styles.filterOptions}>
-                {group.options.map((option) => (
-                  <button
-                    type="button"
-                    class={styles.filterChip}
-                    data-filter-value={`${group.key}::${option.key}`}
-                    aria-pressed="false"
-                  >
-                    {option.label}
-                  </button>
-                ))}
-              </div>
-            </section>
-          ))}
+      <section id="realizations-filters-accordion" class={styles.filtersAccordion} data-open="false">
+        <div class={styles.filterToolbar}>
+          <button
+            id="realizations-filters-toggle"
+            type="button"
+            class={styles.filterToggleButton}
+            aria-expanded="false"
+            aria-controls="realizations-filters-panel"
+          >
+            <span class={styles.filterToggleLabel}>{t('realizationsPage.filters.filtersTitle', 'Filtry')}</span>
+            <span class={styles.filterToggleDivider} aria-hidden="true"></span>
+            <span class={styles.filterToggleIcon} aria-hidden="true">▾</span>
+          </button>
         </div>
-      </div>
+
+        <div id="realizations-filters-panel" class={styles.filterPanel} aria-hidden="true">
+          <div class={styles.filterPanelTop}>
+            <input
+              id="realizations-filter-search"
+              class={styles.filterSearchInput}
+              type="search"
+              placeholder={t('realizationsPage.filters.searchPlaceholder', 'Szukaj tagu, np. DR')}
+              aria-label={t('realizationsPage.filters.searchPlaceholder', 'Szukaj tagu, np. DR')}
+              autocomplete="off"
+            />
+            <button id="realizations-filter-reset" type="button" class={styles.filterResetButton}>
+              {t('realizationsPage.filters.clear', 'Wyczyść')}
+            </button>
+          </div>
+
+          <div class={styles.filterGroups}>
+            {filterGroups.map((group) => {
+              const groupPanelId = `filters-group-${group.key}`;
+              return (
+                <section class={styles.filterGroup} data-filter-group>
+                  <div class={styles.filterGroupTitleBar}>
+                    <span class={styles.filterGroupTitle}>{group.label}</span>
+                  </div>
+                  <div id={groupPanelId} class={styles.filterGroupBody} data-filter-group-body>
+                    <div class={styles.filterOptionsList}>
+                      {group.options.map((option) => (
+                        <label
+                          class={styles.filterOption}
+                          data-filter-option
+                          data-filter-search-text={`${group.label} ${option.label}`.toUpperCase()}
+                        >
+                          <input
+                            type="checkbox"
+                            class={styles.filterOptionInput}
+                            data-filter-input
+                            data-filter-value={`${group.key}::${option.key}`}
+                          />
+                          <span class={styles.filterOptionText}>{option.label}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+                </section>
+              );
+            })}
+          </div>
+        </div>
+      </section>
     </div>
 
     <div class={styles.realizationsContainer} id="realizations-grid">
@@ -137,11 +182,6 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
               />
             ) : null;
           })()}
-          <div class={styles.realizationTags}>
-            {(item.tags || []).map((tag) => (
-              <span class={styles.tag}>{tag.valueLabel}</span>
-            ))}
-          </div>
         </div>
       ))}
     </div>
@@ -199,7 +239,13 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
 </div>
 
 <script is:inline>
-  const filterButtons = Array.from(document.querySelectorAll('[data-filter-value]'));
+  const filtersToggleButton = document.getElementById('realizations-filters-toggle');
+  const filtersAccordion = document.getElementById('realizations-filters-accordion');
+  const filtersPanel = document.getElementById('realizations-filters-panel');
+  const filterSearchInput = document.getElementById('realizations-filter-search');
+  const filterInputs = Array.from(document.querySelectorAll('[data-filter-input]'));
+  const filterOptions = Array.from(document.querySelectorAll('[data-filter-option]'));
+  const filterGroups = Array.from(document.querySelectorAll('[data-filter-group]'));
   const resetButton = document.getElementById('realizations-filter-reset');
   const cards = Array.from(document.querySelectorAll('[data-realization-card]'));
   const counter = document.querySelector('[class*="filterCounter"]');
@@ -274,7 +320,7 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
     lightboxDialog.focus();
   };
 
-  const toggleFilter = (pair) => {
+  const toggleFilter = (pair, forceChecked) => {
     const [category, value] = String(pair || '').split('::');
     if (!category || !value) return;
 
@@ -283,12 +329,37 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
     }
 
     const values = selectedByCategory.get(category);
-    if (values.has(value)) {
+    if (forceChecked === false || (forceChecked == null && values.has(value))) {
       values.delete(value);
       if (!values.size) selectedByCategory.delete(category);
-    } else {
+    } else if (forceChecked === true || forceChecked == null) {
       values.add(value);
     }
+  };
+
+  const syncInputsFromSelection = () => {
+    filterInputs.forEach((input) => {
+      const pair = input.getAttribute('data-filter-value') || '';
+      const [category, value] = pair.split('::');
+      input.checked = Boolean(selectedByCategory.get(category)?.has(value));
+    });
+  };
+
+  const applyFilterSearch = () => {
+    const query = String(filterSearchInput?.value || '').trim().toUpperCase();
+
+    filterOptions.forEach((option) => {
+      const haystack = option.getAttribute('data-filter-search-text') || '';
+      const visible = !query || haystack.includes(query);
+      option.style.display = visible ? '' : 'none';
+    });
+
+    filterGroups.forEach((group) => {
+      const anyVisible = Array.from(group.querySelectorAll('[data-filter-option]')).some(
+        (option) => option.style.display !== 'none'
+      );
+      group.style.display = anyVisible ? '' : 'none';
+    });
   };
 
   const applyFilters = () => {
@@ -337,28 +408,43 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
     }
   };
 
-  filterButtons.forEach((button) => {
-    button.addEventListener('click', () => {
-      const pair = button.getAttribute('data-filter-value') || '';
-      toggleFilter(pair);
-
-      const [category, value] = pair.split('::');
-      const isActive = Boolean(selectedByCategory.get(category)?.has(value));
-      button.classList.toggle('is-active', isActive);
-      button.setAttribute('aria-pressed', String(isActive));
-
+  filterInputs.forEach((input) => {
+    input.addEventListener('change', () => {
+      const pair = input.getAttribute('data-filter-value') || '';
+      toggleFilter(pair, input.checked);
       applyFilters();
     });
   });
 
+  filterSearchInput?.addEventListener('input', applyFilterSearch);
+
+  if (filtersToggleButton) {
+    filtersToggleButton.onclick = () => {
+      if (!filtersPanel) return;
+      const isOpen = filtersAccordion?.getAttribute('data-open') === 'true';
+      const nextOpen = !isOpen;
+      filtersAccordion?.setAttribute('data-open', String(nextOpen));
+      filtersToggleButton.setAttribute('aria-expanded', String(nextOpen));
+      filtersPanel.setAttribute('aria-hidden', String(!nextOpen));
+    };
+  }
+
+  if (filtersAccordion?.getAttribute('data-open') === 'true') {
+    filtersToggleButton?.setAttribute('aria-expanded', 'true');
+    filtersPanel?.setAttribute('aria-hidden', 'false');
+  } else {
+    filtersToggleButton?.setAttribute('aria-expanded', 'false');
+    filtersPanel?.setAttribute('aria-hidden', 'true');
+  }
+
   resetButton?.addEventListener('click', () => {
     selectedByCategory.clear();
-    filterButtons.forEach((button) => {
-      button.classList.remove('is-active');
-      button.setAttribute('aria-pressed', 'false');
-    });
+    syncInputsFromSelection();
     applyFilters();
   });
+
+  syncInputsFromSelection();
+  applyFilterSearch();
 
   cards.forEach((card) => {
     card.addEventListener('click', () => openLightbox(card));

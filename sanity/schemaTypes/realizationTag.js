@@ -1,11 +1,5 @@
 import {defineField, defineType} from 'sanity'
 
-const isUppercaseOrEmpty = (value) => {
-  const text = String(value || '').trim()
-  if (!text) return true
-  return text === text.toUpperCase()
-}
-
 export default defineType({
   name: 'realizationTag',
   title: 'Wartość tagu realizacji',
@@ -24,10 +18,6 @@ export default defineType({
       type: 'localizedString',
       validation: (Rule) =>
         Rule.required().custom(async (value, context) => {
-          if (!isUppercaseOrEmpty(value?.pl) || !isUppercaseOrEmpty(value?.en) || !isUppercaseOrEmpty(value?.de)) {
-            return 'Wartości tagu muszą być zapisane WIELKIMI LITERAMI (uppercase).'
-          }
-
           const plValue = String(value?.pl || '').trim().toLowerCase()
           const keyRef = context?.document?.key?._ref
           if (!plValue || !keyRef) return true
