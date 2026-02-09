@@ -139,7 +139,7 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
           })()}
           <div class={styles.realizationTags}>
             {(item.tags || []).map((tag) => (
-              <span class={styles.tag}>{tag.categoryLabel}: {tag.valueLabel}</span>
+              <span class={styles.tag}>{tag.valueLabel}</span>
             ))}
           </div>
         </div>

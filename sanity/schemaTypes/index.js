@@ -10,6 +10,7 @@ import teamMember from './teamMember'
 
 import realization from './realization'
 import realizationTagKey from './realizationTagKey'
+import realizationTag from './realizationTag'
 
 import faqItem from './faqItem'
 
@@ -37,6 +38,7 @@ export const schemaTypes = [
   partner,
   teamMember,
   realizationTagKey,
+  realizationTag,
   articleTag,
   articlesPage,
   realization,

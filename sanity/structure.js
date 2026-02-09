@@ -56,6 +56,9 @@ export const structure = (S) =>
               S.listItem()
                 .title('Klucze tagów realizacji')
                 .child(S.documentTypeList('realizationTagKey').title('Klucze tagów realizacji')),
+              S.listItem()
+                .title('Wartości tagów realizacji')
+                .child(S.documentTypeList('realizationTag').title('Wartości tagów realizacji')),
             ])
         ),
 
@@ -82,11 +85,12 @@ export const structure = (S) =>
                     .title('Artykuły')
                     .defaultOrdering([{ field: 'publishedAt', direction: 'desc' }])
                 ),
+              S.divider(),
+              S.listItem()
+                .title('Tagi artykułów')
+                .child(S.documentTypeList('articleTag').title('Tagi artykułów')),
             ])
         ),
-
-      // --- Tagi artykułów ---
-      S.listItem().title('Tagi artykułów').child(S.documentTypeList('articleTag').title('Tagi artykułów')),
 
       // --- O firmie ---
       S.listItem().title('O firmie').child(S.document().schemaType('aboutPage').documentId('aboutPage').title('O firmie')),

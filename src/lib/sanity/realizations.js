@@ -5,16 +5,20 @@ import { pickLocale } from './i18n.js';
 import { REALIZATIONS_DATA } from '../../data/realizations.js';
 
 const toFilterValueKey = (value) => encodeURIComponent(String(value || '').trim().toLowerCase());
+const toUpperTagLabel = (value) => String(value || '').trim().toUpperCase();
 
 const buildFallbackRealizations = () =>
   REALIZATIONS_DATA.map((item, index) => {
     const tags = Object.entries(item?.tags || {}).flatMap(([categoryKey, values]) =>
-      (values || []).map((value) => ({
-        categoryKey,
-        categoryLabel: categoryKey,
-        valueKey: toFilterValueKey(value),
-        valueLabel: String(value),
-      }))
+      (values || []).map((value) => {
+        const valueLabel = toUpperTagLabel(value);
+        return {
+          categoryKey,
+          categoryLabel: toUpperTagLabel(categoryKey),
+          valueKey: toFilterValueKey(valueLabel),
+          valueLabel,
+        };
+      })
     );
 
     return {
@@ -40,7 +44,13 @@ export const fetchRealizationsPageData = async ({ lang = 'pl', signal } = {}) =>
       _id,
       "image": image ${SANITY_IMAGE_PROJECTION},
       tags[]{
-        value,
+        "value": value->{
+          value,
+          "key": key->{
+            key,
+            label
+          }
+        },
         "key": key->{
           key,
           label
@@ -57,13 +67,13 @@ export const fetchRealizationsPageData = async ({ lang = 'pl', signal } = {}) =>
       const tags = (item?.tags || [])
         .map((tag) => {
           const categoryKey = tag?.key?.key;
-          const valueLabel = pickLocale(tag?.value, lang);
+          const valueLabel = toUpperTagLabel(pickLocale(tag?.value?.value, lang));
           if (!categoryKey || !valueLabel) return null;
           const valueKey = toFilterValueKey(valueLabel);
 
           return {
             categoryKey,
-            categoryLabel: pickLocale(tag?.key?.label, lang) || categoryKey,
+            categoryLabel: toUpperTagLabel(pickLocale(tag?.key?.label, lang) || categoryKey),
             valueKey,
             valueLabel,
           };
