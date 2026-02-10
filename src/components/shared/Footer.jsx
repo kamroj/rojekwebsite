@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiPhone, FiMail } from 'react-icons/fi';
 import { COMPANY } from '../../data/company.js';
+import { hasConsent, onConsentChange, openConsentSettings } from '../../lib/consent/browser.js';
 import styles from './Footer.module.css';
 
 const Footer = () => {
   const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
+  const [mapConsent, setMapConsent] = useState(false);
 
   const contactData = [
     {
@@ -20,6 +22,15 @@ const Footer = () => {
   ];
 
   const mapSrc = COMPANY.map.embedUrl;
+
+  useEffect(() => {
+    setMapConsent(hasConsent('externalMedia'));
+    const unsubscribe = onConsentChange((detail) => {
+      const next = detail?.consents?.externalMedia;
+      setMapConsent(typeof next === 'boolean' ? next : hasConsent('externalMedia'));
+    });
+    return unsubscribe;
+  }, []);
 
   return (
     <footer className={styles.footerWrapper}>
@@ -63,19 +74,46 @@ const Footer = () => {
           <div className={styles.mapSection}>
             <h3>{t('contact.locationTitle')}</h3>
             <div className={styles.mapContainer}>
-              <iframe
-                src={mapSrc}
-                title={t('contact.locationTitle')}
-                loading="lazy"
-                referrerPolicy="no-referrer-when-downgrade"
-                allowFullScreen
-              />
+              {mapConsent ? (
+                <iframe
+                  src={mapSrc}
+                  title={t('contact.locationTitle')}
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  allowFullScreen
+                />
+              ) : (
+                <div className={styles.mapPlaceholder}>
+                  <p>
+                    {t(
+                      'cookies.placeholders.map',
+                      'Aby wyświetlić mapę, zaakceptuj treści zewnętrzne (Google Maps).'
+                    )}
+                  </p>
+                  <button
+                    type="button"
+                    className={styles.mapConsentButton}
+                    data-open-consent-settings
+                    onClick={openConsentSettings}
+                  >
+                    {t('cookies.actions.openSettings', 'Ustawienia cookies')}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
         <div className={styles.copyrightSection}>
           <p>{t('footer.copy', { year: currentYear })}</p>
+          <button
+            type="button"
+            className={styles.cookieSettingsButton}
+            data-open-consent-settings
+            onClick={openConsentSettings}
+          >
+            {t('cookies.actions.openSettings', 'Ustawienia cookies')}
+          </button>
         </div>
       </div>
     </footer>
@@ -83,5 +121,8 @@ const Footer = () => {
 };
 
 export default Footer;
+
+
+
 
 

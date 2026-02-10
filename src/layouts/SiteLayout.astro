@@ -74,6 +74,6 @@ const initialSanityProductsByCategory = await getHeaderMegaMenuData(lang);
     <slot />
   </main>
 
-  <!-- Footer is SSR-only (no hydration). It has no interactivity and saves JS. -->
-  <SiteFooterSsg lang={lang} resources={resources} />
+  <!-- Footer contains cookie settings actions, so it must be hydrated. -->
+  <SiteFooterSsg lang={lang} resources={resources} client:load />
 </BaseLayout>

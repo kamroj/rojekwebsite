@@ -5,6 +5,7 @@
 
 import '../styles/prose.css';
 import '../styles/global.css';
+import 'klaro/dist/klaro.css';
 
 import { translatePathname } from '../lib/i18n/routing.js';
 import { getCompanyJsonLd } from '../data/company.js';
@@ -101,6 +102,348 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
   </head>
   <body>
     <slot />
+
+    <script>
+      import * as klaroImport from 'klaro';
+      const consentWindow = window as any;
+
+      function resolveKlaroApi(candidate, depth = 0) {
+        if (!candidate || depth > 4) return null;
+        if (
+          typeof candidate.setup === 'function' &&
+          typeof candidate.show === 'function' &&
+          typeof candidate.getManager === 'function'
+        ) {
+          return candidate;
+        }
+
+        return (
+          resolveKlaroApi(candidate.default, depth + 1) ||
+          resolveKlaroApi(candidate.klaro, depth + 1) ||
+          null
+        );
+      }
+
+      const klaro =
+        resolveKlaroApi(consentWindow.klaro) ||
+        resolveKlaroApi(klaroImport);
+
+      if (!klaro) {
+        console.error('[consent] Klaro failed to load: setup() not available');
+      }
+
+      const CONSENT_EVENT = 'rojek:consent-changed';
+      let consentEmitScheduled = false;
+      let lastConsentCookieRaw = '';
+
+      function getConsentCookieRaw() {
+        return (
+          document.cookie
+            .split(';')
+            .map((part) => part.trim())
+            .find((part) => part.startsWith('rojek-consent=')) ||
+          ''
+        );
+      }
+
+      function readConsentCookie() {
+        const raw = document.cookie
+          .split(';')
+          .map((part) => part.trim())
+          .find((part) => part.startsWith('rojek-consent='));
+
+        if (!raw) return {};
+
+        try {
+          const value = raw.slice('rojek-consent='.length);
+          return JSON.parse(decodeURIComponent(value)) || {};
+        } catch {
+          return {};
+        }
+      }
+
+      const translations = {
+        pl: {
+          consentNotice: {
+            description: 'Ta strona korzysta z technologii śledzenia witryn internetowych stron trzecich, w celu świadczenia i ciągłego ulepszania naszych usług oraz wyświetlania reklam zgodnie z zainteresowaniami użytkowników. Wyrażam zgodę i mogę ją w dowolnym momencie cofnąć lub zmienić, ze skutkiem na przyszłość.',
+            learnMore: 'Ustawienia',
+          },
+          consentModal: {
+            title: 'Ustawienia prywatności',
+            description: 'Tutaj możesz zdecydować, które usługi zewnętrzne mogą być aktywne.',
+          },
+          ok: 'Akceptuj wszystko',
+          acceptAll: 'Akceptuj wszystko',
+          decline: 'Odrzuć wszystko',
+          save: 'Zapisz ustawienia',
+          close: 'Zamknij',
+          privacyPolicy: {
+            text: 'Polityka prywatności',
+            name: 'polityka prywatności',
+          },
+          purposeItem: {
+            service: 'usługa',
+            services: 'usługi',
+          },
+          purposes: {
+            security: 'Bezpieczeństwo',
+            externalMedia: 'Treści zewnętrzne',
+          },
+          security: {
+            title: 'Google reCAPTCHA',
+            description: 'Chroni formularz kontaktowy przed spamem.',
+          },
+          externalMedia: {
+            title: 'Mapy i wideo (Google Maps / YouTube)',
+            description: 'Umożliwia wyświetlanie mapy i osadzonych materiałów wideo.',
+          },
+        },
+        en: {
+          consentNotice: {
+            description: 'This website uses third-party website tracking technologies to provide and continuously improve our services and to display advertisements according to users\' interests. I agree and may withdraw or change my consent at any time with effect for the future.',
+            learnMore: 'Settings',
+          },
+          consentModal: {
+            title: 'Privacy settings',
+            description: 'Here you can decide which external services can be enabled.',
+          },
+          ok: 'Accept all',
+          acceptAll: 'Accept all',
+          decline: 'Reject all',
+          save: 'Save settings',
+          close: 'Close',
+          privacyPolicy: {
+            text: 'Privacy policy',
+            name: 'privacy policy',
+          },
+          purposeItem: {
+            service: 'service',
+            services: 'services',
+          },
+          purposes: {
+            security: 'Security',
+            externalMedia: 'External media',
+          },
+          security: {
+            title: 'Google reCAPTCHA',
+            description: 'Protects the contact form against spam.',
+          },
+          externalMedia: {
+            title: 'Maps and video (Google Maps / YouTube)',
+            description: 'Enables map display and embedded videos.',
+          },
+        },
+        de: {
+          consentNotice: {
+            description: 'Diese Website verwendet Tracking-Technologien von Drittanbietern, um unsere Dienste bereitzustellen und kontinuierlich zu verbessern sowie Werbung entsprechend den Interessen der Nutzer anzuzeigen. Ich stimme zu und kann meine Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen oder ändern.',
+            learnMore: 'Einstellungen',
+          },
+          consentModal: {
+            title: 'Datenschutzeinstellungen',
+            description: 'Hier können Sie festlegen, welche externen Dienste aktiviert werden dürfen.',
+          },
+          ok: 'Alle akzeptieren',
+          acceptAll: 'Alle akzeptieren',
+          decline: 'Alle ablehnen',
+          save: 'Einstellungen speichern',
+          close: 'Schließen',
+          privacyPolicy: {
+            text: 'Datenschutzerklärung',
+            name: 'Datenschutzerklärung',
+          },
+          purposeItem: {
+            service: 'Dienst',
+            services: 'Dienste',
+          },
+          purposes: {
+            security: 'Sicherheit',
+            externalMedia: 'Externe Medien',
+          },
+          security: {
+            title: 'Google reCAPTCHA',
+            description: 'Schützt das Kontaktformular vor Spam.',
+          },
+          externalMedia: {
+            title: 'Karten und Video (Google Maps / YouTube)',
+            description: 'Ermöglicht die Anzeige von Karten und eingebetteten Videos.',
+          },
+        },
+      };
+
+      function emitConsentChanged() {
+        if (!klaro) return;
+
+        if (consentEmitScheduled) return;
+        consentEmitScheduled = true;
+
+        queueMicrotask(() => {
+          consentEmitScheduled = false;
+          const consents = readConsentCookie();
+
+          consentWindow.dispatchEvent(
+            new CustomEvent(CONSENT_EVENT, {
+              detail: { consents },
+            })
+          );
+        });
+      }
+
+      const pageLang = document?.documentElement?.lang || 'pl';
+      const activeLang = ['pl', 'en', 'de'].includes(pageLang) ? pageLang : 'pl';
+      const privacyPolicyUrlByLang = {
+        pl: '/kontakt',
+        en: '/en/contact',
+        de: '/de/kontakt',
+      };
+
+      const config = {
+        version: 1,
+        elementID: 'klaro',
+        storageMethod: 'cookie',
+        cookieName: 'rojek-consent',
+        cookieExpiresAfterDays: 365,
+        default: false,
+        mustConsent: false,
+        acceptAll: true,
+        hideDeclineAll: false,
+        hideLearnMore: false,
+        noticeAsModal: false,
+        lang: activeLang,
+        additionalClass: 'rojek-klaro',
+        translations: {
+          ...translations,
+          zz: {
+            privacyPolicyUrl: privacyPolicyUrlByLang[activeLang] || '/kontakt',
+          },
+        },
+        services: [
+          {
+            name: 'security',
+            required: false,
+            default: false,
+            purposes: ['security'],
+            cookies: [/^_GRECAPTCHA/],
+            callback: () => emitConsentChanged(),
+          },
+          {
+            name: 'externalMedia',
+            required: false,
+            default: false,
+            purposes: ['externalMedia'],
+            callback: () => emitConsentChanged(),
+          },
+        ],
+      };
+
+      if (klaro) {
+        lastConsentCookieRaw = getConsentCookieRaw();
+        consentWindow.klaroConfig = config;
+        klaro.setup(config);
+
+        if (typeof klaro.addEventListener === 'function') {
+          klaro.addEventListener('saveConsents', () => emitConsentChanged());
+          klaro.addEventListener('applyConsents', () => emitConsentChanged());
+        }
+
+        // Defensive fallback: if Klaro events are skipped in some flow,
+        // detect cookie changes and notify React listeners immediately.
+        setInterval(() => {
+          const nextRaw = getConsentCookieRaw();
+          if (nextRaw !== lastConsentCookieRaw) {
+            lastConsentCookieRaw = nextRaw;
+            emitConsentChanged();
+          }
+        }, 250);
+
+        function clearConsentCookie(cookieName) {
+          const host = location.hostname;
+          const domainParts = host.split('.');
+          const domainVariants = [undefined, host];
+
+          if (domainParts.length > 1) {
+            for (let i = 0; i < domainParts.length - 1; i += 1) {
+              domainVariants.push(`.${domainParts.slice(i).join('.')}`);
+            }
+          }
+
+          const paths = ['/', location.pathname || '/'];
+          const uniqueDomains = [...new Set(domainVariants.filter(Boolean))];
+          const uniquePaths = [...new Set(paths)];
+
+          // Try common combinations (path/domain) to reliably remove cookie in dev.
+          uniquePaths.forEach((path) => {
+            document.cookie = `${cookieName}=; Max-Age=0; path=${path}`;
+            uniqueDomains.forEach((domain) => {
+              document.cookie = `${cookieName}=; Max-Age=0; path=${path}; domain=${domain}`;
+            });
+          });
+        }
+
+        const params = new URLSearchParams(location.search);
+        if (params.has('reset-consent')) {
+          clearConsentCookie(config.cookieName);
+        }
+
+        const hasConsentCookie = document.cookie
+          .split(';')
+          .map((part) => part.trim())
+          .some((part) => part.startsWith(`${config.cookieName}=`));
+
+        if (!hasConsentCookie) {
+          // Ensure first-time visitors always see the notice.
+          klaro.show(config, false);
+        }
+
+        consentWindow.ROJEK_CONSENT = {
+          hasConsent(serviceName) {
+            const consents = readConsentCookie();
+            if (typeof consents?.[serviceName] === 'boolean') {
+              return consents[serviceName];
+            }
+
+            try {
+              const manager = klaro.getManager();
+              return !!manager?.getConsent(serviceName);
+            } catch {
+              return false;
+            }
+          },
+          openManager() {
+            klaro.show(config, true);
+          },
+        };
+
+        // Fallback: allow opening settings even when a React island/button
+        // is not hydrated yet (or hydration fails for any reason).
+        document.addEventListener('click', (event) => {
+          const path = typeof event.composedPath === 'function' ? event.composedPath() : [];
+          const origin = path.find((node) => node instanceof Element);
+          if (!(origin instanceof Element)) return;
+          const trigger = origin.matches('[data-open-consent-settings]')
+            ? origin
+            : origin.closest('[data-open-consent-settings]');
+
+          if (!trigger) return;
+          event.preventDefault();
+          klaro.show(config, true);
+        }, true);
+
+        // Keyboard fallback for non-button triggers (Enter/Space).
+        document.addEventListener('keydown', (event) => {
+          if (event.key !== 'Enter' && event.key !== ' ') return;
+          const target = event.target;
+          if (!(target instanceof Element)) return;
+          const trigger = target.matches('[data-open-consent-settings]')
+            ? target
+            : target.closest('[data-open-consent-settings]');
+          if (!trigger) return;
+          event.preventDefault();
+          klaro.show(config, true);
+        }, true);
+
+        emitConsentChanged();
+      }
+    </script>
 
     <style>
       /* Sticky footer layout for all pages */

@@ -4,6 +4,7 @@ import Page from '../components/ui/Page';
 import Section from '../components/ui/Section';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomeView';
 import { verifyRecaptcha } from '../services/recaptcha';
+import { hasConsent, onConsentChange, openConsentSettings } from '../lib/consent/browser.js';
 
 import styles from './ContactView.module.css';
 
@@ -62,8 +63,25 @@ const ContactPage = (props = {}) => {
   // `react-google-recaptcha` is browser-only (touches `window` / DOM).
   // To keep the Contact page SSR-friendly (SEO), we lazy-load it on the client.
   const [RecaptchaComponent, setRecaptchaComponent] = useState(null);
+  const [securityConsent, setSecurityConsent] = useState(false);
 
   useEffect(() => {
+    setSecurityConsent(hasConsent('security'));
+    const unsubscribe = onConsentChange((detail) => {
+      const next = detail?.consents?.security;
+      setSecurityConsent(typeof next === 'boolean' ? next : hasConsent('security'));
+    });
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    if (!securityConsent) {
+      setRecaptchaToken(null);
+      setRecaptchaComponent(null);
+      return;
+    }
+
     let mounted = true;
     import('react-google-recaptcha')
       .then((m) => {
@@ -77,7 +95,7 @@ const ContactPage = (props = {}) => {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [securityConsent]);
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -102,7 +120,9 @@ const ContactPage = (props = {}) => {
     if (!message.trim()) {
       next.message = t('contactPage.errors.messageRequired');
     }
-    if (!RECAPTCHA_ENABLED) {
+    if (!securityConsent) {
+      next.recaptcha = t('cookies.placeholders.recaptcha', 'Aby wysłać formularz, zaakceptuj usługę bezpieczeństwa (reCAPTCHA).');
+    } else if (!RECAPTCHA_ENABLED) {
       next.recaptcha = t('contactPage.errors.recaptchaMissing', 'ReCAPTCHA nie jest skonfigurowana.');
     } else if (!RecaptchaComponent) {
       next.recaptcha = t('contactPage.errors.recaptchaLoading', 'Ładowanie reCAPTCHA...');
@@ -220,7 +240,24 @@ const ContactPage = (props = {}) => {
         </div>
 
         <div className={styles.field}>
-          {RecaptchaComponent && RECAPTCHA_ENABLED ? (
+          {!securityConsent ? (
+            <div className={styles.recaptchaPlaceholder} role="note">
+              <p>
+                {t(
+                  'cookies.placeholders.recaptcha',
+                  'Aby wysłać formularz, zaakceptuj usługę bezpieczeństwa (reCAPTCHA).'
+                )}
+              </p>
+              <button
+                type="button"
+                className={styles.recaptchaConsentButton}
+                data-open-consent-settings
+                onClick={openConsentSettings}
+              >
+                {t('cookies.actions.openSettings', 'Ustawienia cookies')}
+              </button>
+            </div>
+          ) : RecaptchaComponent && RECAPTCHA_ENABLED ? (
             <RecaptchaComponent
               ref={recaptchaRef}
               sitekey={RECAPTCHA_SITE_KEY}
@@ -241,7 +278,7 @@ const ContactPage = (props = {}) => {
         </div>
 
         <div className={styles.submitRow}>
-          <button className={styles.button} type="submit" disabled={submitting || !RECAPTCHA_ENABLED}>
+          <button className={styles.button} type="submit" disabled={submitting || !RECAPTCHA_ENABLED || !securityConsent}>
             {submitting ? t('contactPage.actions.sending') : t('contactPage.actions.send')}
           </button>
           {sent && <div className={styles.successBox}>{t('contactPage.success')}</div>}
