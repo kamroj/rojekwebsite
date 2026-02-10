@@ -462,6 +462,15 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
       main {
         flex: 1 0 auto;
       }
+
+      :global(.klaro .cookie-notice .cn-body::before) {
+        content: '';
+        display: block;
+        width: 150px;
+        height: 50px;
+        margin: 0 auto 1rem;
+        background: url('/images/logo.png') center / contain no-repeat;
+      }
     </style>
   </body>
 </html>
