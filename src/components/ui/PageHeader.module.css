@@ -50,7 +50,7 @@
   right: 22px;
   margin: 0;
   padding: 12px 24px;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(4px);
   border-radius: 10px;
   display: inline-block;
   z-index: 2;

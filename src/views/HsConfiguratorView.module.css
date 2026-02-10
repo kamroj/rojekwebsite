@@ -242,7 +242,7 @@
   border: 1px solid #e6c7197d;
   padding: 6px 12px;
   border-radius: 4px;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(4px);
   pointer-events: none;
   user-select: none;
 }
@@ -260,7 +260,7 @@
   border-radius: 4px;
   font-size: 14px;
   font-weight: 500;
-  backdrop-filter: blur(3px);
+  backdrop-filter: blur(4px);
   transition: all 0.3s ease;
   cursor: var(--button-cursor, pointer);
   -webkit-tap-highlight-color: transparent;
