@@ -21,7 +21,9 @@ const ProductTile = ({ id, product }) => {
           <img className={styles.image}
             src={product.backgroundSrc} 
             alt={product.name}
-            loading="lazy"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
           />
         </div>
         

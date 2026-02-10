@@ -80,7 +80,9 @@ const PartnersSection = () => {
         className={styles.logo}
         src={partner.logo}
         alt={partner.alt}
-        loading="lazy"
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
         onError={(e) => handleLogoError(e, partner.name)}
       />
     </a>
@@ -100,7 +102,9 @@ const PartnersSection = () => {
         className={styles.logo}
         src={partner.logo}
         alt={partner.alt}
-        loading="lazy"
+        loading="eager"
+        fetchPriority="high"
+        decoding="async"
         onError={(e) => handleLogoError(e, partner.name)}
       />
     </a>

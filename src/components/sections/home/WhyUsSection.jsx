@@ -91,7 +91,9 @@ const WhyUsSection = () => {
           className={styles.icon}
           src={feature.icon}
           alt={t(feature.titleKey, feature.defaultTitle)}
-          loading="lazy"
+          loading="eager"
+          fetchPriority="high"
+          decoding="async"
         />
       </div>
       <h3 className={styles.featureTitle}>
