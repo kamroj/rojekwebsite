@@ -353,6 +353,16 @@
     "playVideo": "Odtwórz film prezentacyjny",
     "title": "Prezentacja firmy ROJEK"
   },
+  "cookies": {
+    "actions": {
+      "openSettings": "Ustawienia cookies"
+    },
+    "placeholders": {
+      "map": "Aby wyświetlić mapę, zaakceptuj treści zewnętrzne (Google Maps).",
+      "video": "Aby odtworzyć wideo, zaakceptuj treści zewnętrzne (YouTube).",
+      "recaptcha": "Aby wysłać formularz, zaakceptuj usługę bezpieczeństwa (reCAPTCHA)."
+    }
+  },
   "partners": {
     "title": "Współpracujemy z najlepszymi",
     "subtitle": "Firmy, z którymi współpracujemy",

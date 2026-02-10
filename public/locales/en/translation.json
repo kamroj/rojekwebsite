@@ -359,6 +359,16 @@
     "playVideo": "Play presentation video",
     "title": "ROJEK company presentation"
   },
+  "cookies": {
+    "actions": {
+      "openSettings": "Cookie settings"
+    },
+    "placeholders": {
+      "map": "To display the map, accept external media (Google Maps).",
+      "video": "To play the video, accept external media (YouTube).",
+      "recaptcha": "To send the form, accept the security service (reCAPTCHA)."
+    }
+  },
   "partners": {
     "title": "We cooperate with the best",
     "subtitle": "Companies we work with",

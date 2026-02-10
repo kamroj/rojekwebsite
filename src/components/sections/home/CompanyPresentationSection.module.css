@@ -111,6 +111,7 @@
   border: 1px solid #07be56;
   border-radius: 50%;
   background-color: rgb(3 84 0 / 58%);
+  backdrop-filter: blur(4px);
 
   display: flex;
   align-items: center;

@@ -359,6 +359,16 @@
     "playVideo": "Präsentationsvideo abspielen",
     "title": "ROJEK Firmenpräsentation"
   },
+  "cookies": {
+    "actions": {
+      "openSettings": "Cookie-Einstellungen"
+    },
+    "placeholders": {
+      "map": "Um die Karte anzuzeigen, akzeptieren Sie externe Medien (Google Maps).",
+      "video": "Um das Video abzuspielen, akzeptieren Sie externe Medien (YouTube).",
+      "recaptcha": "Um das Formular zu senden, akzeptieren Sie den Sicherheitsdienst (reCAPTCHA)."
+    }
+  },
   "partners": {
     "title": "Wir arbeiten mit den Besten zusammen",
     "subtitle": "Firmen, mit denen wir zusammenarbeiten",
