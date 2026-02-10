@@ -49,7 +49,8 @@ export default function ArticleCard({ article, lang = 'pl' }) {
               <circle cx="12" cy="12" r="10"></circle>
               <polyline points="12 6 12 12 16 14"></polyline>
             </svg>
-            {readingTime} min czytania
+            <span className={styles.metaReadingValue}>{readingTime} min</span>
+            <span className={styles.metaReadingSuffix}>czytania</span>
           </span>
           <span className={styles.metaItem}>
             <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -65,7 +66,8 @@ export default function ArticleCard({ article, lang = 'pl' }) {
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
-            Autor: {author}
+            <span className={styles.metaAuthorPrefix}>Autor:</span>
+            <span>{author}</span>
           </span>
         </div>
 
