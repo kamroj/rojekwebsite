@@ -8,6 +8,7 @@ import {
 } from './imageProjection.js';
 
 const WINDOWS_CATEGORY_ID = 'category_okna';
+const DOORS_CATEGORY_IDS = ['category_drzwi_zewnetrzne', 'category_ppoz'];
 
 const fetchViaDevProxy = async (query, vars = {}, { signal } = {}) => {
   if (!(import.meta.env.DEV && typeof window !== 'undefined')) return null;
@@ -79,6 +80,22 @@ export const fetchProductsListByCategory = async (categoryId, lang, { signal } =
 
 export const fetchWindowProductsList = async (lang, { signal } = {}) => {
   return fetchProductsListByCategory(WINDOWS_CATEGORY_ID, lang, { signal });
+};
+
+export const fetchDoorProductsList = async (lang, { signal } = {}) => {
+  const results = await Promise.allSettled(
+    DOORS_CATEGORY_IDS.map((categoryId) => fetchProductsListByCategory(categoryId, lang, { signal }))
+  );
+
+  const merged = results
+    .filter((r) => r.status === 'fulfilled')
+    .flatMap((r) => r.value || []);
+
+  return merged.filter((item, index, arr) => {
+    const itemKey = item?.slug || item?.id;
+    if (!itemKey) return false;
+    return arr.findIndex((x) => (x?.slug || x?.id) === itemKey) === index;
+  });
 };
 
 export const fetchWindowProductDetail = async (slug, lang, { signal } = {}) => {
@@ -154,6 +171,76 @@ export const fetchWindowProductDetail = async (slug, lang, { signal } = {}) => {
     faq,
 
     // Assets to preload
+    _assetUrls: [p?.headerImage?.asset?.url, ...(p?.gallery || []).map((img) => img?.asset?.url), videoUrl]
+      .filter(Boolean),
+  };
+};
+
+export const fetchDoorProductDetail = async (slug, lang, { signal } = {}) => {
+  const sanityClient = getSanityClient();
+  if (!sanityClient) return null;
+
+  const query = `
+    *[_type == "product" && slug.current == $slug][0]{
+      _id,
+      name,
+      "slug": slug.current,
+      "headerImage": headerImage ${SANITY_IMAGE_PROJECTION},
+      "gallery": gallery[] ${SANITY_IMAGE_PROJECTION},
+      shortDescription,
+      longDescription ${SANITY_LOCALIZED_BLOCK_CONTENT_PROJECTION},
+      specs{profileThickness, thermalTransmittance, waterTightness, video{asset->{url}}},
+      features,
+      advantages[]{
+        title,
+        description
+      },
+      faq[]{
+        question,
+        answer
+      }
+    }
+  `;
+
+  const p = await sanityClient.fetch(query, { slug }, { signal });
+  if (!p) return null;
+
+  const videoUrl = p?.specs?.video?.asset?.url || null;
+
+  const advantages = (p?.advantages || []).map((a) => ({
+    title: pickLocale(a?.title, lang) || '',
+    description: pickLocale(a?.description, lang) || '',
+  }));
+
+  const faq = (p?.faq || []).map((f) => ({
+    question: pickLocale(f?.question, lang) || '',
+    answer: pickLocale(f?.answer, lang) || [],
+  }));
+
+  const features = (p?.features || []).map((localizedBlocks) => pickLocale(localizedBlocks, lang) || []);
+
+  return {
+    id: p._id,
+    slug: p.slug,
+    name: p.name,
+
+    category: 'Drzwi zewnętrzne',
+    categoryKey: 'exteriorDoors',
+
+    headerImageSanity: p.headerImage || null,
+    gallery: Array.isArray(p.gallery) ? p.gallery : [],
+
+    headerImage: null,
+    images: [],
+    video: videoUrl,
+    specs: p.specs || {},
+
+    shortDescription: pickLocale(p.shortDescription, lang) || '',
+    longDescription: pickLocale(p.longDescription, lang) || [],
+    features,
+    advantages,
+    faq,
+
     _assetUrls: [p?.headerImage?.asset?.url, ...(p?.gallery || []).map((img) => img?.asset?.url), videoUrl]
       .filter(Boolean),
   };

@@ -6,7 +6,7 @@ import ProductCategorySsg from '../../../../components/_astro/ssg/ProductCategor
 
 import { productCategories } from '../../../../data/products/index.js';
 import { CATEGORY_SLUGS } from '../../../../lib/i18n/routing.js';
-import { fetchWindowsListForBuild } from '../../../../lib/sanity/build.js';
+import { fetchDoorsListForBuild, fetchWindowsListForBuild } from '../../../../lib/sanity/build.js';
 import { getProductCategoryMeta } from '../../../../lib/seo/productsMeta.js';
 
 const { category } = Astro.params;
@@ -27,6 +27,9 @@ export async function getStaticPaths() {
     if (categoryKey === 'okna') {
       const windows = await fetchWindowsListForBuild('de');
       if (windows) props.initialSanityProducts = windows;
+    } else if (categoryKey === 'drzwi') {
+      const doors = await fetchDoorsListForBuild('de');
+      if (doors) props.initialSanityProducts = doors;
     }
 
     paths.push({

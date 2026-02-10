@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { getCategoryKeyFromSlug, getProductCategoryPath, getProductsIndexPath } from '../lib/i18n/routing';
 import { useResourceCollector } from '../context/ResourceCollectorContext';
 import { runSanityTask } from '../lib/sanity/runSanityTask';
-import { fetchWindowProductDetail } from '../lib/sanity/windows';
+import { fetchDoorProductDetail, fetchWindowProductDetail } from '../lib/sanity/windows';
 import { isSanityConfigured } from '../lib/sanity/config';
 import RouterAgnosticLink from '../components/_astro/RouterAgnosticLink.jsx';
 
@@ -35,10 +35,12 @@ function ProductDetailPageBase({ category, productId, initialSanityProduct }) {
   const detailType = categoryInfo?.detailType;
 
   const isWindows = detailType === 'windows';
+  const isDoors = detailType === 'doors';
+  const supportsSanityDetail = isWindows || isDoors;
 
-  // Try Sanity first for windows.
+  // Try Sanity first for detail types that support CMS integration.
   React.useEffect(() => {
-    if (!isWindows) {
+    if (!supportsSanityDetail) {
       setSanityProduct(undefined);
       return;
     }
@@ -61,8 +63,9 @@ function ProductDetailPageBase({ category, productId, initialSanityProduct }) {
       beginTask,
       endTask,
       addResources,
-      taskName: `sanity:windows:detail:${productId}`,
-      fetcher: ({ signal }) => fetchWindowProductDetail(productId, lang, { signal }),
+      taskName: `sanity:${isWindows ? 'windows' : 'doors'}:detail:${productId}`,
+      fetcher: ({ signal }) =>
+        (isWindows ? fetchWindowProductDetail : fetchDoorProductDetail)(productId, lang, { signal }),
       extractAssetUrls: (data) => data?._assetUrls || [],
       signal: controller.signal,
     })
@@ -72,7 +75,7 @@ function ProductDetailPageBase({ category, productId, initialSanityProduct }) {
       })
       .catch((e) => {
         if (controller.signal.aborted) return;
-        console.warn('Sanity windows detail fetch failed', e);
+        console.warn('Sanity product detail fetch failed', e);
         // Fallback to local data.
         setSanityProduct(null);
       });
@@ -80,17 +83,17 @@ function ProductDetailPageBase({ category, productId, initialSanityProduct }) {
     return () => {
       controller.abort();
     };
-  }, [isWindows, productId, lang, initialSanityProduct, beginTask, endTask, addResources]);
+  }, [supportsSanityDetail, isWindows, productId, lang, initialSanityProduct, beginTask, endTask, addResources]);
 
   // Fallback: local data when Sanity is not configured / no data found.
   const productFromLocal = detailType
     ? productDetailsByType?.[detailType]?.[productId]
     : undefined;
 
-  // For windows:
+  // For Sanity-integrated detail types:
   // - if Sanity returned a product object, use it
   // - if Sanity explicitly returned `null` (not found), fallback to local mock
-  const product = isWindows && sanityProduct ? sanityProduct : productFromLocal;
+  const product = supportsSanityDetail && sanityProduct ? sanityProduct : productFromLocal;
 
   // Keep existing behavior for missing product/category
   if (!categoryInfo || !product) {

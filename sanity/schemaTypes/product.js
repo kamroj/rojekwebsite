@@ -47,6 +47,7 @@ export default defineType({
       weak: true,
       validation: (Rule) => Rule.required(),
       readOnly: ({document}) => Boolean(document?.categoryLocked),
+      hidden: ({document}) => Boolean(document?.categoryLocked),
       description:
         'Jeśli tworzysz produkt z poziomu danej kategorii, kategoria ustawia się automatycznie (i jest zablokowana).',
       group: 'basic',
@@ -92,8 +93,9 @@ export default defineType({
     }),
     defineField({
       name: 'longDescription',
-      title: 'Opis',
+      title: 'Treść uzupełniająca',
       type: 'localizedBlockContent',
+      description: 'Najlepiej jeden akapit uzupełniający zdanie promocyjne.',
       group: 'content',
     }),
     defineField({
@@ -114,7 +116,7 @@ export default defineType({
           ],
         },
       ],
-      group: 'media',
+      group: ['media', 'basic'],
     }),
 
     defineField({

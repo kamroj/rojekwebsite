@@ -18,6 +18,15 @@ function arrayify(val) {
   return Array.isArray(val) ? val : [val];
 }
 
+function getImageUrl(candidate) {
+  if (!candidate) return undefined;
+  if (typeof candidate === 'string') return candidate;
+  if (typeof candidate === 'object') {
+    return candidate?.asset?.url || undefined;
+  }
+  return undefined;
+}
+
 function portableTextToPlainText(blocks) {
   if (!Array.isArray(blocks)) return '';
   const parts = [];
@@ -52,9 +61,12 @@ export function getProductJsonLd({ product, site, canonicalUrl, categoryName } =
 
   const images = [
     ...arrayify(product?.headerImage),
+    ...arrayify(product?.headerImageSanity),
+    ...arrayify(product?.gallery),
     ...arrayify(product?.images),
     ...arrayify(product?.image),
   ]
+    .map((img) => getImageUrl(img))
     .filter(Boolean)
     .map((img) => toAbsoluteUrl(site, img));
 

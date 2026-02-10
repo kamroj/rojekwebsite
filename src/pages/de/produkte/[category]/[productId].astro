@@ -6,7 +6,12 @@ import ProductDetailSsg from '../../../../components/_astro/ssg/ProductDetailSsg
 
 import { productCategories, productDetailsByType } from '../../../../data/products/index.js';
 import { CATEGORY_SLUGS } from '../../../../lib/i18n/routing.js';
-import { fetchWindowDetailForBuild, fetchWindowsListForBuild } from '../../../../lib/sanity/build.js';
+import {
+  fetchDoorDetailForBuild,
+  fetchDoorsListForBuild,
+  fetchWindowDetailForBuild,
+  fetchWindowsListForBuild,
+} from '../../../../lib/sanity/build.js';
 import { getProductDetailMeta } from '../../../../lib/seo/productsMeta.js';
 import { getFaqPageJsonLd, getProductJsonLd } from '../../../../lib/seo/structuredData.js';
 import { getCategoryKeyFromSlug, getProductDetailPath } from '../../../../lib/i18n/routing.js';
@@ -68,10 +73,14 @@ export async function getStaticPaths() {
           .map((p) => (typeof p === 'string' ? p : (p?.slug || p?.id)))
           .filter(Boolean);
 
-    // Include all Sanity window slugs in SSG to avoid 404 for non-mocked products.
+    // Include all Sanity slugs in SSG to avoid 404 for non-mocked products.
     let allIds = productIds;
     if (detailType === 'windows') {
       const sanityList = await fetchWindowsListForBuild('de');
+      const sanitySlugs = (sanityList || []).map((p) => p?.slug).filter(Boolean);
+      allIds = Array.from(new Set([...(productIds || []), ...sanitySlugs]));
+    } else if (detailType === 'doors') {
+      const sanityList = await fetchDoorsListForBuild('de');
       const sanitySlugs = (sanityList || []).map((p) => p?.slug).filter(Boolean);
       allIds = Array.from(new Set([...(productIds || []), ...sanitySlugs]));
     }
@@ -80,6 +89,9 @@ export async function getStaticPaths() {
       const props = {};
       if (detailType === 'windows') {
         const detail = await fetchWindowDetailForBuild(pid, 'de');
+        if (detail) props.initialSanityProduct = detail;
+      } else if (detailType === 'doors') {
+        const detail = await fetchDoorDetailForBuild(pid, 'de');
         if (detail) props.initialSanityProduct = detail;
       }
       paths.push({ params: { category: categorySlug, productId: pid }, props });

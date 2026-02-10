@@ -12,7 +12,7 @@ import { WINDOW_SPECS_DEFS, WINDOW_SPECS_ORDER_LIST } from '../data/products/win
 import { DOOR_SPECS_DEFS, DOOR_SPECS_ORDER_LIST } from '../data/products/doors';
 import { useResourceCollector } from '../context/ResourceCollectorContext';
 import { runSanityTask } from '../lib/sanity/runSanityTask';
-import { fetchWindowProductsList } from '../lib/sanity/windows';
+import { fetchDoorProductsList, fetchWindowProductsList } from '../lib/sanity/windows';
 import { isSanityConfigured } from '../lib/sanity/config';
 import SanityImage from '../components/ui/SanityImage.jsx';
 
@@ -44,10 +44,10 @@ function ProductCategoryPageBase({ category, initialSanityProducts }) {
   const specsDefs = isWindowsCategory ? WINDOW_SPECS_DEFS : (isDoorsCategory ? DOOR_SPECS_DEFS : WINDOW_SPECS_DEFS);
   const specsOrderList = isWindowsCategory ? WINDOW_SPECS_ORDER_LIST : (isDoorsCategory ? DOOR_SPECS_ORDER_LIST : WINDOW_SPECS_ORDER_LIST);
 
-  // Fetch window products from Sanity (only for Okna).
+  // Fetch products from Sanity for categories that support full CMS integration.
   // In Astro SSG we may already have `initialSanityProducts` from build-time.
   React.useEffect(() => {
-    if (!isWindowsCategory) return;
+    if (!isWindowsCategory && !isDoorsCategory) return;
 
     // If we already have initial products (SSG), don't refetch on mount.
     if (Array.isArray(initialSanityProducts) && initialSanityProducts.length > 0) return;
@@ -63,8 +63,9 @@ function ProductCategoryPageBase({ category, initialSanityProducts }) {
       beginTask,
       endTask,
       addResources,
-      taskName: 'sanity:windows:list',
-      fetcher: ({ signal }) => fetchWindowProductsList(lang, { signal }),
+      taskName: isWindowsCategory ? 'sanity:windows:list' : 'sanity:doors:list',
+      fetcher: ({ signal }) =>
+        (isWindowsCategory ? fetchWindowProductsList : fetchDoorProductsList)(lang, { signal }),
       extractAssetUrls: (data) => (data || []).flatMap((p) => p?._assetUrls || []),
       signal: controller.signal,
     })
@@ -75,7 +76,7 @@ function ProductCategoryPageBase({ category, initialSanityProducts }) {
       })
       .catch((e) => {
         if (controller.signal.aborted) return;
-        console.warn('Sanity windows list fetch failed', e);
+        console.warn('Sanity products list fetch failed', e);
         setSanityError(e);
         setSanityProducts([]);
       });
@@ -83,7 +84,7 @@ function ProductCategoryPageBase({ category, initialSanityProducts }) {
     return () => {
       controller.abort();
     };
-  }, [isWindowsCategory, lang, initialSanityProducts, beginTask, endTask, addResources]);
+  }, [isWindowsCategory, isDoorsCategory, lang, initialSanityProducts, beginTask, endTask, addResources]);
 
   if (!categoryInfo) {
     return (
@@ -106,9 +107,10 @@ function ProductCategoryPageBase({ category, initialSanityProducts }) {
   }
 
   // Data source:
-  // - for Okna: prefer Sanity (if configured + data fetched), otherwise fallback to local.
+  // - for Okna/Drzwi: prefer Sanity (if configured + data fetched), otherwise fallback to local.
   // - for other categories: keep local behavior.
-  const productsToRender = isWindowsCategory && Array.isArray(sanityProducts) && sanityProducts.length > 0
+  const supportsSanityList = isWindowsCategory || isDoorsCategory;
+  const productsToRender = supportsSanityList && Array.isArray(sanityProducts) && sanityProducts.length > 0
     ? sanityProducts
     : categoryInfo.products;
 

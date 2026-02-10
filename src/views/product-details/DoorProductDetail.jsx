@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Page from '../../components/ui/Page';
 import Section from '../../components/ui/Section';
 import { DOOR_SPECS_DEFS, DOOR_SPECS_ORDER_LIST } from '../../data/products/doors';
+import { WINDOW_COLORS_PALETTE } from '../../data/products/windows';
 import SanityPortableText from '../../components/portable/SanityPortableText';
 import styles from './DoorProductDetail.module.css';
 import {
@@ -207,7 +208,8 @@ const DoorProductDetail = ({ product }) => {
     waterTightness: 'productSpecs.tooltips.waterTightness',
   };
 
-  const colors = product?.colors || [];
+  // Keep colors static by requirement (independent from CMS product data).
+  const colors = WINDOW_COLORS_PALETTE;
 
   const longDescriptionContent = Array.isArray(product?.longDescription) ? (
     <SanityPortableText value={product.longDescription} />
@@ -249,7 +251,8 @@ const DoorProductDetail = ({ product }) => {
 
   return (
     <Page
-      imageSrc="/images/products/doors/drzwi-zewnetrzne-top.jpg"
+      imageSrc={product.headerImage}
+      headerImage={product.headerImageSanity}
       title={product.name}
       headerProps={{
         badge: { label: product.name },
