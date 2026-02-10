@@ -1,0 +1,79 @@
+---
+import { IoIosArrowForward } from 'react-icons/io';
+import styles from './PaginationSsg.module.css';
+
+const {
+  pagination,
+  ariaLabel = 'Pagination',
+} = Astro.props;
+
+/** @type {(number | 'ellipsis-left' | 'ellipsis-right')[]} */
+const paginationItems = [];
+if (pagination?.totalPages >= 1) {
+  const currentPage = Math.max(1, Number(pagination.currentPage || 1));
+  const totalPages = Math.max(1, Number(pagination.totalPages || 1));
+
+  paginationItems.push(1);
+
+  const windowStart = Math.max(2, currentPage - 1);
+  const windowEnd = Math.min(totalPages - 1, currentPage + 1);
+
+  if (windowStart > 2) paginationItems.push('ellipsis-left');
+  for (let p = windowStart; p <= windowEnd; p += 1) paginationItems.push(p);
+  if (windowEnd < totalPages - 1) paginationItems.push('ellipsis-right');
+
+  if (totalPages > 1) paginationItems.push(totalPages);
+}
+
+const getPageHref = (page) => {
+  if (!pagination) return '#';
+  const basePath = String(pagination.basePath || '/');
+  const pagedPrefix = String(pagination.pagedPrefix || basePath);
+  return page <= 1 ? basePath : `${pagedPrefix}/${page}`;
+};
+---
+
+{pagination?.totalPages >= 1 && (
+  <nav class={styles.paginate} aria-label={ariaLabel}>
+    <a
+      href={getPageHref(Math.max(1, pagination.currentPage - 1))}
+      class:list={[
+        styles.paginateArrow,
+        styles.paginateArrowPrev,
+        pagination.currentPage <= 1 && styles.paginateDisabled,
+      ]}
+      aria-disabled={pagination.currentPage <= 1 ? 'true' : 'false'}
+    >
+      <span class={styles.paginateArrowWrapper} aria-hidden="true">
+        <IoIosArrowForward className={`${styles.paginateArrowIcon} ${styles.paginateArrowIconPrev}`} />
+      </span>
+    </a>
+
+    {paginationItems.map((item) => (
+      item === 'ellipsis-left' || item === 'ellipsis-right' ? (
+        <span class={styles.paginateDots} aria-hidden="true">…</span>
+      ) : (
+        <a
+          href={getPageHref(item)}
+          class:list={[styles.paginateItem, item === pagination.currentPage && styles.paginateActive]}
+          aria-current={item === pagination.currentPage ? 'page' : undefined}
+        >
+          {item}
+        </a>
+      )
+    ))}
+
+    <a
+      href={getPageHref(Math.min(pagination.totalPages, pagination.currentPage + 1))}
+      class:list={[
+        styles.paginateArrow,
+        pagination.currentPage >= pagination.totalPages && styles.paginateDisabled,
+      ]}
+      aria-disabled={pagination.currentPage >= pagination.totalPages ? 'true' : 'false'}
+    >
+      <span class={styles.paginateArrowWrapper} aria-hidden="true">
+        <IoIosArrowForward className={styles.paginateArrowIcon} />
+      </span>
+    </a>
+  </nav>
+)}

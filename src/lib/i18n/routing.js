@@ -163,6 +163,22 @@ export const getRealizationsPagePath = (lang, page = 1) => {
 // Keep Polish (default) without prefix: `/artykuly/...`
 export const getArticlesIndexPath = (lang) => withLangPrefix(lang, '/artykuly')
 
+export const ARTICLES_PAGE_SEGMENT = {
+  pl: 'strona',
+  en: 'page',
+  de: 'seite',
+}
+
+export const getArticlesPagePath = (lang, page = 1) => {
+  const base = getArticlesIndexPath(lang)
+  const safePage = Number.isFinite(page) ? Math.max(1, Math.trunc(page)) : Number.parseInt(String(page || '1'), 10) || 1
+  if (safePage <= 1) return base
+
+  const l = normalizeLang(lang)
+  const segment = ARTICLES_PAGE_SEGMENT[l] || 'page'
+  return `${base}/${segment}/${safePage}`
+}
+
 export const getArticlesTagPath = (lang, tag) => {
   const value = tag ? encodeURIComponent(String(tag).trim()) : ''
   return withLangPrefix(lang, `/artykuly/tag/${value}`)

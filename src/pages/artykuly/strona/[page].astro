@@ -1,29 +1,48 @@
 ---
-import SiteLayout from '../../layouts/SiteLayout.astro';
-import Section from '../../components/ui/Section.jsx';
-import MaxWidthContainer from '../../components/ui/MaxWidthContainer.jsx';
-import PageHeader from '../../components/ui/PageHeader.jsx';
-import { ArticleCard } from '../../components/sections/articles/index.js';
-import PaginationSsg from '../../components/_astro/ssg/PaginationSsg.astro';
-import { fetchAllArticles, fetchArticlesPageSettings } from '../../lib/sanity/articles.js';
-import { getArticlesIndexPath } from '../../lib/i18n/routing.js';
-import { paginateArticles, getArticlesPagination } from '../../lib/articlesPagination.js';
-import homeHeaderStyles from '../../views/HomeView.module.css';
+import SiteLayout from '../../../layouts/SiteLayout.astro';
+import Section from '../../../components/ui/Section.jsx';
+import MaxWidthContainer from '../../../components/ui/MaxWidthContainer.jsx';
+import PageHeader from '../../../components/ui/PageHeader.jsx';
+import { ArticleCard } from '../../../components/sections/articles/index.js';
+import PaginationSsg from '../../../components/_astro/ssg/PaginationSsg.astro';
+import { fetchAllArticles, fetchArticlesPageSettings } from '../../../lib/sanity/articles.js';
+import { getArticlesPagePath } from '../../../lib/i18n/routing.js';
+import { paginateArticles, getArticlesPagination } from '../../../lib/articlesPagination.js';
+import homeHeaderStyles from '../../../views/HomeView.module.css';
 
 const lang = 'pl';
+const { page } = Astro.params;
+const currentPage = Number.parseInt(String(page || '1'), 10) || 1;
+
 const allArticles = await fetchAllArticles();
 const pageSettings = await fetchArticlesPageSettings();
-const pageData = paginateArticles(allArticles, 1);
+const pageData = paginateArticles(allArticles, currentPage);
+
+if (pageData.currentPage <= 1) {
+  return Astro.redirect(getArticlesPagePath(lang, 1));
+}
+
+export async function getStaticPaths() {
+  const allArticles = await fetchAllArticles();
+  const firstPageData = paginateArticles(allArticles, 1);
+
+  const paths = [];
+  for (let p = 2; p <= firstPageData.totalPages; p += 1) {
+    paths.push({ params: { page: String(p) } });
+  }
+
+  return paths;
+}
+
 const pagination = getArticlesPagination({
   lang,
   currentPage: pageData.currentPage,
   totalItems: pageData.totalItems,
 });
 
-// SEO
 const title = 'Artykuły | ROJEK – Okna i Drzwi';
 const description = 'Przeczytaj nasze artykuły o oknach, drzwiach, montażu i trendach w stolarce budowlanej. Porady ekspertów i aktualności branżowe.';
-const canonicalUrl = getArticlesIndexPath(lang);
+const canonicalUrl = getArticlesPagePath(lang, pageData.currentPage);
 ---
 
 <SiteLayout

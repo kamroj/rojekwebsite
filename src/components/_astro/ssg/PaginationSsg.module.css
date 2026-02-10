@@ -1,0 +1,84 @@
+.paginate {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  padding: 0;
+}
+
+.paginateItem,
+.paginateArrow {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-radius: 0;
+  width: auto;
+  height: auto;
+  color: #212529;
+  cursor: pointer;
+  transition: color 0.3s ease, transform 0.3s ease;
+  text-decoration: none;
+  border: none;
+  background: transparent;
+  padding: 2px 4px;
+}
+
+.paginateActive {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 25%;
+  border-color: #003f1b;
+  color: #003f1b;
+  background: #f1fdf6;
+  font-weight: 600;
+  font-size: 1.8rem;
+  border: 1px solid #003f1b;
+}
+
+.paginateDisabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.paginateDisabled:hover {
+  background-color: transparent;
+  color: var(--color-text);
+}
+
+.paginateItem:hover,
+.paginateArrow:hover {
+  color: #015123;
+}
+
+.paginateArrowWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #000;
+  transition: color 0.3s ease;
+}
+
+.paginateArrowIcon {
+  color: currentColor;
+  font-size: 2rem;
+  transition: color 0.3s ease;
+}
+
+.paginateArrow:hover .paginateArrowWrapper {
+  color: #2a8f5b;
+}
+
+.paginateArrowIconPrev {
+  transform: rotate(180deg);
+}
+
+.paginateDots {
+  color: #4a4a4a;
+  user-select: none;
+}
