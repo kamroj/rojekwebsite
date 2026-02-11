@@ -112,7 +112,7 @@ const PartnersSection = () => {
 
   return (
       <MaxWidthContainer>
-        <HeaderWrap className='full-width'>
+        <HeaderWrap className='full-width' reversed>
           <ProductHeader>
             {t('sections.partners')}
           </ProductHeader>

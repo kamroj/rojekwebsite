@@ -10,10 +10,16 @@ import homeHeaderStyles from '../../../../views/HomeView.module.css';
 import productStyles from '../../../sections/home/ProducSection.module.css';
 
 import { PRODUCT_TYPES, REALIZATION_IMAGES, GALLERY_CONFIG } from '../../../../constants/index.js';
-import { getProductCategoryPath, getSectionPath } from '../../../../lib/i18n/routing.js';
+import {
+  getArticleDetailPath,
+  getArticlesIndexPath,
+  getProductCategoryPath,
+  getSectionPath,
+} from '../../../../lib/i18n/routing.js';
 import { loadTranslationJson } from '../../../../lib/i18n/resources.js';
 import { t as tt } from '../../../../lib/i18n/t.js';
 import { fetchHomePageIntro, fetchHomePageRealizations } from '../../../../lib/sanity/homePage.js';
+import { fetchArticlesList } from '../../../../lib/sanity/articles.js';
 import { IoIosArrowForward } from 'react-icons/io';
 
 const { lang = 'pl' } = Astro.props;
@@ -27,6 +33,7 @@ let introMedia = {
 };
 
 let homeRealizations = [];
+let latestArticles = [];
 
 try {
   const intro = await fetchHomePageIntro();
@@ -43,6 +50,13 @@ try {
   homeRealizations = await fetchHomePageRealizations({ lang });
 } catch (e) {
   console.warn('[sanity][home] realizations fetch failed', e);
+}
+
+try {
+  const result = await fetchArticlesList({ page: 1, perPage: 3 });
+  latestArticles = result?.articles || [];
+} catch (e) {
+  console.warn('[sanity][home] latest articles fetch failed', e);
 }
 
 const productData = {
@@ -93,6 +107,32 @@ const realizationsData = sourceRealizations.map((img, idx) => {
     title: safeTitle || safeAlt || fallbackTitle,
   };
 });
+
+const homeArticlesCopy = {
+  pl: {
+    title: 'Artykuły',
+    subtitle: '3 najnowsze wpisy z naszego bloga',
+    readMore: 'Czytaj więcej',
+    viewAll: 'Zobacz wszystkie artykuły',
+    fallbackDate: 'Data publikacji niedostępna',
+  },
+  en: {
+    title: 'Articles',
+    subtitle: '3 latest posts from our blog',
+    readMore: 'Read more',
+    viewAll: 'View all articles',
+    fallbackDate: 'Publication date unavailable',
+  },
+  de: {
+    title: 'Artikel',
+    subtitle: '3 neueste Beiträge aus unserem Blog',
+    readMore: 'Weiterlesen',
+    viewAll: 'Alle Artikel anzeigen',
+    fallbackDate: 'Veröffentlichungsdatum nicht verfügbar',
+  },
+};
+
+const articleCopy = homeArticlesCopy[lang] || homeArticlesCopy.pl;
 ---
 
 <!-- HERO (interactive) -->
@@ -167,5 +207,247 @@ const realizationsData = sourceRealizations.map((img, idx) => {
 <!-- COMPANY PRESENTATION (island; youtube iframe on click) -->
 <CompanyPresentationIslandWithResources lang={lang} hydrate="load" />
 
+<!-- LATEST ARTICLES (SSG, tylko PL) -->
+{lang === 'pl' && latestArticles.length > 0 && (
+  <section class="home-articles-section" aria-labelledby="home-articles-heading">
+    <div class={MaxWidthContainerStyles.root} data-max-width-container="true">
+      <div class={`${homeHeaderStyles.headerWrap} full-width`}>
+        <div class={homeHeaderStyles.productHeader} id="home-articles-heading">{articleCopy.title}</div>
+        <div class={homeHeaderStyles.productHeaderSubtitle}>{articleCopy.subtitle}</div>
+      </div>
+
+      <div class="home-articles-grid">
+        {latestArticles.map((article) => {
+          const articleHref = getArticleDetailPath(lang, article.slug);
+          const imageUrl = article?.featuredImage?.asset?.url;
+          const dateLabel = article?.publishedAtFormatted || articleCopy.fallbackDate;
+
+          return (
+            <article class="home-article-card">
+              <a
+                class="home-article-card-link"
+                href={articleHref}
+                aria-label={`${articleCopy.readMore}: ${article.title}`}
+              >
+                <div class="home-article-image-wrap">
+                  {imageUrl ? (
+                    <img
+                      class="home-article-image"
+                      src={imageUrl}
+                      alt={article?.featuredImage?.alt || article.title}
+                      loading="lazy"
+                      decoding="async"
+                    />
+                  ) : (
+                    <div class="home-article-image-placeholder" aria-hidden="true" />
+                  )}
+                </div>
+
+                <div class="home-article-content">
+                  <p class="home-article-date">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                      <line x1="16" y1="2" x2="16" y2="6"></line>
+                      <line x1="8" y1="2" x2="8" y2="6"></line>
+                      <line x1="3" y1="10" x2="21" y2="10"></line>
+                    </svg>
+                    <span>{dateLabel}</span>
+                  </p>
+                  <h3 class="home-article-title">{article.title}</h3>
+                  <p class="home-article-excerpt">{article.excerpt}</p>
+                  <div class="home-article-footer">
+                    <span class="home-article-link">{articleCopy.readMore}</span>
+                  </div>
+                </div>
+              </a>
+            </article>
+          );
+        })}
+      </div>
+
+      <div class="home-articles-footer-link-wrap">
+        <a href={getArticlesIndexPath(lang)} class="home-articles-footer-link">
+          {articleCopy.viewAll}
+        </a>
+      </div>
+    </div>
+  </section>
+)}
+
 <!-- PARTNERS (island; mobile swiper) -->
 <PartnersIslandWithResources lang={lang} hydrate="load" />
+
+<style>
+  .home-articles-section {
+    padding: 20px 0 16px;
+  }
+
+  .home-articles-grid {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0, 1fr));
+    gap: 20px;
+  }
+
+  .home-article-card {
+    position: relative;
+    display: flex;
+    padding: var(--space-sm);
+    border: 1px solid #0c45347a;
+    border-radius: 8px;
+    background-color: var(--color-background, #fff);
+    overflow: hidden;
+    transition: background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .home-article-card-link {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    height: 100%;
+    gap: var(--space-md);
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .home-article-card:hover {
+    background-color: rgba(2, 99, 3, 0.03);
+    border-color: #026303;
+    box-shadow: 0 8px 24px rgba(11, 61, 46, 0.12);
+  }
+
+  .home-article-image-wrap {
+    height: 210px;
+    background: var(--color-background-alt);
+    overflow: hidden;
+    border-radius: 6px 6px 0 0;
+  }
+
+  .home-article-image,
+  .home-article-image-placeholder {
+    width: 100%;
+    height: 100%;
+  }
+
+  .home-article-image {
+    object-fit: cover;
+    border-radius: 0;
+    transition: transform 0.3s ease;
+  }
+
+  .home-article-card:hover .home-article-image {
+    transform: scale(1.04);
+  }
+
+  .home-article-image-placeholder {
+    background: linear-gradient(135deg, var(--color-background-alt) 0%, var(--color-border) 100%);
+  }
+
+  .home-article-content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    padding: var(--space-xs) var(--space-sm);
+    row-gap: var(--space-sm);
+  }
+
+  .home-article-date {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1.2rem;
+    line-height: 1.3;
+    color: #0b5a2a;
+    font-weight: 600;
+  }
+
+  .home-article-date svg {
+    width: 14px;
+    height: 14px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    opacity: 0.9;
+    flex-shrink: 0;
+  }
+
+  .home-article-title {
+    margin: 0;
+    font-size: clamp(1.4rem, 2.4vw, 1.65rem);
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--color-text);
+    transition: color 0.2s ease;
+  }
+
+  .home-article-card:hover .home-article-title {
+    color: #026303;
+  }
+
+  .home-article-excerpt {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 1.4rem;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    overflow: hidden;
+  }
+
+  .home-article-link {
+    position: relative;
+    z-index: 2;
+    color: #026303;
+    font-size: 1.4rem;
+    font-weight: 600;
+    text-decoration: underline;
+  }
+
+  .home-article-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+    width: 100%;
+  }
+
+  .home-articles-footer-link-wrap {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .home-articles-footer-link {
+    font-size: 1.4rem;
+    font-weight: 600;
+    color: #026303;
+    text-decoration: underline;
+  }
+
+  @media (min-width: 1024px) {
+    .home-articles-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      align-items: stretch;
+    }
+
+    .home-article-card {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .home-article-content {
+      flex: 1;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .home-article-image-wrap {
+      width: 100%;
+      height: 210px;
+      border-radius: 6px 6px 0 0;
+    }
+  }
+</style>
