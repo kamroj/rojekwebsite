@@ -23,7 +23,7 @@
 .card:hover {
   background-color: rgba(2, 99, 3, 0.03);
   border-color: #026303;
-  box-shadow: 0 8px 24px rgba(11, 61, 46, 0.12);
+  box-shadow: 0 6px 18px rgba(11, 61, 46, 0.1);
 }
 
 @media (max-width: 900px) {
