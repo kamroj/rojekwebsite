@@ -157,7 +157,14 @@ const articleCopy = homeArticlesCopy[lang] || homeArticlesCopy.pl;
             <article class={productStyles.card}>
               <a class={productStyles.cardLink} href={to} aria-label={`${p.name} - ${t('common.learnMore', 'Dowiedz się więcej')}`}>
                 <div class={productStyles.imageContainer}>
-                  <img class={productStyles.image} src={p.backgroundSrc} alt={p.name} loading="lazy" />
+                  <img
+                    class={productStyles.image}
+                    src={p.backgroundSrc}
+                    alt={p.name}
+                    loading="eager"
+                    fetchpriority="high"
+                    decoding="async"
+                  />
                 </div>
                 <div class={productStyles.cardContent}>
                   <h3 class={productStyles.cardTitle}>{p.name}</h3>
