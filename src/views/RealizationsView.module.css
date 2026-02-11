@@ -23,9 +23,9 @@
 }
 
 .filterCounter {
-  font-weight: 600;
-  font-size: 1.4rem;
-  color: var(--color-text);
+  font-weight: 300;
+  font-size: 1.5rem;
+  color: #326647;
 }
 
 .filterToolbar {
@@ -70,7 +70,7 @@
 .filterToggleDivider {
   flex: 1;
   height: 1px;
-  background: currentColor;
+  background: rgb(46 90 60 / 22%);
   opacity: 0.35;
 }
 
@@ -131,7 +131,7 @@
 
 .filterGroups {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 12px;
   max-height: min(52vh, 500px);
   overflow: auto;
@@ -141,7 +141,7 @@
 .filterGroup {
   border: 1px solid #deebe1;
   background: #ffffff;
-  border-radius: 10px;
+  border-radius: 5px;
   overflow: hidden;
 }
 
@@ -161,33 +161,43 @@
 }
 
 .filterGroupBody {
-  padding: 8px;
+  padding: 0;
 }
 
 .filterOptionsList {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 6px;
-  max-height: 86px;
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  max-height: 210px;
   overflow: auto;
-  padding-right: 4px;
+}
+
+.filterOptionItem {
+  margin: 0;
 }
 
 .filterOption {
   display: flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid #ebf2ec;
-  border-radius: 8px;
-  padding: 7px 8px;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  padding: 9px 10px;
   background: #fff;
   cursor: pointer;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
 .filterOption:hover {
   background: #f2f8f4;
-  border-color: #cfe1d4;
+}
+
+.filterOptionItem + .filterOptionItem .filterOption {
+  border-top: 1px solid #edf4ef;
 }
 
 .filterOptionInput {
@@ -205,9 +215,9 @@
   border: 1px solid #7aa486;
   background: #fff;
   color: #2f5e3f;
-  border-radius: 999px;
+  border-radius: 5px;
   padding: 7px 14px;
-  font-weight: 600;
+  font-weight: 400;
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -234,8 +244,7 @@
   }
 
   .filterOptionsList {
-    grid-template-columns: 1fr;
-    max-height: 128px;
+    max-height: 170px;
   }
 }
 

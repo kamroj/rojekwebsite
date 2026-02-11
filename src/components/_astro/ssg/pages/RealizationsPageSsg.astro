@@ -127,23 +127,25 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
                     <span class={styles.filterGroupTitle}>{group.label}</span>
                   </div>
                   <div id={groupPanelId} class={styles.filterGroupBody} data-filter-group-body>
-                    <div class={styles.filterOptionsList}>
+                    <ul class={styles.filterOptionsList}>
                       {group.options.map((option) => (
-                        <label
-                          class={styles.filterOption}
+                        <li
+                          class={styles.filterOptionItem}
                           data-filter-option
                           data-filter-search-text={`${group.label} ${option.label}`.toUpperCase()}
                         >
-                          <input
-                            type="checkbox"
-                            class={styles.filterOptionInput}
-                            data-filter-input
-                            data-filter-value={`${group.key}::${option.key}`}
-                          />
-                          <span class={styles.filterOptionText}>{option.label}</span>
-                        </label>
+                          <label class={styles.filterOption}>
+                            <input
+                              type="checkbox"
+                              class={styles.filterOptionInput}
+                              data-filter-input
+                              data-filter-value={`${group.key}::${option.key}`}
+                            />
+                            <span class={styles.filterOptionText}>{option.label}</span>
+                          </label>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </div>
                 </section>
               );
