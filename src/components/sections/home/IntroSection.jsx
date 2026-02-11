@@ -258,7 +258,7 @@ export default function IntroSection({ id, introMedia }) {
                 <circle
                   cx={SIZE / 2} cy={SIZE / 2} r={R}
                   fill="none"
-                  stroke="var(--color-secondary)"
+                  stroke="#3eb772"
                   strokeWidth={STROKE}
                   strokeDasharray={C}
                   strokeDashoffset={dashOffset}
