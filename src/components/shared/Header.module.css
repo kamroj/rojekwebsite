@@ -130,7 +130,7 @@
   /* Bez width - pozycjonowanie przez top/right wystarczy */
   z-index: 3002;
   transition: color 0.3s ease, transform 0.3s ease;
-  color: var(--color-text-light);
+  color: #2e8b57;
 }
 
 .mobileMenuButtonPastThreshold {
