@@ -230,7 +230,7 @@
 @media (--bp-sm) {
   .filterCounter {
     font-size: 1.2rem;
-    font-weight: 100;
+    font-weight: 600;
   }
 
   .filterPanelTop {
