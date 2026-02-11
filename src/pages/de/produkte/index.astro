@@ -2,8 +2,10 @@
 import SiteLayout from '../../../layouts/SiteLayout.astro';
 import { getI18nResources } from '../../../lib/i18n/resources.js';
 import ProductsIndexSsg from '../../../components/_astro/ssg/ProductsIndexSsg.jsx';
+import { fetchProductsIndexCountsForBuild } from '../../../lib/sanity/build.js';
 
 const resources = await getI18nResources('de');
+const initialProductCountsByCategory = await fetchProductsIndexCountsForBuild('de');
 ---
 
 <SiteLayout
@@ -11,5 +13,9 @@ const resources = await getI18nResources('de');
   title="Produkte – ROJEK | Fenster, Türen, Tore & Rollläden"
   description="ROJEK Produkte: Fenster, Türen, Garagentore und Rollläden. Kategorien ansehen und passende Lösung wählen."
 >
-  <ProductsIndexSsg lang="de" resources={resources} />
+  <ProductsIndexSsg
+    lang="de"
+    resources={resources}
+    initialProductCountsByCategory={initialProductCountsByCategory}
+  />
 </SiteLayout>

@@ -53,3 +53,30 @@ export const fetchDoorDetailForBuild = async (slug, lang) => {
     return null;
   }
 };
+
+/**
+ * Product counts for products index page (SSG/SEO-friendly).
+ *
+ * Returns category-keyed counts from Sanity where available.
+ * Current Sanity-backed categories:
+ * - okna (windows)
+ * - drzwi (doors)
+ */
+export const fetchProductsIndexCountsForBuild = async (lang) => {
+  if (!isSanityConfigured()) return null;
+
+  try {
+    const [windows, doors] = await Promise.all([
+      fetchWindowProductsList(lang),
+      fetchDoorProductsList(lang),
+    ]);
+
+    return {
+      okna: Array.isArray(windows) ? windows.length : 0,
+      drzwi: Array.isArray(doors) ? doors.length : 0,
+    };
+  } catch (e) {
+    console.warn('[sanity][build] products index counts fetch failed', { lang, e });
+    return null;
+  }
+};
