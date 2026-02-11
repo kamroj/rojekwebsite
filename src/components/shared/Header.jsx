@@ -42,6 +42,8 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
   const [mobileActiveCategoryKey, setMobileActiveCategoryKey] = useState(null);
   const mobileMenuId = 'mobile-menu';
   const restoreOverflowTimeoutRef = useRef(null);
+  const bodyOverflowBeforeOpenRef = useRef('');
+  const isBodyScrollLockedRef = useRef(false);
   const lastPathnameRef = useRef(null);
 
   const { t, i18n } = useTranslation();
@@ -133,20 +135,45 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
     }
   }, [closeMobileMenu, isMobileMenuOpen, pathname]);
 
-  // Lock body scroll while menu is open + close on ESC
+  // Lock body scroll only on open/close transitions.
+  // NOTE: we intentionally don't depend on mobileMenuView here,
+  // because view changes inside the open menu (main/products/category)
+  // must not overwrite the original body overflow state.
   useEffect(() => {
     if (typeof window === 'undefined' || typeof document === 'undefined') return;
-    // If we re-open the menu before the close animation finished,
-    // cancel any pending "restore overflow" timeout.
+
+    // If we re-open the menu before close animation finished,
+    // cancel the pending restore timeout.
     if (isMobileMenuOpen && restoreOverflowTimeoutRef.current) {
       window.clearTimeout(restoreOverflowTimeoutRef.current);
       restoreOverflowTimeoutRef.current = null;
     }
 
-    if (!isMobileMenuOpen) return;
+    if (isMobileMenuOpen) {
+      // Capture body overflow only once per open cycle.
+      if (!isBodyScrollLockedRef.current) {
+        bodyOverflowBeforeOpenRef.current = document.body.style.overflow;
+        document.body.style.overflow = 'hidden';
+        isBodyScrollLockedRef.current = true;
+      }
+      return;
+    }
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = 'hidden';
+    // Menu closed: restore overflow after close animation.
+    if (isBodyScrollLockedRef.current) {
+      restoreOverflowTimeoutRef.current = window.setTimeout(() => {
+        document.body.style.overflow = bodyOverflowBeforeOpenRef.current;
+        bodyOverflowBeforeOpenRef.current = '';
+        isBodyScrollLockedRef.current = false;
+        restoreOverflowTimeoutRef.current = null;
+      }, MENU_ANIMATION_MS);
+    }
+  }, [isMobileMenuOpen]);
+
+  // Close on ESC
+  useEffect(() => {
+    if (typeof document === 'undefined') return;
+    if (!isMobileMenuOpen) return;
 
     const onKeyDown = (event) => {
       if (event.key === 'Escape') {
@@ -163,15 +190,23 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
     document.addEventListener('keydown', onKeyDown);
     return () => {
       document.removeEventListener('keydown', onKeyDown);
-      // We delay restoring scroll to match the close animation.
-      // IMPORTANT: do NOT cancel this timeout in the next effect run when the menu is closed,
-      // otherwise the body may stay locked.
-      restoreOverflowTimeoutRef.current = window.setTimeout(() => {
-        document.body.style.overflow = previousOverflow;
-        restoreOverflowTimeoutRef.current = null;
-      }, MENU_ANIMATION_MS);
     };
   }, [closeMobileCategory, closeMobileMenu, closeMobileProducts, isMobileMenuOpen, mobileMenuView]);
+
+  // Defensive cleanup on unmount.
+  useEffect(() => {
+    return () => {
+      if (restoreOverflowTimeoutRef.current) {
+        window.clearTimeout(restoreOverflowTimeoutRef.current);
+        restoreOverflowTimeoutRef.current = null;
+      }
+      if (typeof document !== 'undefined' && isBodyScrollLockedRef.current) {
+        document.body.style.overflow = bodyOverflowBeforeOpenRef.current;
+      }
+      bodyOverflowBeforeOpenRef.current = '';
+      isBodyScrollLockedRef.current = false;
+    };
+  }, []);
 
   const navItems = useMemo(() => NAV_ITEMS, []);
 
@@ -345,6 +380,15 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
                       <IoIosArrowForward aria-hidden="true" />
                     </button>
                   ))}
+
+                  <RouterAgnosticLink
+                    to={getSectionPath(lang, 'products')}
+                    onClick={closeMobileMenu}
+                    className={styles.mobileNavItem}
+                    style={{ animationDelay: `${mobileCategories.length * 0.05}s` }}
+                  >
+                    {t('common.seeAll', 'Zobacz wszystkie')}
+                  </RouterAgnosticLink>
                 </>
               )}
 
