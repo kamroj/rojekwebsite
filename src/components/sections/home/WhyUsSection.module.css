@@ -60,10 +60,10 @@
 }
 
 .iconWrapper {
-  box-shadow: 0px 0px 20px rgb(0 0 0 / 12%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   width: 150px;
   height: 150px;
-  border: 1px solid var(--color-bottle-green-light);
+  border: 1px solid #2e8b57;
   border-radius: 8px;
   display: flex;
   align-items: center;

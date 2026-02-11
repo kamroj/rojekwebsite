@@ -111,7 +111,7 @@ const PartnersSection = () => {
   );
 
   return (
-      <MaxWidthContainer>
+      <MaxWidthContainer className={styles.sectionRoot}>
         <HeaderWrap className='full-width' reversed>
           <ProductHeader>
             {t('sections.partners')}
