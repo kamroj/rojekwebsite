@@ -219,7 +219,7 @@ const articleCopy = homeArticlesCopy[lang] || homeArticlesCopy.pl;
   <section class="home-articles-section" aria-labelledby="home-articles-heading">
     <div class={MaxWidthContainerStyles.root} data-max-width-container="true">
       <div class={`${homeHeaderStyles.headerWrap} full-width`}>
-        <div class={homeHeaderStyles.productHeader} id="home-articles-heading">{articleCopy.title}</div>
+        <div class={homeHeaderStyles.productHeader} id="home-articles-heading">{articleCopy.title.toUpperCase()}</div>
         <div class={homeHeaderStyles.productHeaderSubtitle}>{articleCopy.subtitle}</div>
       </div>
 
