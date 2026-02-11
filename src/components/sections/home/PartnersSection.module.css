@@ -48,10 +48,7 @@
   padding: var(--space-lg);
   background-color: #fff;
 
-  transition:
-    transform var(--transition-default),
-    box-shadow var(--transition-default),
-    border-color var(--transition-default);
+  transition: all 0.35s ease;
 
   cursor: pointer;
   text-decoration: none;
@@ -66,9 +63,9 @@
 }
 
 .partnerItem:hover {
-  transform: translateY(-8px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--color-bottle-green);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px -8px rgba(0, 0, 0, 0.215);
+  border-color: rgba(2, 92, 17, 0.686);
 }
 
 .partnerItem:active {
@@ -87,7 +84,7 @@
   cursor: pointer;
   text-decoration: none;
   flex-shrink: 0;
-  transition: all var(--transition-default);
+  transition: all 0.35s ease;
   margin-right: var(--space-sm);
 
   display: flex;
@@ -98,9 +95,9 @@
 }
 
 .mobilePartnerItem:hover {
-  box-shadow: rgb(0 0 0 / 20%) 0px 4px 24px 0px;
-  border-color: var(--color-bottle-green-light);
-  transform: scale(1.02);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 28px -8px rgba(0, 0, 0, 0.215);
+  border-color: rgba(2, 92, 17, 0.686);
 }
 
 /* Obrazek partnera */
