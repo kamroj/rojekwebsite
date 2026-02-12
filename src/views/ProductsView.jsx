@@ -4,6 +4,7 @@ import { IoIosArrowForward } from 'react-icons/io';
 import Page from '../components/ui/Page';
 import Section from '../components/ui/Section';
 import { useTranslation } from 'react-i18next';
+import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomeView';
 import { productCategories } from '../data/products/index.js';
 import { getProductCategoryPath } from '../lib/i18n/routing';
 
@@ -81,6 +82,13 @@ const ProductsPage = ({ initialProductCountsByCategory = null }) => {
       title={t('pageTitle.products', t('nav.products', 'Produkty'))}
     >
       <Section>
+        <HeaderWrap>
+          <ProductHeader>{t('sections.products', 'PRODUKTY')}</ProductHeader>
+          <ProductHeaderSubtitle>
+            {t('sections.productsSubtitle', 'Poznaj nasze systemy okienne i drzwiowe')}
+          </ProductHeaderSubtitle>
+        </HeaderWrap>
+
         <div className={styles.productsContainer}>
           {categoryCards.map((card) => (
             <article className={styles.productCard} key={card.key}>
