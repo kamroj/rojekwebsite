@@ -33,7 +33,8 @@
   background: var(--color-background);
   border-radius: var(--radius-md);
   overflow: hidden;
-  border: 1px solid rgba(2, 99, 3, 0.22);
+  border: none;
+  box-shadow: var(--shadow-home-product-card);
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
