@@ -96,10 +96,11 @@
 }
 
 .productCountValue {
-  color: #017e54;
+  color: #03531d;
   font-size: 2.4rem;
-  font-weight: 700;
+  font-weight: 500;
   line-height: 1;
+  margin-left: 3px;
 }
 
 @media (--bp-sm) {
