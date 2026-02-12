@@ -130,8 +130,8 @@
   position: relative;
   border-radius: 16px;
   overflow: hidden;
-  border: 1px #075400 solid;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  border: 1px #2e8b57 solid;
+  box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   background: #f8faf8;
   aspect-ratio: 4/3;
 }

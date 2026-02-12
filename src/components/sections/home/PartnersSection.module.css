@@ -61,13 +61,13 @@
   align-items: center;
   justify-content: center;
 
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-home-product-card);
   border-radius: 4px;
 }
 
 .partnerItem:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 28px -8px rgba(0, 0, 0, 0.215);
+  box-shadow: var(--shadow-home-product-card);
   border-color: rgba(2, 92, 17, 0.686);
 }
 
@@ -92,12 +92,12 @@
   align-items: center;
   justify-content: center;
 
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: var(--shadow-home-product-card);
 }
 
 .mobilePartnerItem:hover {
   transform: translateY(-4px);
-  box-shadow: 0 8px 28px -8px rgba(0, 0, 0, 0.215);
+  box-shadow: var(--shadow-home-product-card);
   border-color: rgba(2, 92, 17, 0.686);
 }
 

@@ -41,6 +41,8 @@
   --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
   --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.2);
   --shadow-lg: 0 4px 12px rgba(30, 62, 44, 0.73);
+  --shadow-home-product-card: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px,
+    rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
 
   /* Transitions */
   --transition-default: 0.3s ease;
