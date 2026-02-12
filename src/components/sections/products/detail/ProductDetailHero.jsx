@@ -67,7 +67,7 @@ export default function ProductDetailHero({
               // LCP: first slide is likely visible immediately.
               loading={index === 0 ? 'eager' : 'lazy'}
               // Keep `fetchpriority="high"` reserved for the actual page header (PageHeader).
-              fetchpriority="auto"
+              fetchPriority="auto"
               sizes="(max-width: 1024px) 100vw, 50vw"
               widths={[640, 800, 1024, 1280, 1600]}
             />
@@ -79,7 +79,7 @@ export default function ProductDetailHero({
               alt={`${product?.name || 'product'} - zdjęcie ${index + 1}`}
               loading={index === 0 ? 'eager' : 'lazy'}
               decoding="async"
-              fetchpriority={index === 0 ? 'high' : undefined}
+              fetchPriority={index === 0 ? 'high' : undefined}
               className={[styles.heroImage, index === currentImageIndex ? styles.isActive : null].filter(Boolean).join(' ')}
             />
           ))}

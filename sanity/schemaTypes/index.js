@@ -18,6 +18,7 @@ import {localizedString, localizedText, localizedBlockContent, blockContent} fro
 import article from './article'
 import articleTag from './articleTag'
 import articlesPage from './articlesPage'
+import productsPage from './productsPage'
 
 export const schemaTypes = [
   // localized field types
@@ -41,6 +42,7 @@ export const schemaTypes = [
   realizationTag,
   articleTag,
   articlesPage,
+  productsPage,
   realization,
   article
 ]

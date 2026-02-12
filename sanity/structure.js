@@ -21,6 +21,15 @@ export const structure = (S) =>
           S.list()
             .title('Produkty')
             .items([
+              S.listItem()
+                .title('Ustawienia produktów')
+                .child(
+                  S.document()
+                    .schemaType('productsPage')
+                    .documentId('productsPage')
+                    .title('Ustawienia produktów')
+                ),
+              S.divider(),
               categorySection(S, {
                 id: 'category_okna',
                 title: 'Okna',

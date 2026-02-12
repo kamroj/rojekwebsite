@@ -22,6 +22,8 @@ export default function SanityImage({
   format,
   loading = 'lazy',
   decoding = 'async',
+  fetchPriority,
+  // backward compatibility for older call sites
   fetchpriority,
   placeholder = 'lqip',
   className,
@@ -40,7 +42,7 @@ export default function SanityImage({
     format,
     loading,
     decoding,
-    fetchpriority,
+    fetchpriority: fetchPriority || fetchpriority,
     altFallback: altFallback ?? alt ?? '',
   });
 

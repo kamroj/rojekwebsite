@@ -24,7 +24,12 @@ function ViewMoreButton({ className, ...props }) {
 }
 
 // --- Base (router-agnostic) ---
-function ProductCategoryPageBase({ category, initialSanityProducts }) {
+function ProductCategoryPageBase({
+  category,
+  initialSanityProducts,
+  categoryHeaderImage = null,
+  breadcrumbPathname,
+}) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
 
@@ -117,7 +122,9 @@ function ProductCategoryPageBase({ category, initialSanityProducts }) {
   return (
     <Page
       imageSrc="/images/products/doors/drzwi-zewnetrzne-top.jpg"
+      headerImage={categoryHeaderImage}
       title={t(`pageTitle.${categoryKey}`, categoryInfo.pageTitle)}
+      breadcrumbPathname={breadcrumbPathname}
     >
       <Section>
         <HeaderWrap>
@@ -214,6 +221,18 @@ export default function ProductCategoryPage({ category }) {
 // --- Astro (no React Router context) ---
 // NOTE: `ViewIsland` passes `viewProps` as regular props to the rendered view.
 // So for Astro we accept `category` directly (not nested under `viewProps`).
-export function ProductCategoryViewAstro({ category, initialSanityProducts }) {
-  return <ProductCategoryPageBase category={category} initialSanityProducts={initialSanityProducts} />;
+export function ProductCategoryViewAstro({
+  category,
+  initialSanityProducts,
+  categoryHeaderImage = null,
+  breadcrumbPathname,
+}) {
+  return (
+    <ProductCategoryPageBase
+      category={category}
+      initialSanityProducts={initialSanityProducts}
+      categoryHeaderImage={categoryHeaderImage}
+      breadcrumbPathname={breadcrumbPathname}
+    />
+  );
 }

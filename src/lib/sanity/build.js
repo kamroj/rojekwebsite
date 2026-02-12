@@ -5,6 +5,11 @@ import {
   fetchWindowProductDetail,
   fetchWindowProductsList,
 } from './windows.js';
+import {
+  fetchProductsCategoryCardImages,
+  fetchProductsCategoryHeaderImages,
+  fetchProductsPageSettings,
+} from './products.js';
 
 /**
  * Build-time helpers (Astro SSG)
@@ -78,5 +83,53 @@ export const fetchProductsIndexCountsForBuild = async (lang) => {
   } catch (e) {
     console.warn('[sanity][build] products index counts fetch failed', { lang, e });
     return null;
+  }
+};
+
+/**
+ * Products index page settings (header image) for Astro SSG pages.
+ */
+export const fetchProductsPageSettingsForBuild = async () => {
+  if (!isSanityConfigured()) {
+    return { headerImage: null };
+  }
+
+  try {
+    return await fetchProductsPageSettings();
+  } catch (e) {
+    console.warn('[sanity][build] products page settings fetch failed', e);
+    return { headerImage: null };
+  }
+};
+
+/**
+ * Product category card images for products index tiles (okna/drzwi).
+ */
+export const fetchProductsCategoryCardImagesForBuild = async () => {
+  if (!isSanityConfigured()) {
+    return { okna: null, drzwi: null };
+  }
+
+  try {
+    return await fetchProductsCategoryCardImages();
+  } catch (e) {
+    console.warn('[sanity][build] products category card images fetch failed', e);
+    return { okna: null, drzwi: null };
+  }
+};
+
+/**
+ * Product category header images for category pages top image (okna/drzwi).
+ */
+export const fetchProductsCategoryHeaderImagesForBuild = async () => {
+  if (!isSanityConfigured()) {
+    return { okna: null, drzwi: null };
+  }
+
+  try {
+    return await fetchProductsCategoryHeaderImages();
+  } catch (e) {
+    console.warn('[sanity][build] products category header images fetch failed', e);
+    return { okna: null, drzwi: null };
   }
 };

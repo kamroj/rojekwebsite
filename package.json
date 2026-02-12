@@ -5,9 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
+    "dev:force": "astro dev --force",
     "build": "astro build",
     "preview": "astro preview",
     "dev:vite": "vite",
+    "dev:vite:force": "vite --force",
     "build:vite": "vite build",
     "preview:vite": "vite preview",
     "lint": "eslint .",

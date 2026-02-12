@@ -6,12 +6,17 @@ import ProductCategorySsg from '../../../../components/_astro/ssg/ProductCategor
 
 import { productCategories } from '../../../../data/products/index.js';
 import { CATEGORY_SLUGS } from '../../../../lib/i18n/routing.js';
-import { fetchDoorsListForBuild, fetchWindowsListForBuild } from '../../../../lib/sanity/build.js';
+import {
+  fetchDoorsListForBuild,
+  fetchProductsCategoryHeaderImagesForBuild,
+  fetchWindowsListForBuild,
+} from '../../../../lib/sanity/build.js';
 import { getProductCategoryMeta } from '../../../../lib/seo/productsMeta.js';
 
 const { category } = Astro.params;
 
 const initialSanityProducts = Astro.props?.initialSanityProducts;
+const categoryHeaderImage = Astro.props?.categoryHeaderImage || null;
 
 const resources = await getI18nResources('de');
 
@@ -19,6 +24,7 @@ const meta = getProductCategoryMeta({ lang: 'de', categorySlug: category });
 
 export async function getStaticPaths() {
   const paths = [];
+  const categoryHeaderImages = await fetchProductsCategoryHeaderImagesForBuild();
 
   for (const categoryKey of Object.keys(productCategories || {})) {
     const categorySlug = CATEGORY_SLUGS?.de?.[categoryKey] || categoryKey;
@@ -27,9 +33,11 @@ export async function getStaticPaths() {
     if (categoryKey === 'okna') {
       const windows = await fetchWindowsListForBuild('de');
       if (windows) props.initialSanityProducts = windows;
+      props.categoryHeaderImage = categoryHeaderImages?.okna || null;
     } else if (categoryKey === 'drzwi') {
       const doors = await fetchDoorsListForBuild('de');
       if (doors) props.initialSanityProducts = doors;
+      props.categoryHeaderImage = categoryHeaderImages?.drzwi || null;
     }
 
     paths.push({
@@ -52,5 +60,6 @@ export async function getStaticPaths() {
     resources={resources}
     category={category}
     initialSanityProducts={initialSanityProducts}
+    categoryHeaderImage={categoryHeaderImage}
   />
 </SiteLayout>

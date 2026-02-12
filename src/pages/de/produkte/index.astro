@@ -2,10 +2,16 @@
 import SiteLayout from '../../../layouts/SiteLayout.astro';
 import { getI18nResources } from '../../../lib/i18n/resources.js';
 import ProductsIndexSsg from '../../../components/_astro/ssg/ProductsIndexSsg.jsx';
-import { fetchProductsIndexCountsForBuild } from '../../../lib/sanity/build.js';
+import {
+  fetchProductsCategoryCardImagesForBuild,
+  fetchProductsIndexCountsForBuild,
+  fetchProductsPageSettingsForBuild,
+} from '../../../lib/sanity/build.js';
 
 const resources = await getI18nResources('de');
 const initialProductCountsByCategory = await fetchProductsIndexCountsForBuild('de');
+const productsPageSettings = await fetchProductsPageSettingsForBuild();
+const categoryCardImages = await fetchProductsCategoryCardImagesForBuild();
 ---
 
 <SiteLayout
@@ -17,5 +23,7 @@ const initialProductCountsByCategory = await fetchProductsIndexCountsForBuild('d
     lang="de"
     resources={resources}
     initialProductCountsByCategory={initialProductCountsByCategory}
+    productsHeaderImage={productsPageSettings?.headerImage || null}
+    categoryCardImages={categoryCardImages}
   />
 </SiteLayout>

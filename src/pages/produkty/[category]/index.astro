@@ -6,13 +6,18 @@ import ProductCategorySsg from '../../../components/_astro/ssg/ProductCategorySs
 
 import { productCategories } from '../../../data/products/index.js';
 import { CATEGORY_SLUGS } from '../../../lib/i18n/routing.js';
-import { fetchDoorsListForBuild, fetchWindowsListForBuild } from '../../../lib/sanity/build.js';
+import {
+  fetchDoorsListForBuild,
+  fetchProductsCategoryHeaderImagesForBuild,
+  fetchWindowsListForBuild,
+} from '../../../lib/sanity/build.js';
 import { getProductCategoryMeta } from '../../../lib/seo/productsMeta.js';
 
 const { category } = Astro.params;
 
 // In SSG we can pass build-time fetched data.
 const initialSanityProducts = Astro.props?.initialSanityProducts;
+const categoryHeaderImage = Astro.props?.categoryHeaderImage || null;
 
 const resources = await getI18nResources('pl');
 
@@ -23,6 +28,7 @@ export async function getStaticPaths() {
   // For now we generate category pages based on existing local product category keys.
   // NOTE: In later steps we will expand this for EN/DE and Sanity-driven categories.
   const paths = [];
+  const categoryHeaderImages = await fetchProductsCategoryHeaderImagesForBuild();
 
   for (const categoryKey of Object.keys(productCategories || {})) {
     const categorySlug = CATEGORY_SLUGS?.pl?.[categoryKey] || categoryKey;
@@ -32,9 +38,11 @@ export async function getStaticPaths() {
     if (categoryKey === 'okna') {
       const windows = await fetchWindowsListForBuild('pl');
       if (windows) props.initialSanityProducts = windows;
+      props.categoryHeaderImage = categoryHeaderImages?.okna || null;
     } else if (categoryKey === 'drzwi') {
       const doors = await fetchDoorsListForBuild('pl');
       if (doors) props.initialSanityProducts = doors;
+      props.categoryHeaderImage = categoryHeaderImages?.drzwi || null;
     }
 
     paths.push({
@@ -57,5 +65,6 @@ export async function getStaticPaths() {
     resources={resources}
     category={category}
     initialSanityProducts={initialSanityProducts}
+    categoryHeaderImage={categoryHeaderImage}
   />
 </SiteLayout>

@@ -25,11 +25,23 @@ export default defineConfig({
   integrations: [react(), sitemap()],
 
   vite: {
+    optimizeDeps: {
+      // Stabilize dev prebundle for HS configurator (three.js stack)
+      include: ['three', '@react-three/fiber', '@react-three/drei'],
+      // Prevent stale optimized chunks for heavy 3D deps in long-running dev sessions
+      exclude: ['@react-three/drei'],
+    },
     resolve: {
       conditions: ['module-sync', 'import', 'module', 'browser', 'default'],
     },
     ssr: {
-      noExternal: ['react-router', 'react-router-dom'],
+      noExternal: [
+        'react-router',
+        'react-router-dom',
+        '@react-three/fiber',
+        '@react-three/drei',
+        'three',
+      ],
     },
     build: {
       chunkSizeWarningLimit: 900,

@@ -29,6 +29,7 @@ const Page = ({
     contentBg,
     contentColor,
     headerProps,
+    breadcrumbPathname,
     children,
     ...rest
 }) => {
@@ -47,7 +48,7 @@ const Page = ({
                 {...(headerProps || {})}
             />
             <MaxWidthContainer>
-                <AppBreadcrumbs />
+                <AppBreadcrumbs pathname={breadcrumbPathname} />
                 {children}
             </MaxWidthContainer>
         </div>

@@ -19,11 +19,24 @@ const PageHeader = ({
   imgDecoding = 'async',
   imgFetchPriority = 'high',
   imgSizes = '100vw',
+  mobileHeight,
   children,
 }) => {
+  const numericHeight = Number(height);
+  const resolvedHeight = Number.isFinite(numericHeight) ? `${numericHeight}px` : '300px';
+  const resolvedMobileHeight = Number.isFinite(Number(mobileHeight))
+    ? `${Number(mobileHeight)}px`
+    : (numericHeight === 500 ? '400px' : resolvedHeight);
+
   return (
     <section className={styles.headerWrapper} id={id}>
-      <div className={styles.headerImageWrapper} style={{ height: height ? `${height}px` : '300px' }}>
+      <div
+        className={styles.headerImageWrapper}
+        style={{
+          '--header-height': resolvedHeight,
+          '--header-height-mobile': resolvedMobileHeight,
+        }}
+      >
         {image ? (
           <SanityImage
             className={styles.headerImage}
@@ -31,7 +44,7 @@ const PageHeader = ({
             altFallback={title || ''}
             loading={imgLoading}
             decoding={imgDecoding}
-            fetchpriority={imgFetchPriority}
+            fetchPriority={imgFetchPriority}
             sizes={imgSizes}
             // Full-bleed header typically needs large widths.
             widths={[640, 800, 1024, 1280, 1600, 2000, 2400]}
@@ -43,7 +56,7 @@ const PageHeader = ({
             alt={title || ''}
             loading={imgLoading}
             decoding={imgDecoding}
-            fetchpriority={imgFetchPriority}
+            fetchPriority={imgFetchPriority}
           />
         )}
         <div

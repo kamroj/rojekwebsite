@@ -3,6 +3,7 @@ import RouterAgnosticLink from '../components/_astro/RouterAgnosticLink.jsx';
 import { IoIosArrowForward } from 'react-icons/io';
 import Page from '../components/ui/Page';
 import Section from '../components/ui/Section';
+import SanityImage from '../components/ui/SanityImage.jsx';
 import { useTranslation } from 'react-i18next';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomeView';
 import { productCategories } from '../data/products/index.js';
@@ -10,7 +11,12 @@ import { getProductCategoryPath } from '../lib/i18n/routing';
 
 import styles from './ProductsView.module.css';
 
-const ProductsPage = ({ initialProductCountsByCategory = null }) => {
+const ProductsPage = ({
+  initialProductCountsByCategory = null,
+  productsHeaderImage = null,
+  categoryCardImages = null,
+  breadcrumbPathname,
+}) => {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
 
@@ -68,18 +74,21 @@ const ProductsPage = ({ initialProductCountsByCategory = null }) => {
           key,
           title: homeTitle,
           subtitle: longDescriptionByKey[key] || t(`productCategories.${key}.subtitle`, category?.subtitle || ''),
+          sanityImage: categoryCardImages?.[key] || null,
           image: homeImage,
           productsCount,
           href: getProductCategoryPath(lang, key),
         };
       })
       .filter((card) => card.productsCount > 0);
-  }, [initialProductCountsByCategory, lang, longDescriptionByKey, t]);
+  }, [categoryCardImages, initialProductCountsByCategory, lang, longDescriptionByKey, t]);
 
   return (
     <Page
       imageSrc="/images/products/windows/top.jpg"
+      headerImage={productsHeaderImage}
       title={t('pageTitle.products', t('nav.products', 'Produkty'))}
+      breadcrumbPathname={breadcrumbPathname}
     >
       <Section>
         <HeaderWrap>
@@ -110,13 +119,26 @@ const ProductsPage = ({ initialProductCountsByCategory = null }) => {
               </div>
 
               <div className={styles.productImageWrapper}>
-                <img
-                  className={styles.productImage}
-                  src={card.image}
-                  alt={card.title}
-                  loading="lazy"
-                  decoding="async"
-                />
+                {card.sanityImage ? (
+                  <SanityImage
+                    className={styles.productImage}
+                    image={card.sanityImage}
+                    placeholder="none"
+                    altFallback={card.title}
+                    loading="lazy"
+                    decoding="async"
+                    sizes="(max-width: 768px) 100vw, 40vw"
+                    widths={[480, 640, 800, 1024, 1280]}
+                  />
+                ) : (
+                  <img
+                    className={styles.productImage}
+                    src={card.image}
+                    alt={card.title}
+                    loading="lazy"
+                    decoding="async"
+                  />
+                )}
               </div>
             </article>
           ))}
