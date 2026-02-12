@@ -189,8 +189,12 @@
 .managementGrid {
   max-width: var(--max-width);
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
   gap: 18px;
+}
+
+.managementSection {
+  margin-bottom: 2.4rem;
 }
 
 .managerCard {
@@ -200,12 +204,6 @@
   padding: var(--space-sm);
   background: #fff;
   box-shadow: var(--shadow-home-product-card);
-  transition: box-shadow 0.2s ease, transform 0.2s ease;
-}
-
-.managerCard:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .managerImageWrapper {
@@ -243,10 +241,22 @@
 }
 
 .managerContacts a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   color: var(--color-text);
   text-decoration: none;
   font-size: 1.12rem;
   line-height: 1.4;
+}
+
+.managerContactIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-bottle-green-light);
+  font-size: 1.2em;
+  line-height: 1;
 }
 
 .managerContacts a:hover {
@@ -305,5 +315,39 @@
 
   .historyPanelMeta {
     font-size: 1.5rem;
+  }
+
+  .managementGrid {
+    gap: 12px;
+  }
+
+  .managerCard {
+    padding: var(--space-xs);
+  }
+
+  .managerImageWrapper {
+    aspect-ratio: 4 / 3;
+  }
+
+  .managerBody {
+    padding: 12px;
+  }
+
+  .managerName {
+    font-size: 1.32rem;
+  }
+
+  .managerRole {
+    margin: 6px 0 10px;
+    font-size: 1.02rem;
+  }
+
+  .managerContacts {
+    gap: 6px;
+  }
+
+  .managerContacts a {
+    font-size: 0.98rem;
+    line-height: 1.35;
   }
 }

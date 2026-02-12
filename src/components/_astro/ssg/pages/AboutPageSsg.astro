@@ -6,6 +6,7 @@ import maxWidthStyles from '../../../ui/MaxWidthContainer.module.css';
 import homeHeaderStyles from '../../../../views/HomeView.module.css';
 import styles from '../../../../views/AboutUsView.module.css';
 import { IoMdArrowDropright } from 'react-icons/io';
+import { FiPhone, FiMail } from 'react-icons/fi';
 import { COMPANY } from '../../../../data/company.js';
 
 import { loadTranslationJson } from '../../../../lib/i18n/resources.js';
@@ -337,7 +338,7 @@ const membersWithContacts = members.map((member) => {
     </section>
 
     <!-- MANAGEMENT (static, no swiper) -->
-    <section>
+    <section class={styles.managementSection}>
       <div class={`${homeHeaderStyles.headerWrap} full-width`}>
         <div class={homeHeaderStyles.productHeader}>{t('management.title', 'Management')}</div>
         <div class={homeHeaderStyles.productHeaderSubtitle}>{pageCopy.managementSubtitle}</div>
@@ -353,8 +354,14 @@ const membersWithContacts = members.map((member) => {
               <h4 class={styles.managerName}>{m.name}</h4>
               <p class={styles.managerRole}>{m.role}</p>
               <div class={styles.managerContacts}>
-                <a href={m.phoneHref}>{m.phone}</a>
-                <a href={m.emailHref}>{m.email}</a>
+                <a href={m.phoneHref} aria-label={`${t('contact.phone', 'Telefon')}: ${m.phone}`}>
+                  <span class={styles.managerContactIcon} aria-hidden="true"><FiPhone /></span>
+                  <span>{m.phone}</span>
+                </a>
+                <a href={m.emailHref} aria-label={`${t('contact.email', 'E-mail')}: ${m.email}`}>
+                  <span class={styles.managerContactIcon} aria-hidden="true"><FiMail /></span>
+                  <span>{m.email}</span>
+                </a>
               </div>
             </div>
           </article>
