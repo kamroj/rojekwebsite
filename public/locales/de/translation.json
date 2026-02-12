@@ -229,7 +229,9 @@
     "downloadCatalogPdf": "PDF‑Katalog herunterladen",
     "windows": {
       "featuresTitle": "Was zeichnet das Fenster {{product}} aus?",
-      "colorsTitle": "RAL‑Farbpalette",
+      "colorsTitle": "FARBEN",
+      "colorsRalTab": "RAL",
+      "colorsLazurTab": "LAZUR",
       "colorsMostPopular": "Beliebteste Farben",
       "colorsFullPalette": "Vollständige RAL‑Farbkarte",
       "advantagesTitle": "Warum {{product}} wählen?",
@@ -246,7 +248,9 @@
     },
     "doors": {
       "featuresTitle": "Was zeichnet die Tür {{product}} aus?",
-      "colorsTitle": "RAL‑Farbpalette",
+      "colorsTitle": "FARBEN",
+      "colorsRalTab": "RAL",
+      "colorsLazurTab": "LAZUR",
       "colorsMostPopular": "Beliebteste Farben",
       "colorsFullPalette": "Vollständige RAL‑Farbkarte",
       "advantagesTitle": "Warum {{product}} wählen?",

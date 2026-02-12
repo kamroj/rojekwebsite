@@ -2,7 +2,12 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import Page from '../../components/ui/Page';
 import Section from '../../components/ui/Section';
-import { WINDOW_COLORS_PALETTE, WINDOW_SPECS_DEFS, WINDOW_SPECS_ORDER_LIST } from '../../data/products/windows';
+import {
+  WINDOW_COLORS_PALETTE,
+  WINDOW_LAZUR_PALETTE,
+  WINDOW_SPECS_DEFS,
+  WINDOW_SPECS_ORDER_LIST,
+} from '../../data/products/windows';
 import SanityPortableText from '../../components/portable/SanityPortableText';
 import {
   ProductDetailHero,
@@ -50,7 +55,9 @@ const WindowProductDetail = ({ product }) => {
     defaultValue: 'Co wyróżnia okno {{product}}?',
   });
 
-  const colorsTitle = t('productDetail.windows.colorsTitle', 'Kolorystyka RAL');
+  const colorsTitle = t('productDetail.windows.colorsTitle', 'KOLORYSTYKA');
+  const colorsRalTabLabel = t('productDetail.windows.colorsRalTab', 'RAL');
+  const colorsLazurTabLabel = t('productDetail.windows.colorsLazurTab', 'LAZUR');
   const colorsMostPopular = t('productDetail.windows.colorsMostPopular', 'Najczęściej wybierane kolory');
   const colorsFullPalette = t('productDetail.windows.colorsFullPalette', 'Pełna paleta kolorów RAL');
 
@@ -106,8 +113,11 @@ const WindowProductDetail = ({ product }) => {
 
       {/* Colors Section */}
       <ProductDetailColors
-        colors={colors}
         title={colorsTitle}
+        colorsRal={colors}
+        colorsLazur={WINDOW_LAZUR_PALETTE}
+        ralTabLabel={colorsRalTabLabel}
+        lazurTabLabel={colorsLazurTabLabel}
         mostPopularLabel={colorsMostPopular}
         fullPaletteLabel={colorsFullPalette}
         t={t}

@@ -223,7 +223,9 @@
     "downloadCatalogPdf": "Pobierz katalog PDF",
     "windows": {
       "featuresTitle": "Co wyróżnia okno {{product}}?",
-      "colorsTitle": "Kolorystyka RAL",
+      "colorsTitle": "KOLORYSTYKA",
+      "colorsRalTab": "RAL",
+      "colorsLazurTab": "LAZUR",
       "colorsMostPopular": "Najczęściej wybierane kolory",
       "colorsFullPalette": "Pełna paleta kolorów RAL",
       "advantagesTitle": "Dlaczego warto wybrać {{product}}?",
@@ -240,7 +242,9 @@
     },
     "doors": {
       "featuresTitle": "Co wyróżnia drzwi {{product}}?",
-      "colorsTitle": "Kolorystyka RAL",
+      "colorsTitle": "KOLORYSTYKA",
+      "colorsRalTab": "RAL",
+      "colorsLazurTab": "LAZUR",
       "colorsMostPopular": "Najczęściej wybierane kolory",
       "colorsFullPalette": "Pełna paleta kolorów RAL",
       "advantagesTitle": "Dlaczego warto wybrać {{product}}?",

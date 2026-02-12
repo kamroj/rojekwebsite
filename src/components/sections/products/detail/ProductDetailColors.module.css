@@ -2,14 +2,75 @@
   font-size: 2.8rem;
   font-weight: 400;
   color: #013613;
-  margin: 0 0 3rem 0;
+  margin: 0 0 1.5rem 0;
   text-align: left;
 }
 
 @media (--bp-sm) {
   .sectionTitle {
     font-size: 2.2rem;
-    margin-bottom: 2rem;
+    margin-bottom: 1.25rem;
+  }
+}
+
+.paletteTabs {
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: repeat(var(--tabs-count, 2), minmax(0, 1fr));
+  align-items: center;
+  margin-bottom: 2.25rem;
+  padding: 0.3rem;
+  border-radius: 999px;
+  background: #e9f0ea;
+  border: 1px solid #cfe0d2;
+  min-width: 260px;
+}
+
+.paletteTabsThumb {
+  position: absolute;
+  top: 0.3rem;
+  left: 0.3rem;
+  width: calc((100% - 0.6rem) / var(--tabs-count, 2));
+  height: calc(100% - 0.6rem);
+  border-radius: 999px;
+  background: linear-gradient(135deg, #1a5618 0%, #2d7a2a 100%);
+  box-shadow: 0px 3px 10px 0px rgb(13 43 12 / 25%);
+  transform: translateX(calc(var(--active-index, 0) * 100%));
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  pointer-events: none;
+}
+
+.paletteTabButton {
+  position: relative;
+  z-index: 1;
+  border: 0;
+  background: transparent;
+  color: #1f3f2c;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1;
+  border-radius: 999px;
+  padding: 1.1rem 2.2rem;
+  transition: color 0.2s ease;
+}
+
+.paletteTabButton:hover {
+  color: #123a12;
+}
+
+.paletteTabButton.isActive {
+  color: #ffffff;
+}
+
+@media (--bp-sm) {
+  .paletteTabs {
+    margin-bottom: 1.75rem;
+    min-width: 220px;
+  }
+
+  .paletteTabButton {
+    font-size: 1.05rem;
+    padding: 0.9rem 1.25rem;
   }
 }
 
@@ -140,7 +201,7 @@
   background: #ffffff;
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  box-shadow: var(--shadow-home-product-card);
   border: 1px solid #e5e7eb;
 }
 
@@ -158,6 +219,13 @@
   background-image: var(--preview-image, none);
   background-size: cover;
   background-position: center;
+  background-repeat: no-repeat;
+}
+
+.colorPreviewMainLazur {
+  background-size: 180% auto;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .colorPreviewInfo {

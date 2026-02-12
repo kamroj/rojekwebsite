@@ -81,6 +81,10 @@
   margin: 0;
 }
 
+.featureText p {
+  margin: 0;
+}
+
 .featureText strong {
   color: #326647;
   font-weight: 600;

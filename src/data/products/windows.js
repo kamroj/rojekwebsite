@@ -145,6 +145,41 @@ export const WINDOW_COLORS_PALETTE = [
   },
 ]
 
+export const WINDOW_LAZUR_PALETTE = [
+  {
+    id: 'lazur-e4-16-46t',
+    name: 'Acacia',
+    ral: 'E4.16.46T',
+    image: '/images/colors/E4.16.46T-acacia.png',
+    description:
+      'Dekor lazur Acacia (kod E4.16.46T) o ciepłym, naturalnym charakterze drewna. Dobrze komponuje się z klasycznymi i nowoczesnymi elewacjami.',
+  },
+  {
+    id: 'lazur-e2-26-56t',
+    name: 'Douglas',
+    ral: 'E2.26.56T',
+    image: '/images/colors/E2.26.56T-douglas.png',
+    description:
+      'Lazur Douglas (kod E2.26.56T) o ciepłym, miodowo-brązowym charakterze. Dobrze podkreśla usłojenie i nadaje profilom naturalny, stolarski wygląd.',
+  },
+  {
+    id: 'lazur-e8-35-66t',
+    name: 'Érable Naturel',
+    ral: 'E8.35.66T',
+    image: '/images/colors/E8.35.66T-Erable Naturel.png',
+    description:
+      'Lazur Érable Naturel (kod E8.35.66T) w jasnym, naturalnym tonie klonu. Rozjaśnia wizualnie stolarkę i dobrze komponuje się z nowoczesnymi, lekkimi elewacjami.',
+  },
+  {
+    id: 'lazur-g1-18-82t',
+    name: 'Peuplier',
+    ral: 'G1.18.82T',
+    image: '/images/colors/G1.18.82T-peupiler.png',
+    description:
+      'Lazur Peuplier (kod G1.18.82T) o stonowanym, neutralno-ciepłym odcieniu drewna. Uniwersalny wybór do projektów klasycznych i nowoczesnych.',
+  },
+]
+
 export const windowProductDetails = {
   pava: {
     category: 'Okna',

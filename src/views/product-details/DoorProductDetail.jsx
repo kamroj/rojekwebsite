@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import Page from '../../components/ui/Page';
 import Section from '../../components/ui/Section';
 import { DOOR_SPECS_DEFS, DOOR_SPECS_ORDER_LIST } from '../../data/products/doors';
-import { WINDOW_COLORS_PALETTE } from '../../data/products/windows';
+import { WINDOW_COLORS_PALETTE, WINDOW_LAZUR_PALETTE } from '../../data/products/windows';
 import SanityPortableText from '../../components/portable/SanityPortableText';
 import styles from './DoorProductDetail.module.css';
 import {
@@ -230,7 +230,9 @@ const DoorProductDetail = ({ product }) => {
     defaultValue: 'Co wyróżnia drzwi {{product}}?',
   });
 
-  const colorsTitle = t('productDetail.doors.colorsTitle', 'Kolorystyka RAL');
+  const colorsTitle = t('productDetail.doors.colorsTitle', 'KOLORYSTYKA');
+  const colorsRalTabLabel = t('productDetail.doors.colorsRalTab', 'RAL');
+  const colorsLazurTabLabel = t('productDetail.doors.colorsLazurTab', 'LAZUR');
   const colorsMostPopular = t('productDetail.doors.colorsMostPopular', 'Najczęściej wybierane kolory');
   const colorsFullPalette = t('productDetail.doors.colorsFullPalette', 'Pełna paleta kolorów RAL');
 
@@ -290,8 +292,11 @@ const DoorProductDetail = ({ product }) => {
 
       {/* Colors Section */}
       <ProductDetailColors
-        colors={colors}
         title={colorsTitle}
+        colorsRal={colors}
+        colorsLazur={WINDOW_LAZUR_PALETTE}
+        ralTabLabel={colorsRalTabLabel}
+        lazurTabLabel={colorsLazurTabLabel}
         mostPopularLabel={colorsMostPopular}
         fullPaletteLabel={colorsFullPalette}
         t={t}

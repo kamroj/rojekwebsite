@@ -229,7 +229,9 @@
     "downloadCatalogPdf": "Download PDF catalogue",
     "windows": {
       "featuresTitle": "What makes the {{product}} window stand out?",
-      "colorsTitle": "RAL colour range",
+      "colorsTitle": "COLORS",
+      "colorsRalTab": "RAL",
+      "colorsLazurTab": "LAZUR",
       "colorsMostPopular": "Most popular colours",
       "colorsFullPalette": "Full RAL colour chart",
       "advantagesTitle": "Why choose {{product}}?",
@@ -246,7 +248,9 @@
     },
     "doors": {
       "featuresTitle": "What makes the {{product}} door stand out?",
-      "colorsTitle": "RAL colour range",
+      "colorsTitle": "COLORS",
+      "colorsRalTab": "RAL",
+      "colorsLazurTab": "LAZUR",
       "colorsMostPopular": "Most popular colours",
       "colorsFullPalette": "Full RAL colour chart",
       "advantagesTitle": "Why choose {{product}}?",
