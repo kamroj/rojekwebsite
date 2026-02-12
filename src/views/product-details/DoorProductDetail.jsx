@@ -1,5 +1,5 @@
 // src/pages/products/DoorProductDetail.jsx
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Page from '../../components/ui/Page';
 import Section from '../../components/ui/Section';
@@ -23,6 +23,50 @@ import { DOOR_FAQ_FALLBACK } from '../../data/products/faqFallback.js';
 // ============================================
 
 const DoorStandardFeaturesSection = ({ t }) => {
+  const lockImageWrapRef = useRef(null);
+  const thresholdImageWrapRef = useRef(null);
+  const [isLockCentered, setIsLockCentered] = useState(false);
+  const [isThresholdCentered, setIsThresholdCentered] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return undefined;
+
+    let lockObserver = null;
+    let thresholdObserver = null;
+
+    const createObservers = () => {
+      if (lockObserver) lockObserver.disconnect();
+      if (thresholdObserver) thresholdObserver.disconnect();
+
+      const isMobileViewport = (window.innerWidth || document.documentElement.clientWidth) <= 992;
+      const rootMargin = isMobileViewport ? '-38% 0px -38% 0px' : '-32% 0px -32% 0px';
+
+      lockObserver = new IntersectionObserver(
+        ([entry]) => setIsLockCentered(entry.isIntersecting),
+        { root: null, rootMargin, threshold: 0.01 }
+      );
+
+      thresholdObserver = new IntersectionObserver(
+        ([entry]) => setIsThresholdCentered(entry.isIntersecting),
+        { root: null, rootMargin, threshold: 0.01 }
+      );
+
+      if (lockImageWrapRef.current) lockObserver.observe(lockImageWrapRef.current);
+      if (thresholdImageWrapRef.current) thresholdObserver.observe(thresholdImageWrapRef.current);
+    };
+
+    createObservers();
+    window.addEventListener('resize', createObservers);
+    window.addEventListener('orientationchange', createObservers);
+
+    return () => {
+      window.removeEventListener('resize', createObservers);
+      window.removeEventListener('orientationchange', createObservers);
+      if (lockObserver) lockObserver.disconnect();
+      if (thresholdObserver) thresholdObserver.disconnect();
+    };
+  }, []);
+
   const lockFeatures = [
     {
       icon: (
@@ -139,10 +183,10 @@ const DoorStandardFeaturesSection = ({ t }) => {
           </div>
 
           <div className={styles.imageContainer}>
-            <div className={styles.imageWrapper}>
+            <div className={styles.imageWrapper} ref={lockImageWrapRef}>
               <div className={styles.glowEffect} />
               <img
-                className={styles.productImage}
+                className={`${styles.productImage} ${isLockCentered ? styles.productImageCentered : ''}`}
                 src="/images/products/doors/lock-3point.png"
                 alt={t('productDetail.doors.lock.imageAlt', 'Zamek 3-punktowy')}
               />
@@ -154,10 +198,10 @@ const DoorStandardFeaturesSection = ({ t }) => {
       {/* Threshold Block */}
       <div className={`${styles.contentGrid} ${styles.contentGridReversed} ${styles.contentGridWithPadding}`}>
         <div className={styles.imageContainer}>
-          <div className={styles.imageWrapper}>
+          <div className={styles.imageWrapper} ref={thresholdImageWrapRef}>
             <div className={styles.glowEffect} />
             <img
-              className={styles.productImage}
+              className={`${styles.productImage} ${isThresholdCentered ? styles.productImageCentered : ''}`}
               src="/images/products/doors/threshold-alu.png"
               alt={t('productDetail.doors.threshold.imageAlt', 'Niski próg aluminiowy')}
             />

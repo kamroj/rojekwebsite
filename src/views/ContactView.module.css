@@ -133,8 +133,8 @@
   isolation: isolate;
   overflow: hidden;
   flex: 1;
-  background: #fcfcfc;
-  border: 1px solid #006326;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbf8 100%);
+  border: 1px solid #2e8b57;
   border-radius: 12px;
   padding: 20px;
   box-shadow: 0 1px 2px rgba(16, 24, 40, 0.04);
