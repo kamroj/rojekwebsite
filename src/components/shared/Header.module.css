@@ -134,11 +134,11 @@
 }
 
 .mobileMenuButtonPastThreshold {
-  color: var(--color-text);
+  color: #2e8b57;
 }
 
 .mobileMenuButtonOpen {
-  color: var(--color-text);
+  color: #2e8b57;
 }
 
 @media (min-width: 993px) {
@@ -172,9 +172,8 @@
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;  /* DODAJ */
+  right: 0;  
   bottom: 0;
-  /* Usuń width/height jeśli są - left/right/top/bottom wystarczą */
   background-color: rgba(0, 0, 0, 0.6);
   z-index: 3000;
 
