@@ -68,26 +68,26 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1.25rem 1.5rem;
-  border-radius: 12px;
-  border: 1px solid #00460f52;
-  transition: all 0.3s ease;
+  padding: 14px 16px;
+  border-radius: 10px;
+  border: 1px solid #2e8b57;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbf8 100%);
 }
 
 .featureText {
-  font-size: 1.3rem;
-  color: #4b5563;
-  line-height: 1.6;
+  font-size: 1.18rem;
+  color: var(--color-text);
+  line-height: 1.58;
   margin: 0;
 }
 
 .featureText strong {
-  color: #013613;
+  color: #326647;
   font-weight: 600;
 }
 
 @media (max-width: 1200px) {
   .featureText {
-    font-size: 1.2rem;
+    font-size: 1.12rem;
   }
 }

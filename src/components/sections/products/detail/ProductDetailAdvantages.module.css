@@ -77,30 +77,23 @@
 }
 
 .advantageCard {
-  background: #ffffff;
-  border-radius: 16px;
-  padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
-  border: 1px solid #0d6b035e;
-  transition: all 0.3s ease;
-}
-
-.advantageCard:hover {
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.08);
-  transform: translateY(-5px);
+  border: 1px solid #2e8b57;
+  border-radius: 10px;
+  padding: 14px 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbf8 100%);
 }
 
 .advantageTitle {
-  font-size: 1.35rem;
+  font-size: 1.32rem;
   font-weight: 600;
-  color: #013613;
-  margin: 0 0 0.75rem 0;
+  color: #326647;
+  margin: 0 0 6px;
 }
 
 .advantageDescription {
-  font-size: 1.2rem;
-  color: #6b7280;
-  line-height: 1.6;
+  font-size: 1.18rem;
+  color: var(--color-text);
+  line-height: 1.58;
   margin: 0;
 }
 

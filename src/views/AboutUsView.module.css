@@ -116,12 +116,12 @@
 
 .historyTab {
   border: 1px solid #2e8b57;
-  background: transparent;
-  color: rgba(11, 90, 42, 0.95);
-  border-radius: 4px;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbf8 100%);
+  color: #326647;
+  border-radius: 10px;
   padding: 10px 16px;
-  font-size: 1.4rem;
-  font-weight: 500;
+  font-size: 1.32rem;
+  font-weight: 600;
   line-height: 1;
   letter-spacing: 0.2px;
   cursor: pointer;
@@ -131,14 +131,14 @@
 }
 
 .historyTab[aria-selected='true'] {
-  background: rgba(2, 99, 3, 0.1);
-  color: #0b5a2a;
-  border-color: rgba(2, 99, 3, 0.3);
+  background: #2e8b57;
+  color: #fff;
+  border-color: #2e8b57;
 }
 
 .historyTab:hover {
-  background: rgba(2, 99, 3, 0.16);
-  border-color: rgba(2, 99, 3, 0.35);
+  background: #eef7f1;
+  border-color: #326647;
 }
 
 .historyTab:focus-visible {
@@ -226,7 +226,7 @@
 .managerName {
   margin: 0;
   font-size: 1.55rem;
-  color: var(--color-bottle-green);
+  color: #326647;
 }
 
 .managerRole {
@@ -307,6 +307,19 @@
   .historyTab {
     font-size: 1.2rem;
     padding: 9px 12px;
+  }
+
+  .historyTab:hover {
+    background: linear-gradient(180deg, #ffffff 0%, #f7fbf8 100%);
+    border-color: #2e8b57;
+    color: #326647;
+  }
+
+  .historyTab[aria-selected='true'],
+  .historyTab[aria-selected='true']:hover {
+    background: #2e8b57;
+    color: #fff;
+    border-color: #2e8b57;
   }
 
   .historyTabSeparator {
