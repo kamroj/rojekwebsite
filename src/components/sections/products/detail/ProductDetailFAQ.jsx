@@ -6,7 +6,7 @@ import SanityPortableText from '../../../portable/SanityPortableText';
 
 import styles from './ProductDetailFAQ.module.css';
 
-export default function ProductDetailFAQ({ items, productName, t }) {
+export default function ProductDetailFAQ({ items, productName, titleOverride, subtitleOverride, t }) {
   const [openFAQIndex, setOpenFAQIndex] = React.useState(null);
   const toggleFAQ = (index) => setOpenFAQIndex((prev) => (prev === index ? null : index));
 
@@ -23,15 +23,17 @@ export default function ProductDetailFAQ({ items, productName, t }) {
       <Section>
         <div className={styles.faqHeader}>
           <h2 className={styles.faqTitle}>
-            <Trans
-              i18nKey="productDetail.faq.title"
-              defaults="<product>{{product}}</product> – Najczęściej zadawane pytania"
-              values={{ product: productName }}
-              components={{ product: <ProductName /> }}
-            />
+            {titleOverride || (
+              <Trans
+                i18nKey="productDetail.faq.title"
+                defaults="<product>{{product}}</product> – Najczęściej zadawane pytania"
+                values={{ product: productName }}
+                components={{ product: <ProductName /> }}
+              />
+            )}
           </h2>
           <p className={styles.faqSubtitle}>
-            {t(
+            {subtitleOverride || t(
               'productDetail.faq.subtitle',
               'Znajdź odpowiedzi na najważniejsze pytania dotyczące naszego produktu'
             )}

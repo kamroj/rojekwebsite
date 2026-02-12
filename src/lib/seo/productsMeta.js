@@ -13,18 +13,21 @@ const CATEGORY_LABELS = {
   pl: {
     okna: 'Okna',
     drzwi: 'Drzwi',
+    oknaDrzwiPrzeciwpozarowe: 'Okna i drzwi przeciwpożarowe',
     bramy: 'Bramy',
     rolety: 'Rolety',
   },
   en: {
     okna: 'Windows',
     drzwi: 'Doors',
+    oknaDrzwiPrzeciwpozarowe: 'Fire-rated windows and doors',
     bramy: 'Gates',
     rolety: 'Shutters',
   },
   de: {
     okna: 'Fenster',
     drzwi: 'Türen',
+    oknaDrzwiPrzeciwpozarowe: 'Brandschutzfenster und -türen',
     bramy: 'Garagentore',
     rolety: 'Rollläden',
   },

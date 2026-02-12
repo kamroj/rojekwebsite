@@ -42,18 +42,21 @@ export const CATEGORY_SLUGS = {
   pl: {
     okna: 'okna',
     drzwi: 'drzwi',
+    oknaDrzwiPrzeciwpozarowe: 'okna-i-drzwi-przeciwpozarowe',
     bramy: 'bramy',
     rolety: 'rolety',
   },
   en: {
     okna: 'windows',
     drzwi: 'doors',
+    oknaDrzwiPrzeciwpozarowe: 'fire-rated-windows-and-doors',
     bramy: 'gates',
     rolety: 'shutters',
   },
   de: {
     okna: 'fenster',
     drzwi: 'tueren',
+    oknaDrzwiPrzeciwpozarowe: 'brandschutz-fenster-und-tueren',
     bramy: 'garagentore',
     rolety: 'rolllaeden',
   },

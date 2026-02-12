@@ -72,6 +72,20 @@
   max-width: 550px;
 }
 
+.heroHighlights {
+  margin: 0 0 1.8rem;
+  padding-left: 1.6rem;
+  max-width: 560px;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.heroHighlights li {
+  font-size: 1.25rem;
+  line-height: 1.55;
+  color: #1f3524;
+}
+
 .buttonsContainer {
   display: flex;
   gap: 1rem;

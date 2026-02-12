@@ -13,6 +13,8 @@ export default function ProductDetailHero({
   longDescriptionContent,
   contactHref = '/kontakt',
   onDownloadCatalog,
+  primaryCtaLabel,
+  secondaryCtaLabel,
   t,
 }) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -22,6 +24,7 @@ export default function ProductDetailHero({
   // Fallback: legacy `product.images` (array of string URLs).
   const gallery = Array.isArray(product?.gallery) ? product.gallery : [];
   const images = Array.isArray(product?.images) ? product.images : [];
+  const heroHighlights = Array.isArray(product?.heroHighlights) ? product.heroHighlights : [];
   const hasSanityGallery = gallery.length > 0;
   const totalSlides = hasSanityGallery ? gallery.length : images.length;
 
@@ -43,15 +46,22 @@ export default function ProductDetailHero({
         <div className={styles.titleDivider} />
         <p className={styles.productDescription}>{product?.shortDescription}</p>
         <div className={styles.productHighlight}>{longDescriptionContent}</div>
+        {heroHighlights.length > 0 ? (
+          <ul className={styles.heroHighlights}>
+            {heroHighlights.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        ) : null}
 
         <div className={styles.buttonsContainer}>
           <RouterAgnosticLink className={styles.primaryButton} href={contactHref}>
             <FiPhone />
-            {t?.('common.contactUs', 'Skontaktuj się z nami')}
+            {primaryCtaLabel || t?.('common.contactUs', 'Skontaktuj się z nami')}
           </RouterAgnosticLink>
           <button className={styles.outlineButton} type="button" onClick={onDownloadCatalog}>
             <FiDownload />
-            {t?.('productDetail.downloadCatalogPdf', 'Pobierz katalog PDF')}
+            {secondaryCtaLabel || t?.('productDetail.downloadCatalogPdf', 'Pobierz katalog PDF')}
           </button>
         </div>
       </div>

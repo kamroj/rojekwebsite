@@ -8,6 +8,91 @@ export const DOOR_SPECS_ORDER_LIST = WINDOW_SPECS_ORDER_LIST;
 // Mockupowe dane dla 3 typów drzwi
 export const DOORS_MOCK_DATA = [
   {
+    id: 'okna-ei30-ei60',
+    slug: 'okna-ei30-ei60',
+    name: 'Okna EI30 / EI60',
+    category: 'Okna i drzwi przeciwpożarowe',
+    categoryKey: 'exteriorDoors',
+    shortDescription: 'Certyfikowana stolarka ognioodporna do budownictwa mieszkaniowego i komercyjnego. Dokumentacja, badania, wsparcie projektowe.',
+    longDescription: 'Rozwiązania przeciwpożarowe w klasach EI30 i EI60 projektujemy z myślą o bezpieczeństwie użytkowników oraz zgodności z wymaganiami dokumentacji technicznej. Stolarka drewniana łączy estetykę, stabilność konstrukcji i możliwość dopasowania do charakteru inwestycji.',
+    headerImage: '/images/products/fire/top.png',
+    images: [
+      '/images/products/fire/top.png',
+      '/images/aboutus/drzwi-kafelka.png'
+    ],
+    video: '/videos/door.mp4',
+    specs: {
+      profileThickness: '68 / 78 / 90 mm',
+      thermalTransmittance: 'Uw zależne od konfiguracji EI',
+      waterTightness: 'do 1200 Pa (w zależności od systemu)',
+    },
+    features: [
+      { text: '<strong>Klasy odporności EI30 / EI60</strong> – wariant dobierany do wymagań obiektu i scenariusza pożarowego' },
+      { text: '<strong>Szklenie ognioodporne i uszczelnienia pęczniejące</strong> – kompletne rozwiązania zgodne z zakresem oferty' },
+      { text: '<strong>Produkcja i doradztwo: Kraków / Małopolska / Polska</strong> – wsparcie projektowe od doboru po dokumentację' },
+      { text: '<strong>Wykończenia i kolorystyka</strong> – lazury i kolory dopasowane do standardowej stolarki drewnianej' },
+      { text: '<strong>Kompletacja pod wymagania inwestycji</strong> – dobór okuć, wyposażenia i detali montażowych pod konkretny projekt' },
+    ],
+    specialSections: [],
+    advantages: [
+      {
+        title: 'Bezpieczeństwo potwierdzone dokumentacją',
+        description: 'Rozwiązania przygotowywane z uwzględnieniem klas odporności ogniowej i wymagań formalnych projektu.'
+      },
+      {
+        title: 'Elastyczna konfiguracja EI30 / EI60',
+        description: 'Dobór konstrukcji, szklenia i okuć zgodnie z przeznaczeniem obiektu oraz oczekiwaniami inwestora.'
+      },
+      {
+        title: 'Spójność estetyczna',
+        description: 'Stolarka przeciwpożarowa może zachować charakter i kolorystykę pozostałych elementów drewnianych.'
+      },
+      {
+        title: 'Wsparcie techniczne',
+        description: 'Pomoc na etapie koncepcji, projektu wykonawczego i przygotowania dokumentacji do odbioru.'
+      },
+      {
+        title: 'Obsługa lokalna i ogólnopolska',
+        description: 'Realizacje prowadzimy w Krakowie, Małopolsce i na terenie całej Polski.'
+      },
+    ],
+    colors: WINDOW_COLORS_PALETTE,
+    faq: [
+      {
+        question: 'Czy drewno może spełniać wymagania przeciwpożarowe?',
+        answer: 'Tak. Odpowiednio zaprojektowana konstrukcja drewniana, właściwe uszczelnienia i komponenty systemowe pozwalają uzyskać wymagane klasy odporności ogniowej w zakresie oferty.'
+      },
+      {
+        question: 'Czym różni się EI30 od EI60?',
+        answer: 'Podstawowa różnica dotyczy czasu utrzymania wymaganych parametrów odporności ogniowej: odpowiednio 30 i 60 minut. Dobór klasy zależy od wymagań projektu i przepisów dla danego obiektu.'
+      },
+      {
+        question: 'Czy można zastosować przeszklenie?',
+        answer: 'Tak, przewidujemy warianty ze szkleniem ognioodpornym. Zakres i konfiguracja szyb są dobierane indywidualnie do klasy EI oraz wymagań projektowych.'
+      },
+      {
+        question: 'Czy klasa EI zależy od montażu?',
+        answer: 'Tak. Zachowanie klasy odporności ogniowej dotyczy kompletnego rozwiązania, dlatego istotne są zarówno parametry wyrobu, jak i poprawny montaż zgodny z wytycznymi.'
+      },
+      {
+        question: 'Jak wygląda dokumentacja do odbioru / projektu?',
+        answer: 'Przygotowujemy dokumentację przewidzianą dla danego systemu i zakresu oferty, m.in. informacje o klasyfikacji, badaniach oraz dokumentach deklaracyjnych, jeśli dotyczą.'
+      },
+      {
+        question: 'Czy można dobrać kolor/lazur jak w standardowej stolarce?',
+        answer: 'Tak, oferujemy wykończenia spójne z pozostałą stolarką drewnianą. Zakres kolorystyki i rodzaju powłok ustalamy na etapie doboru rozwiązania.'
+      },
+      {
+        question: 'Jaki jest czas realizacji i jak wygląda wycena?',
+        answer: 'Termin realizacji zależy od klasy EI, konfiguracji oraz skali inwestycji. Wycenę przygotowujemy po analizie projektu i wymaganych parametrów technicznych.'
+      },
+      {
+        question: 'Czy realizujecie Kraków i całą Polskę?',
+        answer: 'Tak. Prowadzimy realizacje lokalnie w Krakowie i Małopolsce oraz obsługujemy inwestycje na terenie całej Polski.'
+      },
+    ]
+  },
+  {
     id: 'plycinowo-fryzowe',
     slug: 'plycinowo-fryzowe',
     name: 'płycinowo-fryzowe',

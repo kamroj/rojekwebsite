@@ -73,10 +73,16 @@ export async function getStaticPaths() {
     const detailType = c?.detailType;
     const details = detailType ? (productDetailsByType?.[detailType] || null) : null;
 
-    // Prefer productDetailsByType keys if available; fallback to category products list.
-    let productIds = details
-      ? Object.keys(details)
-      : (c?.products || []).map((p) => (typeof p === 'string' ? p : (p?.slug || p?.id))).filter(Boolean);
+    // Prefer category-specific products list.
+    // This allows dedicated categories (e.g. fire-rated) to expose only selected product slugs.
+    let productIds = (c?.products || [])
+      .map((p) => (typeof p === 'string' ? p : (p?.slug || p?.id)))
+      .filter(Boolean);
+
+    // Fallback to all detail keys only when category list is empty.
+    if (!productIds.length && details) {
+      productIds = Object.keys(details);
+    }
 
     // IMPORTANT: In SSG, if a URL is not returned by getStaticPaths(), Astro returns 404.
     // For CMS-integrated categories, we must include *all* slugs from Sanity, not only local mock data.
