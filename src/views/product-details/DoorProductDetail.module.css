@@ -188,6 +188,17 @@
   justify-content: center;
 }
 
+.centerMarker {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1px;
+  height: 1px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
 .glowEffect {
   position: absolute;
   top: 50%;

@@ -25,6 +25,8 @@ import { DOOR_FAQ_FALLBACK } from '../../data/products/faqFallback.js';
 const DoorStandardFeaturesSection = ({ t }) => {
   const lockImageWrapRef = useRef(null);
   const thresholdImageWrapRef = useRef(null);
+  const lockCenterMarkerRef = useRef(null);
+  const thresholdCenterMarkerRef = useRef(null);
   const [isLockCentered, setIsLockCentered] = useState(false);
   const [isThresholdCentered, setIsThresholdCentered] = useState(false);
 
@@ -39,7 +41,8 @@ const DoorStandardFeaturesSection = ({ t }) => {
       if (thresholdObserver) thresholdObserver.disconnect();
 
       const isMobileViewport = (window.innerWidth || document.documentElement.clientWidth) <= 992;
-      const rootMargin = isMobileViewport ? '-38% 0px -38% 0px' : '-32% 0px -32% 0px';
+      // Narrow center band => zoom starts later (closer to the actual middle of viewport).
+      const rootMargin = isMobileViewport ? '-35% 0px -35% 0px' : '-35% 0px -35% 0px';
 
       lockObserver = new IntersectionObserver(
         ([entry]) => setIsLockCentered(entry.isIntersecting),
@@ -51,8 +54,8 @@ const DoorStandardFeaturesSection = ({ t }) => {
         { root: null, rootMargin, threshold: 0.01 }
       );
 
-      if (lockImageWrapRef.current) lockObserver.observe(lockImageWrapRef.current);
-      if (thresholdImageWrapRef.current) thresholdObserver.observe(thresholdImageWrapRef.current);
+      if (lockCenterMarkerRef.current) lockObserver.observe(lockCenterMarkerRef.current);
+      if (thresholdCenterMarkerRef.current) thresholdObserver.observe(thresholdCenterMarkerRef.current);
     };
 
     createObservers();
@@ -185,6 +188,7 @@ const DoorStandardFeaturesSection = ({ t }) => {
           <div className={styles.imageContainer}>
             <div className={styles.imageWrapper} ref={lockImageWrapRef}>
               <div className={styles.glowEffect} />
+              <span className={styles.centerMarker} ref={lockCenterMarkerRef} aria-hidden="true" />
               <img
                 className={`${styles.productImage} ${isLockCentered ? styles.productImageCentered : ''}`}
                 src="/images/products/doors/lock-3point.png"
@@ -200,6 +204,7 @@ const DoorStandardFeaturesSection = ({ t }) => {
         <div className={styles.imageContainer}>
           <div className={styles.imageWrapper} ref={thresholdImageWrapRef}>
             <div className={styles.glowEffect} />
+            <span className={styles.centerMarker} ref={thresholdCenterMarkerRef} aria-hidden="true" />
             <img
               className={`${styles.productImage} ${isThresholdCentered ? styles.productImageCentered : ''}`}
               src="/images/products/doors/threshold-alu.png"
