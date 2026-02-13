@@ -2,7 +2,7 @@ export const PRODUCT_TYPES = {
   WINDOWS: 'okna',
   DOORS: 'drzwi',
   TERRACE_DOORS: 'oknaPrzesuwne',
-  FIRE_RESISTANT: 'okna-drzwi-przeciwpozarowe'
+  FIRE_RESISTANT: 'oknaDrzwiPrzeciwpozarowe'
 };
 
 export const ROUTES = {
