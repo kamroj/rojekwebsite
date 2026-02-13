@@ -281,11 +281,12 @@
 
 .categoryRow:hover {
   background: rgba(255, 255, 255, 0.18);
-  color: inherit;
+  color: var(--color-text-light);
 }
 
 .megaMenuInnerPastThreshold .categoryRow:hover {
   background: rgba(2, 99, 3, 0.14);
+  color: var(--color-text);
 }
 
 .categoryRowActive {
@@ -345,7 +346,7 @@
 .productList {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  padding-right: 16px;
 }
 
 .productLink {
@@ -356,6 +357,8 @@
   text-transform: uppercase;
   letter-spacing: 0.3px;
   transition: color 150ms ease;
+  padding: 8px 10px;
+  border-radius: 10px;
 }
 
 .megaMenuInnerPastThreshold .productLink {
@@ -363,7 +366,13 @@
 }
 
 .productLink:hover {
-  color: #018001;
+  background: rgba(255, 255, 255, 0.18);
+  color: var(--color-text-light);
+}
+
+.megaMenuInnerPastThreshold .productLink:hover {
+  background: rgba(2, 99, 3, 0.14);
+  color: var(--color-text);
 }
 
 .productSpecs {

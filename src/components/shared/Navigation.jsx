@@ -244,8 +244,10 @@ const Navigation = ({
     const entries = Object.entries(productCategories || {});
 
     const iconByKey = {
-      okna: '/images/window-icon.png',
-      drzwi: '/images/door-icon.png',
+      okna: '/images/icons/ikona-okna-mm.png',
+      drzwi: '/images/icons/ikona-drzwi-mm.png',
+      oknaDrzwiPrzeciwpozarowe: '/images/icons/ikona-okna-ppoz-mm.png',
+      oknaPrzesuwne: '/images/icons/ikona-hs-mm.png',
       bramy: '/images/icons/tools-icon.png',
       rolety: '/images/icons/tools-icon.png',
     };
