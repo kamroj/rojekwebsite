@@ -1,7 +1,7 @@
 export const PRODUCT_TYPES = {
   WINDOWS: 'okna',
   DOORS: 'drzwi',
-  TERRACE_DOORS: 'drzwi-tarasowe',
+  TERRACE_DOORS: 'oknaPrzesuwne',
   FIRE_RESISTANT: 'okna-drzwi-przeciwpozarowe'
 };
 

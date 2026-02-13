@@ -18,6 +18,7 @@
     "about": "About Us",
     "contact": "Contact",
     "okna": "Windows",
+    "oknaPrzesuwne": "Sliding windows HS",
     "drzwi": "Doors",
     "bramy": "Gates",
     "rolety": "Shutters"
@@ -111,8 +112,8 @@
       "description": "Stylish and functional exterior doors"
     },
     "terraceDoors": {
-      "name": "Terrace doors",
-      "description": "Modern HS and PSK sliding systems"
+      "name": "Sliding windows (HS)",
+      "description": "Modern HS sliding systems"
     },
     "fireResistant": {
       "name": "Fire-resistant windows and doors",
@@ -212,6 +213,10 @@
       "title": "Window products",
       "subtitle": "Discover our modern window systems."
     },
+    "oknaPrzesuwne": {
+      "title": "Sliding windows HS",
+      "subtitle": "Choose the HS system variant best suited to your project."
+    },
     "drzwi": {
       "title": "Door products",
       "subtitle": "Discover our modern door systems."
@@ -293,20 +298,105 @@
       "backToCategory": "Back to category",
       "noTemplateTitle": "No product template",
       "noTemplateText": "We haven't prepared a product detail page for this category yet."
+    },
+    "hsSchemes": {
+      "sectionTitle": "Schemes / configurations",
+      "selectorAriaLabel": "HS scheme selection",
+      "configurationLabel": "Configuration:",
+      "usageLabel": "Application:",
+      "cta": "Open HS configurator",
+      "items": {
+        "A": {
+          "buttonLabel": "Scheme A",
+          "title": "2-part (1 fixed sash + 1 sliding sash)",
+          "description": "The simplest and most frequently chosen configuration. One sash is fixed (non-opening), while the other slides parallel to it.",
+          "usage": "Access to a terrace, balcony, or garden in standard widths."
+        },
+        "A3": {
+          "buttonLabel": "Scheme A3",
+          "title": "2-part (1 fixed sash + 1 sliding sash – mirrored version)",
+          "description": "A layout equivalent to scheme A, with sliding in the opposite direction. It allows matching the opening side to the room layout.",
+          "usage": "When left-side opening is required or alignment with a wall, built-in furniture, or circulation path is needed."
+        },
+        "C": {
+          "buttonLabel": "Scheme C",
+          "title": "4-part (2 sliding sashes + 2 fixed)",
+          "description": "Two sliding sashes enable a wide opening of the space. Fixed elements stabilize the structure and provide a large glazed area.",
+          "usage": "Large terrace glazing in modern homes, wide openings to the garden."
+        },
+        "D": {
+          "buttonLabel": "Scheme D",
+          "title": "2-part (2 sliding sashes)",
+          "description": "Both sashes are movable and can slide in opposite directions. This enables flexible opening depending on user needs.",
+          "usage": "Terraces and gardens where symmetry and two-way opening functionality are required."
+        },
+        "E": {
+          "buttonLabel": "Scheme E",
+          "title": "3-part (2 sliding sashes + 1 fixed)",
+          "description": "A solution combining a wide passage opening with a large fixed glazed area. Two sliding sashes provide convenient operation.",
+          "usage": "Modern living rooms with large glazing and panoramic views."
+        },
+        "F": {
+          "buttonLabel": "Scheme F",
+          "title": "4-part (4 sliding sashes)",
+          "description": "All sashes are movable and can slide both left and right. A symmetrical layout enabling a very wide opening of the entire construction and maximum flexibility of use.",
+          "usage": "Large, representative terrace glazing in modern homes and residences where panoramic opening and a glass-wall effect are key."
+        },
+        "G2": {
+          "buttonLabel": "Scheme G2",
+          "title": "3-part asymmetric with static mullion (1 sliding sash + 2 fixed)",
+          "description": "An asymmetric layout with a visible structural mullion. One sliding sash provides comfortable access, while the remaining elements are fixed.",
+          "usage": "Wide glazing with maintained structural stability."
+        },
+        "G3": {
+          "buttonLabel": "Scheme G3",
+          "title": "3-part asymmetric without static mullion (1 sliding sash + 2 fixed)",
+          "description": "A modern variant without a visible center mullion. It delivers a more uniform glass surface and a cleaner visual effect.",
+          "usage": "Minimalist architectural projects where maximum aesthetics and view are essential."
+        },
+        "H": {
+          "buttonLabel": "Scheme H",
+          "title": "3-part (3 sliding sashes)",
+          "description": "All sashes are movable, allowing flexible and wide opening of the space in both directions.",
+          "usage": "Large terrace glazing in premium homes and modern residences."
+        },
+        "K": {
+          "buttonLabel": "Scheme K",
+          "title": "3-part (2 sliding sashes + 1 fixed – central layout)",
+          "description": "The fixed element is located in the center, while sliding sashes operate on both sides. A solution with high aesthetics and a symmetrical appearance.",
+          "usage": "Wide facades with a representative exit to the terrace or garden."
+        }
+      }
     }
   },
   "realizations": {
     "subtitle": "See our realizations",
     "description": "Below we present selected projects that we have implemented for our clients. Each order is a new challenge for us, which we face with passion and professionalism.",
     "items": [
-      { "title": "Single-family house, Wrocław" },
-      { "title": "Modern housing estate, Poznań" },
-      { "title": "Tenement renovation, Kraków" },
-      { "title": "Class A office building, Warsaw" },
-      { "title": "Lofts in old factory, Łódź" },
-      { "title": "Villa outside the city, Gdańsk" },
-      { "title": "Urban residence, Wrocław" },
-      { "title": "Residential complex, Gdańsk" }
+      {
+        "title": "Single-family house, Wrocław"
+      },
+      {
+        "title": "Modern housing estate, Poznań"
+      },
+      {
+        "title": "Tenement renovation, Kraków"
+      },
+      {
+        "title": "Class A office building, Warsaw"
+      },
+      {
+        "title": "Lofts in old factory, Łódź"
+      },
+      {
+        "title": "Villa outside the city, Gdańsk"
+      },
+      {
+        "title": "Urban residence, Wrocław"
+      },
+      {
+        "title": "Residential complex, Gdańsk"
+      }
     ]
   },
   "whyUs": {
@@ -475,6 +565,7 @@
     "configurator": "HS Configurator",
     "categories": {
       "okna": "Windows",
+      "oknaPrzesuwne": "Sliding windows HS",
       "drzwi": "Doors",
       "bramy": "Gates",
       "rolety": "Shutters"

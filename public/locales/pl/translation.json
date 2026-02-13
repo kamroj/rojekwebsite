@@ -19,6 +19,7 @@
     "about": "O Firmie",
     "contact": "Kontakt",
     "okna": "Okna",
+    "oknaPrzesuwne": "Okna przesuwne HS",
     "drzwi": "Drzwi",
     "bramy": "Bramy",
     "rolety": "Rolety"
@@ -189,8 +190,8 @@
       "description": "Stylowe i funkcjonalne drzwi zewnętrzne"
     },
     "terraceDoors": {
-      "name": "Drzwi tarasowe",
-      "description": "Nowoczesne systemy przesuwne HS i PSK"
+      "name": "Okna przesuwne (HS)",
+      "description": "Nowoczesne systemy przesuwne HS"
     },
     "fireResistant": {
       "name": "Okna i Drzwi przeciwpożarowe",
@@ -205,6 +206,10 @@
     "okna": {
       "title": "Produkty okienne",
       "subtitle": "Poznaj nasze nowoczesne systemy okienne."
+    },
+    "oknaPrzesuwne": {
+      "title": "Okna przesuwne HS",
+      "subtitle": "Wybierz wariant systemu HS dopasowany do Twojego projektu."
     },
     "drzwi": {
       "title": "Produkty drzwiowe",
@@ -287,20 +292,105 @@
       "backToCategory": "Wróć do kategorii",
       "noTemplateTitle": "Brak szablonu produktu",
       "noTemplateText": "Dla tej kategorii produktów nie mamy jeszcze przygotowanej strony detalu."
+    },
+    "hsSchemes": {
+      "sectionTitle": "Schematy / konfiguracje",
+      "selectorAriaLabel": "Wybór schematu HS",
+      "configurationLabel": "Konfiguracja:",
+      "usageLabel": "Zastosowanie:",
+      "cta": "Zobacz konfigurator HS",
+      "items": {
+        "A": {
+          "buttonLabel": "Schemat A",
+          "title": "2-elementowy (1 skrzydło stałe + 1 przesuwne)",
+          "description": "Najprostsza i najczęściej wybierana konfiguracja. Jedno skrzydło jest stałe (nieotwierane), drugie przesuwa się równolegle do niego.",
+          "usage": "Wyjście na taras, balkon lub ogród w standardowych szerokościach."
+        },
+        "A3": {
+          "buttonLabel": "Schemat A3",
+          "title": "2-elementowy (1 skrzydło stałe + 1 przesuwne – wersja lustrzana)",
+          "description": "Układ analogiczny do schematu A, z przesuwem w przeciwnym kierunku. Pozwala dopasować stronę otwierania do układu pomieszczenia.",
+          "usage": "Gdy wymagane jest otwieranie w lewo lub dopasowanie do ściany, zabudowy lub komunikacji."
+        },
+        "C": {
+          "buttonLabel": "Schemat C",
+          "title": "4-elementowy (2 skrzydła przesuwne + 2 stałe)",
+          "description": "Dwa skrzydła przesuwne umożliwiają szerokie otwarcie przestrzeni. Elementy stałe stabilizują konstrukcję i zapewniają dużą powierzchnię przeszklenia.",
+          "usage": "Duże przeszklenia tarasowe w nowoczesnych domach, szerokie wyjścia do ogrodu."
+        },
+        "D": {
+          "buttonLabel": "Schemat D",
+          "title": "2-elementowy (2 skrzydła przesuwne)",
+          "description": "Oba skrzydła są ruchome i mogą przesuwać się w przeciwnych kierunkach. Umożliwia to elastyczne otwieranie w zależności od potrzeb użytkownika.",
+          "usage": "Tarasy i ogrody, gdzie wymagana jest symetria i funkcjonalność dwustronnego otwierania."
+        },
+        "E": {
+          "buttonLabel": "Schemat E",
+          "title": "3-elementowy (2 skrzydła przesuwne + 1 stałe)",
+          "description": "Rozwiązanie łączące szerokie światło przejścia z dużą powierzchnią stałego przeszklenia. Dwa skrzydła przesuwne zapewniają wygodne użytkowanie.",
+          "usage": "Nowoczesne salony z dużym przeszkleniem i panoramicznym widokiem."
+        },
+        "F": {
+          "buttonLabel": "Schemat F",
+          "title": "4-elementowy (4 skrzydła przesuwne)",
+          "description": "Wszystkie skrzydła są ruchome i mogą przesuwać się w prawo oraz w lewo. Układ symetryczny, umożliwiający bardzo szerokie otwarcie całej konstrukcji i maksymalną elastyczność użytkowania.",
+          "usage": "Duże, reprezentacyjne przeszklenia tarasowe w nowoczesnych domach i rezydencjach, gdzie kluczowe jest panoramiczne otwarcie przestrzeni oraz efekt „ściany ze szkła”."
+        },
+        "G2": {
+          "buttonLabel": "Schemat G2",
+          "title": "3-elementowy asymetryczny ze słupkiem statycznym (1 skrzydło przesuwne + 2 stałe)",
+          "description": "Układ asymetryczny z widocznym słupkiem konstrukcyjnym. Jedno skrzydło przesuwne zapewnia komfortowe wyjście, pozostałe elementy są stałe.",
+          "usage": "Szerokie przeszklenia z zachowaniem stabilności konstrukcyjnej."
+        },
+        "G3": {
+          "buttonLabel": "Schemat G3",
+          "title": "3-elementowy asymetryczny bez słupka statycznego (1 skrzydło przesuwne + 2 stałe)",
+          "description": "Nowoczesny wariant bez widocznego słupka pośrodku. Zapewnia bardziej jednolitą taflę szkła i lepszy efekt wizualny.",
+          "usage": "Minimalistyczne projekty architektoniczne, gdzie liczy się maksymalna estetyka i widok."
+        },
+        "H": {
+          "buttonLabel": "Schemat H",
+          "title": "3-elementowy (3 skrzydła przesuwne)",
+          "description": "Wszystkie skrzydła są ruchome, co umożliwia elastyczne i szerokie otwarcie przestrzeni w obu kierunkach.",
+          "usage": "Duże przeszklenia tarasowe w domach premium i nowoczesnych rezydencjach."
+        },
+        "K": {
+          "buttonLabel": "Schemat K",
+          "title": "3-elementowy (2 skrzydła przesuwne + 1 stałe – układ centralny)",
+          "description": "Stały element znajduje się pośrodku, a skrzydła przesuwne pracują po bokach. Rozwiązanie o wysokiej estetyce i symetrycznym wyglądzie.",
+          "usage": "Szerokie elewacje z reprezentacyjnym wyjściem na taras lub ogród."
+        }
+      }
     }
   },
   "realizations": {
     "subtitle": "Zobacz nasze realizacje",
     "description": "Poniżej prezentujemy wybrane projekty, które realizowaliśmy dla naszych klientów. Każde zlecenie to dla nas nowe wyzwanie, któremu stawiamy czoła z pasją i profesjonalizmem.",
     "items": [
-      { "title": "Dom jednorodzinny, Wrocław" },
-      { "title": "Nowoczesne osiedle, Poznań" },
-      { "title": "Renowacja kamienicy, Kraków" },
-      { "title": "Biurowiec klasy A, Warszawa" },
-      { "title": "Lofty w starej fabryce, Łódź" },
-      { "title": "Willa pod miastem, Gdańsk" },
-      { "title": "Rezydencja miejska, Wrocław" },
-      { "title": "Kompleks mieszkaniowy, Gdańsk" }
+      {
+        "title": "Dom jednorodzinny, Wrocław"
+      },
+      {
+        "title": "Nowoczesne osiedle, Poznań"
+      },
+      {
+        "title": "Renowacja kamienicy, Kraków"
+      },
+      {
+        "title": "Biurowiec klasy A, Warszawa"
+      },
+      {
+        "title": "Lofty w starej fabryce, Łódź"
+      },
+      {
+        "title": "Willa pod miastem, Gdańsk"
+      },
+      {
+        "title": "Rezydencja miejska, Wrocław"
+      },
+      {
+        "title": "Kompleks mieszkaniowy, Gdańsk"
+      }
     ]
   },
   "whyUs": {
@@ -469,6 +559,7 @@
     "configurator": "Konfigurator HS",
     "categories": {
       "okna": "Okna",
+      "oknaPrzesuwne": "Okna przesuwne HS",
       "drzwi": "Drzwi",
       "bramy": "Bramy",
       "rolety": "Rolety"

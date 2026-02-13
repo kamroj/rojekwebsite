@@ -1,5 +1,6 @@
 import { windowCategory, windowProductDetails } from './windows.js';
 import { DOORS_MOCK_DATA, getAllDoors, getDoorBySlug } from './doors.js';
+import { HS_PRODUCT_DETAILS } from './hs.js';
 
 // Convenience re-export.
 // NOTE: In Node ESM (used by Astro build/SSG), directory imports like `../data/products` are not supported.
@@ -9,6 +10,8 @@ export { DOORS_MOCK_DATA, getAllDoors };
 
 const FIRE_RATED_DOOR = getDoorBySlug('okna-ei30-ei60');
 
+const hsProductsList = [HS_PRODUCT_DETAILS['drewno-alu'], HS_PRODUCT_DETAILS.drewno].filter(Boolean);
+
 // Convert doors mock data to the format expected by productDetailsByType
 const doorProductDetails = {};
 DOORS_MOCK_DATA.forEach(door => {
@@ -17,6 +20,22 @@ DOORS_MOCK_DATA.forEach(door => {
 
 export const productCategories = {
   okna: windowCategory,
+  oknaPrzesuwne: {
+    id: 'oknaPrzesuwne',
+    detailType: 'hs',
+    title: 'Okna przesuwne HS',
+    subtitle: 'Wybierz wariant systemu HS dopasowany do Twojego projektu.',
+    pageTitle: 'Okna przesuwne HS',
+    headerImage: '/images/hs/top.jpg',
+    products: hsProductsList.map((product) => ({
+      id: product.id,
+      slug: product.slug,
+      name: product.name,
+      image: product.images?.[0] || '/images/aboutus/hs-kafelka.png',
+      description: product.shortDescription,
+      specs: product.specs,
+    })),
+  },
   drzwi: {
     id: 'drzwi',
     detailType: 'doors',
@@ -71,5 +90,6 @@ export const productCategories = {
 
 export const productDetailsByType = {
   windows: windowProductDetails,
-  doors: doorProductDetails
+  doors: doorProductDetails,
+  hs: HS_PRODUCT_DETAILS,
 };

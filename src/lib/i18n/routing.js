@@ -41,6 +41,7 @@ export const SECTION_SLUGS = {
 export const CATEGORY_SLUGS = {
   pl: {
     okna: 'okna',
+    oknaPrzesuwne: 'okna-przesuwne',
     drzwi: 'drzwi',
     oknaDrzwiPrzeciwpozarowe: 'okna-i-drzwi-przeciwpozarowe',
     bramy: 'bramy',
@@ -48,6 +49,7 @@ export const CATEGORY_SLUGS = {
   },
   en: {
     okna: 'windows',
+    oknaPrzesuwne: 'sliding-windows',
     drzwi: 'doors',
     oknaDrzwiPrzeciwpozarowe: 'fire-rated-windows-and-doors',
     bramy: 'gates',
@@ -55,6 +57,7 @@ export const CATEGORY_SLUGS = {
   },
   de: {
     okna: 'fenster',
+    oknaPrzesuwne: 'schiebefenster',
     drzwi: 'tueren',
     oknaDrzwiPrzeciwpozarowe: 'brandschutz-fenster-und-tueren',
     bramy: 'garagentore',

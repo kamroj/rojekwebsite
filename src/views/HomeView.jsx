@@ -75,7 +75,6 @@ const HomePage = () => {
       name: t('products.terraceDoors.name'),
       description: t('products.terraceDoors.description'),
       backgroundSrc: '/images/aboutus/hs-kafelka.png',
-
       videoSrc: VIDEO_SOURCES.TERRACE_DOORS,
     },
     [PRODUCT_TYPES.FIRE_RESISTANT]: {

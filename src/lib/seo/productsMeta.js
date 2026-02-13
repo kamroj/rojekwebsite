@@ -12,6 +12,7 @@ const PRODUCTS_SECTION_LABEL = {
 const CATEGORY_LABELS = {
   pl: {
     okna: 'Okna',
+    oknaPrzesuwne: 'Okna przesuwne HS',
     drzwi: 'Drzwi',
     oknaDrzwiPrzeciwpozarowe: 'Okna i drzwi przeciwpożarowe',
     bramy: 'Bramy',
@@ -19,6 +20,7 @@ const CATEGORY_LABELS = {
   },
   en: {
     okna: 'Windows',
+    oknaPrzesuwne: 'Sliding windows HS',
     drzwi: 'Doors',
     oknaDrzwiPrzeciwpozarowe: 'Fire-rated windows and doors',
     bramy: 'Gates',
@@ -26,6 +28,7 @@ const CATEGORY_LABELS = {
   },
   de: {
     okna: 'Fenster',
+    oknaPrzesuwne: 'Schiebefenster HS',
     drzwi: 'Türen',
     oknaDrzwiPrzeciwpozarowe: 'Brandschutzfenster und -türen',
     bramy: 'Garagentore',

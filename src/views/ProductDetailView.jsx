@@ -6,6 +6,7 @@ import { productCategories, productDetailsByType } from '../data/products/index.
 import WindowProductDetail from './product-details/WindowProductDetail';
 import DoorProductDetail from './product-details/DoorProductDetail';
 import FireRatedProductDetail from './product-details/FireRatedProductDetail';
+import HsProductDetail from './product-details/HsProductDetail';
 import { useTranslation } from 'react-i18next';
 import { getCategoryKeyFromSlug, getProductCategoryPath, getProductsIndexPath } from '../lib/i18n/routing';
 import { useResourceCollector } from '../context/ResourceCollectorContext';
@@ -122,6 +123,8 @@ function ProductDetailPageBase({ category, productId, initialSanityProduct }) {
         return <FireRatedProductDetail product={product} />;
       }
       return <DoorProductDetail product={product} />;
+    case 'hs':
+      return <HsProductDetail product={product} />;
     default:
       return (
         <Page

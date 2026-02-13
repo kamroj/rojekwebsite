@@ -18,6 +18,7 @@
     "about": "Über uns",
     "contact": "Kontakt",
     "okna": "Fenster",
+    "oknaPrzesuwne": "Schiebefenster HS",
     "drzwi": "Türen",
     "bramy": "Garagentore",
     "rolety": "Rollläden"
@@ -111,8 +112,8 @@
       "description": "Stilvolle und funktionale Außentüren"
     },
     "terraceDoors": {
-      "name": "Terrassentüren",
-      "description": "Moderne HS- und PSK-Schiebeanlagen"
+      "name": "Schiebefenster (HS)",
+      "description": "Moderne HS-Schiebesysteme"
     },
     "fireResistant": {
       "name": "Brandschutzfenster und -türen",
@@ -212,6 +213,10 @@
       "title": "Fensterprodukte",
       "subtitle": "Entdecken Sie unsere modernen Fenstersysteme."
     },
+    "oknaPrzesuwne": {
+      "title": "Schiebefenster HS",
+      "subtitle": "Wählen Sie die HS-Systemvariante, die zu Ihrem Projekt passt."
+    },
     "drzwi": {
       "title": "Türprodukte",
       "subtitle": "Entdecken Sie unsere modernen Türsysteme."
@@ -293,20 +298,105 @@
       "backToCategory": "Zurück zur Kategorie",
       "noTemplateTitle": "Keine Produktvorlage",
       "noTemplateText": "Für diese Produktkategorie haben wir noch keine Detailseite vorbereitet."
+    },
+    "hsSchemes": {
+      "sectionTitle": "Schemata / Konfigurationen",
+      "selectorAriaLabel": "Auswahl des HS-Schemas",
+      "configurationLabel": "Konfiguration:",
+      "usageLabel": "Einsatzbereich:",
+      "cta": "HS-Konfigurator öffnen",
+      "items": {
+        "A": {
+          "buttonLabel": "Schema A",
+          "title": "2-teilig (1 festes Flügel + 1 Schiebeflügel)",
+          "description": "Die einfachste und am häufigsten gewählte Konfiguration. Ein Flügel ist fest (nicht zu öffnen), der zweite verschiebt sich parallel dazu.",
+          "usage": "Ausgang zur Terrasse, zum Balkon oder in den Garten bei Standardbreiten."
+        },
+        "A3": {
+          "buttonLabel": "Schema A3",
+          "title": "2-teilig (1 festes Flügel + 1 Schiebeflügel – Spiegelversion)",
+          "description": "Aufbau analog zu Schema A, jedoch mit Schieberichtung in die entgegengesetzte Richtung. So lässt sich die Öffnungsseite an den Grundriss anpassen.",
+          "usage": "Wenn eine Öffnung nach links erforderlich ist oder eine Anpassung an Wand, Einbauten oder Laufwege nötig ist."
+        },
+        "C": {
+          "buttonLabel": "Schema C",
+          "title": "4-teilig (2 Schiebeflügel + 2 feste Elemente)",
+          "description": "Zwei Schiebeflügel ermöglichen eine breite Öffnung des Raums. Feste Elemente stabilisieren die Konstruktion und sorgen für eine große Glasfläche.",
+          "usage": "Große Terrassenverglasungen in modernen Häusern, breite Ausgänge in den Garten."
+        },
+        "D": {
+          "buttonLabel": "Schema D",
+          "title": "2-teilig (2 Schiebeflügel)",
+          "description": "Beide Flügel sind beweglich und können in entgegengesetzte Richtungen verschoben werden. Das ermöglicht eine flexible Öffnung je nach Bedarf.",
+          "usage": "Terrassen und Gärten, bei denen Symmetrie und die Funktion des beidseitigen Öffnens gefragt sind."
+        },
+        "E": {
+          "buttonLabel": "Schema E",
+          "title": "3-teilig (2 Schiebeflügel + 1 festes Element)",
+          "description": "Lösung mit großer Durchgangsbreite und großer festverglaster Fläche. Zwei Schiebeflügel sorgen für komfortable Bedienung.",
+          "usage": "Moderne Wohnbereiche mit großer Verglasung und Panoramablick."
+        },
+        "F": {
+          "buttonLabel": "Schema F",
+          "title": "4-teilig (4 Schiebeflügel)",
+          "description": "Alle Flügel sind beweglich und können nach rechts und links verschoben werden. Symmetrischer Aufbau für eine sehr große Gesamtöffnung und maximale Flexibilität in der Nutzung.",
+          "usage": "Große, repräsentative Terrassenverglasungen in modernen Häusern und Residenzen, bei denen eine panoramische Öffnung und der Effekt einer Glaswand entscheidend sind."
+        },
+        "G2": {
+          "buttonLabel": "Schema G2",
+          "title": "3-teilig asymmetrisch mit statischem Pfosten (1 Schiebeflügel + 2 feste Elemente)",
+          "description": "Asymmetrischer Aufbau mit sichtbarem Konstruktionspfosten. Ein Schiebeflügel ermöglicht einen komfortablen Ausgang, die übrigen Elemente sind fest.",
+          "usage": "Breite Verglasungen bei gleichzeitiger Wahrung der Konstruktionsstabilität."
+        },
+        "G3": {
+          "buttonLabel": "Schema G3",
+          "title": "3-teilig asymmetrisch ohne statischen Pfosten (1 Schiebeflügel + 2 feste Elemente)",
+          "description": "Moderne Variante ohne sichtbaren mittleren Pfosten. Sorgt für eine einheitlichere Glasfläche und eine bessere optische Wirkung.",
+          "usage": "Minimalistische Architekturprojekte, bei denen maximale Ästhetik und Aussicht zählen."
+        },
+        "H": {
+          "buttonLabel": "Schema H",
+          "title": "3-teilig (3 Schiebeflügel)",
+          "description": "Alle Flügel sind beweglich, wodurch eine flexible und breite Öffnung des Raums in beide Richtungen möglich ist.",
+          "usage": "Große Terrassenverglasungen in Premiumhäusern und modernen Residenzen."
+        },
+        "K": {
+          "buttonLabel": "Schema K",
+          "title": "3-teilig (2 Schiebeflügel + 1 festes Element – zentrales Layout)",
+          "description": "Das feste Element befindet sich in der Mitte, die Schiebeflügel arbeiten seitlich. Eine Lösung mit hoher Ästhetik und symmetrischem Erscheinungsbild.",
+          "usage": "Breite Fassaden mit repräsentativem Ausgang zur Terrasse oder in den Garten."
+        }
+      }
     }
   },
   "realizations": {
     "subtitle": "Sehen Sie unsere Projekte",
     "description": "Unten präsentieren wir ausgewählte Projekte, die wir für unsere Kunden realisiert haben. Jeder Auftrag ist für uns eine neue Herausforderung, der wir mit Leidenschaft und Professionalität begegnen.",
     "items": [
-      { "title": "Einfamilienhaus, Wrocław" },
-      { "title": "Moderne Wohnsiedlung, Poznań" },
-      { "title": "Mietshausrenovierung, Kraków" },
-      { "title": "Bürogebäude Klasse A, Warschau" },
-      { "title": "Lofts in alter Fabrik, Łódź" },
-      { "title": "Villa außerhalb der Stadt, Gdańsk" },
-      { "title": "Stadtresidenz, Wrocław" },
-      { "title": "Wohnkomplex, Gdańsk" }
+      {
+        "title": "Einfamilienhaus, Wrocław"
+      },
+      {
+        "title": "Moderne Wohnsiedlung, Poznań"
+      },
+      {
+        "title": "Mietshausrenovierung, Kraków"
+      },
+      {
+        "title": "Bürogebäude Klasse A, Warschau"
+      },
+      {
+        "title": "Lofts in alter Fabrik, Łódź"
+      },
+      {
+        "title": "Villa außerhalb der Stadt, Gdańsk"
+      },
+      {
+        "title": "Stadtresidenz, Wrocław"
+      },
+      {
+        "title": "Wohnkomplex, Gdańsk"
+      }
     ]
   },
   "whyUs": {
@@ -475,6 +565,7 @@
     "configurator": "HS‑Konfigurator",
     "categories": {
       "okna": "Fenster",
+      "oknaPrzesuwne": "Schiebefenster HS",
       "drzwi": "Türen",
       "bramy": "Garagentore",
       "rolety": "Rollläden"
@@ -546,12 +637,6 @@
     "description1": "Die Produktionsstätte befindet sich in Kryspinów 399, an der Autobahn A4.",
     "description2": "Wir laden Sie ein, unseren Showroom zu besuchen, wo Sie die gesamte Palette unserer Produkte sehen und fachkundige Beratung erhalten können.",
     "imageAlt": "ROJEK Firmensitz"
-  },
-  "aboutPage": {
-    "headers": {
-      "whyUsSubtitle": "Was uns auszeichnet",
-      "historySubtitle": "Wie wir uns im Laufe der Jahre verändert haben"
-    }
   },
   "contactPage": {
     "header": {
