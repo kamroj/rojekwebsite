@@ -294,7 +294,7 @@
       "noTemplateText": "Dla tej kategorii produktów nie mamy jeszcze przygotowanej strony detalu."
     },
     "hsSchemes": {
-      "sectionTitle": "Schematy / konfiguracje",
+      "sectionTitle": "Schematy",
       "selectorAriaLabel": "Wybór schematu HS",
       "configurationLabel": "Konfiguracja:",
       "usageLabel": "Zastosowanie:",

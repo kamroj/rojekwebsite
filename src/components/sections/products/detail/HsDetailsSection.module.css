@@ -68,10 +68,8 @@
 .profileThicknessSwitch {
   display: flex;
   gap: 0.75rem;
-  margin-bottom: 0.8rem;
-  width: 100%;
-  max-width: var(--profile-media-width);
-  justify-content: center;
+  margin-bottom: 0;
+  width: fit-content;
 }
 
 .profileThicknessButton {
@@ -98,7 +96,7 @@
 .profileThicknessLayout {
   display: grid;
   grid-template-columns: minmax(230px, var(--profile-media-width)) minmax(0, 1fr);
-  gap: 1.2rem;
+  gap: 2rem;
   align-items: start;
 }
 
@@ -145,6 +143,12 @@
   margin-bottom: 0.9rem;
 }
 
+.profileThicknessTopLine {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
 .profileThicknessDescription {
   display: flex;
   flex-direction: column;
@@ -172,6 +176,102 @@
   line-height: 1.75;
   color: #4a5c50;
   max-width: 760px;
+}
+
+.thresholdSection {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3rem 2rem 2.5rem;
+}
+
+.thresholdLayout {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 2rem;
+  align-items: stretch;
+}
+
+.thresholdDescription {
+  display: flex;
+  flex-direction: column;
+}
+
+.thresholdSwitch {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0;
+  width: fit-content;
+}
+
+.thresholdButton {
+  border: 1px solid #2e8b57;
+  background: #ffffff;
+  color: #0f591a;
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.thresholdButton:hover {
+  border-color: #0f591a;
+}
+
+.thresholdButtonActive {
+  background: #e8f5e8;
+  border-color: #0f591a;
+}
+
+.thresholdTitleBlock {
+  margin-bottom: 0.9rem;
+}
+
+.thresholdTopLine {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 0.7rem;
+}
+
+.thresholdOverline {
+  display: inline-block;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #4c4c4c;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0;
+}
+
+.thresholdTitle {
+  margin: 0;
+  font-size: 2.6rem;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #104818;
+}
+
+.thresholdParagraph {
+  margin: 0 0 0.9rem;
+  font-size: 1.35rem;
+  line-height: 1.75;
+  color: #4a5c50;
+}
+
+.thresholdMedia {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 520px;
+}
+
+.thresholdImage {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
 }
 
 .grid {
@@ -323,6 +423,18 @@
   .additionalGrid {
     grid-template-columns: 1fr;
   }
+
+  .thresholdLayout {
+    gap: 1.4rem;
+  }
+
+  .thresholdTitle {
+    font-size: 2.2rem;
+  }
+
+  .thresholdMedia {
+    height: 440px;
+  }
 }
 
 @media (--bp-sm) {
@@ -341,6 +453,14 @@
 
   .profileThicknessLayout {
     grid-template-columns: 1fr;
+  }
+
+  .profileThicknessDescription {
+    order: 1;
+  }
+
+  .profileThicknessMediaColumn {
+    order: 2;
   }
 
   .profileThicknessMediaColumn {
@@ -374,5 +494,28 @@
 
   .embeddedSection {
     padding: 0 1rem;
+  }
+
+  .thresholdSection {
+    padding: 2rem 1rem 2rem;
+  }
+
+  .thresholdLayout {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .thresholdTitle {
+    font-size: 2rem;
+  }
+
+  .thresholdImage {
+    width: 100%;
+    height: 100%;
+    margin: 0 auto;
+  }
+
+  .thresholdMedia {
+    height: 320px;
   }
 }

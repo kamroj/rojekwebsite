@@ -28,6 +28,7 @@ function HsCard({ title, description, chip, ctaHref, ctaLabel }) {
 
 export default function HsDetailsSection({ profileThicknesses = [], isWoodAlu = false, additionalInfo = [], children = null }) {
   const [activeProfileThickness, setActiveProfileThickness] = React.useState('78');
+  const [activeThreshold, setActiveThreshold] = React.useState('67');
 
   const profileThicknessContent = {
     '78': {
@@ -49,6 +50,27 @@ export default function HsDetailsSection({ profileThicknesses = [], isWoodAlu = 
   };
 
   const activeProfile = profileThicknessContent[activeProfileThickness];
+
+  const thresholdContent = {
+    '67': {
+      overline: 'PRÓG HS',
+      title: '67 mm – rozwiązanie standardowe',
+      paragraphs: [
+        'Próg o wysokości 67 mm to klasyczne rozwiązanie w systemach HS, zapewniające bardzo dobre parametry szczelności oraz trwałości eksploatacyjnej. Konstrukcja oparta na stabilnym profilu z przekładką termiczną gwarantuje skuteczną izolację cieplną oraz ochronę przed przenikaniem wody i powietrza. To wariant rekomendowany w inwestycjach, gdzie priorytetem jest maksymalna szczelność oraz odporność na intensywne użytkowanie.',
+        'Wyższy próg zapewnia również zwiększoną sztywność całej konstrukcji w strefie dolnej, co ma szczególne znaczenie przy dużych, ciężkich skrzydłach przesuwnych. Rozwiązanie to sprawdza się w domach jednorodzinnych, apartamentach oraz obiektach o dużych przeszkleniach tarasowych, gdzie istotne jest połączenie trwałości, bezpieczeństwa i wysokiej klasy parametrów technicznych.',
+      ],
+    },
+    '50': {
+      overline: 'PRÓG HS',
+      title: '50 mm – płaski, komfortowy i nowoczesny',
+      paragraphs: [
+        'Próg płaski o wysokości 50 mm to rozwiązanie dedykowane nowoczesnym realizacjom, w których kluczową rolę odgrywa komfort przejścia oraz estetyka minimalizmu. Obniżona wysokość progu pozwala uzyskać niemal bezbarierowe połączenie wnętrza z tarasem lub ogrodem, co znacząco poprawia ergonomię użytkowania – szczególnie w domach z małymi dziećmi lub dla osób starszych.',
+        'Pomimo smuklejszej konstrukcji, system zachowuje wysokie parametry szczelności dzięki zastosowaniu odpowiednich uszczelnień oraz rozwiązań konstrukcyjnych ograniczających mostki termiczne. Płaski próg podkreśla nowoczesny charakter przeszklenia HS i pozwala uzyskać efekt płynnego przejścia między strefą wewnętrzną a zewnętrzną, bez kompromisów w zakresie trwałości i bezpieczeństwa.',
+      ],
+    },
+  };
+
+  const activeThresholdContent = thresholdContent[activeThreshold];
 
   const cards = [
     {
@@ -110,34 +132,79 @@ export default function HsDetailsSection({ profileThicknesses = [], isWoodAlu = 
                   loading="lazy"
                 />
               ) : (
-                <span aria-hidden="true">300 × 500</span>
+                <span aria-hidden="true">PLACEHOLDER</span>
               )}
-            </div>
-
-            <div className={styles.profileThicknessSwitch} role="tablist" aria-label="Wybór grubości profilu HS">
-              {['78', '90'].map((thickness) => (
-                <button
-                  key={thickness}
-                  type="button"
-                  role="tab"
-                  aria-selected={activeProfileThickness === thickness}
-                  className={`${styles.profileThicknessButton} ${activeProfileThickness === thickness ? styles.profileThicknessButtonActive : ''}`}
-                  onClick={() => setActiveProfileThickness(thickness)}
-                >
-                  Grubość {thickness} mm
-                </button>
-              ))}
             </div>
           </div>
 
           <div className={styles.profileThicknessDescription}>
             <div className={styles.profileThicknessTitleBlock}>
-              <span className={styles.profileThicknessOverline}>{activeProfile.overline}</span>
+              <div className={styles.profileThicknessTopLine}>
+                <span className={styles.profileThicknessOverline}>{activeProfile.overline}</span>
+                <div className={styles.profileThicknessSwitch} role="tablist" aria-label="Wybór grubości profilu HS">
+                  {['78', '90'].map((thickness) => (
+                    <button
+                      key={thickness}
+                      type="button"
+                      role="tab"
+                      aria-selected={activeProfileThickness === thickness}
+                      className={`${styles.profileThicknessButton} ${activeProfileThickness === thickness ? styles.profileThicknessButtonActive : ''}`}
+                      onClick={() => setActiveProfileThickness(thickness)}
+                    >
+                      {thickness} mm
+                    </button>
+                  ))}
+                </div>
+              </div>
               <h4 className={styles.profileThicknessMainTitle}>{activeProfile.title}</h4>
             </div>
             {activeProfile.paragraphs.map((paragraph) => (
               <p key={paragraph}>{paragraph}</p>
             ))}
+          </div>
+        </div>
+      </div>
+
+      <div className={styles.thresholdSection}>
+        <div className={styles.thresholdLayout}>
+          <div className={styles.thresholdDescription}>
+            <div className={styles.thresholdTitleBlock}>
+              <div className={styles.thresholdTopLine}>
+                <span className={styles.thresholdOverline}>PRÓG</span>
+
+                <div className={styles.thresholdSwitch} role="tablist" aria-label="Wybór progu HS">
+                  {['67', '50'].map((value) => (
+                    <button
+                      key={value}
+                      type="button"
+                      role="tab"
+                      aria-selected={activeThreshold === value}
+                      className={`${styles.thresholdButton} ${activeThreshold === value ? styles.thresholdButtonActive : ''}`}
+                      onClick={() => setActiveThreshold(value)}
+                    >
+                      {value} mm
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <h3 className={styles.thresholdTitle}>{activeThresholdContent.title}</h3>
+            </div>
+
+            {activeThresholdContent.paragraphs.map((paragraph) => (
+              <p key={paragraph} className={styles.thresholdParagraph}>
+                {paragraph}
+              </p>
+            ))}
+          </div>
+
+          <div className={styles.thresholdMedia}>
+            <img
+              src={activeThreshold === '67' ? '/images/hs/prog-67mm.png' : '/images/hs/prog-50mm.png'}
+              alt={activeThreshold === '67' ? 'Próg HS 67 mm' : 'Próg HS 50 mm'}
+              className={styles.thresholdImage}
+              loading="lazy"
+            />
           </div>
         </div>
       </div>

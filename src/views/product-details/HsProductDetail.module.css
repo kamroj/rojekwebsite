@@ -17,6 +17,28 @@
   margin-bottom: 1.5rem;
 }
 
+.schemesTitleBlock {
+  margin: 0 0 1.2rem;
+}
+
+.schemesOverline {
+  display: inline-block;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #4c4c4c;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+.schemesMainTitle {
+  margin: 0;
+  font-size: 2.6rem;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #104818;
+}
+
 .schemeTiles {
   display: flex;
   flex-wrap: nowrap;
@@ -195,6 +217,10 @@
 }
 
 @media (max-width: 900px) {
+  .schemesMainTitle {
+    font-size: 2rem;
+  }
+
   .schemeTiles {
     gap: 0.9rem;
   }

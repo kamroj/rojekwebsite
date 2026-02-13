@@ -84,7 +84,7 @@ export const HS_PRODUCT_DETAILS = {
     slug: 'drewno',
     category: 'Okna przesuwne HS',
     categoryKey: 'oknaPrzesuwne',
-    name: 'HS DREWNO',
+    name: 'DREWNIANE',
     shortDescription:
       'System HS Drewno to ciepło naturalnego materiału, duże przeszklenia i płynna obsługa zaprojektowana z myślą o nowoczesnym tarasie.',
     longDescription:

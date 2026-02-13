@@ -133,7 +133,12 @@ export default function HsProductDetail({ product }) {
         isWoodAlu={product.slug === 'drewno-alu'}
       >
         <section className={styles.schemesSection} id="hs-schemes">
-          <h2 className={styles.sectionTitle}>{t('productDetail.hsSchemes.sectionTitle', 'Schematy / konfiguracje')}</h2>
+          <div className={styles.schemesTitleBlock}>
+            <span className={styles.schemesOverline}>{t('productDetail.hsSchemes.sectionOverline', 'SCHEMATY')}</span>
+            <h2 className={styles.schemesMainTitle}>
+              {t('productDetail.hsSchemes.sectionSubtitle', 'Konfiguracja dopasowana do Twoich wymagań')}
+            </h2>
+          </div>
 
           <div
             className={styles.schemeTiles}
