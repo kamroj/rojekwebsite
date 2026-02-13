@@ -2,33 +2,10 @@ import React from 'react';
 
 import styles from './HsDetailsSection.module.css';
 
-const ICON_PLACEHOLDER = (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" aria-hidden="true">
-    <path d="M4 7h16M4 12h16M4 17h10" strokeLinecap="round" />
-  </svg>
-);
-
-function HsCard({ title, description, chip, ctaHref, ctaLabel }) {
-  return (
-    <article className={styles.card}>
-      <div className={styles.iconWrap}>{ICON_PLACEHOLDER}</div>
-      <div className={styles.cardContent}>
-        <h3 className={styles.cardTitle}>{title}</h3>
-        {chip ? <span className={styles.chip}>{chip}</span> : null}
-        <p className={styles.cardDescription}>{description}</p>
-        {ctaHref && ctaLabel ? (
-          <a className={styles.cardLink} href={ctaHref}>
-            {ctaLabel}
-          </a>
-        ) : null}
-      </div>
-    </article>
-  );
-}
-
 export default function HsDetailsSection({ profileThicknesses = [], isWoodAlu = false, additionalInfo = [], children = null }) {
   const [activeProfileThickness, setActiveProfileThickness] = React.useState('78');
   const [activeThreshold, setActiveThreshold] = React.useState('67');
+  const [activeUsageFeature, setActiveUsageFeature] = React.useState('glazing');
 
   const profileThicknessContent = {
     '78': {
@@ -72,45 +49,41 @@ export default function HsDetailsSection({ profileThicknesses = [], isWoodAlu = 
 
   const activeThresholdContent = thresholdContent[activeThreshold];
 
-  const cards = [
-    {
-      title: 'Próg',
-      chip: '67 mm / 50 mm płaski',
-      description:
-        'Do wyboru wariant klasyczny 67 mm oraz płaski 50 mm. Dzięki temu łatwiej dobrać próg do oczekiwanego komfortu przejścia i charakteru realizacji.',
+  const usageFeatureContent = {
+    glazing: {
+      tabLabel: 'Szklenie',
+      title: 'Szklenie listwowe i bezlistwowe',
+      paragraphs: [
+        'System HS oferuje dwa podejścia do wykończenia szyby: klasyczne szklenie listwowe oraz wariant bezlistwowy. Dzięki temu można dobrać nie tylko parametry techniczne, ale również finalny charakter wizualny konstrukcji — od bardziej tradycyjnego po nowoczesny, minimalistyczny.',
+        'Wariant listwowy ułatwia serwisowanie i dobrze sprawdza się w projektach, gdzie liczy się trwałość oraz przewidywalność eksploatacyjna. Rozwiązanie bezlistwowe podkreśla lekkość dużych przeszkleń i estetykę jednolitej tafli, co jest szczególnie pożądane w nowoczesnej architekturze.',
+      ],
+      benefit: 'Większa swoboda projektowa bez kompromisu w zakresie szczelności i trwałości.',
+      mediaLabel: 'Szklenie',
+      mediaText: 'Dobór wariantu szklenia do stylu budynku, oczekiwań użytkowych i założeń projektu.',
     },
-    {
-      title: 'Szklenie',
-      chip: 'Listwą / Bezlistwowe',
-      description:
-        'System oferuje warianty szklenia listwą oraz bezlistwowe. Umożliwia to dopasowanie estetyki i techniki wykonania do projektu architektonicznego.',
+    hardware: {
+      tabLabel: 'Okucia',
+      title: 'Okucia GU do ciężkich skrzydeł HS',
+      paragraphs: [
+        'Zastosowanie okuć GU zapewnia stabilną i płynną pracę nawet przy dużych gabarytach skrzydeł przesuwnych. To system opracowany z myślą o wysokich obciążeniach, częstym użytkowaniu oraz utrzymaniu komfortu przesuwu przez długi czas eksploatacji.',
+        'Precyzyjna praca mechanizmów przekłada się na wyższą kulturę użytkowania: skrzydło prowadzi się lekko, bez szarpnięć i z dobrą kontrolą ruchu. To szczególnie ważne w realizacjach premium, gdzie duże przeszklenia mają działać intuicyjnie każdego dnia.',
+      ],
+      benefit: 'Pewna, lekka obsługa skrzydeł i wysoka trwałość mechaniczna systemu.',
+      mediaLabel: 'Okucia GU',
+      mediaText: 'Sprawdzony standard dla konstrukcji HS o podwyższonych wymaganiach użytkowych.',
     },
-    {
-      title: 'Okucia',
-      chip: 'GU',
-      description:
-        'Zastosowanie okuć GU zapewnia płynną i stabilną pracę skrzydeł HS. To sprawdzone rozwiązanie dla dużych przeszkleń i codziennej, komfortowej obsługi.',
+    silentClose: {
+      tabLabel: 'Komfort domykania',
+      title: 'Komfort domykania i kontrola ruchu skrzydła',
+      paragraphs: [
+        'W obszarze komfortu domykania system HS może łączyć funkcję Silent Close z rozwiązaniem Stop Unit. Taki zestaw poprawia kulturę pracy całej konstrukcji: skrzydło kończy ruch łagodniej, bez gwałtownego domknięcia i bez nieprzyjemnego efektu uderzenia.',
+        'Połączenie obu funkcji szczególnie dobrze sprawdza się przy dużych i ciężkich przeszkleniach, gdzie kluczowa jest kontrola końcowej fazy ruchu. Użytkownik zyskuje większą przewidywalność obsługi, wyższy komfort akustyczny oraz dodatkowe poczucie bezpieczeństwa na co dzień.',
+      ],
+      benefit: 'Cichsze domykanie, lepsza kontrola ruchu i większe bezpieczeństwo codziennej obsługi.',
     },
-    {
-      title: 'Komfort domykania',
-      chip: 'Silent Close (opcjonalnie)',
-      description:
-        'Opcjonalna funkcja Silent Close zwiększa wygodę użytkowania poprzez łagodne i ciche domykanie skrzydła. To szczególnie istotne przy cięższych, wielkogabarytowych konstrukcjach.',
-    },
-    {
-      title: 'Kontrola domknięcia',
-      chip: 'Stop Unit (hamulec)',
-      description:
-        'Hamulec Stop Unit wspiera kontrolę ruchu skrzydła i podnosi bezpieczeństwo codziennego użytkowania. Rozwiązanie ogranicza ryzyko gwałtownego domknięcia.',
-    },
-    {
-      title: 'Schematy',
-      description:
-        'System HS jest dostępny we wszystkich schematach spotykanych na rynku. Dzięki temu łatwo dobrać konfigurację do układu pomieszczeń i strefy tarasowej.',
-      ctaHref: '#hs-schemes',
-      ctaLabel: 'Przejdź do sekcji schematów',
-    },
-  ];
+  };
+
+  const activeUsage = usageFeatureContent[activeUsageFeature];
 
   return (
     <section className={styles.sectionWrap}>
@@ -209,10 +182,41 @@ export default function HsDetailsSection({ profileThicknesses = [], isWoodAlu = 
         </div>
       </div>
 
-      <div className={styles.grid}>
-        {cards.map((card) => (
-          <HsCard key={card.title} {...card} />
-        ))}
+      <div className={styles.usageSection}>
+        <div className={styles.usageTitleBlock}>
+          <div className={styles.usageTopLine}>
+            <span className={styles.usageOverline}>DETALE</span>
+            <div className={styles.usageSwitch} role="tablist" aria-label="Wybór parametrów użytkowych HS">
+              {Object.entries(usageFeatureContent).map(([key, item]) => (
+                <button
+                  key={key}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeUsageFeature === key}
+                  className={`${styles.usageButton} ${activeUsageFeature === key ? styles.usageButtonActive : ''}`}
+                  onClick={() => setActiveUsageFeature(key)}
+                >
+                  {item.tabLabel}
+                </button>
+              ))}
+            </div>
+          </div>
+          <h3 className={styles.usageMainTitle}>Szczegóły, które robią różnicę w codziennym użytkowaniu</h3>
+        </div>
+
+        <div className={styles.usageLayout}>
+          <div className={styles.usageDescription}>
+            <h4 className={styles.usageItemTitle}>{activeUsage.title}</h4>
+            {activeUsage.paragraphs.map((paragraph) => (
+              <p key={paragraph} className={styles.usageParagraph}>
+                {paragraph}
+              </p>
+            ))}
+            <p className={styles.usageBenefit}>
+              <span>Korzyść:</span> {activeUsage.benefit}
+            </p>
+          </div>
+        </div>
       </div>
 
       {children ? <div className={styles.embeddedSection}>{children}</div> : null}

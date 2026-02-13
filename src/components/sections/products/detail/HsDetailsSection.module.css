@@ -264,7 +264,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 520px;
+  height: 380px;
 }
 
 .thresholdImage {
@@ -274,79 +274,119 @@
   object-fit: contain;
 }
 
-.grid {
+.usageSection {
   max-width: 1200px;
   margin: 0 auto;
   padding: 2.5rem 2rem;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.5rem;
 }
 
-.card {
-  border: 1px solid #2e8b57;
-  border-radius: 10px;
-  background: linear-gradient(180deg, #ffffff 0%, #f7fbf8 100%);
-  padding: 1.4rem;
-  display: flex;
-  gap: 1rem;
+.usageTitleBlock {
+  margin-bottom: 1.2rem;
 }
 
-.iconWrap {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: rgba(26, 86, 24, 0.08);
-  color: #1a5618;
+.usageTopLine {
   display: flex;
   align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
+  gap: 0.8rem;
+  margin-bottom: 0.65rem;
 }
 
-.iconWrap svg {
-  width: 22px;
-  height: 22px;
+.usageOverline {
+  display: inline-block;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: #4c4c4c;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
-.cardContent {
+.usageSwitch {
   display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+  gap: 0.75rem;
+  width: fit-content;
 }
 
-.cardTitle {
-  margin: 0;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #326647;
-}
-
-.chip {
-  display: inline-flex;
-  align-self: flex-start;
+.usageButton {
+  border: 1px solid #2e8b57;
+  background: #ffffff;
+  color: #0f591a;
   border-radius: 999px;
-  padding: 0.2rem 0.75rem;
+  padding: 0.55rem 1rem;
   font-size: 1.2rem;
   font-weight: 600;
-  color: #0f591a;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.usageButton:hover {
+  border-color: #0f591a;
+}
+
+.usageButtonActive {
   background: #e8f5e8;
+  border-color: #0f591a;
 }
 
-.cardDescription {
+.usageMainTitle {
   margin: 0;
-  font-size: 1.25rem;
-  line-height: 1.55;
-  color: var(--color-text);
+  font-size: 2.6rem;
+  font-weight: 400;
+  line-height: 1.2;
+  color: #104818;
 }
 
-.cardLink {
-  margin-top: 0.25rem;
-  font-size: 1.25rem;
+.usageLayout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  align-items: stretch;
+}
+
+.usageDescription {
+  display: flex;
+  flex-direction: column;
+}
+
+.usageItemTitle {
+  margin: 0 0 0.9rem;
+  font-size: 2.2rem;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #104818;
+}
+
+.usageParagraph {
+  margin: 0;
+  font-size: 1.35rem;
+  line-height: 1.75;
+  color: #4a5c50;
+}
+
+.usageParagraph + .usageParagraph {
+  margin-top: 0.9rem;
+}
+
+.usageBenefit {
+  margin: 1rem 0 0;
+  font-size: 1.3rem;
+  line-height: 1.6;
+  color: #1f4d2c;
+}
+
+.usageBenefit span {
+  font-weight: 600;
+}
+
+.usageLink {
+  display: inline-flex;
+  align-self: flex-start;
+  margin-top: 1rem;
+  font-size: 1.2rem;
   color: #026303;
   text-decoration: underline;
   font-weight: 600;
 }
+
 
 .additionalStrip {
   max-width: 1200px;
@@ -415,11 +455,6 @@
     font-size: 2.4rem;
   }
 
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 1.2rem;
-  }
-
   .additionalGrid {
     grid-template-columns: 1fr;
   }
@@ -434,6 +469,14 @@
 
   .thresholdMedia {
     height: 440px;
+  }
+
+  .usageMainTitle {
+    font-size: 2.2rem;
+  }
+
+  .usageItemTitle {
+    font-size: 2rem;
   }
 }
 
@@ -483,11 +526,6 @@
     font-size: 2.2rem;
   }
 
-  .grid {
-    grid-template-columns: 1fr;
-    padding: 2rem 1rem;
-  }
-
   .additionalStrip {
     padding: 0 1rem 2rem;
   }
@@ -518,4 +556,31 @@
   .thresholdMedia {
     height: 320px;
   }
+
+  .usageSection {
+    padding: 2rem 1rem;
+  }
+
+  .usageTopLine {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.55rem;
+  }
+
+  .usageSwitch {
+    flex-wrap: wrap;
+  }
+
+  .usageMainTitle {
+    font-size: 2rem;
+  }
+
+  .usageLayout {
+    gap: 1rem;
+  }
+
+  .usageItemTitle {
+    font-size: 1.9rem;
+  }
+
 }
