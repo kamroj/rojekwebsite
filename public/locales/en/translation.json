@@ -299,6 +299,11 @@
       "noTemplateTitle": "No product template",
       "noTemplateText": "We haven't prepared a product detail page for this category yet."
     },
+    "hsOverview": {
+      "overline": "Key elements",
+      "title": "In the HS system",
+      "subtitle": "Configuration tailored to your project"
+    },
     "hsSchemes": {
       "sectionTitle": "Schemes / configurations",
       "selectorAriaLabel": "HS scheme selection",

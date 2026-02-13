@@ -293,6 +293,11 @@
       "noTemplateTitle": "Brak szablonu produktu",
       "noTemplateText": "Dla tej kategorii produktów nie mamy jeszcze przygotowanej strony detalu."
     },
+    "hsOverview": {
+      "overline": "Najważniejsze elementy",
+      "title": "W systemie HS",
+      "subtitle": "Konfiguracja dopasowana do projektu"
+    },
     "hsSchemes": {
       "sectionTitle": "Schematy",
       "selectorAriaLabel": "Wybór schematu HS",

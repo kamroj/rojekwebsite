@@ -299,6 +299,11 @@
       "noTemplateTitle": "Keine Produktvorlage",
       "noTemplateText": "Für diese Produktkategorie haben wir noch keine Detailseite vorbereitet."
     },
+    "hsOverview": {
+      "overline": "Wichtigste Elemente",
+      "title": "Im HS-System",
+      "subtitle": "Konfiguration passend zum Projekt"
+    },
     "hsSchemes": {
       "sectionTitle": "Schemata / Konfigurationen",
       "selectorAriaLabel": "Auswahl des HS-Schemas",

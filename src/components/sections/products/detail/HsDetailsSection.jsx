@@ -1,8 +1,10 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 import styles from './HsDetailsSection.module.css';
 
 export default function HsDetailsSection({ profileThicknesses = [], isWoodAlu = false, additionalInfo = [], children = null }) {
+  const { t } = useTranslation();
   const [activeProfileThickness, setActiveProfileThickness] = React.useState('78');
   const [activeThreshold, setActiveThreshold] = React.useState('67');
   const [activeUsageFeature, setActiveUsageFeature] = React.useState('glazing');
@@ -88,9 +90,9 @@ export default function HsDetailsSection({ profileThicknesses = [], isWoodAlu = 
   return (
     <section className={styles.sectionWrap}>
       <div className={styles.sectionHeader}>
-        <span className={styles.headerOverline}>Najważniejsze elementy</span>
-        <h2 className={styles.headerTitle}>W systemie HS</h2>
-        <p className={styles.headerSubtitle}>Konfiguracja dopasowana do projektu</p>
+        <span className={styles.headerOverline}>{t('productDetail.hsOverview.overline', 'Najważniejsze elementy')}</span>
+        <h2 className={styles.headerTitle}>{t('productDetail.hsOverview.title', 'W systemie HS')}</h2>
+        <p className={styles.headerSubtitle}>{t('productDetail.hsOverview.subtitle', 'Konfiguracja dopasowana do projektu')}</p>
       </div>
 
       <div className={styles.profileThicknessSection}>
