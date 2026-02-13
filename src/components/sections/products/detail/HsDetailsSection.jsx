@@ -27,13 +27,30 @@ function HsCard({ title, description, chip, ctaHref, ctaLabel }) {
 }
 
 export default function HsDetailsSection({ profileThicknesses = [], isWoodAlu = false, additionalInfo = [], children = null }) {
-  const cards = [
-    {
-      title: 'Dostępne grubości profilu',
-      chip: profileThicknesses.join(' / '),
-      description:
-        'Zakres grubości profili pozwala precyzyjnie dopasować system do wymagań projektu. Odpowiednia konfiguracja wspiera stabilność konstrukcji oraz parametry izolacyjności termicznej.',
+  const [activeProfileThickness, setActiveProfileThickness] = React.useState('78');
+
+  const profileThicknessContent = {
+    '78': {
+      overline: 'PROFIL',
+      title: 'Grubość 78 mm',
+      paragraphs: [
+        'Profil HS o grubości 78 mm to rozwiązanie idealne do nowoczesnego budownictwa jednorodzinnego oraz obiektów o podwyższonych wymaganiach estetycznych. Konstrukcja oparta na klejonce warstwowej z drewna litego zapewnia wysoką stabilność wymiarową oraz odporność na odkształcenia, nawet przy dużych przeszkleniach. System umożliwia zastosowanie pakietów trzyszybowych, co przekłada się na bardzo dobre parametry izolacyjności termicznej oraz akustycznej.',
+        'Grubość 78 mm stanowi optymalny balans pomiędzy smukłą linią profilu a parametrami technicznymi. Dzięki temu konstrukcja zachowuje elegancki, lekki wygląd przy jednoczesnym zapewnieniu odpowiedniej sztywności skrzydeł przesuwnych. System doskonale sprawdza się w wyjściach tarasowych, ogrodowych oraz w strefach dziennych z dużymi przeszkleniami, gdzie kluczowe jest połączenie designu, funkcjonalności i komfortu użytkowania.',
+      ],
     },
+    '90': {
+      overline: 'PROFIL',
+      title: 'Grubość 90 mm',
+      paragraphs: [
+        'Profil HS o grubości 90 mm to rozwiązanie dedykowane inwestycjom o najwyższych wymaganiach w zakresie energooszczędności oraz trwałości konstrukcji. Zwiększona głębokość zabudowy umożliwia zastosowanie pakietów szybowych o większej grubości, co znacząco poprawia współczynnik przenikania ciepła całego systemu. To propozycja szczególnie polecana do budynków pasywnych i energooszczędnych.',
+        'Masywniejsza konstrukcja profilu przekłada się również na jeszcze większą stabilność przy bardzo dużych formatach przeszkleń. System 90 mm pozwala na realizację imponujących przesuwnych ścian szklanych, zachowując wysoką szczelność, odporność na obciążenia wiatrem oraz komfort eksploatacji. To rozwiązanie premium – dla inwestorów oczekujących maksymalnych parametrów technicznych bez kompromisu w estetyce naturalnego drewna.',
+      ],
+    },
+  };
+
+  const activeProfile = profileThicknessContent[activeProfileThickness];
+
+  const cards = [
     {
       title: 'Próg',
       chip: '67 mm / 50 mm płaski',
@@ -76,9 +93,53 @@ export default function HsDetailsSection({ profileThicknesses = [], isWoodAlu = 
   return (
     <section className={styles.sectionWrap}>
       <div className={styles.sectionHeader}>
-        <span className={styles.headerOverline}>Najważniejsze elementy systemu</span>
+        <span className={styles.headerOverline}>Najważniejsze elementy</span>
         <h2 className={styles.headerTitle}>W systemie HS</h2>
         <p className={styles.headerSubtitle}>Konfiguracja dopasowana do projektu</p>
+      </div>
+
+      <div className={styles.profileThicknessSection}>
+        <div className={styles.profileThicknessLayout}>
+          <div className={styles.profileThicknessMediaColumn}>
+            <div className={styles.profileThicknessPlaceholder}>
+              {activeProfileThickness === '90' ? (
+                <img
+                  src="/images/hs/hs-profil-90.png"
+                  alt="Rysunek techniczny profilu HS 90 mm"
+                  className={styles.profileThicknessImage}
+                  loading="lazy"
+                />
+              ) : (
+                <span aria-hidden="true">300 × 500</span>
+              )}
+            </div>
+
+            <div className={styles.profileThicknessSwitch} role="tablist" aria-label="Wybór grubości profilu HS">
+              {['78', '90'].map((thickness) => (
+                <button
+                  key={thickness}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeProfileThickness === thickness}
+                  className={`${styles.profileThicknessButton} ${activeProfileThickness === thickness ? styles.profileThicknessButtonActive : ''}`}
+                  onClick={() => setActiveProfileThickness(thickness)}
+                >
+                  Grubość {thickness} mm
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className={styles.profileThicknessDescription}>
+            <div className={styles.profileThicknessTitleBlock}>
+              <span className={styles.profileThicknessOverline}>{activeProfile.overline}</span>
+              <h4 className={styles.profileThicknessMainTitle}>{activeProfile.title}</h4>
+            </div>
+            {activeProfile.paragraphs.map((paragraph) => (
+              <p key={paragraph}>{paragraph}</p>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div className={styles.grid}>

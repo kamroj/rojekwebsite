@@ -51,6 +51,129 @@
   font-weight: 400;
 }
 
+.profileThicknessSection {
+  --profile-media-width: 280px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 3.5rem 2rem 1rem;
+}
+
+.profileThicknessTitle {
+  margin: 0 0 1rem;
+  font-size: 2rem;
+  font-weight: 500;
+  color: #104818;
+}
+
+.profileThicknessSwitch {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 0.8rem;
+  width: 100%;
+  max-width: var(--profile-media-width);
+  justify-content: center;
+}
+
+.profileThicknessButton {
+  border: 1px solid #2e8b57;
+  background: #ffffff;
+  color: #0f591a;
+  border-radius: 999px;
+  padding: 0.55rem 1rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.profileThicknessButton:hover {
+  border-color: #0f591a;
+}
+
+.profileThicknessButtonActive {
+  background: #e8f5e8;
+  border-color: #0f591a;
+}
+
+.profileThicknessLayout {
+  display: grid;
+  grid-template-columns: minmax(230px, var(--profile-media-width)) minmax(0, 1fr);
+  gap: 1.2rem;
+  align-items: start;
+}
+
+.profileThicknessMediaColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  align-items: flex-start;
+}
+
+.profileThicknessPlaceholder {
+  width: 100%;
+  max-width: var(--profile-media-width);
+  height: 340px;
+  border: 2px dashed #9dc5a2;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #f8fbf9 0%, #eef7ef 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profileThicknessPlaceholder span {
+  color: #4d6f54;
+  font-size: 1.4rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+}
+
+.profileThicknessImage {
+  width: 100%;
+  height: 100%;
+  padding-block: 10px;
+  box-sizing: border-box;
+  object-fit: contain;
+  display: block;
+  border-radius: 10px;
+}
+
+.profileThicknessTitleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-bottom: 0.9rem;
+}
+
+.profileThicknessDescription {
+  display: flex;
+  flex-direction: column;
+}
+
+.profileThicknessOverline {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: #4c4c4c;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.profileThicknessMainTitle {
+  margin: 0;
+  font-size: 3rem;
+  font-weight: 400;
+  color: #104818;
+  line-height: 1.1;
+}
+
+.profileThicknessDescription p {
+  margin: 0 0 0.9rem;
+  font-size: 1.4rem;
+  line-height: 1.75;
+  color: #4a5c50;
+  max-width: 760px;
+}
+
 .grid {
   max-width: 1200px;
   margin: 0 auto;
@@ -176,6 +299,22 @@
 }
 
 @media (--bp-lg) {
+  .profileThicknessSection {
+    --profile-media-width: 250px;
+  }
+
+  .profileThicknessLayout {
+    grid-template-columns: minmax(210px, 250px) minmax(0, 1fr);
+  }
+
+  .profileThicknessPlaceholder {
+    height: 300px;
+  }
+
+  .profileThicknessMainTitle {
+    font-size: 2.4rem;
+  }
+
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1.2rem;
@@ -189,6 +328,31 @@
 @media (--bp-sm) {
   .sectionHeader {
     padding: 2rem 1rem 1.5rem;
+  }
+
+  .profileThicknessSection {
+    --profile-media-width: 100%;
+    padding: 2.5rem 1rem 1rem;
+  }
+
+  .profileThicknessSwitch {
+    flex-wrap: wrap;
+  }
+
+  .profileThicknessLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .profileThicknessMediaColumn {
+    width: 100%;
+    align-items: center;
+  }
+
+  .profileThicknessPlaceholder {
+    width: 100%;
+    max-width: none;
+    height: 260px;
+    margin: 0;
   }
 
   .sectionHeader::after {

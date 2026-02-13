@@ -56,12 +56,12 @@
   background: var(--color-background);
   color: #013613;
   width: 100%;
-  min-width: 160px;
-  max-width: 220px;
+  min-width: 180px;
+  max-width: 250px;
   border-radius: 12px;
-  padding: 0.45rem;
+  padding: 0.55rem;
   display: grid;
-  gap: 0.45rem;
+  gap: 0.55rem;
   text-align: left;
   cursor: pointer;
   transition: border-color 0.2s ease;
@@ -80,7 +80,7 @@
 
 .schemeTileImageFrame {
   width: 100%;
-  height: 180px;
+  height: 205px;
   background: #f8fbf9;
   border-radius: 8px;
   border: 1px solid rgba(2, 99, 3, 0.14);
@@ -200,8 +200,8 @@
   }
 
   .schemeTile {
-    min-width: 140px;
-    max-width: 175px;
+    min-width: 160px;
+    max-width: 200px;
   }
 
   .schemeHeaderLabel {
