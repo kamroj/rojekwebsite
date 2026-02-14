@@ -71,6 +71,7 @@ export default function ImageWithSpinner({
 
   const resolvedWrapperClassName = [
     styles.wrapper,
+    !showSpinner ? styles.noSpinner : null,
     isLoaded || !showSpinner ? styles.isLoaded : null,
     isHydrated ? styles.isHydrated : null,
     wrapperClassName,

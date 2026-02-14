@@ -76,10 +76,12 @@ export default function ProductDetailHero({
               altFallback={`${product?.name || 'product'} - zdjęcie ${index + 1}`}
               wrapperClassName={[styles.heroImageLayer, index === currentImageIndex ? styles.isActive : null].filter(Boolean).join(' ')}
               className={styles.heroImage}
-              // LCP: first slide is likely visible immediately.
-              loading={index === 0 ? 'eager' : 'lazy'}
+              // Slider overlays with absolute/faded layers can be unreliable with lazy-loading
+              // in some production/browser environments. Keep gallery slides eager for stability.
+              loading="eager"
               // Keep `fetchpriority="high"` reserved for the actual page header (PageHeader).
               fetchPriority="auto"
+              showSpinner={false}
               sizes="(max-width: 1024px) 100vw, 50vw"
               widths={[640, 800, 1024, 1280, 1600]}
             />
@@ -90,10 +92,11 @@ export default function ProductDetailHero({
               wrapperClassName={[styles.heroImageSlide, index === currentImageIndex ? styles.isActive : null].filter(Boolean).join(' ')}
               src={image}
               alt={`${product?.name || 'product'} - zdjęcie ${index + 1}`}
-              loading={index === 0 ? 'eager' : 'lazy'}
+              loading="eager"
               decoding="async"
               fetchPriority={index === 0 ? 'high' : undefined}
               className={styles.heroImage}
+              showSpinner={false}
             />
           ))}
 

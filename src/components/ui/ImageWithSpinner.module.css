@@ -11,8 +11,17 @@
   transition: opacity 0.28s ease;
 }
 
+.noSpinner .image {
+  opacity: 1;
+  transition: none;
+}
+
 .isHydrated .image {
   opacity: 0;
+}
+
+.noSpinner.isHydrated .image {
+  opacity: 1;
 }
 
 .isHydrated.isLoaded .image {
