@@ -24,6 +24,7 @@
   inset: 0;
   display: grid;
   place-items: center;
+  padding: 3px;
   background: transparent;
   pointer-events: none;
   transition: opacity 0.22s ease;
@@ -34,9 +35,10 @@
 }
 
 .spinner {
-  width: var(--image-spinner-size, 34px);
-  height: var(--image-spinner-size, 34px);
+  width: min(var(--image-spinner-size, 34px), calc(100% - 6px));
+  height: min(var(--image-spinner-size, 34px), calc(100% - 6px));
   border-radius: 999px;
+  box-sizing: border-box;
   border: 3px solid var(--image-spinner-track, rgba(2, 99, 3, 0.2));
   border-top-color: var(--image-spinner-accent, #1a5618);
   animation: image-spinner-rotate 0.8s linear infinite;

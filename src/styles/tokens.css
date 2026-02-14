@@ -50,6 +50,11 @@
   --transition-fast: 0.2s ease-in;
 
   --radius-md: 8px;
+
+  /* Shared media spinner (ImageWithSpinner / VideoWithSpinner) */
+  --image-spinner-size: 34px;
+  --image-spinner-accent: #1a5618;
+  --image-spinner-track: rgba(2, 99, 3, 0.2);
 }
 
 /* Breakpoints as custom media (supported by modern tooling; safe as documentation too) */
