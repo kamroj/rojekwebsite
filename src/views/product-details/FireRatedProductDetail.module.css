@@ -130,6 +130,11 @@
   object-fit: contain;
 }
 
+.featureIconWrap {
+  width: 26px;
+  height: 26px;
+}
+
 .featureTextBlock {
   display: flex;
   flex-direction: column;
@@ -251,6 +256,12 @@
   width: 48px;
   height: 48px;
   object-fit: contain;
+  flex-shrink: 0;
+}
+
+.applicationIconWrap {
+  width: 48px;
+  height: 48px;
   flex-shrink: 0;
 }
 

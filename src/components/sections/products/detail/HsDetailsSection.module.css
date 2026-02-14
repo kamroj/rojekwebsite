@@ -136,6 +136,11 @@
   border-radius: 10px;
 }
 
+.profileThicknessImageWrap {
+  width: 100%;
+  height: 100%;
+}
+
 .profileThicknessTitleBlock {
   display: flex;
   flex-direction: column;
@@ -272,6 +277,11 @@
   height: 100%;
   display: block;
   object-fit: contain;
+}
+
+.thresholdImageWrap {
+  width: 100%;
+  height: 100%;
 }
 
 .usageSection {

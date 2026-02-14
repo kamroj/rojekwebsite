@@ -18,12 +18,18 @@ export default function ImageWithSpinner({
   ...imgProps
 }) {
   const imageRef = useRef(null);
+  const [isHydrated, setIsHydrated] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSpinnerHoldActive, setIsSpinnerHoldActive] = useState(holdSpinnerMs > 0);
 
   useEffect(() => {
+    setIsHydrated(true);
     setIsLoaded(false);
     setIsSpinnerHoldActive(holdSpinnerMs > 0);
+
+    if (!src) {
+      setIsLoaded(true);
+    }
 
     let holdTimer;
     if (holdSpinnerMs > 0) {
@@ -33,7 +39,12 @@ export default function ImageWithSpinner({
     }
 
     const node = imageRef.current;
-    if (node && node.complete && node.naturalWidth > 0) {
+    // In Astro islands the browser can finish loading (or fail loading)
+    // the image before React hydrates. In that case onLoad/onError events
+    // are already gone, so we must rely on `complete` only.
+    // If `naturalWidth === 0`, the image likely failed, but spinner still
+    // must disappear to avoid an infinite loading state.
+    if (node && node.complete) {
       setIsLoaded(true);
     }
 
@@ -61,6 +72,7 @@ export default function ImageWithSpinner({
   const resolvedWrapperClassName = [
     styles.wrapper,
     isLoaded || !showSpinner ? styles.isLoaded : null,
+    isHydrated ? styles.isHydrated : null,
     wrapperClassName,
   ]
     .filter(Boolean)
@@ -87,7 +99,7 @@ export default function ImageWithSpinner({
         onError={handleError}
       />
 
-      {showSpinner && (!isLoaded || isSpinnerHoldActive) ? (
+      {showSpinner && isHydrated && (!isLoaded || isSpinnerHoldActive) ? (
         <span className={styles.loader} aria-hidden="true">
           <span className={styles.spinner} />
         </span>

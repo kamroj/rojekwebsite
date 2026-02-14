@@ -15,6 +15,7 @@ import { runSanityTask } from '../lib/sanity/runSanityTask';
 import { fetchDoorProductsList, fetchWindowProductsList } from '../lib/sanity/windows';
 import { isSanityConfigured } from '../lib/sanity/config';
 import SanityImage from '../components/ui/SanityImage.jsx';
+import ImageWithSpinner from '../components/ui/ImageWithSpinner.jsx';
 
 import styles from './ProductCategoryView.module.css';
 
@@ -182,6 +183,7 @@ function ProductCategoryPageBase({
                 <div className={styles.productImageWrapper}>
                   {product?.listImage ? (
                     <SanityImage
+                      wrapperClassName={styles.productImageInner}
                       className={styles.productImage}
                       image={product.listImage}
                       placeholder="none"
@@ -191,7 +193,8 @@ function ProductCategoryPageBase({
                       widths={[320, 480, 640, 800, 1024]}
                     />
                   ) : (
-                    <img
+                    <ImageWithSpinner
+                      wrapperClassName={styles.productImageInner}
                       className={styles.productImage}
                       src={product.image || product.images?.[0]}
                       alt={product.name}

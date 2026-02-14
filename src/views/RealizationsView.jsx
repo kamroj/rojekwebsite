@@ -4,6 +4,7 @@ import Select from 'react-select';
 import ReactPaginate from 'react-paginate';
 import { useResponsive } from '../hooks/useResponsive';
 import Page from '../components/ui/Page';
+import ImageWithSpinner from '../components/ui/ImageWithSpinner.jsx';
 
 import { REALIZATIONS_DATA } from '../data/realizations.js';
 
@@ -191,7 +192,8 @@ export default function RealizationsPage() {
             ref={(el) => (cardRefs.current[idx] = el)}
             className={styles.singleRealizationContainer}
           >
-            <img
+            <ImageWithSpinner
+              wrapperClassName={styles.realizationImageWrap}
               className={[
                 styles.realizationImage,
                 idx === activeCardIndex ? styles.realizationImageActive : null,

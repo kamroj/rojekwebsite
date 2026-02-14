@@ -263,15 +263,20 @@ const membersWithContacts = members.map((member) => {
         </div>
 
         <div class={styles.headquartersImage} data-reveal>
-          <video
-            src="/videos/aboutus.mp4"
-            autoplay
-            muted
-            loop
-            playsinline
-            preload="metadata"
-            aria-label={t('headquarters.imageAlt', 'Siedziba firmy ROJEK')}
-          ></video>
+          <div class={styles.mediaSpinnerHost} data-media-spinner>
+            <div class={styles.mediaSpinnerOverlay} aria-hidden="true">
+              <span class={styles.mediaSpinnerRing}></span>
+            </div>
+            <video
+              src="/videos/aboutus.mp4"
+              autoplay
+              muted
+              loop
+              playsinline
+              preload="metadata"
+              aria-label={t('headquarters.imageAlt', 'Siedziba firmy ROJEK')}
+            ></video>
+          </div>
         </div>
       </div>
     </section>
@@ -330,7 +335,12 @@ const membersWithContacts = members.map((member) => {
               <p>{item.extendedText}</p>
             </div>
             <div class={styles.historyPanelImage}>
-              <img src={item.image} alt={pageCopy.historyImageAlt} loading="lazy" />
+              <div class={styles.mediaSpinnerHost} data-media-spinner>
+                <div class={styles.mediaSpinnerOverlay} aria-hidden="true">
+                  <span class={styles.mediaSpinnerRing}></span>
+                </div>
+                <img src={item.image} alt={pageCopy.historyImageAlt} loading="lazy" />
+              </div>
             </div>
           </article>
         ))}
@@ -348,7 +358,12 @@ const membersWithContacts = members.map((member) => {
         {membersWithContacts.map((m) => (
           <article class={styles.managerCard}>
             <div class={styles.managerImageWrapper}>
-              <img class={styles.managerPhoto} src={m.photo} alt={m.name} loading="lazy" />
+              <div class={styles.mediaSpinnerHost} data-media-spinner>
+                <div class={styles.mediaSpinnerOverlay} aria-hidden="true">
+                  <span class={styles.mediaSpinnerRing}></span>
+                </div>
+                <img class={styles.managerPhoto} src={m.photo} alt={m.name} loading="lazy" />
+              </div>
             </div>
             <div class={styles.managerBody}>
               <h4 class={styles.managerName}>{m.name}</h4>
@@ -407,6 +422,33 @@ const membersWithContacts = members.map((member) => {
     });
 
     const revealElements = Array.from(document.querySelectorAll('[data-reveal]'));
+    const mediaSpinnerHosts = Array.from(document.querySelectorAll('[data-media-spinner]'));
+
+    mediaSpinnerHosts.forEach((host) => {
+      const media = host.querySelector('img,video');
+      if (!media) return;
+
+      const markLoaded = () => host.setAttribute('data-loaded', 'true');
+
+      if (media.tagName === 'IMG') {
+        if (media.complete) {
+          markLoaded();
+        } else {
+          media.addEventListener('load', markLoaded, { once: true });
+          media.addEventListener('error', markLoaded, { once: true });
+        }
+        return;
+      }
+
+      if (media.readyState >= 2) {
+        markLoaded();
+      } else {
+        media.addEventListener('loadeddata', markLoaded, { once: true });
+        media.addEventListener('canplay', markLoaded, { once: true });
+        media.addEventListener('error', markLoaded, { once: true });
+      }
+    });
+
     if ('IntersectionObserver' in window) {
       const observer = new IntersectionObserver(
         (entries) => {

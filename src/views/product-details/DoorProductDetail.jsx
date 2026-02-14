@@ -6,6 +6,7 @@ import Section from '../../components/ui/Section';
 import { DOOR_SPECS_DEFS, DOOR_SPECS_ORDER_LIST } from '../../data/products/doors';
 import { WINDOW_COLORS_PALETTE, WINDOW_LAZUR_PALETTE } from '../../data/products/windows';
 import SanityPortableText from '../../components/portable/SanityPortableText';
+import ImageWithSpinner from '../../components/ui/ImageWithSpinner.jsx';
 import styles from './DoorProductDetail.module.css';
 import {
   ProductDetailHero,
@@ -189,10 +190,12 @@ const DoorStandardFeaturesSection = ({ t }) => {
             <div className={styles.imageWrapper} ref={lockImageWrapRef}>
               <div className={styles.glowEffect} />
               <span className={styles.centerMarker} ref={lockCenterMarkerRef} aria-hidden="true" />
-              <img
+              <ImageWithSpinner
+                wrapperClassName={styles.productImageSpinnerWrap}
                 className={`${styles.productImage} ${isLockCentered ? styles.productImageCentered : ''}`}
                 src="/images/products/doors/lock-3point.png"
                 alt={t('productDetail.doors.lock.imageAlt', 'Zamek 3-punktowy')}
+                loading="lazy"
               />
             </div>
           </div>
@@ -205,10 +208,12 @@ const DoorStandardFeaturesSection = ({ t }) => {
           <div className={styles.imageWrapper} ref={thresholdImageWrapRef}>
             <div className={styles.glowEffect} />
             <span className={styles.centerMarker} ref={thresholdCenterMarkerRef} aria-hidden="true" />
-            <img
+            <ImageWithSpinner
+              wrapperClassName={styles.productImageSpinnerWrap}
               className={`${styles.productImage} ${isThresholdCentered ? styles.productImageCentered : ''}`}
               src="/images/products/doors/threshold-alu.png"
               alt={t('productDetail.doors.threshold.imageAlt', 'Niski próg aluminiowy')}
+              loading="lazy"
             />
           </div>
         </div>

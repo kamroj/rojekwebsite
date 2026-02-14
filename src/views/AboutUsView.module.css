@@ -97,6 +97,42 @@
   object-position: center center;
 }
 
+.mediaSpinnerHost {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.mediaSpinnerOverlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+  z-index: 2;
+}
+
+.mediaSpinnerRing {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  border: 3px solid rgba(2, 99, 3, 0.2);
+  border-top-color: #1a5618;
+  animation: media-spinner-rotate 0.8s linear infinite;
+}
+
+.mediaSpinnerHost[data-loaded='true'] .mediaSpinnerOverlay {
+  opacity: 0;
+}
+
+@keyframes media-spinner-rotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .historySection {
   margin-top: 2.6rem;
   padding: 2.2rem 0;

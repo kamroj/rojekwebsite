@@ -157,14 +157,19 @@ const articleCopy = homeArticlesCopy[lang] || homeArticlesCopy.pl;
             <article class={productStyles.card}>
               <a class={productStyles.cardLink} href={to} aria-label={`${p.name} - ${t('common.learnMore', 'Dowiedz się więcej')}`}>
                 <div class={productStyles.imageContainer}>
-                  <img
-                    class={productStyles.image}
-                    src={p.backgroundSrc}
-                    alt={p.name}
-                    loading="eager"
-                    fetchpriority="high"
-                    decoding="async"
-                  />
+                  <div class="media-spinner-host" data-media-spinner>
+                    <span class="media-spinner-overlay" aria-hidden="true">
+                      <span class="media-spinner-ring"></span>
+                    </span>
+                    <img
+                      class={productStyles.image}
+                      src={p.backgroundSrc}
+                      alt={p.name}
+                      loading="eager"
+                      fetchpriority="high"
+                      decoding="async"
+                    />
+                  </div>
                 </div>
                 <div class={productStyles.cardContent}>
                   <h3 class={productStyles.cardTitle}>{p.name}</h3>
@@ -238,13 +243,18 @@ const articleCopy = homeArticlesCopy[lang] || homeArticlesCopy.pl;
               >
                 <div class="home-article-image-wrap">
                   {imageUrl ? (
-                    <img
-                      class="home-article-image"
-                      src={imageUrl}
-                      alt={article?.featuredImage?.alt || article.title}
-                      loading="lazy"
-                      decoding="async"
-                    />
+                    <div class="media-spinner-host" data-media-spinner>
+                      <span class="media-spinner-overlay" aria-hidden="true">
+                        <span class="media-spinner-ring"></span>
+                      </span>
+                      <img
+                        class="home-article-image"
+                        src={imageUrl}
+                        alt={article?.featuredImage?.alt || article.title}
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    </div>
                   ) : (
                     <div class="home-article-image-placeholder" aria-hidden="true" />
                   )}
@@ -323,10 +333,46 @@ const articleCopy = homeArticlesCopy[lang] || homeArticlesCopy.pl;
   }
 
   .home-article-image-wrap {
+    position: relative;
     height: 210px;
     background: var(--color-background-alt);
     overflow: hidden;
     border-radius: 6px 6px 0 0;
+  }
+
+  .media-spinner-host {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .media-spinner-overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+    z-index: 2;
+  }
+
+  .media-spinner-ring {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    border: 3px solid rgba(2, 99, 3, 0.2);
+    border-top-color: #1a5618;
+    animation: home-media-spinner-rotate 0.8s linear infinite;
+  }
+
+  .media-spinner-host[data-loaded='true'] .media-spinner-overlay {
+    opacity: 0;
+  }
+
+  @keyframes home-media-spinner-rotate {
+    to {
+      transform: rotate(360deg);
+    }
   }
 
   .home-article-image,
@@ -458,3 +504,23 @@ const articleCopy = homeArticlesCopy[lang] || homeArticlesCopy.pl;
     }
   }
 </style>
+
+<script is:inline>
+  (() => {
+    const mediaSpinnerHosts = Array.from(document.querySelectorAll('[data-media-spinner]'));
+
+    mediaSpinnerHosts.forEach((host) => {
+      const media = host.querySelector('img');
+      if (!media) return;
+
+      const markLoaded = () => host.setAttribute('data-loaded', 'true');
+
+      if (media.complete) {
+        markLoaded();
+      } else {
+        media.addEventListener('load', markLoaded, { once: true });
+        media.addEventListener('error', markLoaded, { once: true });
+      }
+    });
+  })();
+</script>

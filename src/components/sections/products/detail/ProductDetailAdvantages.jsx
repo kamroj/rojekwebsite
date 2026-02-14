@@ -1,6 +1,7 @@
 import React from 'react';
 import { FiCheck } from 'react-icons/fi';
 import { Trans } from 'react-i18next';
+import ImageWithSpinner from '../../../ui/ImageWithSpinner.jsx';
 
 import styles from './ProductDetailAdvantages.module.css';
 
@@ -38,7 +39,14 @@ export default function ProductDetailAdvantages({
 
       <div className={styles.warrantySection}>
         <div className={styles.warrantyBadge}>
-          <img className={styles.warrantyImage} src={warrantyImageSrc} alt={t('common.warranty', 'Gwarancja')} />
+          <ImageWithSpinner
+            wrapperClassName={styles.warrantyImageWrap}
+            className={styles.warrantyImage}
+            src={warrantyImageSrc}
+            alt={t('common.warranty', 'Gwarancja')}
+            loading="lazy"
+            decoding="async"
+          />
         </div>
 
         <div className={styles.warrantyContent}>

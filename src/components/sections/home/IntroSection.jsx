@@ -239,6 +239,13 @@ export default function IntroSection({ id, introMedia }) {
           decoding="sync"
         />
       )}
+
+      {videoSrc && !isVideoLoaded ? (
+        <div className={styles.videoSpinnerOverlay} aria-hidden="true">
+          <span className={styles.videoSpinner} />
+        </div>
+      ) : null}
+
       <div className={styles.videoOverlay} />
 
       <div className={styles.bottomOverlay}>

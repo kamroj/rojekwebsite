@@ -4,6 +4,7 @@ import { FiDownload, FiPhone } from 'react-icons/fi';
 import { useFitText } from '../../../../hooks';
 import RouterAgnosticLink from '../../../_astro/RouterAgnosticLink.jsx';
 import SanityImage from '../../../ui/SanityImage.jsx';
+import ImageWithSpinner from '../../../ui/ImageWithSpinner.jsx';
 
 import styles from './ProductDetailHero.module.css';
 
@@ -73,7 +74,7 @@ export default function ProductDetailHero({
               key={image?._key || index}
               image={image}
               altFallback={`${product?.name || 'product'} - zdjęcie ${index + 1}`}
-              className={[styles.heroImage, index === currentImageIndex ? styles.isActive : null].filter(Boolean).join(' ')}
+              className={[styles.heroImageLayer, index === currentImageIndex ? styles.isActive : null].filter(Boolean).join(' ')}
               // LCP: first slide is likely visible immediately.
               loading={index === 0 ? 'eager' : 'lazy'}
               // Keep `fetchpriority="high"` reserved for the actual page header (PageHeader).
@@ -83,14 +84,15 @@ export default function ProductDetailHero({
             />
           ))
           : images.map((image, index) => (
-            <img
+            <ImageWithSpinner
               key={index}
+              wrapperClassName={[styles.heroImageSlide, index === currentImageIndex ? styles.isActive : null].filter(Boolean).join(' ')}
               src={image}
               alt={`${product?.name || 'product'} - zdjęcie ${index + 1}`}
               loading={index === 0 ? 'eager' : 'lazy'}
               decoding="async"
               fetchPriority={index === 0 ? 'high' : undefined}
-              className={[styles.heroImage, index === currentImageIndex ? styles.isActive : null].filter(Boolean).join(' ')}
+              className={styles.heroImage}
             />
           ))}
 

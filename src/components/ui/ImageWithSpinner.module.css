@@ -7,11 +7,15 @@
   display: block;
   width: 100%;
   height: 100%;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.28s ease;
 }
 
-.isLoaded .image {
+.isHydrated .image {
+  opacity: 0;
+}
+
+.isHydrated.isLoaded .image {
   opacity: 1;
 }
 
@@ -20,7 +24,7 @@
   inset: 0;
   display: grid;
   place-items: center;
-  background: rgba(248, 251, 249, 0.72);
+  background: transparent;
   pointer-events: none;
   transition: opacity 0.22s ease;
 }

@@ -4,6 +4,7 @@ import { IoIosArrowForward } from 'react-icons/io';
 import Page from '../components/ui/Page';
 import Section from '../components/ui/Section';
 import SanityImage from '../components/ui/SanityImage.jsx';
+import ImageWithSpinner from '../components/ui/ImageWithSpinner.jsx';
 import { useTranslation } from 'react-i18next';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomeView';
 import { productCategories } from '../data/products/index.js';
@@ -121,6 +122,7 @@ const ProductsPage = ({
               <div className={styles.productImageWrapper}>
                 {card.sanityImage ? (
                   <SanityImage
+                    wrapperClassName={styles.productImageInner}
                     className={styles.productImage}
                     image={card.sanityImage}
                     placeholder="none"
@@ -131,7 +133,8 @@ const ProductsPage = ({
                     widths={[480, 640, 800, 1024, 1280]}
                   />
                 ) : (
-                  <img
+                  <ImageWithSpinner
+                    wrapperClassName={styles.productImageInner}
                     className={styles.productImage}
                     src={card.image}
                     alt={card.title}

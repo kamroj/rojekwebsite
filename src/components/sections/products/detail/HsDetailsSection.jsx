@@ -1,5 +1,6 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import ImageWithSpinner from '../../../ui/ImageWithSpinner.jsx';
 
 import styles from './HsDetailsSection.module.css';
 
@@ -100,7 +101,8 @@ export default function HsDetailsSection({ profileThicknesses = [], isWoodAlu = 
           <div className={styles.profileThicknessMediaColumn}>
             <div className={styles.profileThicknessPlaceholder}>
               {activeProfileThickness === '90' ? (
-                <img
+                <ImageWithSpinner
+                  wrapperClassName={styles.profileThicknessImageWrap}
                   src="/images/hs/hs-profil-90.png"
                   alt="Rysunek techniczny profilu HS 90 mm"
                   className={styles.profileThicknessImage}
@@ -174,7 +176,8 @@ export default function HsDetailsSection({ profileThicknesses = [], isWoodAlu = 
           </div>
 
           <div className={styles.thresholdMedia}>
-            <img
+            <ImageWithSpinner
+              wrapperClassName={styles.thresholdImageWrap}
               src={activeThreshold === '67' ? '/images/hs/prog-67mm.png' : '/images/hs/prog-50mm.png'}
               alt={activeThreshold === '67' ? 'Próg HS 67 mm' : 'Próg HS 50 mm'}
               className={styles.thresholdImage}

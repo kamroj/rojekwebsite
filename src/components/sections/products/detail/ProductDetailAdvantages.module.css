@@ -139,6 +139,10 @@
   height: auto;
 }
 
+.warrantyImageWrap {
+  display: block;
+}
+
 @media (--bp-md) {
   .warrantyImage {
     width: 250px;

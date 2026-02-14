@@ -5,6 +5,7 @@ import Section from '../../components/ui/Section';
 import { DOOR_SPECS_DEFS, DOOR_SPECS_ORDER_LIST } from '../../data/products/doors';
 import { WINDOW_COLORS_PALETTE, WINDOW_LAZUR_PALETTE } from '../../data/products/windows';
 import SanityPortableText from '../../components/portable/SanityPortableText';
+import ImageWithSpinner from '../../components/ui/ImageWithSpinner.jsx';
 import {
   ProductDetailHero,
   ProductDetailSpecs,
@@ -102,7 +103,8 @@ const FireRatedInfoSections = () => {
             {certificationItems.map((item) => (
               <div key={item.text} className={styles.featureItem}>
                 <div className={styles.featureIconBox}>
-                  <img
+                  <ImageWithSpinner
+                    wrapperClassName={styles.featureIconWrap}
                     className={styles.featureIconImg}
                     src={item.icon}
                     alt=""
@@ -168,7 +170,8 @@ const FireRatedInfoSections = () => {
           {applications.map((item) => (
             <article key={item.text} className={styles.simpleCard}>
               <p className={styles.simpleCardText}>{item.text}</p>
-              <img
+              <ImageWithSpinner
+                wrapperClassName={styles.applicationIconWrap}
                 className={styles.applicationIcon}
                 src={item.icon}
                 alt=""

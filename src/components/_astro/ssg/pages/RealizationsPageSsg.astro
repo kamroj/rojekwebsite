@@ -174,21 +174,26 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
             });
 
             return imageProps ? (
-              <img
-                class={styles.realizationImage}
-                src={imageProps.src}
-                srcset={imageProps.srcset}
-                sizes={imageProps.sizes}
-                width={imageProps.width}
-                height={imageProps.height}
-                alt={item.alt || imageProps.alt}
-                loading={imageProps.loading}
-                decoding={imageProps.decoding}
-                fetchpriority={imageProps.fetchpriority}
-                style={item?.image?.asset?.metadata?.lqip
-                  ? `background-image:url(${item.image.asset.metadata.lqip});background-size:cover;background-position:center;`
-                  : undefined}
-              />
+              <div class="media-spinner-host" data-media-spinner>
+                <span class="media-spinner-overlay" aria-hidden="true">
+                  <span class="media-spinner-ring"></span>
+                </span>
+                <img
+                  class={styles.realizationImage}
+                  src={imageProps.src}
+                  srcset={imageProps.srcset}
+                  sizes={imageProps.sizes}
+                  width={imageProps.width}
+                  height={imageProps.height}
+                  alt={item.alt || imageProps.alt}
+                  loading={imageProps.loading}
+                  decoding={imageProps.decoding}
+                  fetchpriority={imageProps.fetchpriority}
+                  style={item?.image?.asset?.metadata?.lqip
+                    ? `background-image:url(${item.image.asset.metadata.lqip});background-size:cover;background-position:center;`
+                    : undefined}
+                />
+              </div>
             ) : null;
           })()}
         </div>
@@ -252,7 +257,62 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
   </div>
 </div>
 
+<style is:global>
+  .media-spinner-host {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+
+  .media-spinner-overlay {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    transition: opacity 0.22s ease;
+    z-index: 2;
+  }
+
+  .media-spinner-ring {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    border: 3px solid rgba(2, 99, 3, 0.2);
+    border-top-color: #1a5618;
+    animation: realizations-media-spinner-rotate 0.8s linear infinite;
+  }
+
+  .media-spinner-host[data-loaded='true'] .media-spinner-overlay {
+    opacity: 0;
+  }
+
+  @keyframes realizations-media-spinner-rotate {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>
+
 <script is:inline data-astro-rerun>
+  (() => {
+    const mediaSpinnerHosts = Array.from(document.querySelectorAll('[data-media-spinner]'));
+
+    mediaSpinnerHosts.forEach((host) => {
+      const media = host.querySelector('img');
+      if (!media) return;
+
+      const markLoaded = () => host.setAttribute('data-loaded', 'true');
+
+      if (media.complete) {
+        markLoaded();
+      } else {
+        media.addEventListener('load', markLoaded, { once: true });
+        media.addEventListener('error', markLoaded, { once: true });
+      }
+    });
+  })();
+
   const filtersToggleButton = document.getElementById('realizations-filters-toggle');
   const filtersAccordion = document.getElementById('realizations-filters-accordion');
   const filtersPanel = document.getElementById('realizations-filters-panel');
