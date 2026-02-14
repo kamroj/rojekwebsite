@@ -189,6 +189,7 @@ function ProductCategoryPageBase({
                       placeholder="none"
                       altFallback={product.name}
                       loading="lazy"
+                      showSpinner={false}
                       sizes="(max-width: 900px) 100vw, 520px"
                       widths={[320, 480, 640, 800, 1024]}
                     />
@@ -199,6 +200,7 @@ function ProductCategoryPageBase({
                       src={product.image || product.images?.[0]}
                       alt={product.name}
                       loading="lazy"
+                      showSpinner={false}
                     />
                   )}
                 </div>

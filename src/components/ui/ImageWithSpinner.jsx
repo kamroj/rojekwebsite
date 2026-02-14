@@ -46,9 +46,24 @@ export default function ImageWithSpinner({
       setIsLoaded(true);
     }
 
+    // Safety net for browser/hydration edge-cases where load/error events
+    // may be missed and `complete` flips slightly later.
+    let completionWatcher;
+    if (node && !node.complete) {
+      completionWatcher = window.setInterval(() => {
+        if (node.complete) {
+          setIsLoaded(true);
+          window.clearInterval(completionWatcher);
+        }
+      }, 150);
+    }
+
     return () => {
       if (holdTimer) {
         window.clearTimeout(holdTimer);
+      }
+      if (completionWatcher) {
+        window.clearInterval(completionWatcher);
       }
     };
   }, [src, holdSpinnerMs]);

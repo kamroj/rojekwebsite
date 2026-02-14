@@ -129,6 +129,7 @@ const ProductsPage = ({
                     altFallback={card.title}
                     loading="lazy"
                     decoding="async"
+                    showSpinner={false}
                     sizes="(max-width: 768px) 100vw, 40vw"
                     widths={[480, 640, 800, 1024, 1280]}
                   />
@@ -140,6 +141,7 @@ const ProductsPage = ({
                     alt={card.title}
                     loading="lazy"
                     decoding="async"
+                    showSpinner={false}
                   />
                 )}
               </div>
