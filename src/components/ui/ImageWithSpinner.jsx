@@ -18,12 +18,10 @@ export default function ImageWithSpinner({
   ...imgProps
 }) {
   const imageRef = useRef(null);
-  const [isHydrated, setIsHydrated] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isSpinnerHoldActive, setIsSpinnerHoldActive] = useState(holdSpinnerMs > 0);
 
   useEffect(() => {
-    setIsHydrated(true);
     setIsLoaded(false);
     setIsSpinnerHoldActive(holdSpinnerMs > 0);
 
@@ -73,7 +71,6 @@ export default function ImageWithSpinner({
     styles.wrapper,
     !showSpinner ? styles.noSpinner : null,
     isLoaded || !showSpinner ? styles.isLoaded : null,
-    isHydrated ? styles.isHydrated : null,
     wrapperClassName,
   ]
     .filter(Boolean)
@@ -100,7 +97,7 @@ export default function ImageWithSpinner({
         onError={handleError}
       />
 
-      {showSpinner && isHydrated && (!isLoaded || isSpinnerHoldActive) ? (
+      {showSpinner && (!isLoaded || isSpinnerHoldActive) ? (
         <span className={styles.loader} aria-hidden="true">
           <span className={styles.spinner} />
         </span>
