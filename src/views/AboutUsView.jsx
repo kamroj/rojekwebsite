@@ -10,6 +10,7 @@ import { Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
+import ImageWithSpinner from '../components/ui/ImageWithSpinner.jsx';
 
 import styles from './AboutUsView.module.css';
 
@@ -112,7 +113,12 @@ const AboutUsPage = () => {
   const ManagerItem = ({ manager }) => (
     <div className={styles.managerCard}>
       <div className={styles.managerImageWrapper}>
-        <img className={styles.managerPhoto} src={manager.photo} alt={manager.alt} />
+        <ImageWithSpinner
+          wrapperClassName={styles.managerPhotoWrapper}
+          className={styles.managerPhoto}
+          src={manager.photo}
+          alt={manager.alt}
+        />
       </div>
       <div className={styles.managerBody}>
         <div className={styles.managerTopRow}>
@@ -180,7 +186,9 @@ const AboutUsPage = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <img
+            <ImageWithSpinner
+              wrapperClassName={styles.headquartersMedia}
+              className={styles.headquartersMediaImage}
               src="/images/company/company-building.jpg"
               alt={t('headquarters.imageAlt', 'Siedziba firmy ROJEK')}
             />

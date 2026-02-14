@@ -24,6 +24,10 @@
   transition: transform 0.3s ease;
 }
 
+.imageWrapper {
+  display: block;
+}
+
 .card:hover .image {
   transform: scale(1.05);
 }

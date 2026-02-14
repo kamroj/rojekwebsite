@@ -1,6 +1,7 @@
 // src/components/gallery/RealizationsGallery.jsx
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import MaxWidthContainer from '../../ui/MaxWidthContainer';
+import ImageWithSpinner from '../../ui/ImageWithSpinner.jsx';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../../views/HomeView';
 import homeStyles from '../../../views/HomeView.module.css';
 import { useTranslation } from 'react-i18next';
@@ -92,7 +93,8 @@ const RealizationsGallery = ({ images, options = {} }) => {
             key={imgData.id || i}
             className={styles.fallbackCard}
           >
-            <img
+            <ImageWithSpinner
+              wrapperClassName={styles.fallbackImageWrapper}
               src={imgData.src}
               alt={imgData.title || `Realizacja ${i + 1}`}
               className={styles.fallbackImage}
@@ -130,7 +132,8 @@ const RealizationsGallery = ({ images, options = {} }) => {
               }}
             >
               <div className={styles.slideContentWrapper}>
-                <img
+                <ImageWithSpinner
+                  wrapperClassName={styles.galleryImageWrapper}
                   className={styles.galleryImage}
                   src={item.src}
                   alt={item.alt || item.title || 'Realization'}

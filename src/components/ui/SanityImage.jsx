@@ -1,5 +1,6 @@
 import React from 'react';
 import { getSanityImageProps } from '../../lib/sanity/sanityImageProps.js';
+import ImageWithSpinner from './ImageWithSpinner.jsx';
 
 /**
  * @typedef {import('../../lib/sanity/imageTypes.js').SanityImage} SanityImageType
@@ -26,8 +27,11 @@ export default function SanityImage({
   // backward compatibility for older call sites
   fetchpriority,
   placeholder = 'lqip',
+  wrapperClassName,
   className,
   style,
+  showSpinner,
+  holdSpinnerMs,
   onLoad,
   ...rest
 }) {
@@ -69,10 +73,14 @@ export default function SanityImage({
   // leaving the image invisible forever.
   // Therefore we keep the real image visible at all times.
   const finalStyle = mergedStyle;
+  const shouldShowSpinner = typeof showSpinner === 'boolean'
+    ? showSpinner
+    : !(imgProps.loading === 'eager' || imgProps.fetchpriority === 'high');
 
   return (
-    <img
+    <ImageWithSpinner
       {...rest}
+      wrapperClassName={wrapperClassName || className}
       className={className}
       src={imgProps.src}
       data-sanity-placeholder={shouldUsePlaceholder ? 'lqip' : undefined}
@@ -85,7 +93,9 @@ export default function SanityImage({
       decoding={imgProps.decoding}
       // React DOM prop casing is `fetchPriority` (but the HTML attribute is `fetchpriority`).
       fetchPriority={imgProps.fetchpriority}
-      style={finalStyle}
+      wrapperStyle={finalStyle}
+      showSpinner={shouldShowSpinner}
+      holdSpinnerMs={holdSpinnerMs}
       onLoad={onLoad}
     />
   );

@@ -1,6 +1,7 @@
 import React from 'react';
 import RouterAgnosticLink from '../../_astro/RouterAgnosticLink.jsx';
 import { getSectionPath } from '../../../lib/i18n/routing.js';
+import ImageWithSpinner from '../../ui/ImageWithSpinner.jsx';
 import styles from './RealizationCard.module.css';
 
 const RealizationCard = ({ id: _id, src, title, tags = {} }) => {
@@ -14,7 +15,13 @@ const RealizationCard = ({ id: _id, src, title, tags = {} }) => {
 
   return (
     <RouterAgnosticLink className={styles.card} href={href} role="link" aria-label={title}>
-      <img className={styles.image} src={src} alt={title} draggable={false} />
+      <ImageWithSpinner
+        wrapperClassName={styles.imageWrapper}
+        className={styles.image}
+        src={src}
+        alt={title}
+        draggable={false}
+      />
       {tagValues.length > 0 && (
         <div className={styles.tags}>
           {tagValues.map((t, i) => (

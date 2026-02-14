@@ -14,6 +14,7 @@ import {
   ProductDetailCTA,
 } from '../../components/sections/products/detail';
 import HsDetailsSection from '../../components/sections/products/detail/HsDetailsSection.jsx';
+import ImageWithSpinner from '../../components/ui/ImageWithSpinner.jsx';
 import { HS_SPECS_DEFS, HS_SPECS_ORDER_LIST } from '../../data/products/hs.js';
 import { WINDOW_COLORS_PALETTE, WINDOW_LAZUR_PALETTE } from '../../data/products/windows.js';
 import { WINDOW_FAQ_FALLBACK } from '../../data/products/faqFallback.js';
@@ -85,7 +86,7 @@ export default function HsProductDetail({ product }) {
         };
       })
       .filter(Boolean);
-  }, [t, lang]);
+  }, [t]);
 
   const activeScheme = schemeItems.find((item) => item.id === activeSchemeId) ?? schemeItems[0];
 
@@ -155,11 +156,16 @@ export default function HsProductDetail({ product }) {
                 onClick={() => setActiveSchemeId(scheme.id)}
               >
                 <div className={styles.schemeTileImageFrame}>
-                  <img
+                  <ImageWithSpinner
                     src={scheme.image}
                     alt={`${scheme.buttonLabel} miniatura`}
                     className={styles.schemeTileImage}
+                    wrapperClassName={styles.schemeTileImageWrapper}
                     loading="lazy"
+                    decoding="async"
+                    spinnerSize="30px"
+                    spinnerColor="#1a5618"
+                    spinnerTrackColor="rgba(2, 99, 3, 0.18)"
                   />
                 </div>
                 <span className={styles.schemeTileLabel}>{scheme.buttonLabel}</span>

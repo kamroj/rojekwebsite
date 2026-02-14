@@ -80,6 +80,19 @@
   object-position: center;
 }
 
+.headquartersMedia,
+.headquartersMediaImage {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.headquartersMediaImage {
+  object-fit: cover;
+  object-position: center;
+}
+
 .headquartersImage video {
   object-position: center center;
 }
@@ -217,6 +230,12 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.managerPhotoWrapper {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
 .managerBody {

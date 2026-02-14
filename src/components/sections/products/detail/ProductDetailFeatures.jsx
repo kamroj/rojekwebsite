@@ -1,5 +1,6 @@
 import React from 'react';
 import SanityPortableText from '../../../portable/SanityPortableText';
+import VideoWithSpinner from '../../../ui/VideoWithSpinner.jsx';
 
 import styles from './ProductDetailFeatures.module.css';
 
@@ -15,7 +16,16 @@ export default function ProductDetailFeatures({ product, title, t }) {
 
       <div className={styles.featuresLayout}>
         <div className={styles.videoWrapper}>
-          <video className={styles.productVideo} src={product.video} autoPlay loop muted playsInline />
+          <VideoWithSpinner
+            className={styles.productVideo}
+            src={product.video}
+            poster="/images/video_poster.jpg"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+          />
         </div>
 
         <div className={styles.featuresContent}>
