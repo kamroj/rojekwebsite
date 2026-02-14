@@ -36,6 +36,7 @@ export default function ArticleCard({ article, lang = 'pl' }) {
             sizes="(max-width: 768px) 100vw, 300px"
             widths={[300, 400, 600]}
             loading="lazy"
+            showSpinner={false}
           />
         ) : (
           <div className={styles.imagePlaceholder} />
