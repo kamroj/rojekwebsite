@@ -74,7 +74,8 @@ export default function ProductDetailHero({
               key={image?._key || index}
               image={image}
               altFallback={`${product?.name || 'product'} - zdjęcie ${index + 1}`}
-              className={[styles.heroImageLayer, index === currentImageIndex ? styles.isActive : null].filter(Boolean).join(' ')}
+              wrapperClassName={[styles.heroImageLayer, index === currentImageIndex ? styles.isActive : null].filter(Boolean).join(' ')}
+              className={styles.heroImage}
               // LCP: first slide is likely visible immediately.
               loading={index === 0 ? 'eager' : 'lazy'}
               // Keep `fetchpriority="high"` reserved for the actual page header (PageHeader).

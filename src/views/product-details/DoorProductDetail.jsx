@@ -195,7 +195,9 @@ const DoorStandardFeaturesSection = ({ t }) => {
                 className={`${styles.productImage} ${isLockCentered ? styles.productImageCentered : ''}`}
                 src="/images/products/doors/lock-3point.png"
                 alt={t('productDetail.doors.lock.imageAlt', 'Zamek 3-punktowy')}
-                loading="lazy"
+                loading="eager"
+                fetchPriority="high"
+                showSpinner={false}
               />
             </div>
           </div>
@@ -213,7 +215,9 @@ const DoorStandardFeaturesSection = ({ t }) => {
               className={`${styles.productImage} ${isThresholdCentered ? styles.productImageCentered : ''}`}
               src="/images/products/doors/threshold-alu.png"
               alt={t('productDetail.doors.threshold.imageAlt', 'Niski próg aluminiowy')}
-              loading="lazy"
+              loading="eager"
+              fetchPriority="high"
+              showSpinner={false}
             />
           </div>
         </div>
