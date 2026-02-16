@@ -33,6 +33,15 @@ const NAV_ITEMS = [
 
 const SANITY_MENU_CATEGORY_KEYS = new Set(['okna', 'drzwi']);
 
+const MENU_CATEGORY_ICON_BY_KEY = {
+  okna: '/images/icons/ikona-okna-mm.png',
+  drzwi: '/images/icons/ikona-drzwi-mm.png',
+  oknaDrzwiPrzeciwpozarowe: '/images/icons/ikona-okna-ppoz-mm.png',
+  oknaPrzesuwne: '/images/icons/ikona-hs-mm.png',
+  bramy: '/images/icons/tools-icon.png',
+  rolety: '/images/icons/tools-icon.png',
+};
+
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
 function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
@@ -222,11 +231,17 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
         products: SANITY_MENU_CATEGORY_KEYS.has(key)
           ? (initialSanityProductsByCategory?.[key] || [])
           : (Array.isArray(c?.products) ? c.products : []),
+        icon: MENU_CATEGORY_ICON_BY_KEY[key] || '/images/icons/tools-icon.png',
         key,
         title: t(`breadcrumbs.categories.${key}`, c?.pageTitle || key),
       }))
       .filter((c) => c.products.length > 0);
   }, [initialSanityProductsByCategory, t]);
+
+  const activeMobileCategory = useMemo(
+    () => mobileCategories.find((c) => c.key === mobileActiveCategoryKey) || null,
+    [mobileActiveCategoryKey, mobileCategories]
+  );
 
   return (
     <header
@@ -287,13 +302,20 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
       >
         <SwipeHandler onSwipeRight={closeMobileMenu} enabled={isMobileMenuOpen}>
           <div className={styles.mobileMenuLogo}>
-            <img
-              src={logoBlack}
-              alt={t('nav.logoAlt', 'ROJEK okna i drzwi Logo')}
-              width={1110}
-              height={331}
-              decoding="async"
-            />
+            <RouterAgnosticLink
+              to={getSectionPath(lang, 'home')}
+              onClick={closeMobileMenu}
+              className={styles.mobileLogoLink}
+              aria-label={t('nav.home', 'Strona Główna')}
+            >
+              <img
+                src={logoBlack}
+                alt={t('nav.logoAlt', 'ROJEK okna i drzwi Logo')}
+                width={1110}
+                height={331}
+                decoding="async"
+              />
+            </RouterAgnosticLink>
           </div>
 
           <nav className={styles.mobileNavigation} role="navigation" aria-label={t('nav.mobileNavigation', 'Mobile navigation')}>
@@ -364,8 +386,18 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
               {mobileMenuView === 'products' && (
                 <>
                   <button className={styles.mobileBackButton} onClick={closeMobileProducts}>
-                    {'‹'} {t('buttons.backToMainMenu', 'Wróć do menu głównego')}
+                    <span aria-hidden="true">‹</span>
+                    <span>{t('nav.products', 'Produkty')}</span>
                   </button>
+
+                  <RouterAgnosticLink
+                    to={getSectionPath(lang, 'products')}
+                    onClick={closeMobileMenu}
+                    className={styles.mobileNavItem}
+                    style={{ animationDelay: '0s' }}
+                  >
+                    {t('common.seeAll', 'Zobacz wszystkie')}
+                  </RouterAgnosticLink>
 
                   {mobileCategories.map((c, idx) => (
                     <button
@@ -376,27 +408,33 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
                       className={styles.mobileNavButton}
                       style={{ animationDelay: `${idx * 0.05}s` }}
                     >
-                      <span>{c.title}</span>
+                      <span className={styles.mobileNavButtonLabel}>
+                        <span className={styles.mobileCategoryIcon} aria-hidden="true">
+                          <img src={c.icon} alt="" loading="lazy" />
+                        </span>
+                        <span>{c.title}</span>
+                      </span>
                       <IoIosArrowForward aria-hidden="true" />
                     </button>
                   ))}
-
-                  <RouterAgnosticLink
-                    to={getSectionPath(lang, 'products')}
-                    onClick={closeMobileMenu}
-                    className={styles.mobileNavItem}
-                    style={{ animationDelay: `${mobileCategories.length * 0.05}s` }}
-                  >
-                    {t('common.seeAll', 'Zobacz wszystkie')}
-                  </RouterAgnosticLink>
                 </>
               )}
 
               {mobileMenuView === 'category' && mobileActiveCategoryKey && (
                 <>
                   <button className={styles.mobileBackButton} onClick={closeMobileCategory}>
-                    {'‹'} {t('buttons.backToProducts', 'Wróć do produktów')}
+                    <span aria-hidden="true">‹</span>
+                    <span>{activeMobileCategory?.title || t('nav.products', 'Produkty')}</span>
                   </button>
+
+                  <RouterAgnosticLink
+                    to={getProductCategoryPath(lang, mobileActiveCategoryKey)}
+                    onClick={closeMobileMenu}
+                    className={styles.mobileNavItem}
+                    style={{ animationDelay: '0s' }}
+                  >
+                    {t('common.seeAll', 'Zobacz wszystkie')}
+                  </RouterAgnosticLink>
 
                   <div className={styles.mobileSubList}>
                     {(mobileCategories.find((c) => c.key === mobileActiveCategoryKey)?.products || []).map((p) => (
@@ -410,14 +448,6 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
                         {p.name}
                       </RouterAgnosticLink>
                     ))}
-                    <RouterAgnosticLink
-                      to={getProductCategoryPath(lang, mobileActiveCategoryKey)}
-                      onClick={closeMobileMenu}
-                      className={styles.mobileNavItem}
-                      style={{ animationDelay: '0s' }}
-                    >
-                      {t('common.seeAll', 'Zobacz wszystkie')}
-                    </RouterAgnosticLink>
                   </div>
                 </>
               )}

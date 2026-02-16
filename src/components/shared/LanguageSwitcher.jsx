@@ -30,9 +30,7 @@ function LanguageSwitcherUI({ isMobile = false, isPastThreshold = false, pathnam
 
   const listboxId = isMobile ? undefined : 'language-switcher-listbox';
 
-  const getLanguageName = (code) => {
-    return t(`language.${code}`, code.toUpperCase());
-  };
+  const getLanguageShortCode = (code) => code.toUpperCase();
 
   const toggleDropdown = () => {
     if (!isMobile) {
@@ -93,34 +91,62 @@ function LanguageSwitcherUI({ isMobile = false, isPastThreshold = false, pathnam
 
   return (
     <div ref={wrapperRef} className={cn(styles.wrapper, isMobile && styles.mobile)}>
-      {isMobile && (
-        <div className={styles.languageLabel}>{t('language.switcher.label', 'Language')}</div>
-      )}
-      
       {isMobile ? (
-        <div className={cn(styles.dropdownMenu, styles.dropdownMenuMobile)}>
-          {displayLanguages.map((langCode) => {
-            const nextPath = getNextPath(langCode);
-            const isActive = currentLanguage === langCode;
+        <div className={styles.mobileLanguageRow}>
+          <div className={cn(styles.dropdownMenu, styles.dropdownMenuMobile)}>
+            {displayLanguages.map((langCode) => {
+              const nextPath = getNextPath(langCode);
+              const isActive = currentLanguage === langCode;
 
-            const optionClassName = cn(
-              styles.option,
-              styles.optionMobile,
-              isActive && styles.optionActive,
-              isActive && styles.optionMobileActive
-            );
+              const optionClassName = cn(
+                styles.option,
+                styles.optionMobile,
+                isActive && styles.optionActive,
+                isActive && styles.optionMobileActive
+              );
 
-            const langNameClassName = cn(
-              styles.langName,
-              isActive && styles.langNameActive
-            );
+              const langNameClassName = cn(
+                styles.langName,
+                isActive && styles.langNameActive
+              );
 
-            if (isActive) {
+              if (isActive) {
+                return (
+                  <button
+                    key={langCode}
+                    onKeyDown={(e) => handleKeyDown(e, langCode)}
+                    disabled
+                    aria-label={getAltText(langCode)}
+                    tabIndex={0}
+                    className={optionClassName}
+                  >
+                    <div className={styles.optionFlagContainer}>
+                      <ReactCountryFlag
+                        countryCode={COUNTRY_CODES[langCode]}
+                        svg
+                        style={{
+                          width: '1.4em',
+                          height: 'auto',
+                          display: 'block',
+                        }}
+                        aria-label={getAltText(langCode)}
+                      />
+                    </div>
+                    <span className={langNameClassName}>{getLanguageShortCode(langCode)}</span>
+                  </button>
+                );
+              }
+
               return (
-                <button
+                <RouterAgnosticLink
                   key={langCode}
+                  href={nextPath}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    closeDropdown();
+                    onSelectLanguage(langCode, nextPath);
+                  }}
                   onKeyDown={(e) => handleKeyDown(e, langCode)}
-                  disabled
                   aria-label={getAltText(langCode)}
                   tabIndex={0}
                   className={optionClassName}
@@ -137,41 +163,11 @@ function LanguageSwitcherUI({ isMobile = false, isPastThreshold = false, pathnam
                       aria-label={getAltText(langCode)}
                     />
                   </div>
-                  <span className={langNameClassName}>{getLanguageName(langCode)}</span>
-                </button>
+                  <span className={langNameClassName}>{getLanguageShortCode(langCode)}</span>
+                </RouterAgnosticLink>
               );
-            }
-
-            return (
-              <RouterAgnosticLink
-                key={langCode}
-                href={nextPath}
-                onClick={(e) => {
-                  e.preventDefault();
-                  closeDropdown();
-                  onSelectLanguage(langCode, nextPath);
-                }}
-                onKeyDown={(e) => handleKeyDown(e, langCode)}
-                aria-label={getAltText(langCode)}
-                tabIndex={0}
-                className={optionClassName}
-              >
-                <div className={styles.optionFlagContainer}>
-                  <ReactCountryFlag
-                    countryCode={COUNTRY_CODES[langCode]}
-                    svg
-                    style={{
-                      width: '1.4em',
-                      height: 'auto',
-                      display: 'block',
-                    }}
-                    aria-label={getAltText(langCode)}
-                  />
-                </div>
-                <span className={langNameClassName}>{getLanguageName(langCode)}</span>
-              </RouterAgnosticLink>
-            );
-          })}
+            })}
+          </div>
         </div>
       ) : (
         <>
