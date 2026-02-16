@@ -459,6 +459,60 @@
   color: var(--color-secondary);
 }
 
+.mobileContactCta {
+  width: calc(100% + (2 * var(--space-sm)));
+  margin-left: calc(-1 * var(--space-sm));
+  margin-right: calc(-1 * var(--space-sm));
+  margin-top: 2.6rem;
+  margin-bottom: 2.4rem;
+  padding: 0 var(--space-sm) 2.4rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-bottom: 1px solid var(--mobile-divider-color);
+}
+
+.mobileContactCtaQuestion {
+  margin: 0 0 1.4rem;
+  font-size: 1.5rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+.mobileContactCtaButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(135deg, #1a5618 0%, #2d7a2a 100%);
+  color: #ffffff;
+  padding: 1.1rem 2.2rem;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 1.15rem;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.mobileContactCtaButton:link,
+.mobileContactCtaButton:visited {
+  color: #ffffff;
+}
+
+.mobileContactCtaButton:hover {
+  color: #ffffff;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px 0 rgb(13 43 12 / 35%);
+}
+
+.wrapper .mobileContactCtaButton:hover {
+  color: #ffffff;
+}
+
+.mobileContactCtaButton svg {
+  font-size: 1.3rem;
+}
+
 .mobileLangSwitcher {
   margin-top: auto;
   padding-top: var(--space-lg);
@@ -467,6 +521,8 @@
   margin-right: calc(-1 * var(--space-sm));
   padding-left: var(--space-sm);
   padding-right: var(--space-sm);
+  display: flex;
+  justify-content: center;
   animation: fadeIn 0.3s forwards;
   animation-delay: 0.3s;
   opacity: 0;

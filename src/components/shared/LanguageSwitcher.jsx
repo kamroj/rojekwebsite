@@ -291,13 +291,11 @@ function LanguageSwitcherUI({ isMobile = false, isPastThreshold = false, pathnam
  */
 export default function LanguageSwitcher(props) {
   // Astro owns routing (SSG). We always do full navigation.
-  const { i18n } = useTranslation();
   // Hydration-safe: do not read window.location during render.
   // In Astro SSR, Header should pass `pathname` down when needed.
   const currentPathname = props.pathname || '/';
 
   const onSelectLanguage = (langCode, nextPathFromUi) => {
-    i18n.changeLanguage(langCode);
     const nextPath = nextPathFromUi || translatePathname(currentPathname, langCode);
     if (typeof window !== 'undefined') {
       window.location.assign(nextPath);

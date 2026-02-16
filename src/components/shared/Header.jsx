@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FiMenu, FiX } from 'react-icons/fi';
+import { FiMenu, FiPhone, FiX } from 'react-icons/fi';
 import { IoIosArrowForward } from 'react-icons/io';
 import LanguageSwitcher from './LanguageSwitcher';
 import Navigation from './Navigation';
@@ -333,6 +333,7 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
                   {navItems.map((item, index) => {
                     if (item.onlyLang && item.onlyLang !== lang) return null;
                     if (item.key === 'home') return null;
+                    if (item.key === 'contact') return null;
                     if (item.key === 'products') {
                       return (
                         <button
@@ -454,6 +455,20 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
               )}
             </div>
           </nav>
+
+          <div className={styles.mobileContactCta}>
+            <p className={styles.mobileContactCtaQuestion}>
+              {t('nav.mobileMenuQuestion', 'Masz jakiekolwiek pytania?')}
+            </p>
+            <RouterAgnosticLink
+              to={getSectionPath(lang, 'contact')}
+              onClick={closeMobileMenu}
+              className={styles.mobileContactCtaButton}
+            >
+              <FiPhone aria-hidden="true" />
+              {t('common.contactUs', 'Skontaktuj się z nami')}
+            </RouterAgnosticLink>
+          </div>
 
           <div className={styles.mobileLangSwitcher}>
             <LanguageSwitcher pathname={pathname} isMobile={true} isPastThreshold={true} />
