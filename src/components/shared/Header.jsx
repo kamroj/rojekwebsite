@@ -332,6 +332,7 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
                 <>
                   {navItems.map((item, index) => {
                     if (item.onlyLang && item.onlyLang !== lang) return null;
+                    if (item.key === 'home') return null;
                     if (item.key === 'products') {
                       return (
                         <button
@@ -386,14 +387,14 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
               {mobileMenuView === 'products' && (
                 <>
                   <button className={styles.mobileBackButton} onClick={closeMobileProducts}>
-                    <span aria-hidden="true">‹</span>
+                    <IoIosArrowForward className={styles.mobileBackIcon} aria-hidden="true" />
                     <span>{t('nav.products', 'Produkty')}</span>
                   </button>
 
                   <RouterAgnosticLink
                     to={getSectionPath(lang, 'products')}
                     onClick={closeMobileMenu}
-                    className={styles.mobileNavItem}
+                    className={cn(styles.mobileNavItem, styles.mobileSeeAllLink)}
                     style={{ animationDelay: '0s' }}
                   >
                     {t('common.seeAll', 'Zobacz wszystkie')}
@@ -423,14 +424,14 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
               {mobileMenuView === 'category' && mobileActiveCategoryKey && (
                 <>
                   <button className={styles.mobileBackButton} onClick={closeMobileCategory}>
-                    <span aria-hidden="true">‹</span>
+                    <IoIosArrowForward className={styles.mobileBackIcon} aria-hidden="true" />
                     <span>{activeMobileCategory?.title || t('nav.products', 'Produkty')}</span>
                   </button>
 
                   <RouterAgnosticLink
                     to={getProductCategoryPath(lang, mobileActiveCategoryKey)}
                     onClick={closeMobileMenu}
-                    className={styles.mobileNavItem}
+                    className={cn(styles.mobileNavItem, styles.mobileSeeAllLink)}
                     style={{ animationDelay: '0s' }}
                   >
                     {t('common.seeAll', 'Zobacz wszystkie')}
