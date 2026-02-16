@@ -3,6 +3,33 @@
   publish = "dist"
   functions = "netlify/functions"
 
+# SEO/domain canonicalization:
+# Redirect www host to non-www host (301) to avoid duplicate content.
+[[redirects]]
+  from = "https://www.rojekoid.pl/*"
+  to = "https://rojekoid.pl/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://www.rojekoid.pl/*"
+  to = "https://rojekoid.pl/:splat"
+  status = 301
+  force = true
+
+# Future custom domain (if/when switched to rojekokna.pl):
+[[redirects]]
+  from = "https://www.rojekokna.pl/*"
+  to = "https://rojekokna.pl/:splat"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "http://www.rojekokna.pl/*"
+  to = "https://rojekokna.pl/:splat"
+  status = 301
+  force = true
+
 # Note:
 # - SPA routing is already handled by public/_redirects.
 # - Set environment variables in Netlify dashboard:
