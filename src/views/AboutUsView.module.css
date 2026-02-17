@@ -498,6 +498,8 @@
     grid-template-columns: none;
     overflow-x: auto;
     overflow-y: visible;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
     scroll-snap-type: x mandatory;
     scroll-behavior: smooth;
     padding-bottom: 8px;
