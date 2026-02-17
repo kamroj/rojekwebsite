@@ -46,12 +46,54 @@ export default defineType({
           type: 'array',
           validation: (Rule) => Rule.required().min(4).max(4),
           of: [
-            defineField({
+            {
+              type: 'object',
               name: 'whyUsPoint',
-              title: 'Punkt',
-              type: 'localizedString',
-            }),
+              title: 'Cecha',
+              fields: [
+                defineField({
+                  name: 'title',
+                  title: 'Tytuł (PL/EN/DE)',
+                  type: 'localizedString',
+                  validation: (Rule) => Rule.required(),
+                }),
+                defineField({
+                  name: 'description',
+                  title: 'Opis (PL/EN/DE)',
+                  type: 'localizedText',
+                  rows: 3,
+                }),
+              ],
+              preview: {
+                select: {
+                  titlePl: 'title.pl',
+                  titleEn: 'title.en',
+                  titleDe: 'title.de',
+                  descPl: 'description.pl',
+                  descEn: 'description.en',
+                  descDe: 'description.de',
+                },
+                prepare({titlePl, titleEn, titleDe, descPl, descEn, descDe}) {
+                  const title = titlePl || titleEn || titleDe || '(bez tytułu)'
+                  const description = descPl || descEn || descDe || '(bez opisu)'
+
+                  return {
+                    title,
+                    subtitle: `${description}`.slice(0, 80),
+                  }
+                },
+              },
+            },
           ],
+        }),
+        defineField({
+          name: 'video',
+          title: 'Film sekcji „Dlaczego my”',
+          type: 'file',
+          options: {
+            accept: 'video/*',
+          },
+          description: 'Film wyświetlany po prawej stronie, pod listą naszych cech.',
         }),
       ],
     }),

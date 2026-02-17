@@ -7,11 +7,12 @@ import homeHeaderStyles from '../../../../views/HomeView.module.css';
 import styles from '../../../../views/AboutUsView.module.css';
 import { IoMdArrowDropright } from 'react-icons/io';
 import { FiPhone, FiMail } from 'react-icons/fi';
-import { COMPANY } from '../../../../data/company.js';
 
 import { loadTranslationJson } from '../../../../lib/i18n/resources.js';
 import { t as tt } from '../../../../lib/i18n/t.js';
 import { getSectionPath } from '../../../../lib/i18n/routing.js';
+import { fetchAboutPageData } from '../../../../lib/sanity/aboutPage.js';
+import { getSanityImageProps } from '../../../../lib/sanity/sanityImageProps.js';
 
 const { lang = 'pl' } = Astro.props;
 
@@ -23,210 +24,29 @@ const breadcrumbs = [
   { label: t('breadcrumbs.about', 'About') },
 ];
 
-const copyByLang = {
-  pl: {
-    whyUsLead:
-      'Dogodna lokalizacja stolarni przy granicy administracyjnej Krakowa, nowoczesny park maszynowy oraz hala o powierzchni 1200 m² dają nam wiele możliwości, aby zrealizować każde Państwa zamówienie.',
-    whyUsSecond:
-      'Łączymy rzemieślniczą dokładność z nowoczesną technologią. Dzięki temu dostarczamy stolarkę dopasowaną do inwestycji prywatnych, deweloperskich i obiektów zabytkowych.',
-    valuePoints: [
-      {
-        title: 'Ponad 40 lat doświadczenia',
-        text: 'Wieloletnia praktyka w produkcji i renowacji stolarki drewnianej oraz ppoż.',
-      },
-      {
-        title: 'Nowoczesny park maszynowy',
-        text: 'Precyzyjna produkcja i powtarzalna jakość niezależnie od skali zamówienia.',
-      },
-      {
-        title: 'Kompleksowe wsparcie',
-        text: 'Doradztwo techniczne, indywidualna wycena i stały kontakt na każdym etapie realizacji.',
-      },
-      {
-        title: 'Sprawdzeni partnerzy i materiały',
-        text: 'Pracujemy na rozwiązaniach renomowanych dostawców i dbamy o trwałość efektu końcowego.',
-      },
-    ],
-    historyIntro:
-      'ROJEK to rodzinne przedsiębiorstwo z ponad 40-letnią tradycją, które od początku rozwija się w oparciu o rzetelne rzemiosło, odpowiedzialność i bliską współpracę z klientem. Nasza historia to droga pełna konsekwencji, pasji i przemyślanych decyzji — każdy etap rozwoju był ukierunkowany na podnoszenie jakości wykonania, udoskonalanie technologii oraz tworzenie rozwiązań trwałych, estetycznych i dopasowanych do realnych potrzeb inwestorów.',
-    historyTabsAria: 'Lata rozwoju firmy',
-    historyImageAlt: 'Zdjęcie ilustrujące etap rozwoju firmy',
-    managementSubtitle: 'Poznaj osoby odpowiedzialne za rozwój firmy',
-  },
-  en: {
-    whyUsLead:
-      'Our production facility is located near Kraków, with a modern machine park and a 1200 m² workshop, giving us the flexibility to handle both custom and large-scale projects.',
-    whyUsSecond:
-      'We combine traditional craftsmanship with modern manufacturing standards to deliver durable and refined window and door solutions.',
-    valuePoints: [
-      {
-        title: '40+ years of expertise',
-        text: 'Long-term experience in woodwork, custom joinery and historic restoration projects.',
-      },
-      {
-        title: 'Modern production facilities',
-        text: 'Reliable quality and precision across both individual and multi-unit orders.',
-      },
-      {
-        title: 'End-to-end support',
-        text: 'Technical consulting, tailored offers and clear communication at every stage.',
-      },
-      {
-        title: 'Trusted materials and partners',
-        text: 'We work with proven suppliers to ensure long-term product performance.',
-      },
-    ],
-    historyIntro:
-      'ROJEK is a family-owned company with over 40 years of experience, consistently combining high craftsmanship quality, an individual approach to each client and continuous technological development.',
-    historyTabsAria: 'Company development years',
-    historyImageAlt: 'Image illustrating a stage of company development',
-    managementSubtitle: 'Meet the team leading our company',
-  },
-  de: {
-    whyUsLead:
-      'Unser Produktionsstandort befindet sich in der Nähe von Krakau. Mit modernem Maschinenpark und einer Werkhalle von 1200 m² realisieren wir individuelle sowie umfangreiche Projekte.',
-    whyUsSecond:
-      'Wir verbinden handwerkliche Präzision mit moderner Fertigung und liefern langlebige Fenster- und Türlösungen auf hohem Niveau.',
-    valuePoints: [
-      {
-        title: 'Über 40 Jahre Erfahrung',
-        text: 'Langjährige Praxis in Holzfenstern, Sonderanfertigungen und Restaurierungsprojekten.',
-      },
-      {
-        title: 'Moderner Maschinenpark',
-        text: 'Hohe Präzision und gleichbleibende Qualität für kleine und große Aufträge.',
-      },
-      {
-        title: 'Umfassende Betreuung',
-        text: 'Technische Beratung, individuelle Angebote und transparente Kommunikation.',
-      },
-      {
-        title: 'Bewährte Partner und Materialien',
-        text: 'Wir setzen auf zuverlässige Lieferanten und dauerhafte Lösungen.',
-      },
-    ],
-    historyIntro:
-      'ROJEK ist ein Familienunternehmen mit über 40 Jahren Erfahrung, das von Anfang an hohe Ausführungsqualität, individuelle Kundenbetreuung und kontinuierliche technologische Weiterentwicklung verbindet.',
-    historyTabsAria: 'Jahre der Unternehmensentwicklung',
-    historyImageAlt: 'Bild zur jeweiligen Entwicklungsphase des Unternehmens',
-    managementSubtitle: 'Lernen Sie das Leitungsteam kennen',
-  },
-};
+let aboutData = null;
+try {
+  aboutData = await fetchAboutPageData({ lang });
+} catch (e) {
+  console.warn('[sanity][about] fetch failed', e);
+}
 
-const pageCopy = copyByLang[lang] || copyByLang.pl;
+const headerImage = aboutData?.headerImage || null;
+const headerImageSrc = headerImage?.asset?.url || '/images/company/company-top.jpg';
 
-const historyExtendedCopy = {
-  pl: {
-    'Od 1994':
-      'To był moment, w którym zaczęliśmy budować markę opartą na rzetelnej pracy i odpowiedzialności za każdy detal. Już na starcie przyjęliśmy zasadę, że każde zamówienie traktujemy indywidualnie — od konsultacji, przez dobór rozwiązań, po wykonanie i serwis. Dzięki temu szybko zyskaliśmy zaufanie klientów prywatnych oraz inwestorów szukających stolarki trwałej i estetycznej.',
-    '2002':
-      'W tym okresie rozszerzyliśmy zaplecze technologiczne i uporządkowaliśmy procesy produkcyjne, aby utrzymać wysoką jakość przy rosnącej liczbie realizacji. Rozbudowaliśmy także zespół specjalistów, co pozwoliło nam sprawniej prowadzić bardziej wymagające projekty. Jednocześnie pozostaliśmy wierni rzemieślniczemu podejściu, które od początku stanowi fundament naszej pracy.',
-    '2012':
-      'Kolejne lata przyniosły intensywny rozwój kompetencji technicznych oraz jeszcze większe skupienie na precyzji wykonania. Rozpoczęliśmy współpracę przy projektach o podwyższonych wymaganiach jakościowych, gdzie liczyły się detale, trwałość materiałów i powtarzalność parametrów. To doświadczenie przełożyło się na nowe standardy pracy i lepszą organizację całego procesu realizacyjnego.',
-    '2014':
-      'Rozwój infrastruktury pozwolił nam zoptymalizować logistykę i zwiększyć elastyczność realizacji. Dzięki temu jesteśmy w stanie szybciej odpowiadać na potrzeby klientów, zarówno przy pojedynczych zamówieniach, jak i większych inwestycjach. W tym czasie mocno postawiliśmy także na komunikację z klientem, aby każdy etap współpracy był przejrzysty i przewidywalny.',
-    '2016':
-      'W tym etapie skupiliśmy się na dalszym poszerzaniu oferty oraz dopracowaniu detali produktowych. Wprowadziliśmy rozwiązania, które łączą wysoką estetykę z codzienną funkcjonalnością i trwałością. Coraz częściej realizowaliśmy projekty wymagające indywidualnego podejścia, co umocniło naszą pozycję jako partnera do zadań niestandardowych.',
-    '2019':
-      'To czas intensywnej pracy nad jakością doświadczenia klienta — od pierwszego kontaktu, po finalny montaż i opiekę posprzedażową. Rozwinęliśmy standardy doradztwa technicznego, dzięki czemu łatwiej dopasowujemy rozwiązania do konkretnej inwestycji, stylu architektury i oczekiwań użytkowników. Efektem była jeszcze wyższa satysfakcja klientów i większa liczba poleceń.',
-    '2020':
-      'Mimo dynamicznych zmian rynkowych utrzymaliśmy stabilny rozwój i konsekwentnie realizowaliśmy obrany kierunek. Połączyliśmy doświadczenie z nowoczesnym podejściem do organizacji pracy, co pozwoliło nam zachować wysoką terminowość i jakość. Dziś ten etap postrzegamy jako solidny fundament pod dalsze inwestycje, rozwój produktów i umacnianie relacji z klientami.',
-  },
-  en: {
-    'Od 1994':
-      'This period marked the beginning of our brand built on reliability, precision and responsibility for every detail. From day one, we have treated each project individually — from consultation and solution selection to execution and after-sales support. That approach quickly earned the trust of private clients and investors looking for durable and refined joinery solutions.',
-    '2002':
-      'During this stage, we expanded our technological base and improved production processes to maintain quality while handling a growing number of projects. We also developed our team, which allowed us to manage more demanding implementations with greater efficiency. At the same time, we stayed true to the craftsmanship mindset that has always defined our work.',
-    '2012':
-      'The following years brought a strong focus on technical competence and execution precision. We started delivering projects with higher quality requirements, where durability, consistency and detail accuracy were essential. This experience helped us establish stronger internal standards and further optimize our entire production and delivery workflow.',
-    '2014':
-      'Infrastructure growth gave us better logistics and more flexibility in project handling. As a result, we became faster and more responsive for both single orders and larger investments. In parallel, we improved communication standards, ensuring clients had clear and transparent information at every stage of cooperation.',
-    '2016':
-      'At this point, we focused on broadening our offer and refining key product details. We introduced solutions that combine strong visual quality with long-term functionality and durability. More and more projects required a custom approach, which strengthened our position as a trusted partner for non-standard implementations.',
-    '2019':
-      'This period was dedicated to improving customer experience from first contact to final installation and post-delivery support. We expanded our technical consulting standards to better match products to project conditions, architecture and user expectations. The result was higher customer satisfaction and a growing number of recommendations.',
-    '2020':
-      'Despite dynamic market conditions, we maintained stable growth and continued to execute our long-term strategy. We combined experience with a modern operational approach, keeping both quality and delivery performance at a high level. Today, we treat this stage as a solid foundation for further product development and long-term customer partnerships.',
-  },
-  de: {
-    'Od 1994':
-      'In dieser Phase entstand unsere Marke auf Basis von Zuverlässigkeit, Präzision und Verantwortung für jedes Detail. Von Anfang an behandeln wir jedes Projekt individuell — von der Beratung über die Auswahl der Lösungen bis zur Umsetzung und Betreuung nach Abschluss. Dieses Vorgehen hat uns früh das Vertrauen privater Kunden und professioneller Investoren eingebracht.',
-    '2002':
-      'In diesem Zeitraum haben wir unsere technische Basis erweitert und die Produktionsprozesse optimiert, um auch bei wachsender Projektzahl konstant hohe Qualität zu sichern. Gleichzeitig wurde unser Team gezielt ausgebaut, wodurch wir anspruchsvollere Aufträge effizienter umsetzen konnten. Dabei blieb unser handwerklicher Qualitätsanspruch stets unverändert.',
-    '2012':
-      'Die folgenden Jahre standen im Zeichen technischer Weiterentwicklung und noch höherer Ausführungspräzision. Wir realisierten zunehmend Projekte mit erhöhten Qualitätsanforderungen, bei denen Beständigkeit und Genauigkeit entscheidend waren. Diese Erfahrungen führten zu klareren Standards und einer besseren Organisation des gesamten Ablaufes.',
-    '2014':
-      'Durch den Ausbau der Infrastruktur konnten wir Logistik und Flexibilität deutlich verbessern. Dadurch reagieren wir schneller auf Kundenbedürfnisse — sowohl bei Einzelaufträgen als auch bei größeren Investitionen. Parallel dazu haben wir die Kommunikationsprozesse gestärkt, damit jeder Projektschritt transparent und nachvollziehbar bleibt.',
-    '2016':
-      'In dieser Etappe lag der Fokus auf der Erweiterung unseres Angebots und der Verfeinerung wichtiger Produktdetails. Wir führten Lösungen ein, die hohe Ästhetik mit Alltagstauglichkeit und Langlebigkeit verbinden. Immer häufiger übernahmen wir individuelle Projekte, was unsere Position als Partner für anspruchsvolle Sonderlösungen weiter gefestigt hat.',
-    '2019':
-      'Diese Phase war geprägt von der Weiterentwicklung des Kundenerlebnisses — vom Erstkontakt bis zur Montage und Nachbetreuung. Wir haben unsere technische Beratung ausgebaut, um Produkte noch präziser an Projektanforderungen, Architektur und Nutzerwünsche anzupassen. Das Ergebnis war eine höhere Kundenzufriedenheit und mehr Empfehlungen.',
-    '2020':
-      'Trotz dynamischer Marktbedingungen konnten wir unseren stabilen Wachstumskurs beibehalten und unsere Strategie konsequent umsetzen. Wir haben Erfahrung mit modernen Arbeitsprozessen kombiniert und dadurch Qualität sowie Termintreue auf hohem Niveau gesichert. Heute bildet diese Etappe eine starke Grundlage für weitere Investitionen und Produktentwicklung.',
-  },
-};
+const whyUsDescription = aboutData?.whyUsDescription || '';
+const whyUsVideoUrl = aboutData?.whyUsVideoUrl || '';
+const whyUsPoints = Array.isArray(aboutData?.whyUsPoints) ? aboutData.whyUsPoints : [];
 
-const historyExtended = historyExtendedCopy[lang] || historyExtendedCopy.pl;
+const historyDescription = aboutData?.historyDescription || '';
+const historyItems = Array.isArray(aboutData?.historyItems) ? aboutData.historyItems : [];
 
-const toTelHref = (phone = '') => `tel:${String(phone).replace(/\s+/g, '')}`;
-
-/**
- * Timeline items are based on existing translation keys (history.item1..item7)
- * but the years are not localized in JSON, so we keep them as constants.
- */
-const timeline = [
-  { year: 'Od 1994', key: 'history.item1', image: '/images/aboutus/036.png' },
-  { year: '2002', key: 'history.item2', image: '/images/aboutus/070.png' },
-  { year: '2012', key: 'history.item3', image: '/images/aboutus/071.png' },
-  { year: '2014', key: 'history.item4', image: '/images/company/company-building.jpg' },
-  { year: '2016', key: 'history.item5', image: '/images/aboutus/drzwi-kafelka.png' },
-  { year: '2019', key: 'history.item6', image: '/images/aboutus/okno-kafelka2.png' },
-  { year: '2020', key: 'history.item7', image: '/images/aboutus/hs-kafelka.png' },
-].map((it) => ({
-  year: it.year,
-  title: t(`${it.key}.title`, ''),
-    text: t(`${it.key}.text`, ''),
-    extendedText: historyExtended[it.year] || '',
-  image: it.image,
-}));
-
-const managementMembers = Array.isArray(tr?.management?.members) ? tr.management.members : [];
-const managementPhotos = [
-  '/images/realizations/realization2.jpg',
-  '/images/history/przemek.jpg',
-  '/images/history/tomek.jpg',
-  '/images/realizations/realization5.jpg',
-];
-const members = Array.isArray(managementMembers)
-  ? managementMembers.map((m, idx) => ({
-      ...m,
-      photo: managementPhotos[idx] || managementPhotos[0],
-    }))
-  : [];
-
-const contactList = [...(COMPANY.contacts?.quotes || []), ...(COMPANY.contacts?.distribution || [])];
-const contactByName = new Map(contactList.map((item) => [item.name, item]));
-const membersWithContacts = members.map((member) => {
-  const contact = contactByName.get(member.name);
-  const phone = contact && typeof contact.phone === 'string' ? contact.phone : COMPANY.phone;
-  const email =
-    contact && Array.isArray(contact.emails) && typeof contact.emails[0] === 'string'
-      ? contact.emails[0]
-      : COMPANY.email;
-
-  return {
-    ...member,
-    phone,
-    phoneHref: toTelHref(phone),
-    email,
-    emailHref: `mailto:${email}`,
-  };
-});
+const management = Array.isArray(aboutData?.management) ? aboutData.management : [];
 ---
 
 <div>
   <PageHeaderSsg
-    imageSrc="/images/company/company-top.jpg"
+    imageSrc={headerImageSrc}
     title={t('pageTitle.about', 'O Firmie')}
     height={500}
   />
@@ -234,7 +54,6 @@ const membersWithContacts = members.map((member) => {
   <div class={maxWidthStyles.root} data-max-width-container="true">
     <BreadcrumbsSsg items={breadcrumbs} />
 
-    <!-- WHY US -->
     <section>
       <div class={`${homeHeaderStyles.headerWrap} full-width`}>
         <div class={homeHeaderStyles.productHeader}>{t('sections.whyUs', 'DLACZEGO MY?')}</div>
@@ -245,43 +64,41 @@ const membersWithContacts = members.map((member) => {
 
       <div class={styles.whyUsContainer}>
         <div class={styles.whyUsContentContainer}>
-          <p>
-            {pageCopy.whyUsLead}
-          </p>
-          <p>
-            {pageCopy.whyUsSecond}
-          </p>
+          {whyUsDescription && <p>{whyUsDescription}</p>}
 
-          <ul class={styles.valueList}>
-            {pageCopy.valuePoints.map((point) => (
-              <li class={styles.valueItem} data-reveal>
-                <h3>{point.title}</h3>
-                <p>{point.text}</p>
-              </li>
-            ))}
-          </ul>
+          {whyUsPoints.length > 0 && (
+            <ul class={styles.valueList}>
+              {whyUsPoints.map((point) => (
+                <li class={styles.valueItem} data-reveal>
+                  {point.title && <h3>{point.title}</h3>}
+                  {point.description && <p>{point.description}</p>}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
 
-        <div class={styles.headquartersImage} data-reveal>
-          <div class={styles.mediaSpinnerHost} data-media-spinner>
-            <div class={styles.mediaSpinnerOverlay} aria-hidden="true">
-              <span class={styles.mediaSpinnerRing}></span>
+        {whyUsVideoUrl && (
+          <div class={styles.headquartersImage} data-reveal>
+            <div class={styles.mediaSpinnerHost} data-media-spinner>
+              <div class={styles.mediaSpinnerOverlay} aria-hidden="true">
+                <span class={styles.mediaSpinnerRing}></span>
+              </div>
+              <video
+                src={whyUsVideoUrl}
+                autoplay
+                muted
+                loop
+                playsinline
+                preload="metadata"
+                aria-label={t('headquarters.imageAlt', 'Siedziba firmy ROJEK')}
+              ></video>
             </div>
-            <video
-              src="/videos/aboutus.mp4"
-              autoplay
-              muted
-              loop
-              playsinline
-              preload="metadata"
-              aria-label={t('headquarters.imageAlt', 'Siedziba firmy ROJEK')}
-            ></video>
           </div>
-        </div>
+        )}
       </div>
     </section>
 
-    <!-- HISTORY -->
     <section class={styles.historySection}>
       <div class={`${homeHeaderStyles.headerWrap} full-width`}>
         <div class={homeHeaderStyles.productHeader}>{t('history.title', 'Nasza Historia')}</div>
@@ -290,97 +107,152 @@ const membersWithContacts = members.map((member) => {
         </div>
       </div>
 
-      <div class={styles.introText}>
-        <p>
-          {pageCopy.historyIntro}
-        </p>
-      </div>
+      {historyDescription && (
+        <div class={styles.introText}>
+          <p>{historyDescription}</p>
+        </div>
+      )}
 
-      <div class={styles.historyTabs} role="tablist" aria-label={pageCopy.historyTabsAria}>
-        {timeline.map((item, idx) => (
-          <>
-            <button
-              type="button"
-              class={styles.historyTab}
-              id={`history-tab-${idx}`}
-              role="tab"
-              aria-selected={idx === 0 ? 'true' : 'false'}
-              aria-controls={`history-panel-${idx}`}
-              tabindex={idx === 0 ? '0' : '-1'}
-              data-history-tab
-            >
-              {item.year}
-            </button>
-            {idx < timeline.length - 1 && (
-              <IoMdArrowDropright className={styles.historyTabSeparator} aria-hidden="true" />
-            )}
-          </>
-        ))}
-      </div>
+      {historyItems.length > 0 && (
+        <>
+          <div class={styles.historyTabs} role="tablist" aria-label={t('aboutPage.historyTabsAria', 'Lata rozwoju firmy')}>
+            {historyItems.map((item, idx) => (
+              <>
+                <button
+                  type="button"
+                  class={styles.historyTab}
+                  id={`history-tab-${idx}`}
+                  role="tab"
+                  aria-selected={idx === 0 ? 'true' : 'false'}
+                  aria-controls={`history-panel-${idx}`}
+                  tabindex={idx === 0 ? '0' : '-1'}
+                  data-history-tab
+                >
+                  {item.year}
+                </button>
+                {idx < historyItems.length - 1 && (
+                  <IoMdArrowDropright className={styles.historyTabSeparator} aria-hidden="true" />
+                )}
+              </>
+            ))}
+          </div>
 
-      <div class={styles.historyPanels}>
-        {timeline.map((item, idx) => (
-          <article
-            class={`${styles.historyPanel} ${idx === 0 ? styles.historyPanelActive : ''}`.trim()}
-            id={`history-panel-${idx}`}
-            role="tabpanel"
-            aria-labelledby={`history-tab-${idx}`}
-            data-active={idx === 0 ? 'true' : 'false'}
-            data-history-panel
-            data-reveal
-          >
-            <div class={styles.historyPanelContent}>
-              <h3 class={styles.historyPanelMeta}>{item.year} — {item.title}</h3>
-              <p>{item.text}</p>
-              <p>{item.extendedText}</p>
-            </div>
-            <div class={styles.historyPanelImage}>
-              <div class={styles.mediaSpinnerHost} data-media-spinner>
-                <div class={styles.mediaSpinnerOverlay} aria-hidden="true">
-                  <span class={styles.mediaSpinnerRing}></span>
-                </div>
-                <img src={item.image} alt={pageCopy.historyImageAlt} loading="lazy" />
-              </div>
-            </div>
-          </article>
-        ))}
-      </div>
+          <div class={styles.historyPanels}>
+            {historyItems.map((item, idx) => {
+              const imageProps = getSanityImageProps(item.image, {
+                widths: [420, 640, 960],
+                sizes: '(max-width: 768px) 100vw, 40vw',
+                loading: 'lazy',
+                altFallback: item.imageAlt || t('aboutPage.historyImageAlt', 'Zdjęcie ilustrujące etap rozwoju firmy'),
+              });
+
+              return (
+                <article
+                  class={`${styles.historyPanel} ${idx === 0 ? styles.historyPanelActive : ''}`.trim()}
+                  id={`history-panel-${idx}`}
+                  role="tabpanel"
+                  aria-labelledby={`history-tab-${idx}`}
+                  data-active={idx === 0 ? 'true' : 'false'}
+                  data-history-panel
+                  data-reveal
+                >
+                  <div class={styles.historyPanelContent}>
+                    <h3 class={styles.historyPanelMeta}>{item.year}{item.title ? ` — ${item.title}` : ''}</h3>
+                    {item.description && <p>{item.description}</p>}
+                  </div>
+
+                  {imageProps && (
+                    <div class={styles.historyPanelImage}>
+                      <div class={styles.mediaSpinnerHost} data-media-spinner>
+                        <div class={styles.mediaSpinnerOverlay} aria-hidden="true">
+                          <span class={styles.mediaSpinnerRing}></span>
+                        </div>
+                        <img
+                          src={imageProps.src}
+                          srcset={imageProps.srcset}
+                          sizes={imageProps.sizes}
+                          width={imageProps.width}
+                          height={imageProps.height}
+                          alt={item.imageAlt || imageProps.alt}
+                          loading={imageProps.loading}
+                          decoding={imageProps.decoding}
+                          fetchpriority={imageProps.fetchpriority}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        </>
+      )}
     </section>
 
-    <!-- MANAGEMENT (static, no swiper) -->
     <section class={styles.managementSection}>
       <div class={`${homeHeaderStyles.headerWrap} full-width`}>
         <div class={homeHeaderStyles.productHeader}>{t('management.title', 'Management')}</div>
-        <div class={homeHeaderStyles.productHeaderSubtitle}>{pageCopy.managementSubtitle}</div>
+        <div class={homeHeaderStyles.productHeaderSubtitle}>
+          {t('management.subtitle', 'Poznaj osoby odpowiedzialne za rozwój firmy')}
+        </div>
       </div>
 
       <div class={styles.managementGrid} style="display: grid;">
-        {membersWithContacts.map((m) => (
-          <article class={styles.managerCard}>
-            <div class={styles.managerImageWrapper}>
-              <div class={styles.mediaSpinnerHost} data-media-spinner>
-                <div class={styles.mediaSpinnerOverlay} aria-hidden="true">
-                  <span class={styles.mediaSpinnerRing}></span>
+        {management.map((m) => {
+          const photoProps = getSanityImageProps(m.photo, {
+            widths: [320, 480, 640],
+            sizes: '(max-width: 768px) 100vw, 25vw',
+            loading: 'lazy',
+            altFallback: m.photoAlt || m.name,
+          });
+
+          return (
+            <article class={styles.managerCard}>
+              {photoProps && (
+                <div class={styles.managerImageWrapper}>
+                  <div class={styles.mediaSpinnerHost} data-media-spinner>
+                    <div class={styles.mediaSpinnerOverlay} aria-hidden="true">
+                      <span class={styles.mediaSpinnerRing}></span>
+                    </div>
+                    <img
+                      class={styles.managerPhoto}
+                      src={photoProps.src}
+                      srcset={photoProps.srcset}
+                      sizes={photoProps.sizes}
+                      width={photoProps.width}
+                      height={photoProps.height}
+                      alt={m.photoAlt || photoProps.alt}
+                      loading={photoProps.loading}
+                      decoding={photoProps.decoding}
+                      fetchpriority={photoProps.fetchpriority}
+                    />
+                  </div>
                 </div>
-                <img class={styles.managerPhoto} src={m.photo} alt={m.name} loading="lazy" />
+              )}
+
+              <div class={styles.managerBody}>
+                {m.name && <h4 class={styles.managerName}>{m.name}</h4>}
+                {m.role && <p class={styles.managerRole}>{m.role}</p>}
+
+                <div class={styles.managerContacts}>
+                  {m.phone && (
+                    <a href={m.phoneHref || '#'} aria-label={`${t('contact.phone', 'Telefon')}: ${m.phone}`}>
+                      <span class={styles.managerContactIcon} aria-hidden="true"><FiPhone /></span>
+                      <span>{m.phone}</span>
+                    </a>
+                  )}
+
+                  {m.email && (
+                    <a href={m.emailHref || '#'} aria-label={`${t('contact.email', 'E-mail')}: ${m.email}`}>
+                      <span class={styles.managerContactIcon} aria-hidden="true"><FiMail /></span>
+                      <span>{m.email}</span>
+                    </a>
+                  )}
+                </div>
               </div>
-            </div>
-            <div class={styles.managerBody}>
-              <h4 class={styles.managerName}>{m.name}</h4>
-              <p class={styles.managerRole}>{m.role}</p>
-              <div class={styles.managerContacts}>
-                <a href={m.phoneHref} aria-label={`${t('contact.phone', 'Telefon')}: ${m.phone}`}>
-                  <span class={styles.managerContactIcon} aria-hidden="true"><FiPhone /></span>
-                  <span>{m.phone}</span>
-                </a>
-                <a href={m.emailHref} aria-label={`${t('contact.email', 'E-mail')}: ${m.email}`}>
-                  <span class={styles.managerContactIcon} aria-hidden="true"><FiMail /></span>
-                  <span>{m.email}</span>
-                </a>
-              </div>
-            </div>
-          </article>
-        ))}
+            </article>
+          );
+        })}
       </div>
     </section>
   </div>
