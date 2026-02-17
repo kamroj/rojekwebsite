@@ -29,8 +29,10 @@
 
 .filtersSidebarTitle {
   margin: 0;
-  font-size: 1.6rem;
-  font-weight: 700;
+  font-size: 1.35rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   color: #2e5a3c;
 }
 
@@ -119,7 +121,7 @@
   border-radius: 6px;
   padding: 8px 14px;
   font-size: 1rem;
-  font-weight: 600;
+  font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.04em;
 }
@@ -503,6 +505,10 @@
 }
 
 @media (max-width: 767px) {
+  .filtersSidebarTitle {
+    font-size: 1.45rem;
+  }
+
   .realizationsLayout {
     grid-template-columns: 1fr;
     gap: 12px;
