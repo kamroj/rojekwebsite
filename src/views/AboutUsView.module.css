@@ -285,7 +285,7 @@
 }
 
 .managerImageWrapper {
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 3 / 4;
   overflow: hidden;
   border-radius: 6px 6px 0 0;
   background: #f2f2f2;
@@ -309,14 +309,16 @@
 
 .managerName {
   margin: 0;
-  font-size: 1.55rem;
-  color: #326647;
+  font-size: 1.7rem;
+  color: #2c4d3a;
 }
 
 .managerRole {
-  margin: 8px 0 12px;
-  font-size: 1.16rem;
+  padding-bottom: 4px;
+  margin: 8px 0 8px;
+  font-size: 1.35rem;
   color: var(--color-text-muted, #4a4a4a);
+  border-bottom: 1px solid #00000012;
 }
 
 .managerContacts {
@@ -423,7 +425,7 @@
   }
 
   .managerImageWrapper {
-    aspect-ratio: 4 / 3;
+    aspect-ratio: 3 / 4;
   }
 
   .managerBody {
@@ -436,7 +438,7 @@
 
   .managerRole {
     margin: 6px 0 10px;
-    font-size: 1.02rem;
+    font-size: 1.1rem;
   }
 
   .managerContacts {
