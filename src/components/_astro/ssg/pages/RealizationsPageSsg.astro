@@ -35,76 +35,6 @@ const resultsTemplate =
   'Znaleziono {{count}} realizacji';
 const initialResultsText = resultsTemplate.replace('{{count}}', String(realizations.length));
 
-// Temporary placeholder filters for UI/view tuning.
-// Remove after final Sanity-driven taxonomy is ready.
-const TEMPORARY_FILTER_GROUPS = [
-  {
-    key: 'system',
-    label: 'System',
-    options: ['mb-79n', 'mb-86n', 'mb-104-passive', 'genesis-75', 'decalu-88', 'veka-softline-82', 'schuco-living', 'salamander-bluevolution-82'],
-  },
-  {
-    key: 'productType',
-    label: 'Product type',
-    options: ['window', 'front-door', 'terrace-door', 'hs-portal', 'fixed-glazing', 'corner-window', 'winter-garden', 'facade'],
-  },
-  {
-    key: 'klamka',
-    label: 'Klamka',
-    options: ['standard', 'round', 'square', 'black-mat', 'inox', 'white', 'gold', 'hidden', 'premium'],
-  },
-  {
-    key: 'kolor',
-    label: 'Kolor',
-    options: ['bialy', 'antracyt', 'czarny', 'orzech', 'zloty-dab', 'winchester', 'szary-kwarc', 'bazalt', 'ciemny-braz'],
-  },
-  {
-    key: 'material',
-    label: 'Material',
-    options: ['pvc', 'aluminium', 'wood', 'wood-alu', 'steel', 'composite'],
-  },
-  {
-    key: 'openingType',
-    label: 'Opening type',
-    options: ['fixed', 'tilt', 'turn', 'tilt-turn', 'slide', 'lift-slide', 'folding', 'pivot'],
-  },
-  {
-    key: 'glazingPackage',
-    label: 'Glazing package',
-    options: ['2-pane', '3-pane', '4-pane', 'acoustic', 'safety', 'solar-control', 'ornament', 'anti-burglary'],
-  },
-  {
-    key: 'profileColor',
-    label: 'Profile color',
-    options: ['ral7016', 'ral7021', 'ral7024', 'ral7039', 'ral8019', 'ral9005', 'ral9006', 'ral9016', 'winchester', 'golden-oak', 'nut', 'anthracite-structure'],
-  },
-  {
-    key: 'investmentType',
-    label: 'Investment type',
-    options: ['single-family-house', 'apartment', 'office', 'hotel', 'school', 'restaurant', 'retail', 'industrial-hall', 'renovation', 'new-development'],
-  },
-  {
-    key: 'region',
-    label: 'Region',
-    options: ['warsaw', 'krakow', 'wroclaw', 'poznan', 'gdansk', 'lodz', 'katowice', 'bialystok', 'lublin', 'szczecin'],
-  },
-  {
-    key: 'thermalClass',
-    label: 'Thermal class',
-    options: ['standard', 'warm', 'super-warm', 'passive', 'low-energy', 'nf40'],
-  },
-  {
-    key: 'typ',
-    label: 'Typ',
-    options: ['okno', 'drzwi', 'drzwi-przesuwne', 'witryna', 'narozne', 'fix', 'przeszklenie', 'zabudowa-tarasowa'],
-  },
-  {
-    key: 'additionalFeature',
-    label: 'Additional feature',
-    options: ['hidden-hinges', 'warm-threshold', 'reed-switch', 'smart-lock', 'rc2', 'rc3', 'fingerprint', 'sun-shading', 'micro-ventilation', 'safe-kids'],
-  },
-];
-
 const filterGroupsMap = /** @type {Map<string, { key: string, label: string, options: Map<string, { key: string, label: string }> }>} */ (new Map());
 for (const realization of realizations) {
   for (const tag of realization.tags || []) {
@@ -141,35 +71,7 @@ const baseFilterGroups = Array.from(filterGroupsMap.values()).map((group) => {
   };
 }).sort(sortByKey);
 
-const mergedFilterGroupsMap = new Map(
-  baseFilterGroups.map((group) => [group.key, { ...group, options: [...group.options] }])
-);
-
-for (const tempGroup of TEMPORARY_FILTER_GROUPS) {
-  if (!mergedFilterGroupsMap.has(tempGroup.key)) {
-    mergedFilterGroupsMap.set(tempGroup.key, {
-      key: tempGroup.key,
-      label: tempGroup.label,
-      options: tempGroup.options.map((optionKey) => ({
-        key: optionKey,
-        label: optionKey,
-      })),
-    });
-    continue;
-  }
-
-  const existingGroup = mergedFilterGroupsMap.get(tempGroup.key);
-  const existingOptionKeys = new Set(existingGroup.options.map((option) => option.key));
-
-  for (const optionKey of tempGroup.options) {
-    if (existingOptionKeys.has(optionKey)) continue;
-    existingGroup.options.push({ key: optionKey, label: optionKey });
-  }
-
-  existingGroup.options.sort(sortByKey);
-}
-
-const filterGroups = Array.from(mergedFilterGroupsMap.values()).sort(sortByKey);
+const filterGroups = baseFilterGroups;
 ---
 
 <div>

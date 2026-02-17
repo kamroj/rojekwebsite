@@ -13,21 +13,6 @@ const MENU_PORTAL_Z_INDEX = 9999;
 
 // NOTE: data is now centralized in src/data/realizations.js
 
-// Temporary placeholder filters for UI/view tuning.
-// They will be removed once real CMS-backed taxonomy is finalized.
-const TEMPORARY_FILTER_GROUPS = {
-  system: ['MB-79N', 'MB-86N', 'MB-104 Passive', 'Genesis 75', 'Decalu 88', 'Veka Softline 82', 'Schuco LivIng', 'Salamander bluEvolution 82'],
-  productType: ['window', 'front-door', 'terrace-door', 'hs-portal', 'fixed-glazing', 'corner-window', 'winter-garden', 'facade'],
-  material: ['pvc', 'aluminium', 'wood', 'wood-alu', 'steel', 'composite'],
-  openingType: ['fixed', 'tilt', 'turn', 'tilt-turn', 'slide', 'lift-slide', 'folding', 'pivot'],
-  glazingPackage: ['2-pane', '3-pane', '4-pane', 'acoustic', 'safety', 'solar-control', 'ornament', 'anti-burglary'],
-  profileColor: ['ral7016', 'ral7021', 'ral7024', 'ral7039', 'ral8019', 'ral9005', 'ral9006', 'ral9016', 'winchester', 'golden-oak', 'nut', 'anthracite-structure'],
-  investmentType: ['single-family-house', 'apartment', 'office', 'hotel', 'school', 'restaurant', 'retail', 'industrial-hall', 'renovation', 'new-development'],
-  region: ['warsaw', 'krakow', 'wroclaw', 'poznan', 'gdansk', 'lodz', 'katowice', 'bialystok', 'lublin', 'szczecin'],
-  thermalClass: ['standard', 'warm', 'super-warm', 'passive', 'low-energy', 'nf40'],
-  additionalFeature: ['hidden-hinges', 'warm-threshold', 'reed-switch', 'smart-lock', 'rc2', 'rc3', 'fingerprint', 'sun-shading', 'micro-ventilation', 'safe-kids'],
-};
-
 // Helpers for options and selection mapping
 const collectUniqueTagOptions = (data) => {
   const seen = new Set();
@@ -50,32 +35,6 @@ const collectUniqueTagOptions = (data) => {
   return uniqueOptions;
 };
 
-const collectTemporaryPlaceholderOptions = (groups) => {
-  const placeholderOptions = [];
-  let id = 100000;
-
-  Object.entries(groups).forEach(([group, values]) => {
-    values.forEach((value) => {
-      placeholderOptions.push({ id: id++, label: value, value, group });
-    });
-  });
-
-  return placeholderOptions;
-};
-
-const mergeUniqueOptions = (baseOptions, extraOptions) => {
-  const map = new Map();
-
-  [...baseOptions, ...extraOptions].forEach((option) => {
-    const key = `${option.group}__${option.value}`;
-    if (!map.has(key)) {
-      map.set(key, option);
-    }
-  });
-
-  return Array.from(map.values()).sort((a, b) => a.group.localeCompare(b.group) || a.label.localeCompare(b.label));
-};
-
 const groupOptionsByGroup = (options) => {
   const map = new Map();
   options.forEach(opt => {
@@ -96,11 +55,7 @@ const buildSelectedTagsByGroup = (selected) => {
 
 export default function RealizationsPage() {
   const { t } = useTranslation();
-  const tagOptions = useMemo(() => {
-    const dataOptions = collectUniqueTagOptions(REALIZATIONS_DATA);
-    const placeholderOptions = collectTemporaryPlaceholderOptions(TEMPORARY_FILTER_GROUPS);
-    return mergeUniqueOptions(dataOptions, placeholderOptions);
-  }, []);
+  const tagOptions = useMemo(() => collectUniqueTagOptions(REALIZATIONS_DATA), []);
 
   const groupedTagOptions = useMemo(() => groupOptionsByGroup(tagOptions), [tagOptions]);
 
