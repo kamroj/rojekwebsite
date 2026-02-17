@@ -275,6 +275,10 @@
   margin-bottom: 2.4rem;
 }
 
+.managementSliderViewport {
+  position: relative;
+}
+
 .managerCard {
   border: none;
   border-radius: 12px;
@@ -309,7 +313,7 @@
 
 .managerName {
   margin: 0;
-  font-size: 1.7rem;
+  font-size: 1.8rem;
   color: #2c4d3a;
 }
 
@@ -348,6 +352,44 @@
 .managerContacts a:hover {
   color: var(--color-bottle-green);
   text-decoration: underline;
+}
+
+.managementNav {
+  display: none;
+}
+
+.managementNavButton {
+  border: none;
+  border-radius: 999px;
+  width: 44px;
+  height: 44px;
+  display: inline-grid;
+  place-items: center;
+  background: #618358;
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.18);
+  border: 1px solid rgba(42, 228, 36, 0.3);
+}
+
+.managementNavButton:hover {
+  background: rgb(16 44 1 / 40%);
+}
+
+.managementNavButton:not(:disabled):hover {
+  background: rgb(16 44 1 / 40%);
+}
+
+.managementNavButton:disabled {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
+}
+
+.managementNavButton svg {
+  width: 22px;
+  height: 22px;
 }
 
 [data-reveal] {
@@ -432,13 +474,9 @@
     padding: 12px;
   }
 
-  .managerName {
-    font-size: 1.32rem;
-  }
-
   .managerRole {
     margin: 6px 0 10px;
-    font-size: 1.1rem;
+    font-size: 1.5rem;
   }
 
   .managerContacts {
@@ -446,7 +484,41 @@
   }
 
   .managerContacts a {
-    font-size: 0.98rem;
+    font-size: 1.4rem;
     line-height: 1.35;
+  }
+}
+
+@media (max-width: 1200px) {
+  .managementGrid {
+    --management-visible-cards: 1;
+    --management-gap: 10px;
+    grid-auto-flow: column;
+    grid-auto-columns: calc((100% - (var(--management-gap) * (var(--management-visible-cards) - 1))) / var(--management-visible-cards));
+    grid-template-columns: none;
+    overflow-x: auto;
+    overflow-y: visible;
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    padding-bottom: 8px;
+    gap: 10px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .managementGrid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .managerCard {
+    scroll-snap-align: start;
+  }
+
+  .managementNav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 14px;
+    padding-bottom: 2px;
   }
 }

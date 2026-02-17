@@ -210,62 +210,87 @@ const management = Array.isArray(aboutData?.management) ? aboutData.management :
         </div>
       </div>
 
-      <div class={styles.managementGrid} style="display: grid;">
-        {management.map((m) => {
-          const photoProps = getSanityImageProps(m.photo, {
-            widths: [320, 480, 640],
-            sizes: '(max-width: 768px) 100vw, 25vw',
-            loading: 'lazy',
-            altFallback: m.photoAlt || m.name,
-          });
+      <div class={styles.managementSliderViewport}>
+        <div class={styles.managementGrid} style="display: grid;" data-management-track>
+          {management.map((m) => {
+            const photoProps = getSanityImageProps(m.photo, {
+              widths: [320, 480, 640],
+              sizes: '(max-width: 768px) 100vw, 25vw',
+              loading: 'lazy',
+              altFallback: m.photoAlt || m.name,
+            });
 
-          return (
-            <article class={styles.managerCard}>
-              {photoProps && (
-                <div class={styles.managerImageWrapper}>
-                  <div class={styles.mediaSpinnerHost} data-media-spinner>
-                    <div class={styles.mediaSpinnerOverlay} aria-hidden="true">
-                      <span class={styles.mediaSpinnerRing}></span>
+            return (
+              <article class={styles.managerCard} data-management-card>
+                {photoProps && (
+                  <div class={styles.managerImageWrapper}>
+                    <div class={styles.mediaSpinnerHost} data-media-spinner>
+                      <div class={styles.mediaSpinnerOverlay} aria-hidden="true">
+                        <span class={styles.mediaSpinnerRing}></span>
+                      </div>
+                      <img
+                        class={styles.managerPhoto}
+                        src={photoProps.src}
+                        srcset={photoProps.srcset}
+                        sizes={photoProps.sizes}
+                        width={photoProps.width}
+                        height={photoProps.height}
+                        alt={m.photoAlt || photoProps.alt}
+                        loading={photoProps.loading}
+                        decoding={photoProps.decoding}
+                        fetchpriority={photoProps.fetchpriority}
+                      />
                     </div>
-                    <img
-                      class={styles.managerPhoto}
-                      src={photoProps.src}
-                      srcset={photoProps.srcset}
-                      sizes={photoProps.sizes}
-                      width={photoProps.width}
-                      height={photoProps.height}
-                      alt={m.photoAlt || photoProps.alt}
-                      loading={photoProps.loading}
-                      decoding={photoProps.decoding}
-                      fetchpriority={photoProps.fetchpriority}
-                    />
+                  </div>
+                )}
+
+                <div class={styles.managerBody}>
+                  {m.name && <h4 class={styles.managerName}>{m.name}</h4>}
+                  {m.role && <p class={styles.managerRole}>{m.role}</p>}
+
+                  <div class={styles.managerContacts}>
+                    {m.phone && (
+                      <a href={m.phoneHref || '#'} aria-label={`${t('contact.phone', 'Telefon')}: ${m.phone}`}>
+                        <span class={styles.managerContactIcon} aria-hidden="true"><FiPhone /></span>
+                        <span>{m.phone}</span>
+                      </a>
+                    )}
+
+                    {m.email && (
+                      <a href={m.emailHref || '#'} aria-label={`${t('contact.email', 'E-mail')}: ${m.email}`}>
+                        <span class={styles.managerContactIcon} aria-hidden="true"><FiMail /></span>
+                        <span>{m.email}</span>
+                      </a>
+                    )}
                   </div>
                 </div>
-              )}
+              </article>
+            );
+          })}
+        </div>
 
-              <div class={styles.managerBody}>
-                {m.name && <h4 class={styles.managerName}>{m.name}</h4>}
-                {m.role && <p class={styles.managerRole}>{m.role}</p>}
-
-                <div class={styles.managerContacts}>
-                  {m.phone && (
-                    <a href={m.phoneHref || '#'} aria-label={`${t('contact.phone', 'Telefon')}: ${m.phone}`}>
-                      <span class={styles.managerContactIcon} aria-hidden="true"><FiPhone /></span>
-                      <span>{m.phone}</span>
-                    </a>
-                  )}
-
-                  {m.email && (
-                    <a href={m.emailHref || '#'} aria-label={`${t('contact.email', 'E-mail')}: ${m.email}`}>
-                      <span class={styles.managerContactIcon} aria-hidden="true"><FiMail /></span>
-                      <span>{m.email}</span>
-                    </a>
-                  )}
-                </div>
-              </div>
-            </article>
-          );
-        })}
+        <div class={styles.managementNav} data-management-nav>
+          <button
+            type="button"
+            class={`${styles.managementNavButton} ${styles.managementNavButtonPrev}`}
+            data-management-prev
+            aria-label={t('navigation.previous', 'Poprzedni')}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M15.41 7.41 10.83 12l4.58 4.59L14 18l-6-6 6-6z" fill="currentColor" />
+            </svg>
+          </button>
+          <button
+            type="button"
+            class={`${styles.managementNavButton} ${styles.managementNavButtonNext}`}
+            data-management-next
+            aria-label={t('navigation.next', 'Następny')}
+          >
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="m8.59 16.59 4.58-4.59-4.58-4.59L10 6l6 6-6 6z" fill="currentColor" />
+            </svg>
+          </button>
+        </div>
       </div>
     </section>
   </div>
@@ -350,6 +375,76 @@ const management = Array.isArray(aboutData?.management) ? aboutData.management :
       revealElements.forEach((element) => observer.observe(element));
     } else {
       revealElements.forEach((element) => element.setAttribute('data-visible', 'true'));
+    }
+
+    const managementTrack = document.querySelector('[data-management-track]');
+    const managementCards = Array.from(document.querySelectorAll('[data-management-card]'));
+    const managementPrev = document.querySelector('[data-management-prev]');
+    const managementNext = document.querySelector('[data-management-next]');
+    const managementNav = document.querySelector('[data-management-nav]');
+    const MANAGEMENT_MAX_VISIBLE = 3;
+    const MANAGEMENT_MIN_CARD_WIDTH = 260;
+
+    const isSliderMode = () => window.matchMedia('(max-width: 1200px)').matches;
+
+    const getStep = () => {
+      if (!managementTrack) return 0;
+      const card = managementCards[0];
+      if (!card) return managementTrack.clientWidth;
+      const cardRect = card.getBoundingClientRect();
+      const trackRect = managementTrack.getBoundingClientRect();
+      const styles = window.getComputedStyle(managementTrack);
+      const gap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+      const leftOffset = cardRect.left - trackRect.left;
+      return Math.max(0, leftOffset) + cardRect.width + gap;
+    };
+
+    const updateManagementNav = () => {
+      if (!managementTrack || !managementPrev || !managementNext || !managementNav) return;
+
+      if (!isSliderMode()) {
+        managementNav.hidden = true;
+        managementPrev.disabled = true;
+        managementNext.disabled = true;
+        managementTrack.scrollLeft = 0;
+        return;
+      }
+
+      const trackStyles = window.getComputedStyle(managementTrack);
+      const gap = parseFloat(trackStyles.columnGap || trackStyles.gap || '10') || 10;
+      const trackWidth = managementTrack.clientWidth;
+      const possibleCards = Math.max(1, Math.floor((trackWidth + gap) / (MANAGEMENT_MIN_CARD_WIDTH + gap)));
+      const visibleCards = Math.max(1, Math.min(MANAGEMENT_MAX_VISIBLE, managementCards.length, possibleCards));
+
+      managementTrack.style.setProperty('--management-visible-cards', String(visibleCards));
+      managementTrack.style.setProperty('--management-gap', `${gap}px`);
+
+      const maxScrollLeft = managementTrack.scrollWidth - managementTrack.clientWidth;
+      if (maxScrollLeft <= 2) {
+        managementNav.hidden = true;
+        managementPrev.disabled = true;
+        managementNext.disabled = true;
+        return;
+      }
+
+      managementNav.hidden = false;
+      const current = managementTrack.scrollLeft;
+      managementPrev.disabled = current <= 2;
+      managementNext.disabled = current >= maxScrollLeft - 2;
+    };
+
+    if (managementTrack && managementPrev && managementNext) {
+      managementPrev.addEventListener('click', () => {
+        managementTrack.scrollBy({ left: -getStep(), behavior: 'smooth' });
+      });
+
+      managementNext.addEventListener('click', () => {
+        managementTrack.scrollBy({ left: getStep(), behavior: 'smooth' });
+      });
+
+      managementTrack.addEventListener('scroll', updateManagementNav, { passive: true });
+      window.addEventListener('resize', updateManagementNav);
+      updateManagementNav();
     }
   })();
 </script>
