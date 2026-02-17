@@ -2,17 +2,17 @@
   display: inline-flex;
   align-items: center;
   gap: 0.6rem;
-  background: linear-gradient(135deg, #1a5618 0%, #2d7a2a 100%);
-  color: #ffffff;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   padding: 1.1rem 2.2rem;
   border-radius: 8px;
   text-decoration: none;
   font-size: 1.15rem;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: var(--cta-primary-transition);
 }
 
 .backLink:hover {
-  transform: translateY(-1px);
-  box-shadow: 0px 3px 10px 0px rgb(13 43 12 / 35%);
+  transform: translateY(var(--cta-primary-hover-translate-y));
+  box-shadow: var(--cta-primary-hover-shadow);
 }

@@ -118,20 +118,20 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  background: linear-gradient(135deg, #1a5618 0%, #2d7a2a 100%);
-  color: #ffffff;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   padding: 1rem 1.8rem;
   border-radius: 6px;
   text-decoration: none;
   font-size: 1.25rem;
   font-weight: 500;
-  transition: all 0.3s ease;
+  transition: var(--cta-primary-transition);
   width: fit-content;
 }
 
 .viewMoreButton:hover {
-  transform: translateY(-1px);
-  box-shadow: 0px 3px 10px 0px rgb(13 43 12 / 35%);
+  transform: translateY(var(--cta-primary-hover-translate-y));
+  box-shadow: var(--cta-primary-hover-shadow);
 }
 
 .viewMoreButton svg {

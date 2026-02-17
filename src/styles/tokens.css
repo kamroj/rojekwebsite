@@ -55,6 +55,13 @@
   --image-spinner-size: 34px;
   --image-spinner-accent: #1a5618;
   --image-spinner-track: rgba(2, 99, 3, 0.2);
+
+  /* Shared primary CTA button style */
+  --cta-primary-text: #ffffff;
+  --cta-primary-bg: linear-gradient(135deg, #1a5618 0%, #2d7a2a 100%);
+  --cta-primary-hover-shadow: 0 2px 6px 0 rgb(13 43 12 / 22%);
+  --cta-primary-hover-translate-y: -0.5px;
+  --cta-primary-transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* Breakpoints as custom media (supported by modern tooling; safe as documentation too) */

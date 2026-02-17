@@ -35,6 +35,76 @@ const resultsTemplate =
   'Znaleziono {{count}} realizacji';
 const initialResultsText = resultsTemplate.replace('{{count}}', String(realizations.length));
 
+// Temporary placeholder filters for UI/view tuning.
+// Remove after final Sanity-driven taxonomy is ready.
+const TEMPORARY_FILTER_GROUPS = [
+  {
+    key: 'system',
+    label: 'System',
+    options: ['mb-79n', 'mb-86n', 'mb-104-passive', 'genesis-75', 'decalu-88', 'veka-softline-82', 'schuco-living', 'salamander-bluevolution-82'],
+  },
+  {
+    key: 'productType',
+    label: 'Product type',
+    options: ['window', 'front-door', 'terrace-door', 'hs-portal', 'fixed-glazing', 'corner-window', 'winter-garden', 'facade'],
+  },
+  {
+    key: 'klamka',
+    label: 'Klamka',
+    options: ['standard', 'round', 'square', 'black-mat', 'inox', 'white', 'gold', 'hidden', 'premium'],
+  },
+  {
+    key: 'kolor',
+    label: 'Kolor',
+    options: ['bialy', 'antracyt', 'czarny', 'orzech', 'zloty-dab', 'winchester', 'szary-kwarc', 'bazalt', 'ciemny-braz'],
+  },
+  {
+    key: 'material',
+    label: 'Material',
+    options: ['pvc', 'aluminium', 'wood', 'wood-alu', 'steel', 'composite'],
+  },
+  {
+    key: 'openingType',
+    label: 'Opening type',
+    options: ['fixed', 'tilt', 'turn', 'tilt-turn', 'slide', 'lift-slide', 'folding', 'pivot'],
+  },
+  {
+    key: 'glazingPackage',
+    label: 'Glazing package',
+    options: ['2-pane', '3-pane', '4-pane', 'acoustic', 'safety', 'solar-control', 'ornament', 'anti-burglary'],
+  },
+  {
+    key: 'profileColor',
+    label: 'Profile color',
+    options: ['ral7016', 'ral7021', 'ral7024', 'ral7039', 'ral8019', 'ral9005', 'ral9006', 'ral9016', 'winchester', 'golden-oak', 'nut', 'anthracite-structure'],
+  },
+  {
+    key: 'investmentType',
+    label: 'Investment type',
+    options: ['single-family-house', 'apartment', 'office', 'hotel', 'school', 'restaurant', 'retail', 'industrial-hall', 'renovation', 'new-development'],
+  },
+  {
+    key: 'region',
+    label: 'Region',
+    options: ['warsaw', 'krakow', 'wroclaw', 'poznan', 'gdansk', 'lodz', 'katowice', 'bialystok', 'lublin', 'szczecin'],
+  },
+  {
+    key: 'thermalClass',
+    label: 'Thermal class',
+    options: ['standard', 'warm', 'super-warm', 'passive', 'low-energy', 'nf40'],
+  },
+  {
+    key: 'typ',
+    label: 'Typ',
+    options: ['okno', 'drzwi', 'drzwi-przesuwne', 'witryna', 'narozne', 'fix', 'przeszklenie', 'zabudowa-tarasowa'],
+  },
+  {
+    key: 'additionalFeature',
+    label: 'Additional feature',
+    options: ['hidden-hinges', 'warm-threshold', 'reed-switch', 'smart-lock', 'rc2', 'rc3', 'fingerprint', 'sun-shading', 'micro-ventilation', 'safe-kids'],
+  },
+];
+
 const filterGroupsMap = /** @type {Map<string, { key: string, label: string, options: Map<string, { key: string, label: string }> }>} */ (new Map());
 for (const realization of realizations) {
   for (const tag of realization.tags || []) {
@@ -62,7 +132,7 @@ for (const realization of realizations) {
 const sortByKey = (a, b) =>
   String(a.key || '').localeCompare(String(b.key || ''), 'pl', { sensitivity: 'base' });
 
-const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
+const baseFilterGroups = Array.from(filterGroupsMap.values()).map((group) => {
   const options = Array.from(group.options.values()).sort(sortByKey);
 
   return {
@@ -70,6 +140,36 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
     options,
   };
 }).sort(sortByKey);
+
+const mergedFilterGroupsMap = new Map(
+  baseFilterGroups.map((group) => [group.key, { ...group, options: [...group.options] }])
+);
+
+for (const tempGroup of TEMPORARY_FILTER_GROUPS) {
+  if (!mergedFilterGroupsMap.has(tempGroup.key)) {
+    mergedFilterGroupsMap.set(tempGroup.key, {
+      key: tempGroup.key,
+      label: tempGroup.label,
+      options: tempGroup.options.map((optionKey) => ({
+        key: optionKey,
+        label: optionKey,
+      })),
+    });
+    continue;
+  }
+
+  const existingGroup = mergedFilterGroupsMap.get(tempGroup.key);
+  const existingOptionKeys = new Set(existingGroup.options.map((option) => option.key));
+
+  for (const optionKey of tempGroup.options) {
+    if (existingOptionKeys.has(optionKey)) continue;
+    existingGroup.options.push({ key: optionKey, label: optionKey });
+  }
+
+  existingGroup.options.sort(sortByKey);
+}
+
+const filterGroups = Array.from(mergedFilterGroupsMap.values()).sort(sortByKey);
 ---
 
 <div>
@@ -82,128 +182,145 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
   <div class={maxWidthStyles.root} data-max-width-container="true">
     <BreadcrumbsSsg items={breadcrumbs} />
 
-    <div class={styles.filterContainer}>
-      <div class={styles.filterHeader}>
-        <div class={styles.filterCounter} data-counter-template={resultsTemplate}>
-          {initialResultsText}
-        </div>
-      </div>
-      <section id="realizations-filters-accordion" class={styles.filtersAccordion} data-open="false">
-        <div class={styles.filterToolbar}>
+    <div class={styles.realizationsLayout}>
+      <aside
+        id="realizations-filters-sidebar"
+        class={styles.filtersSidebar}
+        aria-label={t('realizationsPage.filters.filtersTitle', 'Filtry')}
+        role="dialog"
+        aria-modal="true"
+        aria-hidden="true"
+      >
+        <header class={styles.filtersSidebarHeader}>
+          <h2 class={styles.filtersSidebarTitle}>{t('realizationsPage.filters.filtersTitle', 'Filtry')}</h2>
+          <button id="realizations-mobile-filters-close" type="button" class={styles.mobileDrawerClose} aria-label={t('realizationsPage.filters.close', 'Zamknij')}>✕</button>
+        </header>
+
+        <div class={styles.filterPanelTop}>
+          <input
+            id="realizations-filter-search"
+            class={styles.filterSearchInput}
+            type="search"
+            placeholder={t('realizationsPage.filters.searchPlaceholder', 'Szukaj tagu, np. DR')}
+            aria-label={t('realizationsPage.filters.searchPlaceholder', 'Szukaj tagu, np. DR')}
+            autocomplete="off"
+          />
           <button
-            id="realizations-filters-toggle"
+            id="realizations-filter-reset-top"
             type="button"
-            class={styles.filterToggleButton}
-            aria-expanded="false"
-            aria-controls="realizations-filters-panel"
+            class={`${styles.filterResetButton} ${styles.desktopOnlyReset}`}
           >
-            <span class={styles.filterToggleLabel}>{t('realizationsPage.filters.filtersTitle', 'Filtry')}</span>
-            <span class={styles.filterToggleDivider} aria-hidden="true"></span>
-            <span class={styles.filterToggleIcon} aria-hidden="true">▾</span>
+            {t('realizationsPage.filters.clear', 'Wyczyść')}
           </button>
         </div>
 
-        <div id="realizations-filters-panel" class={styles.filterPanel} aria-hidden="true">
-          <div class={styles.filterPanelTop}>
-            <input
-              id="realizations-filter-search"
-              class={styles.filterSearchInput}
-              type="search"
-              placeholder={t('realizationsPage.filters.searchPlaceholder', 'Szukaj tagu, np. DR')}
-              aria-label={t('realizationsPage.filters.searchPlaceholder', 'Szukaj tagu, np. DR')}
-              autocomplete="off"
-            />
-            <button id="realizations-filter-reset" type="button" class={styles.filterResetButton}>
-              {t('realizationsPage.filters.clear', 'Wyczyść')}
-            </button>
-          </div>
+        <div class={styles.filterGroups}>
+          <ul class={styles.filterCategoryList}>
+            {filterGroups.map((group) => (
+              <li class={styles.filterCategoryItem} data-filter-group>
+                <div class={styles.filterGroupHeader}>
+                  <span class={styles.filterGroupTitle}>{group.label}</span>
+                </div>
 
-          <div class={styles.filterGroups}>
-            {filterGroups.map((group) => {
-              const groupPanelId = `filters-group-${group.key}`;
-              return (
-                <section class={styles.filterGroup} data-filter-group>
-                  <div class={styles.filterGroupTitleBar}>
-                    <span class={styles.filterGroupTitle}>{group.label}</span>
-                  </div>
-                  <div id={groupPanelId} class={styles.filterGroupBody} data-filter-group-body>
-                    <ul class={styles.filterOptionsList}>
-                      {group.options.map((option) => (
-                        <li
-                          class={styles.filterOptionItem}
-                          data-filter-option
-                          data-filter-search-text={`${group.label} ${option.label}`.toUpperCase()}
-                        >
-                          <label class={styles.filterOption}>
-                            <input
-                              type="checkbox"
-                              class={styles.filterOptionInput}
-                              data-filter-input
-                              data-filter-value={`${group.key}::${option.key}`}
-                            />
-                            <span class={styles.filterOptionText}>{option.label}</span>
-                          </label>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </section>
-              );
-            })}
+                <ul class={styles.filterOptionsList}>
+                  {group.options.map((option) => (
+                    <li
+                      class={styles.filterOptionItem}
+                      data-filter-option
+                      data-filter-search-text={`${group.label} ${option.label}`.toUpperCase()}
+                    >
+                      <label class={styles.filterOption}>
+                        <input
+                          type="checkbox"
+                          class={styles.filterOptionInput}
+                          data-filter-input
+                          data-filter-value={`${group.key}::${option.key}`}
+                          data-category-label={group.label}
+                          data-option-label={option.label}
+                        />
+                        <span class={styles.filterOptionText}>{option.label}</span>
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <footer class={styles.mobileDrawerActions}>
+          <button id="realizations-mobile-filters-apply" type="button" class={styles.mobileApplyButton}>
+            {t('realizationsPage.filters.apply', 'Zastosuj')}
+          </button>
+          <button id="realizations-filter-reset-bottom" type="button" class={styles.mobileClearButton}>
+            {t('realizationsPage.filters.clear', 'Wyczyść')}
+          </button>
+        </footer>
+      </aside>
+
+      <section class={styles.realizationsContent}>
+        <div class={styles.contentTopBar}>
+          <button id="realizations-mobile-filters-open" type="button" class={styles.mobileFiltersButton}>
+            {t('realizationsPage.filters.filtersTitle', 'Filtry')}
+          </button>
+          <div class={styles.filterCounter} data-filter-counter data-counter-template={resultsTemplate}>
+            {initialResultsText}
           </div>
         </div>
+
+        <div class={styles.realizationsContainer} id="realizations-grid">
+          {realizations.map((item, idx) => (
+            <div
+              class={styles.singleRealizationContainer}
+              data-tag-pairs={(item.tagPairs || []).join(',')}
+              data-realization-card
+              role="button"
+              tabindex="0"
+              aria-label={t('realizationsPage.filters.openImage', 'Powiększ realizację')}
+            >
+              {(() => {
+                const imageProps = getSanityImageProps(item.image, {
+                  widths: [420, 640, 960],
+                  sizes: '(max-width: 768px) 100vw, (max-width: 1400px) 50vw, 33vw',
+                  loading: 'lazy',
+                  altFallback: `${t('realizationsPage.title', 'Realizacje')} ${idx + 1}`,
+                });
+
+                return imageProps ? (
+                  <div class="media-spinner-host" data-media-spinner>
+                    <span class="media-spinner-overlay" aria-hidden="true">
+                      <span class="media-spinner-ring"></span>
+                    </span>
+                    <img
+                      class={styles.realizationImage}
+                      src={imageProps.src}
+                      srcset={imageProps.srcset}
+                      sizes={imageProps.sizes}
+                      width={imageProps.width}
+                      height={imageProps.height}
+                      alt={item.alt || imageProps.alt}
+                      loading={imageProps.loading}
+                      decoding={imageProps.decoding}
+                      fetchpriority={imageProps.fetchpriority}
+                      style={item?.image?.asset?.metadata?.lqip
+                        ? `background-image:url(${item.image.asset.metadata.lqip});background-size:cover;background-position:center;`
+                        : undefined}
+                    />
+                  </div>
+                ) : null;
+              })()}
+            </div>
+          ))}
+        </div>
+
+        <PaginationSsg
+          pagination={pagination}
+          ariaLabel={t('pagination.navigation', 'Pagination')}
+        />
       </section>
     </div>
 
-    <div class={styles.realizationsContainer} id="realizations-grid">
-      {realizations.map((item, idx) => (
-        <div
-          class={styles.singleRealizationContainer}
-          data-tag-pairs={(item.tagPairs || []).join(',')}
-          data-realization-card
-          role="button"
-          tabindex="0"
-          aria-label={t('realizationsPage.filters.openImage', 'Powiększ realizację')}
-        >
-          {(() => {
-            const imageProps = getSanityImageProps(item.image, {
-              widths: [420, 640, 960],
-              sizes: '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',
-              loading: 'lazy',
-              altFallback: `${t('realizationsPage.title', 'Realizacje')} ${idx + 1}`,
-            });
-
-            return imageProps ? (
-              <div class="media-spinner-host" data-media-spinner>
-                <span class="media-spinner-overlay" aria-hidden="true">
-                  <span class="media-spinner-ring"></span>
-                </span>
-                <img
-                  class={styles.realizationImage}
-                  src={imageProps.src}
-                  srcset={imageProps.srcset}
-                  sizes={imageProps.sizes}
-                  width={imageProps.width}
-                  height={imageProps.height}
-                  alt={item.alt || imageProps.alt}
-                  loading={imageProps.loading}
-                  decoding={imageProps.decoding}
-                  fetchpriority={imageProps.fetchpriority}
-                  style={item?.image?.asset?.metadata?.lqip
-                    ? `background-image:url(${item.image.asset.metadata.lqip});background-size:cover;background-position:center;`
-                    : undefined}
-                />
-              </div>
-            ) : null;
-          })()}
-        </div>
-      ))}
-    </div>
-
-    <PaginationSsg
-      pagination={pagination}
-      ariaLabel={t('pagination.navigation', 'Pagination')}
-    />
+    <div id="realizations-filters-backdrop" class={styles.mobileDrawerBackdrop} aria-hidden="true"></div>
 
     <div id="realization-lightbox" class={styles.lightbox} aria-hidden="true">
       <div class={styles.lightboxBackdrop} data-lightbox-close></div>
@@ -313,17 +430,25 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
     });
   })();
 
-  const filtersToggleButton = document.getElementById('realizations-filters-toggle');
-  const filtersAccordion = document.getElementById('realizations-filters-accordion');
-  const filtersPanel = document.getElementById('realizations-filters-panel');
+  const filtersSidebar = document.getElementById('realizations-filters-sidebar');
+  const filtersBackdrop = document.getElementById('realizations-filters-backdrop');
+  const mobileFiltersOpen = document.getElementById('realizations-mobile-filters-open');
+  const mobileFiltersClose = document.getElementById('realizations-mobile-filters-close');
+  const mobileFiltersApply = document.getElementById('realizations-mobile-filters-apply');
   const filterSearchInput = document.getElementById('realizations-filter-search');
   const filterInputs = Array.from(document.querySelectorAll('[data-filter-input]'));
   const filterOptions = Array.from(document.querySelectorAll('[data-filter-option]'));
   const filterGroups = Array.from(document.querySelectorAll('[data-filter-group]'));
-  const resetButton = document.getElementById('realizations-filter-reset');
+  const resetButtons = [
+    document.getElementById('realizations-filter-reset-top'),
+    document.getElementById('realizations-filter-reset-bottom'),
+  ].filter(Boolean);
+  const selectedFiltersBox = document.getElementById('realizations-selected-filters');
+  const selectedChipsContainer = document.getElementById('realizations-selected-chips');
   const cards = Array.from(document.querySelectorAll('[data-realization-card]'));
-  const counter = document.querySelector('[class*="filterCounter"]');
+  const counters = Array.from(document.querySelectorAll('[data-filter-counter]'));
   const selectedByCategory = new Map();
+  const optionMetaByPair = new Map();
 
   const lightbox = document.getElementById('realization-lightbox');
   const lightboxDialog = document.getElementById('realization-lightbox-dialog');
@@ -344,6 +469,54 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
   const LIGHTBOX_ENTER_MS = prefersReducedMotion ? 0 : 220;
   let lightboxSwitchTimeoutId = 0;
   let lightboxEnterTimeoutId = 0;
+
+  const isMobileViewport = () => window.matchMedia('(max-width: 767px)').matches;
+
+  const setMobileDrawerOpen = (shouldOpen) => {
+    if (!filtersSidebar) return;
+    filtersSidebar.setAttribute('data-mobile-open', String(shouldOpen));
+    filtersSidebar.setAttribute('aria-hidden', String(!shouldOpen));
+    filtersBackdrop?.setAttribute('data-open', String(shouldOpen));
+    filtersBackdrop?.setAttribute('aria-hidden', String(!shouldOpen));
+    document.body.style.overflow = shouldOpen ? 'hidden' : '';
+  };
+
+  const closeMobileDrawer = () => setMobileDrawerOpen(false);
+
+  const renderSelectedFilters = () => {
+    if (!selectedFiltersBox || !selectedChipsContainer) return;
+
+    const chips = [];
+
+    for (const [category, selectedValues] of selectedByCategory.entries()) {
+      for (const value of selectedValues) {
+        const pair = `${category}::${value}`;
+        const meta = optionMetaByPair.get(pair);
+        chips.push({
+          pair,
+          label: meta ? `${meta.categoryLabel}: ${meta.optionLabel}` : `${category}: ${value}`,
+        });
+      }
+    }
+
+    selectedChipsContainer.innerHTML = '';
+    selectedFiltersBox.hidden = chips.length === 0;
+
+    chips.forEach((chip) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'realizations-selected-chip';
+      button.setAttribute('data-chip-pair', chip.pair);
+      button.innerHTML = `<span>${chip.label}</span><span aria-hidden="true">✕</span>`;
+      button.addEventListener('click', () => {
+        toggleFilter(chip.pair, false);
+        syncInputsFromSelection();
+        applyFilters();
+        renderSelectedFilters();
+      });
+      selectedChipsContainer.appendChild(button);
+    });
+  };
 
   const clearLightboxTransitionClasses = () => {
     if (!lightboxImage) return;
@@ -605,10 +778,10 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
       if (matches) visibleCount += 1;
     }
 
-    if (counter) {
-      const template = counter.getAttribute('data-counter-template') || 'Znaleziono {{count}} realizacji';
-      counter.textContent = template.replace('{{count}}', String(visibleCount));
-    }
+    counters.forEach((counterItem) => {
+      const template = counterItem.getAttribute('data-counter-template') || 'Znaleziono {{count}} realizacji';
+      counterItem.textContent = template.replace('{{count}}', String(visibleCount));
+    });
 
     if (isLightboxOpen()) {
       const nextVisibleCards = getVisibleCards();
@@ -626,42 +799,39 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
   };
 
   filterInputs.forEach((input) => {
+    const pair = input.getAttribute('data-filter-value') || '';
+    optionMetaByPair.set(pair, {
+      categoryLabel: input.getAttribute('data-category-label') || '',
+      optionLabel: input.getAttribute('data-option-label') || '',
+    });
+
     input.addEventListener('change', () => {
       const pair = input.getAttribute('data-filter-value') || '';
       toggleFilter(pair, input.checked);
       applyFilters();
+      renderSelectedFilters();
     });
   });
 
   filterSearchInput?.addEventListener('input', applyFilterSearch);
 
-  if (filtersToggleButton) {
-    filtersToggleButton.onclick = () => {
-      if (!filtersPanel) return;
-      const isOpen = filtersAccordion?.getAttribute('data-open') === 'true';
-      const nextOpen = !isOpen;
-      filtersAccordion?.setAttribute('data-open', String(nextOpen));
-      filtersToggleButton.setAttribute('aria-expanded', String(nextOpen));
-      filtersPanel.setAttribute('aria-hidden', String(!nextOpen));
-    };
-  }
-
-  if (filtersAccordion?.getAttribute('data-open') === 'true') {
-    filtersToggleButton?.setAttribute('aria-expanded', 'true');
-    filtersPanel?.setAttribute('aria-hidden', 'false');
-  } else {
-    filtersToggleButton?.setAttribute('aria-expanded', 'false');
-    filtersPanel?.setAttribute('aria-hidden', 'true');
-  }
-
-  resetButton?.addEventListener('click', () => {
-    selectedByCategory.clear();
-    syncInputsFromSelection();
-    applyFilters();
+  resetButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      selectedByCategory.clear();
+      syncInputsFromSelection();
+      applyFilters();
+      renderSelectedFilters();
+    });
   });
+
+  mobileFiltersOpen?.addEventListener('click', () => setMobileDrawerOpen(true));
+  mobileFiltersClose?.addEventListener('click', closeMobileDrawer);
+  mobileFiltersApply?.addEventListener('click', closeMobileDrawer);
+  filtersBackdrop?.addEventListener('click', closeMobileDrawer);
 
   syncInputsFromSelection();
   applyFilterSearch();
+  renderSelectedFilters();
   setupScrollReveal();
   scheduleMobileActiveUpdate();
 
@@ -698,9 +868,25 @@ const filterGroups = Array.from(filterGroupsMap.values()).map((group) => {
   }, { passive: true });
 
   document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && isMobileViewport()) {
+      closeMobileDrawer();
+    }
     if (!isLightboxOpen()) return;
     if (event.key === 'Escape') closeLightbox();
     if (event.key === 'ArrowLeft') moveLightbox(-1);
     if (event.key === 'ArrowRight') moveLightbox(1);
   });
+
+  window.addEventListener('resize', () => {
+    if (!isMobileViewport()) {
+      closeMobileDrawer();
+      filtersSidebar?.setAttribute('aria-hidden', 'false');
+    } else if (filtersSidebar?.getAttribute('data-mobile-open') !== 'true') {
+      filtersSidebar?.setAttribute('aria-hidden', 'true');
+    }
+  });
+
+  if (!isMobileViewport()) {
+    filtersSidebar?.setAttribute('aria-hidden', 'false');
+  }
 </script>
