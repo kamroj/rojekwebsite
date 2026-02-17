@@ -148,7 +148,30 @@
   gap: 10px;
   overflow-x: auto;
   padding: 8px 2px 20px;
+  scrollbar-gutter: stable;
   scrollbar-width: thin;
+  scrollbar-color: #9bbf9d #ffffff;
+}
+
+.historyTabs::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+.historyTabs::-webkit-scrollbar-track {
+  background: #e5f2e6;
+  border-radius: 999px;
+}
+
+.historyTabs::-webkit-scrollbar-thumb {
+  background: #d7ead8;
+  border-radius: 999px;
+  border: 0;
+}
+
+.historyTabs::-webkit-scrollbar-thumb:hover,
+.historyTabs::-webkit-scrollbar-thumb:active {
+  background: #b7dcb9;
 }
 
 .historyTabSeparator {
@@ -180,14 +203,20 @@
 }
 
 .historyTab[aria-selected='true'] {
-  background: #2e8b57;
-  color: #fff;
-  border-color: #2e8b57;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border-color: transparent;
 }
 
 .historyTab:hover {
   background: #eef7f1;
   border-color: #326647;
+}
+
+.historyTab[aria-selected='true']:hover {
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
+  border-color: transparent;
 }
 
 .historyTab:focus-visible {
@@ -372,9 +401,9 @@
 
   .historyTab[aria-selected='true'],
   .historyTab[aria-selected='true']:hover {
-    background: #2e8b57;
-    color: #fff;
-    border-color: #2e8b57;
+    background: var(--cta-primary-bg);
+    color: var(--cta-primary-text);
+    border-color: transparent;
   }
 
   .historyTabSeparator {
