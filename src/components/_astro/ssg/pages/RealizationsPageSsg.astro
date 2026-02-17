@@ -173,6 +173,7 @@ const filterGroups = baseFilterGroups;
             class={styles.filterCounter}
             data-filter-counter
             data-counter-lang={lang}
+            data-counter-number-class={styles.filterCounterNumber}
             data-counter-template={resultsTemplate}
             data-counter-template-one={counterTemplateOne}
             data-counter-template-few={counterTemplateFew}
@@ -362,6 +363,7 @@ const filterGroups = baseFilterGroups;
   const selectedChipsContainer = document.getElementById('realizations-selected-chips');
   const cards = Array.from(document.querySelectorAll('[data-realization-card]'));
   const counters = Array.from(document.querySelectorAll('[data-filter-counter]'));
+  const counterNumberClass = counters[0]?.getAttribute('data-counter-number-class') || 'filterCounterNumber';
   const selectedByCategory = new Map();
   const optionMetaByPair = new Map();
 
@@ -707,7 +709,7 @@ const filterGroups = baseFilterGroups;
         counterItem.getAttribute('data-counter-template-other') ||
         counterItem.getAttribute('data-counter-template') ||
         'Znaleziono {{count}} realizacji';
-      counterItem.innerHTML = template.replace('{{count}}', `<span class="${styles.filterCounterNumber}">${visibleCount}</span>`);
+      counterItem.innerHTML = template.replace('{{count}}', `<span class="${counterNumberClass}">${visibleCount}</span>`);
     });
 
     if (isLightboxOpen()) {
