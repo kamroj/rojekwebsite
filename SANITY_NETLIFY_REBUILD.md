@@ -1,31 +1,55 @@
-## Sanity -> Netlify rebuild (Astro SSG)
+## Sanity publish -> Netlify rebuild (Astro SSG)
 
-This project is deployed on Netlify as a static site (Astro `output: static`).
-To make content updates from Sanity visible on the website, Netlify must rebuild the site.
+Target workflow:
 
-### 1) Create a Netlify Build Hook
+1. When content is published in Sanity, Netlify rebuilds the frontend from branch `develop`.
+2. When code is pushed to Git, Netlify rebuilds the branch that was pushed (for example `develop` or `develop-astro`).
 
-1. Go to **Netlify Dashboard → Site settings → Build & deploy → Build hooks**.
+This keeps CMS content refresh predictable (always `develop`) and code deploys branch-aware.
+
+## 1) Netlify setup
+
+### A. Enable branch deploys
+
+In Netlify site settings:
+
+- Enable branch deploys.
+- Make sure both branches are included:
+  - `develop`
+  - `develop-astro`
+
+### B. Create a build hook locked to `develop`
+
+1. Go to **Site settings -> Build & deploy -> Build hooks**.
 2. Click **Add build hook**.
-3. Name it e.g. `sanity-publish`.
-4. Copy the generated hook URL.
+3. Choose branch: **develop**.
+4. Name it for example: `sanity-publish-develop`.
+5. Copy the generated URL.
 
-Keep it secret (treat it like a token).
+## 2) Sanity setup
 
-### 2) Create a Webhook in Sanity Studio
-
-1. Go to **Sanity Manage → API → Webhooks** for the correct project/dataset.
+1. Go to **Sanity Manage -> API -> Webhooks**.
 2. Click **Create webhook**.
-3. URL: paste the Netlify build hook URL.
-4. Triggers: enable **Create**, **Update**, **Delete** (at minimum publish-related events).
-5. Filter (optional): you can limit to specific document types if needed.
+3. URL: paste the Netlify build hook URL created in step 1B.
+4. Triggers: enable publish-related events (at least create/update/delete).
+5. Save.
 
-### 3) Verify
+Optional: add a GROQ filter if only selected document types should trigger a rebuild.
 
-1. Publish/update a document in Sanity.
-2. In Netlify → **Deploys** you should see a new deploy triggered by the build hook.
+## 3) Verify
 
-### Notes
+### A. CMS change test
 
-- For local development, the site fetches content directly from Sanity and does not require Netlify rebuilds.
-- For production (SSG), the rebuild is required to regenerate static HTML.
+1. Publish a document in Sanity.
+2. In Netlify Deploys, confirm a new build starts from `develop`.
+
+### B. Code push test
+
+1. Push commit to `develop-astro`.
+2. Confirm Netlify builds `develop-astro` branch deploy.
+3. Push commit to `develop` and confirm `develop` build.
+
+## Notes
+
+- No custom script is required in this repository for this flow.
+- Keep the Netlify build hook URL secret.
