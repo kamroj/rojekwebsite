@@ -278,6 +278,7 @@
   overflow: hidden;
   border-radius: 6px;
   cursor: pointer;
+  box-shadow: var(--shadow-home-product-card);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
 }
 
@@ -294,7 +295,6 @@
 
 .singleRealizationContainer:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
 }
 
 .singleRealizationContainer:focus-visible {
@@ -349,19 +349,11 @@
   .singleRealizationContainer[data-mobile-active='true'] .realizationImage {
     transform: scale(1.06);
   }
-
-  .singleRealizationContainer[data-mobile-active='true'] {
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
-  }
 }
 
 @media (max-width: 767px) {
   .singleRealizationContainer[data-mobile-active='true'] .realizationImage {
     transform: scale(1.06);
-  }
-
-  .singleRealizationContainer[data-mobile-active='true'] {
-    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
   }
 }
 
