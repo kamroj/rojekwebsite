@@ -538,6 +538,10 @@
     },
     "results": {
       "found": "Znaleziono {{count}} realizacji",
+      "found_one": "Znaleziono {{count}} realizację",
+      "found_few": "Znaleziono {{count}} realizacje",
+      "found_many": "Znaleziono {{count}} realizacji",
+      "found_other": "Znaleziono {{count}} realizacji",
       "noResults": "Brak wyników",
       "noResultsMessage": "Nie znaleziono realizacji dla wybranych filtrów."
     }

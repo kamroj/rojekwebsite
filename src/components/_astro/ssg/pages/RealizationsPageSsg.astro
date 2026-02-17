@@ -7,7 +7,7 @@ import maxWidthStyles from '../../../ui/MaxWidthContainer.module.css';
 import styles from '../../../../views/RealizationsView.module.css';
 
 import { loadTranslationJson } from '../../../../lib/i18n/resources.js';
-import { t as tt } from '../../../../lib/i18n/t.js';
+import { t as tt, tPlural } from '../../../../lib/i18n/t.js';
 import { getSectionPath } from '../../../../lib/i18n/routing.js';
 import { fetchRealizationsPageData } from '../../../../lib/sanity/realizations.js';
 import { getSanityImageProps } from '../../../../lib/sanity/sanityImageProps.js';
@@ -31,9 +31,13 @@ const realizations = Array.isArray(realizationsProp)
   : await fetchRealizationsPageData({ lang });
 
 const resultsTemplate =
-  t('realizationsPage.results.found', 'Znaleziono {{count}} realizacji') ||
+  tPlural(tr, 'realizationsPage.results.found', realizations.length, lang, 'Znaleziono {{count}} realizacji') ||
   'Znaleziono {{count}} realizacji';
-const initialResultsText = resultsTemplate.replace('{{count}}', String(realizations.length));
+const initialResultsHtml = resultsTemplate.replace('{{count}}', `<span class="${styles.filterCounterNumber}">${realizations.length}</span>`);
+const counterTemplateOne = tt(tr, 'realizationsPage.results.found_one', resultsTemplate) || resultsTemplate;
+const counterTemplateFew = tt(tr, 'realizationsPage.results.found_few', resultsTemplate) || resultsTemplate;
+const counterTemplateMany = tt(tr, 'realizationsPage.results.found_many', resultsTemplate) || resultsTemplate;
+const counterTemplateOther = tt(tr, 'realizationsPage.results.found_other', resultsTemplate) || resultsTemplate;
 
 const filterGroupsMap = /** @type {Map<string, { key: string, label: string, options: Map<string, { key: string, label: string }> }>} */ (new Map());
 for (const realization of realizations) {
@@ -165,8 +169,17 @@ const filterGroups = baseFilterGroups;
           <button id="realizations-mobile-filters-open" type="button" class={styles.mobileFiltersButton}>
             {t('realizationsPage.filters.filtersTitle', 'Filtry')}
           </button>
-          <div class={styles.filterCounter} data-filter-counter data-counter-template={resultsTemplate}>
-            {initialResultsText}
+          <div
+            class={styles.filterCounter}
+            data-filter-counter
+            data-counter-lang={lang}
+            data-counter-template={resultsTemplate}
+            data-counter-template-one={counterTemplateOne}
+            data-counter-template-few={counterTemplateFew}
+            data-counter-template-many={counterTemplateMany}
+            data-counter-template-other={counterTemplateOther}
+          >
+            <Fragment set:html={initialResultsHtml} />
           </div>
         </div>
 
@@ -681,8 +694,20 @@ const filterGroups = baseFilterGroups;
     }
 
     counters.forEach((counterItem) => {
-      const template = counterItem.getAttribute('data-counter-template') || 'Znaleziono {{count}} realizacji';
-      counterItem.textContent = template.replace('{{count}}', String(visibleCount));
+      const counterLang = counterItem.getAttribute('data-counter-lang') || 'en';
+      let pluralCategory = 'other';
+      try {
+        pluralCategory = new Intl.PluralRules(counterLang).select(visibleCount);
+      } catch {
+        pluralCategory = 'other';
+      }
+
+      const template =
+        counterItem.getAttribute(`data-counter-template-${pluralCategory}`) ||
+        counterItem.getAttribute('data-counter-template-other') ||
+        counterItem.getAttribute('data-counter-template') ||
+        'Znaleziono {{count}} realizacji';
+      counterItem.innerHTML = template.replace('{{count}}', `<span class="${styles.filterCounterNumber}">${visibleCount}</span>`);
     });
 
     if (isLightboxOpen()) {

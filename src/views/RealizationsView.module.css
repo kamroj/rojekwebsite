@@ -152,6 +152,10 @@
   color: #326647;
 }
 
+.filterCounterNumber {
+  font-weight: 700;
+}
+
 .filterToolbar {
   display: flex;
   align-items: center;

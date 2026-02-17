@@ -544,6 +544,8 @@
     },
     "results": {
       "found": "{{count}} Realisierungen gefunden",
+      "found_one": "{{count}} Realisierung gefunden",
+      "found_other": "{{count}} Realisierungen gefunden",
       "noResults": "Keine Ergebnisse",
       "noResultsMessage": "Keine Realisierungen für die ausgewählten Filter gefunden."
     }

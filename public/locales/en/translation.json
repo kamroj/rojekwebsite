@@ -544,6 +544,8 @@
     },
     "results": {
       "found": "Found {{count}} realizations",
+      "found_one": "Found {{count}} realization",
+      "found_other": "Found {{count}} realizations",
       "noResults": "No results",
       "noResultsMessage": "No realizations found for the selected filters."
     }

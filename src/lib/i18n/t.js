@@ -25,3 +25,29 @@ export function t(translationObj, key, defaultValue = '') {
   const v = getPath(translationObj, key);
   return v === undefined ? defaultValue : v;
 }
+
+/**
+ * Minimal plural-aware translator for Astro/Node usage.
+ * It resolves keys in i18next-like format:
+ *   `${baseKey}_one`, `${baseKey}_few`, `${baseKey}_many`, `${baseKey}_other`
+ * based on Intl.PluralRules(lang).select(count).
+ */
+export function tPlural(translationObj, baseKey, count, lang = 'en', defaultValue = '') {
+  const numericCount = Number(count);
+  const safeCount = Number.isFinite(numericCount) ? numericCount : 0;
+
+  let category = 'other';
+  try {
+    category = new Intl.PluralRules(lang).select(safeCount);
+  } catch {
+    category = 'other';
+  }
+
+  const categoryValue = getPath(translationObj, `${baseKey}_${category}`);
+  if (categoryValue !== undefined) return categoryValue;
+
+  const otherValue = getPath(translationObj, `${baseKey}_other`);
+  if (otherValue !== undefined) return otherValue;
+
+  return t(translationObj, baseKey, defaultValue);
+}
