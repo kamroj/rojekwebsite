@@ -234,6 +234,16 @@ Rules:
 
 ---
 
+## Local Verification Command Policy (Cline-specific)
+
+To avoid redundant local browser actions during development:
+
+* **Do not open the website in a browser automatically**
+* Do not suggest or run commands intended only to launch/open pages (e.g. `start`, `open`, etc.) unless explicitly requested by the user
+* **Use `npm run build` as the default and valid verification command** for confirming frontend changes
+
+---
+
 ## React Code Quality Rules
 
 * React is for **interaction**, not layout
