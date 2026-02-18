@@ -463,7 +463,8 @@
     "actions": {
       "openSettings": "Cookie settings",
       "privacyPolicy": "Privacy policy",
-      "cookiePolicy": "Cookies policy"
+      "cookiePolicy": "Cookies policy",
+      "sitemap": "Sitemap"
     },
     "placeholders": {
       "map": "To display the map, accept external media (Google Maps).",

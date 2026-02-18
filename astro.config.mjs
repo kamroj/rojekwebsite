@@ -2,17 +2,14 @@ import { defineConfig } from 'astro/config';
 
 import react from '@astrojs/react';
 import netlify from '@astrojs/netlify';
-import sitemap from '@astrojs/sitemap';
+import { resolveSiteUrl } from './scripts/resolve-site-url.js';
 
-const resolveSite = () => {
-  const raw = process.env.URL || process.env.DEPLOY_PRIME_URL || process.env.DEPLOY_URL;
-  if (raw) return raw;
-  return 'http://localhost:4321';
-};
+const command = process.env.npm_lifecycle_event?.startsWith('dev') ? 'dev' : 'build';
+const site = resolveSiteUrl({ command });
 
 export default defineConfig({
   output: 'static',
-  site: resolveSite(),
+  site,
   image: {
     remotePatterns: [
       {
@@ -22,7 +19,7 @@ export default defineConfig({
     ],
   },
   adapter: process.env.NETLIFY ? netlify() : undefined,
-  integrations: [react(), sitemap()],
+  integrations: [react()],
 
   vite: {
     optimizeDeps: {

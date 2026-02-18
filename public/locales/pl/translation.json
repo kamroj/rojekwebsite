@@ -457,7 +457,8 @@
     "actions": {
       "openSettings": "Ustawienia cookies",
       "privacyPolicy": "Polityka prywatności",
-      "cookiePolicy": "Polityka cookies"
+      "cookiePolicy": "Polityka cookies",
+      "sitemap": "Mapa strony"
     },
     "placeholders": {
       "map": "Aby wyświetlić mapę, zaakceptuj treści zewnętrzne (Google Maps).",

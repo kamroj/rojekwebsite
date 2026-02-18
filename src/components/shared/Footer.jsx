@@ -14,6 +14,7 @@ const Footer = ({ lang = 'pl' }) => {
 
   const privacyPolicyPath = getSectionPath(activeLang, 'privacyPolicy');
   const cookiePolicyPath = getSectionPath(activeLang, 'cookiePolicy');
+  const sitemapPath = '/sitemap.xml';
   const privacyPolicyFallbackByLang = {
     pl: 'Polityka prywatności',
     en: 'Privacy policy',
@@ -23,6 +24,11 @@ const Footer = ({ lang = 'pl' }) => {
     pl: 'Polityka cookies',
     en: 'Cookies policy',
     de: 'Cookie-Richtlinie',
+  };
+  const sitemapFallbackByLang = {
+    pl: 'Mapa strony',
+    en: 'Sitemap',
+    de: 'Sitemap',
   };
 
   const contactData = [
@@ -141,6 +147,10 @@ const Footer = ({ lang = 'pl' }) => {
             <a href={cookiePolicyPath} className={styles.policyLink}>
               {t('cookies.actions.cookiePolicy', cookiePolicyFallbackByLang[activeLang])}
             </a>
+            <span className={styles.actionSeparator} aria-hidden="true">|</span>
+            <a href={sitemapPath} className={styles.policyLink}>
+              {t('cookies.actions.sitemap', sitemapFallbackByLang[activeLang])}
+            </a>
           </div>
         </div>
       </div>
@@ -149,6 +159,8 @@ const Footer = ({ lang = 'pl' }) => {
 };
 
 export default Footer;
+
+
 
 
 
