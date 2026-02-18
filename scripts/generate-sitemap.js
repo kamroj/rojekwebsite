@@ -1,6 +1,5 @@
 import { promises as fs } from 'node:fs';
 import path from 'node:path';
-
 import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from '../src/constants/index.js';
 import { translatePathname } from '../src/lib/i18n/routing.js';
 import { resolveSiteUrl } from './resolve-site-url.js';
