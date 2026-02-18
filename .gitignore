@@ -170,6 +170,9 @@ dist/
 # Astro build artifacts / local cache
 .astro/
 
+# Generated sitemap fallback (no longer versioned)
+public/sitemap.xml
+
 # FuseBox cache
 .fusebox/
 
