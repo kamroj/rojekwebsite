@@ -4,6 +4,7 @@ import path from 'node:path';
 import { DEFAULT_LANGUAGE, SUPPORTED_LANGUAGES } from '../src/constants/index.js';
 import { translatePathname } from '../src/lib/i18n/routing.js';
 import { resolveSiteUrl } from './resolve-site-url.js';
+import { buildSanityLastmodMap, resolveSanityLastmod } from './sitemap-lastmod.js';
 
 const DIST_DIR = path.resolve('dist');
 const OUTPUT_PATH = path.join(DIST_DIR, 'sitemap.xml');
@@ -101,6 +102,7 @@ function getAlternateEntries(urlPath, availablePaths, siteUrl) {
 async function generate() {
   const siteUrl = resolveSiteUrl({ command: 'build' });
   const htmlFiles = await walkHtmlFiles(DIST_DIR);
+  const sanityLastmodByPath = await buildSanityLastmodMap();
 
   const records = [];
   const seen = new Set();
@@ -114,9 +116,11 @@ async function generate() {
     seen.add(urlPath);
 
     const stats = await fs.stat(filePath);
+    const lastmodFromSanity = resolveSanityLastmod(urlPath, sanityLastmodByPath);
+
     records.push({
       urlPath,
-      lastmod: formatIsoDate(stats.mtime),
+      lastmod: lastmodFromSanity || formatIsoDate(stats.mtime),
     });
   }
 
