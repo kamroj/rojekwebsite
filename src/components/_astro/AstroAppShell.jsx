@@ -12,12 +12,12 @@ import Footer from '../shared/Footer';
  *
  * NOTE: React Router has been removed. Header/Footer are router-agnostic.
  */
-export default function AstroAppShell({ children }) {
+export default function AstroAppShell({ children, lang = 'pl' }) {
   return (
     <>
       <Header />
       <main>{children}</main>
-      <Footer />
+      <Footer lang={lang} />
     </>
   );
 }

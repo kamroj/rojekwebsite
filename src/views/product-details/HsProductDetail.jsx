@@ -22,7 +22,7 @@ import { getSectionPath } from '../../lib/i18n/routing.js';
 
 import styles from './HsProductDetail.module.css';
 
-export default function HsProductDetail({ product }) {
+export default function HsProductDetail({ product, breadcrumbPathname }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
   const [activeSchemeId, setActiveSchemeId] = useState('A');
@@ -94,6 +94,7 @@ export default function HsProductDetail({ product }) {
     <Page
       imageSrc={product.headerImage}
       title={product.name}
+      breadcrumbPathname={breadcrumbPathname}
       headerProps={{
         badge: { label: product.name },
         headerContent: {

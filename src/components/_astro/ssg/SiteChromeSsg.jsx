@@ -16,7 +16,7 @@ export default function SiteChromeSsg({ lang = 'pl', resources, pathname = '/' }
   return (
     <I18nBoundary lang={lang} resources={resources}>
       <Header pathname={pathname} />
-      <Footer />
+      <Footer lang={lang} />
     </I18nBoundary>
   );
 }

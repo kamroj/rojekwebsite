@@ -12,7 +12,7 @@ import Footer from '../../shared/Footer.jsx';
 export default function SiteFooterSsg({ lang = 'pl', resources }) {
   return (
     <I18nBoundary lang={lang} resources={resources}>
-      <Footer />
+      <Footer lang={lang} />
     </I18nBoundary>
   );
 }

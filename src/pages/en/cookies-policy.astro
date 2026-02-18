@@ -1,0 +1,81 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import PageHeaderSsg from '../../components/_astro/ssg/PageHeaderSsg.astro';
+import containerStyles from '../../components/ui/MaxWidthContainer.module.css';
+---
+
+<SiteLayout
+  lang="en"
+  title="Cookies Policy – ROJEK"
+  description="Polityka cookies ROJEK"
+>
+  <PageHeaderSsg
+    imageSrc="/images/policy/policy-top.webp"
+    title="Cookies policy"
+    height={500}
+  />
+
+  <main class="legal-page">
+    <div class={containerStyles.root} data-max-width-container="true">
+      <article class="legal-content">
+      <p><strong>Obowiązuje od: 18.02.2026 r.</strong></p>
+
+      <h2>1. Czym są cookies?</h2>
+      <p>Cookies to niewielkie pliki tekstowe zapisywane na urządzeniu użytkownika podczas korzystania ze strony internetowej.</p>
+
+      <h2>2. Rodzaje wykorzystywanych cookies</h2>
+      <h3>A. Cookies niezbędne</h3>
+      <p>Zapewniają prawidłowe działanie strony i bezpieczeństwo.</p>
+
+      <h3>B. Cookies analityczne (Google Analytics)</h3>
+      <p>Pozwalają analizować ruch na stronie oraz zachowania użytkowników.</p>
+      <p>Aktywowane są wyłącznie po wyrażeniu zgody.</p>
+
+      <h2>3. Zarządzanie cookies</h2>
+      <p>Podczas pierwszej wizyty użytkownik może:</p>
+      <ul>
+        <li>zaakceptować wszystkie cookies,</li>
+        <li>odrzucić cookies analityczne,</li>
+        <li>dostosować ustawienia.</li>
+      </ul>
+      <p>Ustawienia można zmienić w dowolnym momencie poprzez konfigurację przeglądarki.</p>
+
+      <h2>4. Dane przekazywane do Google</h2>
+      <p>W związku z korzystaniem z Google Analytics i reCAPTCHA dane mogą być przekazywane do Google LLC.</p>
+      <p>Szczegóły:</p>
+      <p><a href="https://policies.google.com/privacy">https://policies.google.com/privacy</a></p>
+      <p><a href="https://policies.google.com/technologies/cookies">https://policies.google.com/technologies/cookies</a></p>
+      </article>
+    </div>
+  </main>
+
+  <style>
+    .legal-page {
+      padding: var(--space-lg) 0 var(--space-xl);
+      background: var(--color-background);
+    }
+
+    .legal-content {
+      max-width: none;
+      width: 100%;
+      font-family: var(--font-main);
+      color: var(--color-text-dark);
+    }
+
+    .legal-content h2,
+    .legal-content h3 {
+      font-family: var(--font-heading);
+      color: var(--color-bottle-green);
+      font-weight: 500;
+      line-height: 1.3;
+      margin: 2rem 0 0.8rem;
+    }
+
+    .legal-content h2 { font-size: clamp(1.9rem, 2.2vw, 2.4rem); }
+    .legal-content h3 { font-size: clamp(1.7rem, 2vw, 2rem); margin-top: 1.6rem; }
+    .legal-content p, .legal-content li { font-size: 1.6rem; line-height: 1.4; color: #1f2937; }
+    .legal-content p { margin: 0 0 1rem; }
+    .legal-content ul { margin: 0 0 1rem; padding-left: 2rem; display: grid; gap: 0.35rem; }
+    .legal-content a { color: var(--color-primary); text-decoration: underline; text-underline-offset: 2px; word-break: break-word; }
+  </style>
+</SiteLayout>

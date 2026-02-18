@@ -3,6 +3,7 @@ import SiteLayout from '../../layouts/SiteLayout.astro';
 import Section from '../../components/ui/Section.jsx';
 import MaxWidthContainer from '../../components/ui/MaxWidthContainer.jsx';
 import PageHeader from '../../components/ui/PageHeader.jsx';
+import BreadcrumbsSsg from '../../components/_astro/ssg/BreadcrumbsSsg.astro';
 import { ArticleCard } from '../../components/sections/articles/index.js';
 import PaginationSsg from '../../components/_astro/ssg/PaginationSsg.astro';
 import { fetchAllArticles, fetchArticlesPageSettings } from '../../lib/sanity/articles.js';
@@ -24,6 +25,11 @@ const pagination = getArticlesPagination({
 const title = 'Artykuły | ROJEK – Okna i Drzwi';
 const description = 'Przeczytaj nasze artykuły o oknach, drzwiach, montażu i trendach w stolarce budowlanej. Porady ekspertów i aktualności branżowe.';
 const canonicalUrl = getArticlesIndexPath(lang);
+
+const breadcrumbs = [
+  { label: 'Strona główna', to: '/' },
+  { label: 'Artykuły' },
+];
 ---
 
 <SiteLayout
@@ -45,6 +51,8 @@ const canonicalUrl = getArticlesIndexPath(lang);
 
   <Section>
     <MaxWidthContainer>
+      <BreadcrumbsSsg items={breadcrumbs} />
+
       <div class={`${homeHeaderStyles.headerWrap} full-width`}>
         <div class={homeHeaderStyles.productHeader}>{pageSettings.headerTitle || 'ARTYKUŁY'}</div>
         <div class={homeHeaderStyles.productHeaderSubtitle}>

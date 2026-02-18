@@ -20,6 +20,8 @@ const {
   image = '/images/logo-black.png',
 } = Astro.props;
 
+const gaMeasurementId = (import.meta.env.PUBLIC_GA_MEASUREMENT_ID || '').trim();
+
 // --- SEO helpers
 const pathname = Astro.url?.pathname || '/';
 
@@ -54,7 +56,7 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html lang={lang} data-ga-measurement-id={gaMeasurementId || undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -140,8 +142,78 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
       }
 
       const CONSENT_EVENT = 'rojek:consent-changed';
+      const GA_MEASUREMENT_ID = (document.documentElement.dataset.gaMeasurementId || '').trim();
       let consentEmitScheduled = false;
       let lastConsentCookieRaw = '';
+      let gaInitialized = false;
+
+      function getGaDisableFlagName() {
+        return GA_MEASUREMENT_ID ? `ga-disable-${GA_MEASUREMENT_ID}` : '';
+      }
+
+      function getAnalyticsConsent(consents) {
+        return !!consents?.analytics;
+      }
+
+      function ensureGoogleAnalytics(consented) {
+        if (!GA_MEASUREMENT_ID) return;
+
+        if (!consentWindow.dataLayer) {
+          consentWindow.dataLayer = [];
+        }
+
+        if (typeof consentWindow.gtag !== 'function') {
+          consentWindow.gtag = function gtag() {
+            consentWindow.dataLayer.push(arguments);
+          };
+        }
+
+        const gtag = consentWindow.gtag;
+        const disableFlag = getGaDisableFlagName();
+
+        if (disableFlag) {
+          consentWindow[disableFlag] = !consented;
+        }
+
+        if (!consentWindow.__rojekGaConsentDefaultApplied) {
+          gtag('consent', 'default', {
+            analytics_storage: 'denied',
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied',
+            wait_for_update: 500,
+          });
+
+          consentWindow.__rojekGaConsentDefaultApplied = true;
+        }
+
+        gtag('consent', 'update', {
+          analytics_storage: consented ? 'granted' : 'denied',
+          ad_storage: 'denied',
+          ad_user_data: 'denied',
+          ad_personalization: 'denied',
+        });
+
+        if (gaInitialized || !consented) return;
+
+        if (!document.getElementById('rojek-ga4-script')) {
+          const script = document.createElement('script');
+          script.id = 'rojek-ga4-script';
+          script.async = true;
+          script.src = `https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(GA_MEASUREMENT_ID)}`;
+          document.head.appendChild(script);
+        }
+
+        gtag('js', new Date());
+        gtag('config', GA_MEASUREMENT_ID, {
+          anonymize_ip: true,
+          allow_google_signals: false,
+          allow_ad_personalization_signals: false,
+          transport_type: 'beacon',
+        });
+
+        gaInitialized = true;
+      }
 
       function getConsentCookieRaw() {
         return (
@@ -172,7 +244,7 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
       const translations = {
         pl: {
           consentNotice: {
-            description: 'Ta strona korzysta z technologii śledzenia witryn internetowych stron trzecich, w celu świadczenia i ciągłego ulepszania naszych usług oraz wyświetlania reklam zgodnie z zainteresowaniami użytkowników. Wyrażam zgodę i mogę ją w dowolnym momencie cofnąć lub zmienić, ze skutkiem na przyszłość.',
+            description: 'Ta strona korzysta z technologii stron trzecich (np. analitycznych), aby mierzyć ruch i ulepszać nasze usługi. Zgodę możesz w każdej chwili wycofać lub zmienić ze skutkiem na przyszłość.',
             learnMore: 'Ustawienia',
           },
           consentModal: {
@@ -195,10 +267,15 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
           purposes: {
             security: 'Bezpieczeństwo',
             externalMedia: 'Treści zewnętrzne',
+            analytics: 'Analityka',
           },
           security: {
             title: 'Google reCAPTCHA',
             description: 'Chroni formularz kontaktowy przed spamem.',
+          },
+          analytics: {
+            title: 'Google Analytics 4',
+            description: 'Pozwala mierzyć statystyki odwiedzin i ulepszać działanie strony.',
           },
           externalMedia: {
             title: 'Mapy i wideo (Google Maps / YouTube)',
@@ -207,7 +284,7 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
         },
         en: {
           consentNotice: {
-            description: 'This website uses third-party website tracking technologies to provide and continuously improve our services and to display advertisements according to users\' interests. I agree and may withdraw or change my consent at any time with effect for the future.',
+            description: 'This website uses third-party technologies (for example analytics) to measure traffic and improve our services. You may withdraw or change your consent at any time with effect for the future.',
             learnMore: 'Settings',
           },
           consentModal: {
@@ -230,10 +307,15 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
           purposes: {
             security: 'Security',
             externalMedia: 'External media',
+            analytics: 'Analytics',
           },
           security: {
             title: 'Google reCAPTCHA',
             description: 'Protects the contact form against spam.',
+          },
+          analytics: {
+            title: 'Google Analytics 4',
+            description: 'Allows us to measure website traffic statistics and improve the site.',
           },
           externalMedia: {
             title: 'Maps and video (Google Maps / YouTube)',
@@ -242,7 +324,7 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
         },
         de: {
           consentNotice: {
-            description: 'Diese Website verwendet Tracking-Technologien von Drittanbietern, um unsere Dienste bereitzustellen und kontinuierlich zu verbessern sowie Werbung entsprechend den Interessen der Nutzer anzuzeigen. Ich stimme zu und kann meine Einwilligung jederzeit mit Wirkung für die Zukunft widerrufen oder ändern.',
+            description: 'Diese Website verwendet Technologien von Drittanbietern (z. B. Analytik), um den Traffic zu messen und unsere Dienste zu verbessern. Ihre Einwilligung können Sie jederzeit mit Wirkung für die Zukunft widerrufen oder ändern.',
             learnMore: 'Einstellungen',
           },
           consentModal: {
@@ -265,10 +347,15 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
           purposes: {
             security: 'Sicherheit',
             externalMedia: 'Externe Medien',
+            analytics: 'Analytik',
           },
           security: {
             title: 'Google reCAPTCHA',
             description: 'Schützt das Kontaktformular vor Spam.',
+          },
+          analytics: {
+            title: 'Google Analytics 4',
+            description: 'Hilft uns, Besucherstatistiken zu messen und die Website zu verbessern.',
           },
           externalMedia: {
             title: 'Karten und Video (Google Maps / YouTube)',
@@ -287,6 +374,8 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
           consentEmitScheduled = false;
           const consents = readConsentCookie();
 
+          ensureGoogleAnalytics(getAnalyticsConsent(consents));
+
           consentWindow.dispatchEvent(
             new CustomEvent(CONSENT_EVENT, {
               detail: { consents },
@@ -298,9 +387,9 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
       const pageLang = document?.documentElement?.lang || 'pl';
       const activeLang = ['pl', 'en', 'de'].includes(pageLang) ? pageLang : 'pl';
       const privacyPolicyUrlByLang = {
-        pl: '/kontakt',
-        en: '/en/contact',
-        de: '/de/kontakt',
+        pl: '/polityka-prywatnosci',
+        en: '/en/privacy-policy',
+        de: '/de/datenschutzerklaerung',
       };
 
       const config = {
@@ -320,7 +409,7 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
         translations: {
           ...translations,
           zz: {
-            privacyPolicyUrl: privacyPolicyUrlByLang[activeLang] || '/kontakt',
+            privacyPolicyUrl: privacyPolicyUrlByLang[activeLang] || '/polityka-prywatnosci',
           },
         },
         services: [
@@ -337,6 +426,13 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
             required: false,
             default: false,
             purposes: ['externalMedia'],
+            callback: () => emitConsentChanged(),
+          },
+          {
+            name: 'analytics',
+            required: false,
+            default: false,
+            purposes: ['analytics'],
             callback: () => emitConsentChanged(),
           },
         ],

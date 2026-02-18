@@ -257,7 +257,7 @@ const DoorStandardFeaturesSection = ({ t }) => {
 // MAIN COMPONENT
 // ============================================
 
-const DoorProductDetail = ({ product }) => {
+const DoorProductDetail = ({ product, breadcrumbPathname }) => {
   const { t } = useTranslation();
 
   const specTooltipKeyMap = {
@@ -314,6 +314,7 @@ const DoorProductDetail = ({ product }) => {
       imageSrc={product.headerImage}
       headerImage={product.headerImageSanity}
       title={product.name}
+      breadcrumbPathname={breadcrumbPathname}
       headerProps={{
         badge: { label: product.name },
         headerContent: {

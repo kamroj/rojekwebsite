@@ -8,7 +8,12 @@ import DoorProductDetail from './product-details/DoorProductDetail';
 import FireRatedProductDetail from './product-details/FireRatedProductDetail';
 import HsProductDetail from './product-details/HsProductDetail';
 import { useTranslation } from 'react-i18next';
-import { getCategoryKeyFromSlug, getProductCategoryPath, getProductsIndexPath } from '../lib/i18n/routing';
+import {
+  getCategoryKeyFromSlug,
+  getProductCategoryPath,
+  getProductDetailPath,
+  getProductsIndexPath,
+} from '../lib/i18n/routing';
 import { useResourceCollector } from '../context/ResourceCollectorContext';
 import { runSanityTask } from '../lib/sanity/runSanityTask';
 import { fetchDoorProductDetail, fetchWindowProductDetail } from '../lib/sanity/windows';
@@ -35,6 +40,7 @@ function ProductDetailPageBase({ category, productId, initialSanityProduct }) {
 
   const categoryInfo = productCategories[categoryKey];
   const detailType = categoryInfo?.detailType;
+  const breadcrumbPathname = categoryInfo ? getProductDetailPath(lang, categoryKey, productId) : undefined;
 
   const isWindows = detailType === 'windows';
   const isDoors = detailType === 'doors';
@@ -117,14 +123,14 @@ function ProductDetailPageBase({ category, productId, initialSanityProduct }) {
   // Route to a detail component based on detailType.
   switch (detailType) {
     case 'windows':
-      return <WindowProductDetail product={product} />;
+      return <WindowProductDetail product={product} breadcrumbPathname={breadcrumbPathname} />;
     case 'doors':
       if (product?.slug === 'okna-ei30-ei60') {
-        return <FireRatedProductDetail product={product} />;
+        return <FireRatedProductDetail product={product} breadcrumbPathname={breadcrumbPathname} />;
       }
-      return <DoorProductDetail product={product} />;
+      return <DoorProductDetail product={product} breadcrumbPathname={breadcrumbPathname} />;
     case 'hs':
-      return <HsProductDetail product={product} />;
+      return <HsProductDetail product={product} breadcrumbPathname={breadcrumbPathname} />;
     default:
       return (
         <Page

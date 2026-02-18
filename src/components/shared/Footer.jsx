@@ -3,12 +3,27 @@ import { useTranslation } from 'react-i18next';
 import { FiPhone, FiMail } from 'react-icons/fi';
 import { COMPANY } from '../../data/company.js';
 import { hasConsent, onConsentChange, openConsentSettings } from '../../lib/consent/browser.js';
+import { getSectionPath } from '../../lib/i18n/routing.js';
 import styles from './Footer.module.css';
 
-const Footer = () => {
+const Footer = ({ lang = 'pl' }) => {
   const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
   const [mapConsent, setMapConsent] = useState(false);
+  const activeLang = ['pl', 'en', 'de'].includes(lang) ? lang : 'pl';
+
+  const privacyPolicyPath = getSectionPath(activeLang, 'privacyPolicy');
+  const cookiePolicyPath = getSectionPath(activeLang, 'cookiePolicy');
+  const privacyPolicyFallbackByLang = {
+    pl: 'Polityka prywatności',
+    en: 'Privacy policy',
+    de: 'Datenschutzerklärung',
+  };
+  const cookiePolicyFallbackByLang = {
+    pl: 'Polityka cookies',
+    en: 'Cookies policy',
+    de: 'Cookie-Richtlinie',
+  };
 
   const contactData = [
     {
@@ -106,14 +121,27 @@ const Footer = () => {
 
         <div className={styles.copyrightSection}>
           <p>{t('footer.copy', { year: currentYear })}</p>
-          <button
-            type="button"
-            className={styles.cookieSettingsButton}
-            data-open-consent-settings
-            onClick={openConsentSettings}
-          >
-            {t('cookies.actions.openSettings', 'Ustawienia cookies')}
-          </button>
+          <div className={styles.footerActions}>
+            <a
+              href="#"
+              className={styles.policyLink}
+              data-open-consent-settings
+              onClick={(event) => {
+                event.preventDefault();
+                openConsentSettings();
+              }}
+            >
+              {t('cookies.actions.openSettings', 'Ustawienia cookies')}
+            </a>
+            <span className={styles.actionSeparator} aria-hidden="true">|</span>
+            <a href={privacyPolicyPath} className={styles.policyLink}>
+              {t('cookies.actions.privacyPolicy', privacyPolicyFallbackByLang[activeLang])}
+            </a>
+            <span className={styles.actionSeparator} aria-hidden="true">|</span>
+            <a href={cookiePolicyPath} className={styles.policyLink}>
+              {t('cookies.actions.cookiePolicy', cookiePolicyFallbackByLang[activeLang])}
+            </a>
+          </div>
         </div>
       </div>
     </footer>
@@ -121,6 +149,11 @@ const Footer = () => {
 };
 
 export default Footer;
+
+
+
+
+
 
 
 

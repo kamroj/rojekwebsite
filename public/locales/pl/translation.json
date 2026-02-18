@@ -455,7 +455,9 @@
   },
   "cookies": {
     "actions": {
-      "openSettings": "Ustawienia cookies"
+      "openSettings": "Ustawienia cookies",
+      "privacyPolicy": "Polityka prywatności",
+      "cookiePolicy": "Polityka cookies"
     },
     "placeholders": {
       "map": "Aby wyświetlić mapę, zaakceptuj treści zewnętrzne (Google Maps).",

@@ -25,7 +25,7 @@ import { WINDOW_FAQ_FALLBACK } from '../../data/products/faqFallback.js';
 // --- Styled Components ---
 
 
-const WindowProductDetail = ({ product }) => {
+const WindowProductDetail = ({ product, breadcrumbPathname }) => {
   const { t } = useTranslation();
 
   const specTooltipKeyMap = {
@@ -81,6 +81,7 @@ const WindowProductDetail = ({ product }) => {
       imageSrc={product.headerImage}
       headerImage={product.headerImageSanity}
       title={product.name}
+      breadcrumbPathname={breadcrumbPathname}
       headerProps={{
         badge: { label: product.name },
         headerContent: {

@@ -461,7 +461,9 @@
   },
   "cookies": {
     "actions": {
-      "openSettings": "Cookie settings"
+      "openSettings": "Cookie settings",
+      "privacyPolicy": "Privacy policy",
+      "cookiePolicy": "Cookies policy"
     },
     "placeholders": {
       "map": "To display the map, accept external media (Google Maps).",

@@ -187,7 +187,7 @@ const FireRatedInfoSections = () => {
   );
 };
 
-export default function FireRatedProductDetail({ product }) {
+export default function FireRatedProductDetail({ product, breadcrumbPathname }) {
   const { t } = useTranslation();
 
   const specTooltipKeyMap = {
@@ -237,6 +237,7 @@ export default function FireRatedProductDetail({ product }) {
       imageSrc={product.headerImage}
       headerImage={product.headerImageSanity}
       title={product.name}
+      breadcrumbPathname={breadcrumbPathname}
       headerProps={{
         badge: { label: product.name },
         headerContent: {
