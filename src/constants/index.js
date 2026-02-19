@@ -59,7 +59,7 @@ export const VIDEO_SOURCES = {
   DOORS: '/videos/home/products/drzwi_drewniane.mp4',
   TERRACE_DOORS: '/videos/home/products/hs.mp4',
   FIRE_RESISTANT: '/videos/home/products/drzwi_ppoz.mp4',
-  BACKGROUND: '/videos/background4.mp4'
+  BACKGROUND: '/videos/backgroundcompressed.webp'
 };
 
 export const IMAGE_PATHS = {
