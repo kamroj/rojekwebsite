@@ -14,6 +14,16 @@ import { COMPANY } from '../../../../data/company.js';
 
 const { lang = 'pl' } = Astro.props;
 
+// Build-time resolution for site key:
+// - frontend-standard (Vite): VITE_RECAPTCHA_SITE_KEY
+// - server env fallbacks (if set in CI/Netlify under different names)
+const recaptchaSiteKey =
+  import.meta.env.VITE_RECAPTCHA_SITE_KEY ||
+  process.env.VITE_RECAPTCHA_SITE_KEY ||
+  process.env.RECAPTCHA_SITE_KEY ||
+  process.env.PUBLIC_RECAPTCHA_SITE_KEY ||
+  '';
+
 const tr = await loadTranslationJson(lang);
 const t = (key, def = '') => tt(tr, key, def);
 
@@ -51,7 +61,11 @@ const hours = COMPANY.openingHoursLabel || '';
 
       <div class={styles.contactContainer}>
         <div class={styles.formWrap}>
-          <ContactFormIslandWithResources lang={lang} hydrate="load" />
+          <ContactFormIslandWithResources
+            lang={lang}
+            hydrate="load"
+            viewProps={{ recaptchaSiteKey }}
+          />
         </div>
 
         <div class={styles.directCard} style={{ marginTop: '24px' }}>
@@ -107,5 +121,7 @@ const hours = COMPANY.openingHoursLabel || '';
     </section>
   </div>
 </div>
+
+
 
 
