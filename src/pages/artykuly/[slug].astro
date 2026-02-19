@@ -4,7 +4,7 @@ import Section from '../../components/ui/Section.jsx';
 import MaxWidthContainer from '../../components/ui/MaxWidthContainer.jsx';
 import PageHeader from '../../components/ui/PageHeader.jsx';
 import BreadcrumbsSsg from '../../components/_astro/ssg/BreadcrumbsSsg.astro';
-import { ArticleContent, RelatedArticles } from '../../components/sections/articles/index.js';
+import { ArticleContent, RelatedArticles, ArticleShareBar } from '../../components/sections/articles/index.js';
 import { 
   fetchArticleBySlug, 
   fetchAllArticleSlugs, 
@@ -41,6 +41,7 @@ const title = `${article.seoTitle || article.title} | ROJEK`;
 const description = article.seoDescription || article.excerpt;
 const canonicalUrl = getArticleDetailPath(lang, slug);
 const ogImage = article.featuredImage?.asset?.url;
+const shareUrl = Astro.site ? new URL(canonicalUrl, Astro.site).toString() : canonicalUrl;
 
 // JSON-LD Article schema
 const jsonLd = {
@@ -139,17 +140,23 @@ const jsonLd = {
         <div class="article-body">
           <ArticleContent content={article.content} client:idle />
 
-          <!-- Tags -->
-          {article.tags?.length > 0 && (
-            <footer class="article-footer">
+          <footer class="article-footer">
+            {article.tags?.length > 0 && (
               <div class="tags">
                 <span class="tags-label">Tagi:</span>
                 {article.tags.map((tag) => (
                   <a class="tag" href={getArticlesTagPath(lang, tag)}>{tag}</a>
                 ))}
               </div>
-            </footer>
-          )}
+            )}
+
+            <ArticleShareBar
+              url={shareUrl}
+              title={article.title}
+              lang={lang}
+              client:idle
+            />
+          </footer>
 
           <!-- Related Articles -->
           <RelatedArticles 
@@ -235,9 +242,12 @@ const jsonLd = {
 
   /* Footer / Tags */
   .article-footer {
-    margin-top: var(--space-xl);
-    padding: 1rem 0;
+    margin-top: var(--space-lg);
+    padding: 0.85rem 0;
     border-top: 1px solid var(--color-border);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
   }
 
   .tags {
