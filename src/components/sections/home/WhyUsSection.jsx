@@ -13,7 +13,7 @@ import styles from './WhyUsSection.module.css';
 const features = [
   {
     id: 'tradition',
-    icon: '/images/icons/window-icon.png',
+    icon: '/images/icons/window-icon.webp',
     titleKey: 'whyUs.tradition.title',
     descriptionKey: 'whyUs.tradition.description',
     defaultTitle: 'Tradycja i doświadczenie',
@@ -21,7 +21,7 @@ const features = [
   },
   {
     id: 'individual',
-    icon: '/images/icons/cowork-icon.png',
+    icon: '/images/icons/cowork-icon.webp',
     titleKey: 'whyUs.individual.title',
     descriptionKey: 'whyUs.individual.description',
     defaultTitle: 'Indywidualne podejście',
@@ -29,7 +29,7 @@ const features = [
   },
   {
     id: 'ecological',
-    icon: '/images/icons/leaf-icon.png',
+    icon: '/images/icons/leaf-icon.webp',
     titleKey: 'whyUs.ecological.title',
     descriptionKey: 'whyUs.ecological.description',
     defaultTitle: 'Ekologiczne materiały',
@@ -37,7 +37,7 @@ const features = [
   },
   {
     id: 'precision',
-    icon: '/images/icons/tools-icon.png',
+    icon: '/images/icons/tools-icon.webp',
     titleKey: 'whyUs.precision.title',
     descriptionKey: 'whyUs.precision.description',
     defaultTitle: 'Precyzja wykonania',
@@ -45,7 +45,7 @@ const features = [
   },
   {
     id: 'warranty',
-    icon: '/images/icons/shield-icon.png',
+    icon: '/images/icons/shield-icon.webp',
     titleKey: 'whyUs.warranty.title',
     descriptionKey: 'whyUs.warranty.description',
     defaultTitle: 'Gwarancja i serwis',
@@ -53,7 +53,7 @@ const features = [
   },
   {
     id: 'delivery',
-    icon: '/images/icons/clock-icon.png',
+    icon: '/images/icons/clock-icon.webp',
     titleKey: 'whyUs.delivery.title',
     descriptionKey: 'whyUs.delivery.description',
     defaultTitle: 'Terminowość dostaw',
