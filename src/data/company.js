@@ -57,7 +57,7 @@ export const COMPANY = {
   },
 };
 
-export function getCompanyJsonLd({ url } = {}) {
+export function getCompanyJsonLd({ url, logoUrl } = {}) {
   const address = {
     '@type': 'PostalAddress',
     streetAddress: COMPANY.address.streetAddress,
@@ -80,6 +80,12 @@ export function getCompanyJsonLd({ url } = {}) {
     // Brand is useful for rich results; keep it short.
     brand: { '@type': 'Brand', name: COMPANY.brand },
     url: url || undefined,
+    logo: logoUrl
+      ? {
+          '@type': 'ImageObject',
+          url: logoUrl,
+        }
+      : undefined,
     email: COMPANY.email,
     telephone: COMPANY.phone,
     address,

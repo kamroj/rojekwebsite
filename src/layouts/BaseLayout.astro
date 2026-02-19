@@ -17,7 +17,7 @@ const {
   // Default OG image (used in social previews).
   // Use a non-transparent asset to keep logo/text readable on white preview cards.
   // If you add a dedicated OG image later (recommended 1200×630), change this path.
-  image = '/images/logo-black.png',
+  image = '/images/logo-og.png',
 } = Astro.props;
 
 const gaMeasurementId = (import.meta.env.PUBLIC_GA_MEASUREMENT_ID || '').trim();
@@ -31,7 +31,8 @@ const canonical = Astro.site ? new URL(pathname, Astro.site).toString() : undefi
 
 const ogImage = Astro.site ? new URL(image, Astro.site).toString() : undefined;
 
-const jsonLd = JSON.stringify(getCompanyJsonLd({ url: canonical }), null, 0);
+const companyLogoUrl = Astro.site ? new URL('/images/logo-og.png', Astro.site).toString() : '/images/logo-og.png';
+const jsonLd = JSON.stringify(getCompanyJsonLd({ url: canonical, logoUrl: companyLogoUrl }), null, 0);
 
 // Indexing policy:
 // - production deploys: index
