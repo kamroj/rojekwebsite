@@ -106,14 +106,17 @@ const ContactPage = (props = {}) => {
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
-  const [errors, setErrors] = useState({ email: '', message: '', recaptcha: '' });
+  const [errors, setErrors] = useState({ name: '', email: '', message: '', recaptcha: '', submit: '' });
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState(null);
   const recaptchaRef = useRef(null);
 
   const validate = () => {
-    const next = { email: '', message: '', recaptcha: '' };
+    const next = { name: '', email: '', message: '', recaptcha: '', submit: '' };
+    if (!name.trim()) {
+      next.name = t('contactPage.errors.nameRequired', 'Imię i nazwisko jest wymagane.');
+    }
     if (!email.trim()) {
       next.email = t('contactPage.errors.emailRequired');
     } else {
@@ -135,7 +138,7 @@ const ContactPage = (props = {}) => {
       next.recaptcha = t('contactPage.errors.recaptchaRequired');
     }
     setErrors(next);
-    return !next.email && !next.message && !next.recaptcha;
+    return !next.name && !next.email && !next.message && !next.recaptcha;
   };
 
   const onSubmit = async (e) => {
@@ -153,9 +156,28 @@ const ContactPage = (props = {}) => {
 
     setSubmitting(true);
     try {
-      // Tu można podpiąć faktyczną wysyłkę (EmailJS lub Twój endpoint API).
-      // Na razie symulacja sukcesu:
-      await new Promise((res) => setTimeout(res, 600));
+      const res = await fetch('/.netlify/functions/send-contact-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          name: name.trim(),
+          email: email.trim(),
+          phone: phone.trim(),
+          message: message.trim(),
+          pageUrl: typeof window !== 'undefined' ? window.location.href : '',
+        }),
+      });
+
+      if (!res.ok) {
+        throw new Error(`send-failed:${res.status}`);
+      }
+
+      const data = await res.json().catch(() => ({}));
+      if (!data.success) {
+        throw new Error('send-failed');
+      }
+
       setSent(true);
       // Reset formularza i reCAPTCHA
       setName('');
@@ -163,9 +185,13 @@ const ContactPage = (props = {}) => {
       setPhone('');
       setMessage('');
       setRecaptchaToken(null);
+      setErrors({ name: '', email: '', message: '', recaptcha: '', submit: '' });
       if (recaptchaRef.current) recaptchaRef.current.reset();
     } catch {
-      // Obsłuż ewentualny błąd wysyłki (toast/komunikat)
+      setErrors((p) => ({
+        ...p,
+        submit: t('contactPage.errors.sendFailed', 'Nie udało się wysłać wiadomości. Spróbuj ponownie.'),
+      }));
     } finally {
       setSubmitting(false);
     }
@@ -194,7 +220,10 @@ const ContactPage = (props = {}) => {
             value={name}
             onChange={(e) => setName(e.target.value)}
             autoComplete="name"
+            required
+            aria-invalid={!!errors.name}
           />
+          {errors.name && <div className={styles.errorText}>{errors.name}</div>}
         </div>
 
         <div className={styles.field}>
@@ -286,6 +315,7 @@ const ContactPage = (props = {}) => {
           <button className={styles.button} type="submit" disabled={submitting || !recaptchaEnabled || !securityConsent}>
             {submitting ? t('contactPage.actions.sending') : t('contactPage.actions.send')}
           </button>
+          {errors.submit && <div className={styles.errorText}>{errors.submit}</div>}
           {sent && <div className={styles.successBox}>{t('contactPage.success')}</div>}
         </div>
       </form>

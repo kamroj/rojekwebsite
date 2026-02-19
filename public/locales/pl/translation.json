@@ -667,10 +667,12 @@
     },
     "success": "Dziękujemy! Wiadomość została wysłana.",
     "errors": {
+      "nameRequired": "Imię i nazwisko jest wymagane.",
       "emailRequired": "Adres email jest wymagany.",
       "emailInvalid": "Podaj poprawny adres email.",
       "messageRequired": "Wiadomość jest wymagana.",
-      "recaptchaRequired": "Potwierdź reCAPTCHA."
+      "recaptchaRequired": "Potwierdź reCAPTCHA.",
+      "sendFailed": "Nie udało się wysłać wiadomości. Spróbuj ponownie."
     },
     "direct": {
       "header": "Skontaktuj się z nami bezpośrednio",

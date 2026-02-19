@@ -671,10 +671,12 @@
     },
     "success": "Thank you! Your message has been sent.",
     "errors": {
+      "nameRequired": "Name is required.",
       "emailRequired": "Email address is required.",
       "emailInvalid": "Please enter a valid email address.",
       "messageRequired": "Message is required.",
-      "recaptchaRequired": "Please confirm reCAPTCHA."
+      "recaptchaRequired": "Please confirm reCAPTCHA.",
+      "sendFailed": "Failed to send message. Please try again."
     },
     "direct": {
       "header": "Contact us directly",
