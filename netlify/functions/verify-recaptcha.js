@@ -23,14 +23,7 @@ exports.handler = async (event) => {
   }
 
   const secret = process.env.RECAPTCHA_SECRET;
-  console.info('[reCAPTCHA debug][function] invoke', {
-    method: event.httpMethod,
-    hasSecret: Boolean(secret),
-    hasBody: Boolean(event.body),
-  });
-
   if (!secret) {
-    console.warn('[reCAPTCHA debug][function] missing RECAPTCHA_SECRET');
     return {
       statusCode: 500,
       headers: corsHeaders,
@@ -42,11 +35,7 @@ exports.handler = async (event) => {
   try {
     const body = JSON.parse(event.body || '{}');
     token = body.token;
-    console.info('[reCAPTCHA debug][function] parsed body', {
-      hasToken: Boolean(token),
-    });
   } catch {
-    console.warn('[reCAPTCHA debug][function] invalid JSON body');
     return {
       statusCode: 400,
       headers: corsHeaders,
@@ -55,7 +44,6 @@ exports.handler = async (event) => {
   }
 
   if (!token) {
-    console.warn('[reCAPTCHA debug][function] missing token in request');
     return {
       statusCode: 400,
       headers: corsHeaders,
@@ -78,11 +66,6 @@ exports.handler = async (event) => {
     });
 
     const data = await res.json();
-    console.info('[reCAPTCHA debug][function] google verify response', {
-      success: Boolean(data?.success),
-      errorCodes: data?.['error-codes'] || null,
-      hostname: data?.hostname || null,
-    });
     // Always return 200, but indicate success in body
     return {
       statusCode: 200,
@@ -90,7 +73,6 @@ exports.handler = async (event) => {
       body: JSON.stringify({ ...data, success: !!data.success }),
     };
   } catch (err) {
-    console.error('[reCAPTCHA debug][function] verify error', String(err));
     return {
       statusCode: 500,
       headers: corsHeaders,
