@@ -31,7 +31,7 @@ export const productCategories = {
       id: product.id,
       slug: product.slug,
       name: product.name,
-      image: product.images?.[0] || '/images/aboutus/hs-kafelka.png',
+      image: product.images?.[0] || '/images/aboutus/hs-kafelka.webp',
       description: product.shortDescription,
       specs: product.specs,
     })),
@@ -42,7 +42,7 @@ export const productCategories = {
     title: 'Produkty drzwiowe',
     subtitle: 'Poznaj nasze nowoczesne systemy drzwiowe.',
     pageTitle: 'Drzwi',
-    headerImage: '/images/aboutus/drzwi-kafelka.png',
+    headerImage: '/images/aboutus/drzwi-kafelka.webp',
     products: DOORS_MOCK_DATA.filter((door) => door.slug !== 'okna-ei30-ei60').map(door => ({
       id: door.id,
       slug: door.slug,
@@ -58,7 +58,7 @@ export const productCategories = {
     title: 'Okna i drzwi przeciwpożarowe',
     subtitle: 'Certyfikowana stolarka EI30 / EI60 do inwestycji mieszkaniowych i komercyjnych.',
     pageTitle: 'Okna i drzwi przeciwpożarowe',
-    headerImage: '/images/aboutus/drzwi-ppoz-kafelka.png',
+    headerImage: '/images/aboutus/drzwi-ppoz-kafelka.webp',
     products: FIRE_RATED_DOOR ? [{
       id: FIRE_RATED_DOOR.id,
       slug: FIRE_RATED_DOOR.slug,

@@ -66,9 +66,9 @@ const ProductsPage = ({
 
         const homeImage =
           key === 'okna'
-            ? '/images/aboutus/okno-kafelka.png'
+            ? '/images/aboutus/okno-kafelka.webp'
             : key === 'drzwi'
-              ? '/images/aboutus/drzwi-kafelka.png'
+              ? '/images/aboutus/drzwi-kafelka.webp'
               : category?.headerImage || '/images/products/windows/top.jpg';
 
         return {

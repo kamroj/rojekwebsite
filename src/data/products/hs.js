@@ -15,7 +15,7 @@ export const HS_PRODUCT_DETAILS = {
     longDescription:
       'Wariant Drewno-Alu został zaprojektowany dla inwestorów oczekujących dużych przeszkleń, nowoczesnej linii profilu i wysokiej odporności na warunki zewnętrzne. To rozwiązanie, które podnosi komfort codziennego użytkowania i jednocześnie wspiera bardzo dobre parametry izolacyjne. Dzięki szerokim możliwościom konfiguracji system łatwo dopasować do architektury domu oraz indywidualnych wymagań projektu.',
     headerImage: '/images/hs/top.jpg',
-    images: ['/images/hs/top.jpg', '/images/aboutus/hs-kafelka.png'],
+    images: ['/images/hs/top.jpg', '/images/aboutus/hs-kafelka.webp'],
     video: '/videos/hs.mp4',
     features: [
       {
@@ -90,7 +90,7 @@ export const HS_PRODUCT_DETAILS = {
     longDescription:
       'Wariant Drewno to propozycja dla osób, które cenią naturalny charakter stolarki i komfort codziennego użytkowania. Konstrukcja systemu wspiera stabilność dużych skrzydeł i bardzo dobre parametry izolacyjne. Rozwiązanie sprawdza się zarówno w nowoczesnych bryłach, jak i projektach o bardziej klasycznej estetyce.',
     headerImage: '/images/hs/top.jpg',
-    images: ['/images/hs/top.jpg', '/images/aboutus/hs-kafelka.png'],
+    images: ['/images/hs/top.jpg', '/images/aboutus/hs-kafelka.webp'],
     video: '/videos/hs.mp4',
     features: [
       {

@@ -18,7 +18,7 @@ export const DOORS_MOCK_DATA = [
     headerImage: '/images/products/fire/top.png',
     images: [
       '/images/products/fire/top.png',
-      '/images/aboutus/drzwi-kafelka.png'
+      '/images/aboutus/drzwi-kafelka.webp'
     ],
     video: '/videos/door.mp4',
     specs: {
@@ -100,11 +100,11 @@ export const DOORS_MOCK_DATA = [
     categoryKey: 'exteriorDoors',
     shortDescription: 'Klasyczne drzwi łączące tradycję z nowoczesnością, wykonane w technologii płycinowo-fryzowej.',
     longDescription: 'Idealne rozwiązanie dla osób ceniących styl retro i elegancję. Konstrukcja płycinowo-fryzowa zapewnia wyjątkową estetykę i solidność.',
-    headerImage: '/images/aboutus/drzwi-kafelka.png',
+    headerImage: '/images/aboutus/drzwi-kafelka.webp',
     images: [
-      '/images/aboutus/drzwi-kafelka.png',
-      '/images/aboutus/drzwi-ppoz-kafelka.png',
-      '/images/aboutus/hs-kafelka.png',
+      '/images/aboutus/drzwi-kafelka.webp',
+      '/images/aboutus/drzwi-ppoz-kafelka.webp',
+      '/images/aboutus/hs-kafelka.webp',
     ],
     video: '/videos/door.mp4',
     specs: {
@@ -124,7 +124,7 @@ export const DOORS_MOCK_DATA = [
         type: 'retroDecorations',
         title: 'Zdobienia w stylu retro',
         description: 'Wariant płycinowo‑fryzowy daje ogromne możliwości personalizacji. Możesz postawić na subtelne, klasyczne podziały albo na bardziej dekoracyjne płyciny, listwy i frezowania. Dzięki temu drzwi zyskują niepowtarzalny charakter i świetnie pasują do domów w stylu tradycyjnym, dworkowym oraz do renowacji. Estetyka idzie tu w parze z solidną konstrukcją i dopracowanymi detalami.',
-        image: '/images/aboutus/drzwi-kafelka.png',
+        image: '/images/aboutus/drzwi-kafelka.webp',
         features: [
           'Klasyczne wzory płycin',
           'Ręczne zdobienia',
@@ -180,11 +180,11 @@ export const DOORS_MOCK_DATA = [
     categoryKey: 'exteriorDoors',
     shortDescription: 'Nowoczesne drzwi o gładkiej powierzchni z możliwością frezowania dowolnych wzorów CNC.',
     longDescription: 'Minimalistyczny design spotyka funkcjonalność. Pełno-płytowa konstrukcja pozwala na nieograniczone możliwości personalizacji poprzez frezowanie CNC.',
-    headerImage: '/images/aboutus/drzwi-kafelka.png',
+    headerImage: '/images/aboutus/drzwi-kafelka.webp',
     images: [
-      '/images/aboutus/drzwi-kafelka.png',
-      '/images/aboutus/drzwi-ppoz-kafelka.png',
-      '/images/aboutus/hs-kafelka.png',
+      '/images/aboutus/drzwi-kafelka.webp',
+      '/images/aboutus/drzwi-ppoz-kafelka.webp',
+      '/images/aboutus/hs-kafelka.webp',
     ],
     video: '/videos/door.mp4',
     specs: {
@@ -203,7 +203,7 @@ export const DOORS_MOCK_DATA = [
         type: 'cncMilling',
         title: 'Frezowanie CNC - Twój indywidualny wzór',
         description: 'Technologia frezowania CNC pozwala na precyzyjne wykonanie dowolnego wzoru na powierzchni drzwi. Od prostych geometrycznych linii po skomplikowane kompozycje - Twoja wyobraźnia jest jedynym ograniczeniem.',
-        image: '/images/aboutus/drzwi-kafelka.png',
+        image: '/images/aboutus/drzwi-kafelka.webp',
         features: [
           'Precyzyjne frezowanie do 0,1mm',
           'Dowolne wzory i projekty',
@@ -258,11 +258,11 @@ export const DOORS_MOCK_DATA = [
     categoryKey: 'exteriorDoors',
     shortDescription: 'Połączenie ciepła drewna z trwałością aluminium. Szeroki wybór paneli Aluron.',
     longDescription: 'Najlepsze z dwóch światów - naturalne piękno drewna wewnątrz i ochrona aluminium na zewnątrz. Panele Aluron zapewniają wyjątkową estetykę i trwałość.',
-    headerImage: '/images/aboutus/drzwi-kafelka.png',
+    headerImage: '/images/aboutus/drzwi-kafelka.webp',
     images: [
-      '/images/aboutus/drzwi-kafelka.png',
-      '/images/aboutus/drzwi-ppoz-kafelka.png',
-      '/images/aboutus/hs-kafelka.png',
+      '/images/aboutus/drzwi-kafelka.webp',
+      '/images/aboutus/drzwi-ppoz-kafelka.webp',
+      '/images/aboutus/hs-kafelka.webp',
     ],
     video: '/videos/door.mp4',
     specs: {
@@ -281,7 +281,7 @@ export const DOORS_MOCK_DATA = [
         type: 'aluronPanels',
         title: 'Panele Aluron - Bogactwo wzorów',
         description: 'Panele Aluron to szeroka gama nowoczesnych wzorów i kolorów. Od gładkich minimalistycznych powierzchni po imitacje drewna i betonu. Wysoka jakość wykończenia i trwałość na lata.',
-        image: '/images/aboutus/drzwi-kafelka.png',
+        image: '/images/aboutus/drzwi-kafelka.webp',
         features: [
           'Ponad 200 wzorów paneli',
           'Imitacje drewna i betonu',
