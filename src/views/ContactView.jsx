@@ -71,6 +71,24 @@ const ContactPage = (props = {}) => {
   const [securityConsent, setSecurityConsent] = useState(false);
 
   useEffect(() => {
+    const maskKey = (key) => {
+      if (!key) return '';
+      if (key.length <= 10) return key;
+      return `${key.slice(0, 6)}...${key.slice(-4)}`;
+    };
+
+    console.info('[reCAPTCHA debug][ContactView] init', {
+      importMetaDev: import.meta.env.DEV,
+      hasViewPropsSiteKey: Boolean(viewProps?.recaptchaSiteKey),
+      hasPropSiteKey: Boolean(recaptchaSiteKey),
+      hasEnvSiteKey: Boolean(envRecaptchaSiteKey),
+      hasEffectiveSiteKey: Boolean(effectiveRecaptchaSiteKey),
+      effectiveSiteKeyMasked: maskKey(effectiveRecaptchaSiteKey),
+      consentSecurity: hasConsent('security'),
+    });
+  }, [viewProps?.recaptchaSiteKey, recaptchaSiteKey, envRecaptchaSiteKey, effectiveRecaptchaSiteKey]);
+
+  useEffect(() => {
     setSecurityConsent(hasConsent('security'));
     const unsubscribe = onConsentChange((detail) => {
       const next = detail?.consents?.security;
@@ -82,6 +100,7 @@ const ContactPage = (props = {}) => {
 
   useEffect(() => {
     if (!securityConsent) {
+      console.info('[reCAPTCHA debug][ContactView] blocked by consent: security=false');
       setRecaptchaToken(null);
       setRecaptchaComponent(null);
       return;
@@ -93,6 +112,7 @@ const ContactPage = (props = {}) => {
         if (!mounted) return;
         // Store as component type
         setRecaptchaComponent(() => m.default);
+        console.info('[reCAPTCHA debug][ContactView] component loaded');
       })
       .catch((e) => {
         console.warn('Failed to load ReCAPTCHA component', e);
@@ -128,6 +148,11 @@ const ContactPage = (props = {}) => {
     if (!securityConsent) {
       next.recaptcha = t('cookies.placeholders.recaptcha', 'Aby wysłać formularz, zaakceptuj usługę bezpieczeństwa (reCAPTCHA).');
     } else if (!recaptchaEnabled) {
+      console.warn('[reCAPTCHA debug][ContactView] recaptchaEnabled=false', {
+        importMetaDev: import.meta.env.DEV,
+        hasEnvSiteKey: Boolean(envRecaptchaSiteKey),
+        hasEffectiveSiteKey: Boolean(effectiveRecaptchaSiteKey),
+      });
       next.recaptcha = t('contactPage.errors.recaptchaMissing', 'ReCAPTCHA nie jest skonfigurowana.');
     } else if (!RecaptchaComponent) {
       next.recaptcha = t('contactPage.errors.recaptchaLoading', 'Ładowanie reCAPTCHA...');
