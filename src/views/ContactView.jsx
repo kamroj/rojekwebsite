@@ -43,10 +43,7 @@ const ClockIcon = () => (
   </svg>
 );
 
-const RECAPTCHA_SITE_KEY =
-  import.meta.env.VITE_RECAPTCHA_SITE_KEY ||
-  (import.meta.env.DEV ? '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI' : '');
-const RECAPTCHA_ENABLED = Boolean(RECAPTCHA_SITE_KEY);
+const DEV_RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
 
 // NOTE: This view is used in two modes:
 // - SPA mode (React Router): rendered as a full page with <Page /> wrapper.
@@ -57,8 +54,16 @@ const RECAPTCHA_ENABLED = Boolean(RECAPTCHA_SITE_KEY);
 // accidentally pass `ssgMode` at the top-level instead of inside `viewProps`.
 // To be resilient, we support BOTH shapes.
 const ContactPage = (props = {}) => {
-  const { viewProps, ssgMode, hideDirectCard } = props;
+  const { viewProps, ssgMode, hideDirectCard, recaptchaSiteKey } = props;
   const { t } = useTranslation();
+
+  const envRecaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
+  const effectiveRecaptchaSiteKey =
+    viewProps?.recaptchaSiteKey ||
+    recaptchaSiteKey ||
+    envRecaptchaSiteKey ||
+    (import.meta.env.DEV ? DEV_RECAPTCHA_SITE_KEY : '');
+  const recaptchaEnabled = Boolean(effectiveRecaptchaSiteKey);
 
   // `react-google-recaptcha` is browser-only (touches `window` / DOM).
   // To keep the Contact page SSR-friendly (SEO), we lazy-load it on the client.
@@ -122,7 +127,7 @@ const ContactPage = (props = {}) => {
     }
     if (!securityConsent) {
       next.recaptcha = t('cookies.placeholders.recaptcha', 'Aby wysłać formularz, zaakceptuj usługę bezpieczeństwa (reCAPTCHA).');
-    } else if (!RECAPTCHA_ENABLED) {
+    } else if (!recaptchaEnabled) {
       next.recaptcha = t('contactPage.errors.recaptchaMissing', 'ReCAPTCHA nie jest skonfigurowana.');
     } else if (!RecaptchaComponent) {
       next.recaptcha = t('contactPage.errors.recaptchaLoading', 'Ładowanie reCAPTCHA...');
@@ -257,16 +262,16 @@ const ContactPage = (props = {}) => {
                 {t('cookies.actions.openSettings', 'Ustawienia cookies')}
               </button>
             </div>
-          ) : RecaptchaComponent && RECAPTCHA_ENABLED ? (
+          ) : RecaptchaComponent && recaptchaEnabled ? (
             <RecaptchaComponent
               ref={recaptchaRef}
-              sitekey={RECAPTCHA_SITE_KEY}
+              sitekey={effectiveRecaptchaSiteKey}
               onChange={(token) => {
                 setRecaptchaToken(token);
                 if (errors.recaptcha) setErrors((p) => ({ ...p, recaptcha: '' }));
               }}
             />
-          ) : !RECAPTCHA_ENABLED ? (
+          ) : !recaptchaEnabled ? (
             <div className={styles.recaptchaPlaceholder} role="note">
               {t('contactPage.errors.recaptchaMissing', 'ReCAPTCHA nie jest skonfigurowana.')}
             </div>
@@ -278,7 +283,7 @@ const ContactPage = (props = {}) => {
         </div>
 
         <div className={styles.submitRow}>
-          <button className={styles.button} type="submit" disabled={submitting || !RECAPTCHA_ENABLED || !securityConsent}>
+          <button className={styles.button} type="submit" disabled={submitting || !recaptchaEnabled || !securityConsent}>
             {submitting ? t('contactPage.actions.sending') : t('contactPage.actions.send')}
           </button>
           {sent && <div className={styles.successBox}>{t('contactPage.success')}</div>}
