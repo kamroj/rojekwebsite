@@ -76,7 +76,7 @@
 }
 
 .contactInfo a:hover {
-  color: var(--color-accent);
+  color: var(--color-secondary);
 }
 
 .contactIcon {
@@ -177,7 +177,7 @@
 }
 
 .cookieSettingsButton:hover {
-  color: #a6dba0;
+  color: var(--color-secondary);
 }
 
 .policyLink {
@@ -188,7 +188,7 @@
 }
 
 .policyLink:hover {
-  color: #a6dba0;
+  color: var(--color-secondary);
 }
 
 .actionSeparator {
