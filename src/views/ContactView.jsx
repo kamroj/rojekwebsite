@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next';
 import { useEffect, useRef, useState } from 'react';
+import { FiSend } from 'react-icons/fi';
 import Page from '../components/ui/Page';
 import Section from '../components/ui/Section';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomeView';
@@ -111,6 +112,8 @@ const ContactPage = (props = {}) => {
   const [sent, setSent] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState(null);
   const recaptchaRef = useRef(null);
+  const forceSuccessPreview = false;
+  const forceErrorPreview = false;
 
   const validate = () => {
     const next = { name: '', email: '', message: '', recaptcha: '', submit: '' };
@@ -313,10 +316,19 @@ const ContactPage = (props = {}) => {
 
         <div className={styles.submitRow}>
           <button className={styles.button} type="submit" disabled={submitting || !recaptchaEnabled || !securityConsent}>
+            <FiSend aria-hidden="true" />
             {submitting ? t('contactPage.actions.sending') : t('contactPage.actions.send')}
           </button>
-          {errors.submit && <div className={styles.errorText}>{errors.submit}</div>}
-          {sent && <div className={styles.successBox}>{t('contactPage.success')}</div>}
+          {(errors.submit || forceErrorPreview) && (
+            <div className={styles.errorBox} role="alert">
+              {errors.submit || t('contactPage.errors.sendFailed', 'Nie udało się wysłać wiadomości. Spróbuj ponownie.')}
+            </div>
+          )}
+          {(sent || forceSuccessPreview) && (
+            <div className={styles.successBox} role="status">
+              {t('contactPage.success')}
+            </div>
+          )}
         </div>
       </form>
 

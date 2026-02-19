@@ -95,14 +95,18 @@
 
 .button {
   align-self: flex-start;
-  padding: 12px 32px;
-  background: #004710;
-  color: #ffffff;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.1rem 2.2rem;
+  background: var(--cta-primary-bg);
+  color: var(--cta-primary-text);
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: 400;
-  transition: transform 0.06s ease, opacity 0.2s ease;
+  font-size: 1.15rem;
+  font-weight: 500;
+  transition: var(--cta-primary-transition), opacity 0.2s ease;
 }
 
 .button:disabled {
@@ -110,16 +114,73 @@
   cursor: not-allowed;
 }
 
-.button:active {
-  transform: scale(0.98);
+.button:hover:not(:disabled) {
+  transform: translateY(var(--cta-primary-hover-translate-y));
+  box-shadow: var(--cta-primary-hover-shadow);
+}
+
+.button svg {
+  font-size: 1.2rem;
 }
 
 .successBox {
-  background: #ecfdf3;
-  border: 1px solid #abefc6;
-  color: #067647;
-  padding: 12px;
-  border-radius: 8px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: linear-gradient(180deg, #ffffff 0%, #f7fbf8 100%);
+  border: none;
+  color: #013613;
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-home-product-card);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.successBox::before {
+  content: '✓';
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #f0f4f0;
+  border: 1px solid #e0e5e0;
+  color: #1a5618;
+  font-weight: 700;
+}
+
+.errorBox {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  background: linear-gradient(180deg, #ffffff 0%, #fdf6f7 100%);
+  border: none;
+  color: #7a2e3a;
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  box-shadow: var(--shadow-home-product-card);
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.errorBox::before {
+  content: '✕';
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #fbf1f3;
+  border: 1px solid #e9c9d0;
+  color: #7a2e3a;
+  font-weight: 700;
 }
 
 .formInfo {

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev",
+    "netlify:dev": "netlify dev",
     "dev:force": "astro dev --force",
     "build": "astro build && node scripts/generate-sitemap.js",
     "preview": "astro preview",
@@ -53,6 +54,7 @@
     "eslint-plugin-react-hooks": "^5.1.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^15.15.0",
+    "netlify-cli": "^23.15.1",
     "postcss": "^8.5.6",
     "postcss-custom-media": "^12.0.0",
     "vite": "^6.2.0"

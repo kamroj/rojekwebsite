@@ -81,8 +81,6 @@ exports.handler = async (event) => {
   const email = normalize(payload.email).toLowerCase();
   const phone = normalize(payload.phone, 'brak');
   const message = normalize(payload.message);
-  const topic = normalize(payload.topic, 'ogólne');
-  const pageUrl = normalize(payload.pageUrl, 'nie podano');
 
   if (!name || !email || !message) {
     return {
@@ -101,8 +99,6 @@ exports.handler = async (event) => {
   }
 
   const safeName = stripHeaderBreaks(name);
-  const safeTopic = stripHeaderBreaks(topic);
-  const submittedAt = new Date().toISOString();
 
   const leadSubject = `[rojekokna.pl] Nowe zapytanie kontaktowe – ${safeName}`;
   const leadBody = [
@@ -111,23 +107,26 @@ exports.handler = async (event) => {
     `Imię i nazwisko: ${name}`,
     `E-mail: ${email}`,
     `Telefon: ${phone || 'brak'}`,
-    `Temat zapytania: ${safeTopic || 'ogólne'}`,
     '',
     'Wiadomość:',
     message,
-    '',
-    `Data wysłania: ${submittedAt}`,
-    `Strona: ${pageUrl}`,
   ].join('\n');
 
-  const autoReplySubject = 'Dziękujemy za kontakt – Rojek Okna';
+  const autoReplySubject = 'Potwierdzenie otrzymania wiadomości';
   const autoReplyBody = [
-    `Dzień dobry ${name},`,
+    'Szanowni Państwo,',
     '',
-    'Dziękujemy za kontakt. Otrzymaliśmy Twoją wiadomość i odpowiemy możliwie szybko.',
+    'dziękujemy za kontakt z firmą ROJEK Okna i Drzwi.',
     '',
-    'Pozdrawiamy,',
-    'Firma ROJEK Okna',
+    'Potwierdzamy otrzymanie Państwa wiadomości. Odpowiemy na nią najszybciej, jak to możliwe, zwykle w ciągu jednego dnia roboczego.',
+    '',
+    'Prosimy nie odpowiadać na tę wiadomość, ponieważ została wygenerowana automatycznie.',
+    '',
+    'W przypadku pilnych spraw zachęcamy do kontaktu telefonicznego. Numer telefonu znajdą Państwo na stronie: www.rojekokna.pl/kontakt',
+    '',
+    'Z poważaniem,',
+    'ROJEK Okna i Drzwi',
+    'www.rojekokna.pl',
   ].join('\n');
 
   try {

@@ -3,6 +3,9 @@
   publish = "dist"
   functions = "netlify/functions"
 
+[dev]
+  command = "npm run dev"
+
 # SEO/domain canonicalization:
 # Redirect www host to non-www host (301) to avoid duplicate content.
 [[redirects]]
