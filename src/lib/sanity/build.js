@@ -2,6 +2,8 @@ import { isSanityConfigured } from './config.js';
 import {
   fetchDoorProductDetail,
   fetchDoorProductsList,
+  fetchHsProductDetail,
+  fetchHsProductsList,
   fetchWindowProductDetail,
   fetchWindowProductsList,
 } from './windows.js';
@@ -49,6 +51,26 @@ export const fetchDoorsListForBuild = async (lang) => {
   }
 };
 
+export const fetchHsListForBuild = async (lang) => {
+  if (!isSanityConfigured()) return null;
+  try {
+    return await fetchHsProductsList(lang);
+  } catch (e) {
+    console.warn('[sanity][build] hs list fetch failed', e);
+    return null;
+  }
+};
+
+export const fetchHsDetailForBuild = async (slug, lang) => {
+  if (!isSanityConfigured()) return null;
+  try {
+    return await fetchHsProductDetail(slug, lang);
+  } catch (e) {
+    console.warn('[sanity][build] hs detail fetch failed', { slug, lang, e });
+    return null;
+  }
+};
+
 export const fetchDoorDetailForBuild = async (slug, lang) => {
   if (!isSanityConfigured()) return null;
   try {
@@ -71,14 +93,16 @@ export const fetchProductsIndexCountsForBuild = async (lang) => {
   if (!isSanityConfigured()) return null;
 
   try {
-    const [windows, doors] = await Promise.all([
+    const [windows, doors, hs] = await Promise.all([
       fetchWindowProductsList(lang),
       fetchDoorProductsList(lang),
+      fetchHsProductsList(lang),
     ]);
 
     return {
       okna: Array.isArray(windows) ? windows.length : 0,
       drzwi: Array.isArray(doors) ? doors.length : 0,
+      oknaPrzesuwne: Array.isArray(hs) ? hs.length : 0,
     };
   } catch (e) {
     console.warn('[sanity][build] products index counts fetch failed', { lang, e });

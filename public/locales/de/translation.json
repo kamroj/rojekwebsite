@@ -19,7 +19,7 @@
     "about": "Über uns",
     "contact": "Kontakt",
     "okna": "Fenster",
-    "oknaPrzesuwne": "Schiebefenster HS",
+    "oknaPrzesuwne": "Schiebefenster",
     "drzwi": "Türen",
     "bramy": "Garagentore",
     "rolety": "Rollläden"
@@ -113,7 +113,7 @@
       "description": "Stilvolle und funktionale Außentüren"
     },
     "terraceDoors": {
-      "name": "Schiebefenster (HS)",
+      "name": "Schiebefenster",
       "description": "Moderne HS-Schiebesysteme"
     },
     "fireResistant": {
@@ -215,7 +215,7 @@
       "subtitle": "Entdecken Sie unsere modernen Fenstersysteme."
     },
     "oknaPrzesuwne": {
-      "title": "Schiebefenster HS",
+      "title": "Schiebefenster",
       "subtitle": "Wählen Sie die HS-Systemvariante, die zu Ihrem Projekt passt."
     },
     "drzwi": {
@@ -576,7 +576,7 @@
     "configurator": "HS‑Konfigurator",
     "categories": {
       "okna": "Fenster",
-      "oknaPrzesuwne": "Schiebefenster HS",
+      "oknaPrzesuwne": "Schiebefenster",
       "drzwi": "Türen",
       "bramy": "Garagentore",
       "rolety": "Rollläden"

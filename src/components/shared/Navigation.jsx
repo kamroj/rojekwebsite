@@ -12,8 +12,10 @@ import styles from './Navigation.module.css';
 const cn = (...classes) => classes.filter(Boolean).join(' ');
 
 const SANITY_CATEGORY_IDS_BY_KEY = {
-  okna: ['category_okna', 'category_okna_przesuwne'],
-  drzwi: ['category_drzwi_zewnetrzne', 'category_ppoz'],
+  okna: ['category_okna'],
+  oknaPrzesuwne: ['category_okna_przesuwne'],
+  drzwi: ['category_drzwi_zewnetrzne'],
+  oknaDrzwiPrzeciwpozarowe: ['category_ppoz'],
 };
 
 const BaseNavContainer = ({ className, ...props }) => (

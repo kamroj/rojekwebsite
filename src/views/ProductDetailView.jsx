@@ -16,7 +16,7 @@ import {
 } from '../lib/i18n/routing';
 import { useResourceCollector } from '../context/ResourceCollectorContext';
 import { runSanityTask } from '../lib/sanity/runSanityTask';
-import { fetchDoorProductDetail, fetchWindowProductDetail } from '../lib/sanity/windows';
+import { fetchDoorProductDetail, fetchHsProductDetail, fetchWindowProductDetail } from '../lib/sanity/windows';
 import { isSanityConfigured } from '../lib/sanity/config';
 import RouterAgnosticLink from '../components/_astro/RouterAgnosticLink.jsx';
 
@@ -44,7 +44,8 @@ function ProductDetailPageBase({ category, productId, initialSanityProduct }) {
 
   const isWindows = detailType === 'windows';
   const isDoors = detailType === 'doors';
-  const supportsSanityDetail = isWindows || isDoors;
+  const isHs = detailType === 'hs';
+  const supportsSanityDetail = isWindows || isDoors || isHs;
 
   // Try Sanity first for detail types that support CMS integration.
   React.useEffect(() => {
@@ -71,9 +72,13 @@ function ProductDetailPageBase({ category, productId, initialSanityProduct }) {
       beginTask,
       endTask,
       addResources,
-      taskName: `sanity:${isWindows ? 'windows' : 'doors'}:detail:${productId}`,
+      taskName: `sanity:${isWindows ? 'windows' : isDoors ? 'doors' : 'hs'}:detail:${productId}`,
       fetcher: ({ signal }) =>
-        (isWindows ? fetchWindowProductDetail : fetchDoorProductDetail)(productId, lang, { signal }),
+        (isWindows ? fetchWindowProductDetail : isDoors ? fetchDoorProductDetail : fetchHsProductDetail)(
+          productId,
+          lang,
+          { signal }
+        ),
       extractAssetUrls: (data) => data?._assetUrls || [],
       signal: controller.signal,
     })
@@ -91,7 +96,7 @@ function ProductDetailPageBase({ category, productId, initialSanityProduct }) {
     return () => {
       controller.abort();
     };
-  }, [supportsSanityDetail, isWindows, productId, lang, initialSanityProduct, beginTask, endTask, addResources]);
+  }, [supportsSanityDetail, isWindows, isDoors, productId, lang, initialSanityProduct, beginTask, endTask, addResources]);
 
   // Fallback: local data when Sanity is not configured / no data found.
   const productFromLocal = detailType

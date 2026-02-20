@@ -5,6 +5,7 @@ import { useFitText } from '../../../../hooks';
 import RouterAgnosticLink from '../../../_astro/RouterAgnosticLink.jsx';
 import SanityImage from '../../../ui/SanityImage.jsx';
 import ImageWithSpinner from '../../../ui/ImageWithSpinner.jsx';
+import SanityPortableText from '../../../portable/SanityPortableText.jsx';
 
 import styles from './ProductDetailHero.module.css';
 
@@ -28,6 +29,7 @@ export default function ProductDetailHero({
   const heroHighlights = Array.isArray(product?.heroHighlights) ? product.heroHighlights : [];
   const hasSanityGallery = gallery.length > 0;
   const totalSlides = hasSanityGallery ? gallery.length : images.length;
+  const hasPortableLongDescription = Array.isArray(longDescriptionContent);
 
   const nextImage = () => {
     if (!totalSlides) return;
@@ -46,7 +48,13 @@ export default function ProductDetailHero({
         <h1 className={styles.productTitle} ref={titleRef}>{product?.name}</h1>
         <div className={styles.titleDivider} />
         <p className={styles.productDescription}>{product?.shortDescription}</p>
-        <div className={styles.productHighlight}>{longDescriptionContent}</div>
+        <div className={styles.productHighlight}>
+          {hasPortableLongDescription ? (
+            <SanityPortableText value={longDescriptionContent} />
+          ) : (
+            longDescriptionContent
+          )}
+        </div>
         {heroHighlights.length > 0 ? (
           <ul className={styles.heroHighlights}>
             {heroHighlights.map((item) => (

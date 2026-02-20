@@ -27,7 +27,7 @@ export default function HsProductDetail({ product, breadcrumbPathname }) {
   const lang = i18n.language;
   const [activeSchemeId, setActiveSchemeId] = useState('A');
 
-  const categoryLabel = t('products.terraceDoors.name', 'Okna przesuwne (HS)');
+  const categoryLabel = t('products.terraceDoors.name', 'Okna przesuwne');
 
   const ctaTitle = `Zainteresowany systemem ${product?.name}?`;
   const ctaDescription =
@@ -93,6 +93,7 @@ export default function HsProductDetail({ product, breadcrumbPathname }) {
   return (
     <Page
       imageSrc={product.headerImage}
+      headerImage={product.headerImageSanity}
       title={product.name}
       breadcrumbPathname={breadcrumbPathname}
       headerProps={{
@@ -130,9 +131,8 @@ export default function HsProductDetail({ product, breadcrumbPathname }) {
       </Section>
 
       <HsDetailsSection
-        profileThicknesses={product.hsProfileThicknesses || []}
-        additionalInfo={product.hsAdditionalInfo || []}
-        isWoodAlu={product.slug === 'drewno-alu'}
+        commonSections={product.slidingCommonSections}
+        specialSections={product.slidingSpecialSections}
       >
         <section className={styles.schemesSection} id="hs-schemes">
           <div className={styles.schemesTitleBlock}>

@@ -7,6 +7,7 @@ import ProductCategorySsg from '../../../components/_astro/ssg/ProductCategorySs
 import { productCategories } from '../../../data/products/index.js';
 import { CATEGORY_SLUGS } from '../../../lib/i18n/routing.js';
 import {
+  fetchHsListForBuild,
   fetchDoorsListForBuild,
   fetchProductsCategoryHeaderImagesForBuild,
   fetchWindowsListForBuild,
@@ -39,6 +40,10 @@ export async function getStaticPaths() {
       const windows = await fetchWindowsListForBuild('pl');
       if (windows) props.initialSanityProducts = windows;
       props.categoryHeaderImage = categoryHeaderImages?.okna || null;
+    } else if (categoryKey === 'oknaPrzesuwne') {
+      const hs = await fetchHsListForBuild('pl');
+      if (hs) props.initialSanityProducts = hs;
+      props.categoryHeaderImage = categoryHeaderImages?.oknaPrzesuwne || null;
     } else if (categoryKey === 'drzwi') {
       const doors = await fetchDoorsListForBuild('pl');
       if (doors) props.initialSanityProducts = doors;

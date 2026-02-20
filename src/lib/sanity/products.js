@@ -4,6 +4,7 @@ import { isSanityConfigured } from './config.js';
 
 const CATEGORY_ID_BY_PRODUCTS_KEY = {
   okna: 'category_okna',
+  oknaPrzesuwne: 'category_okna_przesuwne',
   drzwi: 'category_drzwi_zewnetrzne',
 };
 

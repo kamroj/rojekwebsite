@@ -11,6 +11,7 @@ export default defineType({
     {name: 'specs', title: 'Specyfikacja'},
     {name: 'content', title: 'Treści'},
     {name: 'faq', title: 'FAQ'},
+    {name: 'sliding', title: 'Okna przesuwne'},
     {name: 'system', title: 'System'},
   ],
   fields: [
@@ -179,6 +180,61 @@ export default defineType({
         },
       ],
       group: 'content',
+    }),
+
+    defineField({
+      name: 'slidingSystemType',
+      title: 'Typ systemu przesuwnego',
+      type: 'string',
+      description:
+        'Pole pomocnicze dla kategorii „Okna przesuwne” (ułatwia domyślne podpowiedzi i porządek edycji).',
+      options: {
+        list: [
+          {title: 'HS Drewno', value: 'hs_wood'},
+          {title: 'HS Drewno-Alu', value: 'hs_wood_alu'},
+          {title: 'PSK', value: 'psk'},
+          {title: 'Harmonijka', value: 'harmonica'},
+        ],
+        layout: 'radio',
+      },
+      hidden: ({document}) => document?.category?._ref !== 'category_okna_przesuwne',
+      group: 'sliding',
+    }),
+
+    defineField({
+      name: 'slidingCommonSections',
+      title: 'Sekcje wspólne (z opcją override)',
+      type: 'object',
+      hidden: ({document}) => document?.category?._ref !== 'category_okna_przesuwne',
+      group: 'sliding',
+      fields: [
+        defineField({
+          name: 'profileThickness',
+          title: 'Grubość profilu (78/90)',
+          type: 'slidingCommonProfile',
+        }),
+        defineField({
+          name: 'threshold',
+          title: 'Próg (67/50)',
+          type: 'slidingCommonThreshold',
+        }),
+        defineField({
+          name: 'usageDetails',
+          title: 'Szczegóły użytkowe (Szklenie / Okucia / Komfort domykania)',
+          type: 'slidingCommonUsage',
+        }),
+      ],
+    }),
+
+    defineField({
+      name: 'slidingSpecialSections',
+      title: 'Sekcja specjalna (układana z bloków)',
+      description:
+        'Dodatkowe, wariantowe bloki dla danego produktu przesuwnego (np. „Ochrona konstrukcji drewnianej”).',
+      type: 'array',
+      hidden: ({document}) => document?.category?._ref !== 'category_okna_przesuwne',
+      group: 'sliding',
+      of: [{type: 'slidingSpecialHighlight'}],
     }),
 
     defineField({

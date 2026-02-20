@@ -20,7 +20,7 @@
     "about": "O Firmie",
     "contact": "Kontakt",
     "okna": "Okna",
-    "oknaPrzesuwne": "Okna przesuwne HS",
+    "oknaPrzesuwne": "Okna przesuwne",
     "drzwi": "Drzwi",
     "bramy": "Bramy",
     "rolety": "Rolety"
@@ -191,7 +191,7 @@
       "description": "Stylowe i funkcjonalne drzwi zewnętrzne"
     },
     "terraceDoors": {
-      "name": "Okna przesuwne (HS)",
+      "name": "Okna przesuwne",
       "description": "Nowoczesne systemy przesuwne HS"
     },
     "fireResistant": {
@@ -209,7 +209,7 @@
       "subtitle": "Poznaj nasze nowoczesne systemy okienne."
     },
     "oknaPrzesuwne": {
-      "title": "Okna przesuwne HS",
+      "title": "Okna przesuwne",
       "subtitle": "Wybierz wariant systemu HS dopasowany do Twojego projektu."
     },
     "drzwi": {
@@ -572,7 +572,7 @@
     "configurator": "Konfigurator HS",
     "categories": {
       "okna": "Okna",
-      "oknaPrzesuwne": "Okna przesuwne HS",
+      "oknaPrzesuwne": "Okna przesuwne",
       "drzwi": "Drzwi",
       "bramy": "Bramy",
       "rolety": "Rolety"

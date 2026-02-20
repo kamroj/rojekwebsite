@@ -13,6 +13,10 @@ import realizationTagKey from './realizationTagKey'
 import realizationTag from './realizationTag'
 
 import faqItem from './faqItem'
+import slidingCommonProfile from './slidingCommonProfile'
+import slidingCommonThreshold from './slidingCommonThreshold'
+import slidingCommonUsage from './slidingCommonUsage'
+import slidingSpecialHighlight from './slidingSpecialHighlight'
 
 import {localizedString, localizedText, localizedBlockContent, blockContent} from './l10n'
 import article from './article'
@@ -29,6 +33,10 @@ export const schemaTypes = [
 
   // object types
   faqItem,
+  slidingCommonProfile,
+  slidingCommonThreshold,
+  slidingCommonUsage,
+  slidingSpecialHighlight,
 
   // documents
   homePage,

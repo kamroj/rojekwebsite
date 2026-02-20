@@ -19,7 +19,7 @@
     "about": "About Us",
     "contact": "Contact",
     "okna": "Windows",
-    "oknaPrzesuwne": "Sliding windows HS",
+    "oknaPrzesuwne": "Sliding windows",
     "drzwi": "Doors",
     "bramy": "Gates",
     "rolety": "Shutters"
@@ -113,7 +113,7 @@
       "description": "Stylish and functional exterior doors"
     },
     "terraceDoors": {
-      "name": "Sliding windows (HS)",
+      "name": "Sliding windows",
       "description": "Modern HS sliding systems"
     },
     "fireResistant": {
@@ -215,7 +215,7 @@
       "subtitle": "Discover our modern window systems."
     },
     "oknaPrzesuwne": {
-      "title": "Sliding windows HS",
+      "title": "Sliding windows",
       "subtitle": "Choose the HS system variant best suited to your project."
     },
     "drzwi": {
@@ -576,7 +576,7 @@
     "configurator": "HS Configurator",
     "categories": {
       "okna": "Windows",
-      "oknaPrzesuwne": "Sliding windows HS",
+      "oknaPrzesuwne": "Sliding windows",
       "drzwi": "Doors",
       "bramy": "Gates",
       "rolety": "Shutters"

@@ -7,6 +7,8 @@ import ProductDetailSsg from '../../../components/_astro/ssg/ProductDetailSsg.js
 import { productCategories, productDetailsByType } from '../../../data/products/index.js';
 import { CATEGORY_SLUGS } from '../../../lib/i18n/routing.js';
 import {
+  fetchHsDetailForBuild,
+  fetchHsListForBuild,
   fetchDoorDetailForBuild,
   fetchDoorsListForBuild,
   fetchWindowDetailForBuild,
@@ -90,6 +92,10 @@ export async function getStaticPaths() {
       const sanityList = await fetchWindowsListForBuild('pl');
       const sanitySlugs = (sanityList || []).map((p) => p?.slug).filter(Boolean);
       productIds = Array.from(new Set([...(productIds || []), ...sanitySlugs]));
+    } else if (detailType === 'hs') {
+      const sanityList = await fetchHsListForBuild('pl');
+      const sanitySlugs = (sanityList || []).map((p) => p?.slug).filter(Boolean);
+      productIds = Array.from(new Set([...(productIds || []), ...sanitySlugs]));
     } else if (detailType === 'doors') {
       const sanityList = await fetchDoorsListForBuild('pl');
       const sanitySlugs = (sanityList || []).map((p) => p?.slug).filter(Boolean);
@@ -101,6 +107,9 @@ export async function getStaticPaths() {
       if (detailType === 'windows') {
         // Prefetch detail so HTML is generated at build-time.
         const detail = await fetchWindowDetailForBuild(pid, 'pl');
+        if (detail) props.initialSanityProduct = detail;
+      } else if (detailType === 'hs') {
+        const detail = await fetchHsDetailForBuild(pid, 'pl');
         if (detail) props.initialSanityProduct = detail;
       } else if (detailType === 'doors') {
         const detail = await fetchDoorDetailForBuild(pid, 'pl');
