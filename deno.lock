@@ -36,6 +36,7 @@
         "npm:i18next-http-backend@^3.0.2",
         "npm:i18next@^24.2.3",
         "npm:klaro@~0.7.21",
+        "npm:netlify-cli@^23.15.1",
         "npm:postcss-custom-media@12",
         "npm:postcss@^8.5.6",
         "npm:react-country-flag@^3.1.0",

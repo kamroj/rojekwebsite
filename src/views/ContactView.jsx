@@ -56,7 +56,7 @@ const DEV_RECAPTCHA_SITE_KEY = '6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI';
 // To be resilient, we support BOTH shapes.
 const ContactPage = (props = {}) => {
   const { viewProps, ssgMode, hideDirectCard, recaptchaSiteKey } = props;
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const envRecaptchaSiteKey = import.meta.env.VITE_RECAPTCHA_SITE_KEY || '';
   const effectiveRecaptchaSiteKey =
@@ -168,6 +168,7 @@ const ContactPage = (props = {}) => {
           email: email.trim(),
           phone: phone.trim(),
           message: message.trim(),
+          locale: i18n?.resolvedLanguage || i18n?.language || '',
           pageUrl: typeof window !== 'undefined' ? window.location.href : '',
         }),
       });

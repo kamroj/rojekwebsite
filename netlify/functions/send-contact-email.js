@@ -13,6 +13,80 @@ const normalize = (value, fallback = '') => {
   return value.trim();
 };
 
+const detectLocale = ({ locale, pageUrl }) => {
+  const normalizedLocale = normalize(locale).toLowerCase();
+  if (normalizedLocale.startsWith('de')) return 'de';
+  if (normalizedLocale.startsWith('en')) return 'en';
+  if (normalizedLocale.startsWith('pl')) return 'pl';
+
+  const normalizedPageUrl = normalize(pageUrl).toLowerCase();
+  if (normalizedPageUrl.includes('/de/')) return 'de';
+  if (normalizedPageUrl.includes('/en/')) return 'en';
+
+  return 'pl';
+};
+
+const getAutoReplyTemplate = (locale) => {
+  const templates = {
+    pl: {
+      subject: 'Potwierdzenie otrzymania wiadomości',
+      body: [
+        'Szanowni Państwo,',
+        '',
+        'dziękujemy za kontakt z firmą ROJEK Okna i Drzwi.',
+        '',
+        'Potwierdzamy otrzymanie Państwa wiadomości. Odpowiemy na nią najszybciej, jak to możliwe, zwykle w ciągu jednego dnia roboczego.',
+        '',
+        'Prosimy nie odpowiadać na tę wiadomość, ponieważ została wygenerowana automatycznie.',
+        '',
+        'W przypadku pilnych spraw zachęcamy do kontaktu telefonicznego. Numer telefonu znajdą Państwo na stronie: www.rojekokna.pl/kontakt',
+        '',
+        'Z poważaniem,',
+        'ROJEK Okna i Drzwi',
+        'www.rojekokna.pl',
+      ].join('\n'),
+    },
+    en: {
+      subject: 'Confirmation of receiving your message',
+      body: [
+        'Dear Sir or Madam,',
+        '',
+        'thank you for contacting ROJEK Okna i Drzwi.',
+        '',
+        'We confirm that we have received your message. We will reply as soon as possible, usually within one business day.',
+        '',
+        'Please do not reply to this message, as it was generated automatically.',
+        '',
+        'For urgent matters, we encourage you to contact us by phone. You can find our phone number at: www.rojekokna.pl/en/contact',
+        '',
+        'Best regards,',
+        'ROJEK Okna i Drzwi',
+        'www.rojekokna.pl',
+      ].join('\n'),
+    },
+    de: {
+      subject: 'Bestätigung des Eingangs Ihrer Nachricht',
+      body: [
+        'Sehr geehrte Damen und Herren,',
+        '',
+        'vielen Dank für Ihre Kontaktaufnahme mit ROJEK Okna i Drzwi.',
+        '',
+        'Wir bestätigen den Eingang Ihrer Nachricht. Wir werden Ihnen so schnell wie möglich antworten, in der Regel innerhalb eines Werktages.',
+        '',
+        'Bitte antworten Sie nicht auf diese Nachricht, da sie automatisch erstellt wurde.',
+        '',
+        'In dringenden Fällen empfehlen wir Ihnen, uns telefonisch zu kontaktieren. Unsere Telefonnummer finden Sie unter: www.rojekokna.pl/de/kontakt',
+        '',
+        'Mit freundlichen Grüßen,',
+        'ROJEK Okna i Drzwi',
+        'www.rojekokna.pl',
+      ].join('\n'),
+    },
+  };
+
+  return templates[locale] || templates.pl;
+};
+
 const stripHeaderBreaks = (value = '') => value.replace(/[\r\n]+/g, ' ').trim();
 
 const sendViaResend = async ({ apiKey, from, to, subject, text, replyTo }) => {
@@ -81,6 +155,7 @@ exports.handler = async (event) => {
   const email = normalize(payload.email).toLowerCase();
   const phone = normalize(payload.phone, 'brak');
   const message = normalize(payload.message);
+  const locale = detectLocale({ locale: payload.locale, pageUrl: payload.pageUrl });
 
   if (!name || !email || !message) {
     return {
@@ -112,22 +187,9 @@ exports.handler = async (event) => {
     message,
   ].join('\n');
 
-  const autoReplySubject = 'Potwierdzenie otrzymania wiadomości';
-  const autoReplyBody = [
-    'Szanowni Państwo,',
-    '',
-    'dziękujemy za kontakt z firmą ROJEK Okna i Drzwi.',
-    '',
-    'Potwierdzamy otrzymanie Państwa wiadomości. Odpowiemy na nią najszybciej, jak to możliwe, zwykle w ciągu jednego dnia roboczego.',
-    '',
-    'Prosimy nie odpowiadać na tę wiadomość, ponieważ została wygenerowana automatycznie.',
-    '',
-    'W przypadku pilnych spraw zachęcamy do kontaktu telefonicznego. Numer telefonu znajdą Państwo na stronie: www.rojekokna.pl/kontakt',
-    '',
-    'Z poważaniem,',
-    'ROJEK Okna i Drzwi',
-    'www.rojekokna.pl',
-  ].join('\n');
+  const autoReplyTemplate = getAutoReplyTemplate(locale);
+  const autoReplySubject = autoReplyTemplate.subject;
+  const autoReplyBody = autoReplyTemplate.body;
 
   try {
     const leadResult = await sendViaResend({
