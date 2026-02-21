@@ -18,7 +18,7 @@ import slidingCommonThreshold from './slidingCommonThreshold'
 import slidingCommonUsage from './slidingCommonUsage'
 import slidingSpecialHighlight from './slidingSpecialHighlight'
 
-import {localizedString, localizedText, localizedBlockContent, blockContent} from './l10n'
+import {localizedString, localizedText, localizedBlockContent, blockContent, localizedSlug} from './l10n'
 import article from './article'
 import articleTag from './articleTag'
 import articlesPage from './articlesPage'
@@ -28,6 +28,7 @@ export const schemaTypes = [
   // localized field types
   localizedString,
   localizedText,
+  localizedSlug,
   blockContent,
   localizedBlockContent,
 

@@ -130,7 +130,13 @@ function ProductDetailPageBase({ category, productId, initialSanityProduct }) {
     case 'windows':
       return <WindowProductDetail product={product} breadcrumbPathname={breadcrumbPathname} />;
     case 'doors':
-      if (product?.slug === 'okna-ei30-ei60') {
+      const isFireRatedProduct =
+        categoryKey === 'oknaDrzwiPrzeciwpozarowe' ||
+        product?.categoryRef === 'category_ppoz' ||
+        product?.categoryKey === 'oknaDrzwiPrzeciwpozarowe' ||
+        product?.slug === 'okna-ei30-ei60';
+
+      if (isFireRatedProduct) {
         return <FireRatedProductDetail product={product} breadcrumbPathname={breadcrumbPathname} />;
       }
       return <DoorProductDetail product={product} breadcrumbPathname={breadcrumbPathname} />;

@@ -30,15 +30,54 @@ export default defineType({
       title: 'Nazwa',
       type: 'string',
       group: 'basic',
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          if (context?.document?.category?._ref === 'category_ppoz') return true
+          return value ? true : 'Pole wymagane'
+        }),
+      hidden: ({document}) => document?.category?._ref === 'category_ppoz',
+    }),
+    defineField({
+      name: 'localizedName',
+      title: 'Nazwa produktu (PL/EN/DE/FR)',
+      type: 'localizedString',
+      group: 'basic',
+      hidden: ({document}) => document?.category?._ref !== 'category_ppoz',
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          if (context?.document?.category?._ref !== 'category_ppoz') return true
+          return value?.pl ? true : 'Uzupełnij nazwę PL dla produktu ppoż'
+        }),
+      description:
+        'Pole specjalne dla kategorii ppoż. Używane do wyświetlania nazwy produktu w danym języku.',
     }),
     defineField({
       name: 'slug',
       title: 'Slug (URL)',
       type: 'slug',
       options: {source: 'name', maxLength: 96},
-      validation: (Rule) => Rule.required(),
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          const isFireRated = context?.document?.category?._ref === 'category_ppoz'
+          if (isFireRated) return true
+          return value?.current ? true : 'Pole wymagane'
+        }),
       group: 'basic',
+      hidden: ({document}) => document?.category?._ref === 'category_ppoz',
+    }),
+    defineField({
+      name: 'localizedSlug',
+      title: 'Slug (PL/EN/DE/FR)',
+      type: 'localizedSlug',
+      group: 'basic',
+      hidden: ({document}) => document?.category?._ref !== 'category_ppoz',
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          if (context?.document?.category?._ref !== 'category_ppoz') return true
+          return value?.pl ? true : 'Uzupełnij slug PL dla produktu ppoż'
+        }),
+      description:
+        'Slug produktu ppoż w językach PL/EN/DE/FR.',
     }),
     defineField({
       name: 'category',
@@ -250,8 +289,16 @@ export default defineType({
   preview: {
     select: {
       title: 'name',
+      localizedTitle: 'localizedName.pl',
       subtitle: 'category._ref',
       media: 'headerImage',
+    },
+    prepare({title, localizedTitle, subtitle, media}) {
+      return {
+        title: localizedTitle || title || '(brak nazwy)',
+        subtitle,
+        media,
+      }
     },
   },
 })

@@ -86,7 +86,7 @@ export async function getStaticPaths() {
       allIds = Array.from(new Set([...(productIds || []), ...sanitySlugs]));
     } else if (detailType === 'doors') {
       const sanityList = await fetchDoorsListForBuild('fr');
-      const sanitySlugs = (sanityList || []).map((p) => p?.slug).filter(Boolean);
+      const sanitySlugs = (sanityList || []).map((p) => p?.slugForLang || p?.slug).filter(Boolean);
       allIds = Array.from(new Set([...(productIds || []), ...sanitySlugs]));
     }
 

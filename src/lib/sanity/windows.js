@@ -10,6 +10,7 @@ import {
 const WINDOWS_CATEGORY_ID = 'category_okna';
 const SLIDING_WINDOWS_CATEGORY_ID = 'category_okna_przesuwne';
 const DOORS_CATEGORY_IDS = ['category_drzwi_zewnetrzne', 'category_ppoz'];
+const FIRE_RATED_CATEGORY_ID = 'category_ppoz';
 
 const localizeRich = (value, lang) => pickLocale(value, lang) || [];
 const localizeText = (value, lang) => pickLocale(value, lang) || '';
@@ -86,6 +87,9 @@ export const fetchProductsListByCategory = async (categoryId, lang, { signal } =
       {
         _id,
         name,
+        localizedName,
+        localizedSlug,
+        "categoryRef": category._ref,
         "slug": slug.current,
         "listImage": listImage ${SANITY_IMAGE_PROJECTION},
         shortDescription,
@@ -105,10 +109,21 @@ export const fetchProductsListByCategory = async (categoryId, lang, { signal } =
   }
 
   return (items || []).map((p) => {
+    const localizedSlug = p?.localizedSlug || null;
+    const slugForLang = pickLocale(localizedSlug, lang) || p.slug;
+    const localizedName = p?.localizedName || null;
+    const name = p?.categoryRef === FIRE_RATED_CATEGORY_ID
+      ? pickLocale(localizedName, lang) || p.name
+      : p.name;
+
     return {
       id: p._id,
       slug: p.slug,
-      name: p.name,
+      slugForLang,
+      name,
+      localizedName,
+      localizedSlug,
+      categoryRef: p?.categoryRef || null,
       description: pickLocale(p.shortDescription, lang) || '',
       // New canonical shape (preferred by new renderers): full Sanity image object.
       // Keep `image` URL for backward compatibility for now.
@@ -145,6 +160,10 @@ export const fetchDoorProductsList = async (lang, { signal } = {}) => {
     if (!itemKey) return false;
     return arr.findIndex((x) => (x?.slug || x?.id) === itemKey) === index;
   });
+};
+
+export const fetchFireRatedProductsList = async (lang, { signal } = {}) => {
+  return fetchProductsListByCategory(FIRE_RATED_CATEGORY_ID, lang, { signal });
 };
 
 export const fetchWindowProductDetail = async (slug, lang, { signal } = {}) => {
@@ -230,9 +249,12 @@ export const fetchDoorProductDetail = async (slug, lang, { signal } = {}) => {
   if (!sanityClient) return null;
 
   const query = `
-    *[_type == "product" && slug.current == $slug][0]{
+    *[_type == "product" && (slug.current == $slug || localizedSlug[$lang] == $slug)][0]{
       _id,
       name,
+      localizedName,
+      localizedSlug,
+      "categoryRef": category._ref,
       "slug": slug.current,
       "headerImage": headerImage ${SANITY_IMAGE_PROJECTION},
       "gallery": gallery[] ${SANITY_IMAGE_PROJECTION},
@@ -251,7 +273,7 @@ export const fetchDoorProductDetail = async (slug, lang, { signal } = {}) => {
     }
   `;
 
-  const p = await sanityClient.fetch(query, { slug }, { signal });
+  const p = await sanityClient.fetch(query, { slug, lang }, { signal });
   if (!p) return null;
 
   const videoUrl = p?.specs?.video?.asset?.url || null;
@@ -268,13 +290,24 @@ export const fetchDoorProductDetail = async (slug, lang, { signal } = {}) => {
 
   const features = (p?.features || []).map((localizedBlocks) => pickLocale(localizedBlocks, lang) || []);
 
+  const localizedSlug = p?.localizedSlug || null;
+  const slugForLang = pickLocale(localizedSlug, lang) || p.slug;
+  const localizedName = p?.localizedName || null;
+  const resolvedName = p?.categoryRef === FIRE_RATED_CATEGORY_ID
+    ? pickLocale(localizedName, lang) || p.name
+    : p.name;
+
   return {
     id: p._id,
     slug: p.slug,
-    name: p.name,
+    slugForLang,
+    name: resolvedName,
+    localizedName,
+    localizedSlug,
+    categoryRef: p?.categoryRef || null,
 
-    category: 'Drzwi zewnętrzne',
-    categoryKey: 'exteriorDoors',
+    category: p?.categoryRef === FIRE_RATED_CATEGORY_ID ? 'Okna i drzwi przeciwpożarowe' : 'Drzwi zewnętrzne',
+    categoryKey: p?.categoryRef === FIRE_RATED_CATEGORY_ID ? 'oknaDrzwiPrzeciwpozarowe' : 'exteriorDoors',
 
     headerImageSanity: p.headerImage || null,
     gallery: Array.isArray(p.gallery) ? p.gallery : [],

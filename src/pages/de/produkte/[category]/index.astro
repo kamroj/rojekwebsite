@@ -7,6 +7,7 @@ import ProductCategorySsg from '../../../../components/_astro/ssg/ProductCategor
 import { productCategories } from '../../../../data/products/index.js';
 import { CATEGORY_SLUGS } from '../../../../lib/i18n/routing.js';
 import {
+  fetchFireRatedListForBuild,
   fetchHsListForBuild,
   fetchDoorsListForBuild,
   fetchProductsCategoryHeaderImagesForBuild,
@@ -43,6 +44,10 @@ export async function getStaticPaths() {
       const doors = await fetchDoorsListForBuild('de');
       if (doors) props.initialSanityProducts = doors;
       props.categoryHeaderImage = categoryHeaderImages?.drzwi || null;
+    } else if (categoryKey === 'oknaDrzwiPrzeciwpozarowe') {
+      const fireRated = await fetchFireRatedListForBuild('de');
+      if (fireRated) props.initialSanityProducts = fireRated;
+      props.categoryHeaderImage = categoryHeaderImages?.oknaDrzwiPrzeciwpozarowe || null;
     }
 
     paths.push({

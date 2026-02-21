@@ -12,7 +12,12 @@ import { WINDOW_SPECS_DEFS, WINDOW_SPECS_ORDER_LIST } from '../data/products/win
 import { DOOR_SPECS_DEFS, DOOR_SPECS_ORDER_LIST } from '../data/products/doors';
 import { useResourceCollector } from '../context/ResourceCollectorContext';
 import { runSanityTask } from '../lib/sanity/runSanityTask';
-import { fetchDoorProductsList, fetchHsProductsList, fetchWindowProductsList } from '../lib/sanity/windows';
+import {
+  fetchDoorProductsList,
+  fetchFireRatedProductsList,
+  fetchHsProductsList,
+  fetchWindowProductsList,
+} from '../lib/sanity/windows';
 import { isSanityConfigured } from '../lib/sanity/config';
 import SanityImage from '../components/ui/SanityImage.jsx';
 import ImageWithSpinner from '../components/ui/ImageWithSpinner.jsx';
@@ -47,14 +52,15 @@ function ProductCategoryPageBase({
   const isWindowsCategory = categoryKey === 'okna';
   const isSlidingWindowsCategory = categoryKey === 'oknaPrzesuwne';
   const isDoorsCategory = categoryKey === 'drzwi';
+  const isFireRatedCategory = categoryKey === 'oknaDrzwiPrzeciwpozarowe';
 
-  const specsDefs = isWindowsCategory ? WINDOW_SPECS_DEFS : (isDoorsCategory ? DOOR_SPECS_DEFS : WINDOW_SPECS_DEFS);
-  const specsOrderList = isWindowsCategory ? WINDOW_SPECS_ORDER_LIST : (isDoorsCategory ? DOOR_SPECS_ORDER_LIST : WINDOW_SPECS_ORDER_LIST);
+  const specsDefs = isWindowsCategory ? WINDOW_SPECS_DEFS : ((isDoorsCategory || isFireRatedCategory) ? DOOR_SPECS_DEFS : WINDOW_SPECS_DEFS);
+  const specsOrderList = isWindowsCategory ? WINDOW_SPECS_ORDER_LIST : ((isDoorsCategory || isFireRatedCategory) ? DOOR_SPECS_ORDER_LIST : WINDOW_SPECS_ORDER_LIST);
 
   // Fetch products from Sanity for categories that support full CMS integration.
   // In Astro SSG we may already have `initialSanityProducts` from build-time.
   React.useEffect(() => {
-    if (!isWindowsCategory && !isSlidingWindowsCategory && !isDoorsCategory) return;
+    if (!isWindowsCategory && !isSlidingWindowsCategory && !isDoorsCategory && !isFireRatedCategory) return;
 
     // If we already have initial products (SSG), don't refetch on mount.
     if (Array.isArray(initialSanityProducts) && initialSanityProducts.length > 0) return;
@@ -74,12 +80,16 @@ function ProductCategoryPageBase({
         ? 'sanity:windows:list'
         : isSlidingWindowsCategory
           ? 'sanity:sliding-windows:list'
-          : 'sanity:doors:list',
+          : isFireRatedCategory
+            ? 'sanity:fire-rated:list'
+            : 'sanity:doors:list',
       fetcher: ({ signal }) =>
         (isWindowsCategory
           ? fetchWindowProductsList
           : isSlidingWindowsCategory
             ? fetchHsProductsList
+            : isFireRatedCategory
+              ? fetchFireRatedProductsList
             : fetchDoorProductsList)(lang, { signal }),
       extractAssetUrls: (data) => (data || []).flatMap((p) => p?._assetUrls || []),
       signal: controller.signal,
@@ -103,6 +113,7 @@ function ProductCategoryPageBase({
     isWindowsCategory,
     isSlidingWindowsCategory,
     isDoorsCategory,
+    isFireRatedCategory,
     lang,
     initialSanityProducts,
     beginTask,
@@ -133,7 +144,7 @@ function ProductCategoryPageBase({
   // Data source:
   // - for Okna/Drzwi: prefer Sanity (if configured + data fetched), otherwise fallback to local.
   // - for other categories: keep local behavior.
-  const supportsSanityList = isWindowsCategory || isSlidingWindowsCategory || isDoorsCategory;
+  const supportsSanityList = isWindowsCategory || isSlidingWindowsCategory || isDoorsCategory || isFireRatedCategory;
   const productsToRender = supportsSanityList && Array.isArray(sanityProducts) && sanityProducts.length > 0
     ? sanityProducts
     : categoryInfo.products;
@@ -192,7 +203,7 @@ function ProductCategoryPageBase({
                     })}
                   </div>
 
-                  <ViewMoreButton href={getProductDetailPath(lang, categoryKey, product.slug || product.id)}>
+                  <ViewMoreButton href={getProductDetailPath(lang, categoryKey, product.slugForLang || product.slug || product.id)}>
                     {t('common.viewMore', 'Zobacz więcej')}
                     <IoIosArrowForward />
                   </ViewMoreButton>

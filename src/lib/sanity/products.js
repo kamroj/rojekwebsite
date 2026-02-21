@@ -6,6 +6,7 @@ const CATEGORY_ID_BY_PRODUCTS_KEY = {
   okna: 'category_okna',
   oknaPrzesuwne: 'category_okna_przesuwne',
   drzwi: 'category_drzwi_zewnetrzne',
+  oknaDrzwiPrzeciwpozarowe: 'category_ppoz',
 };
 
 const CATEGORY_KEYS = Object.keys(CATEGORY_ID_BY_PRODUCTS_KEY);

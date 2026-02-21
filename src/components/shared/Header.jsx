@@ -31,7 +31,7 @@ const NAV_ITEMS = [
   { key: 'contact', path: ROUTES.CONTACT, label: 'nav.contact' }
 ];
 
-const SANITY_MENU_CATEGORY_KEYS = new Set(['okna', 'drzwi']);
+const SANITY_MENU_CATEGORY_KEYS = new Set(['okna', 'drzwi', 'oknaDrzwiPrzeciwpozarowe']);
 
 const MENU_CATEGORY_ICON_BY_KEY = {
   okna: '/images/icons/ikona-okna-mm.png',

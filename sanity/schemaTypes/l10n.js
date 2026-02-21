@@ -2,6 +2,7 @@
 // Helpers for localized fields (PL/EN/DE/FR)
 
 import I18nAutoTranslateInput from '../components/I18nAutoTranslateInput'
+import LocalizedSlugInput from '../components/LocalizedSlugInput'
 
 export const SUPPORTED_LANGUAGES = [
   {id: 'pl', title: 'Polski'},
@@ -123,4 +124,32 @@ export const localizedBlockContent = {
     title: lang.title,
     type: 'blockContent',
   })),
+}
+
+export const localizedSlug = {
+  name: 'localizedSlug',
+  title: 'Slug (PL/EN/DE/FR)',
+  type: 'object',
+  components: {
+    input: LocalizedSlugInput,
+  },
+  fields: SUPPORTED_LANGUAGES.map((lang) => ({
+    name: lang.id,
+    title: lang.title,
+    type: 'string',
+  })),
+  preview: {
+    select: {
+      pl: 'pl',
+      en: 'en',
+      de: 'de',
+      fr: 'fr',
+    },
+    prepare({pl, en, de, fr}) {
+      return {
+        title: pl || en || de || fr || '(empty)',
+        subtitle: 'Slug (PL/EN/DE/FR)',
+      }
+    },
+  },
 }

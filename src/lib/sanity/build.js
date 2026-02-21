@@ -2,6 +2,7 @@ import { isSanityConfigured } from './config.js';
 import {
   fetchDoorProductDetail,
   fetchDoorProductsList,
+  fetchFireRatedProductsList,
   fetchHsProductDetail,
   fetchHsProductsList,
   fetchWindowProductDetail,
@@ -47,6 +48,16 @@ export const fetchDoorsListForBuild = async (lang) => {
     return await fetchDoorProductsList(lang);
   } catch (e) {
     console.warn('[sanity][build] doors list fetch failed', e);
+    return null;
+  }
+};
+
+export const fetchFireRatedListForBuild = async (lang) => {
+  if (!isSanityConfigured()) return null;
+  try {
+    return await fetchFireRatedProductsList(lang);
+  } catch (e) {
+    console.warn('[sanity][build] fire-rated list fetch failed', e);
     return null;
   }
 };
@@ -131,14 +142,24 @@ export const fetchProductsPageSettingsForBuild = async () => {
  */
 export const fetchProductsCategoryCardImagesForBuild = async () => {
   if (!isSanityConfigured()) {
-    return { okna: null, drzwi: null };
+    return {
+      okna: null,
+      oknaPrzesuwne: null,
+      drzwi: null,
+      oknaDrzwiPrzeciwpozarowe: null,
+    };
   }
 
   try {
     return await fetchProductsCategoryCardImages();
   } catch (e) {
     console.warn('[sanity][build] products category card images fetch failed', e);
-    return { okna: null, drzwi: null };
+    return {
+      okna: null,
+      oknaPrzesuwne: null,
+      drzwi: null,
+      oknaDrzwiPrzeciwpozarowe: null,
+    };
   }
 };
 
@@ -147,13 +168,23 @@ export const fetchProductsCategoryCardImagesForBuild = async () => {
  */
 export const fetchProductsCategoryHeaderImagesForBuild = async () => {
   if (!isSanityConfigured()) {
-    return { okna: null, drzwi: null };
+    return {
+      okna: null,
+      oknaPrzesuwne: null,
+      drzwi: null,
+      oknaDrzwiPrzeciwpozarowe: null,
+    };
   }
 
   try {
     return await fetchProductsCategoryHeaderImages();
   } catch (e) {
     console.warn('[sanity][build] products category header images fetch failed', e);
-    return { okna: null, drzwi: null };
+    return {
+      okna: null,
+      oknaPrzesuwne: null,
+      drzwi: null,
+      oknaDrzwiPrzeciwpozarowe: null,
+    };
   }
 };

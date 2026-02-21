@@ -18,6 +18,8 @@ const SANITY_CATEGORY_IDS_BY_KEY = {
   oknaDrzwiPrzeciwpozarowe: ['category_ppoz'],
 };
 
+const getProductRouteKey = (product) => product?.slugForLang || product?.slug || product?.id || null;
+
 const BaseNavContainer = ({ className, ...props }) => (
   <nav {...props} className={cn(styles.baseNavContainer, className)} />
 );
@@ -308,7 +310,7 @@ const Navigation = ({
     if (!products.length) return null;
 
     if (activeProductKey) {
-      return products.find((p) => (p.slug || p.id) === activeProductKey) || null;
+      return products.find((p) => getProductRouteKey(p) === activeProductKey) || null;
     }
     return products[0] || null;
   }, [activeCategoryProducts, activeProductKey]);
@@ -339,7 +341,7 @@ const Navigation = ({
     const products = activeCategoryProducts;
     const first = products[0];
     if (!first) return;
-    const firstKey = first.slug || first.id;
+    const firstKey = getProductRouteKey(first);
     setActiveProductKey((prev) => prev || firstKey);
   }, [activeCategoryProducts, isMegaOpen, variant]);
 
@@ -351,10 +353,10 @@ const Navigation = ({
       setActiveProductKey(null);
       return;
     }
-    const exists = activeProductKey && products.some((p) => (p.slug || p.id) === activeProductKey);
+    const exists = activeProductKey && products.some((p) => getProductRouteKey(p) === activeProductKey);
     if (!exists) {
       const first = products[0];
-      setActiveProductKey(first?.slug || first?.id || null);
+      setActiveProductKey(getProductRouteKey(first));
     }
   }, [activeCategoryProducts, activeProductKey]);
 
@@ -435,11 +437,11 @@ const Navigation = ({
                 ) : activeCategoryProducts.length > 0 ? (
                   activeCategoryProducts.map((p) => (
                     <RouterAgnosticLink
-                      key={p.slug || p.id}
-                      to={getProductDetailPath(lang, activeCategory.key, p.slug || p.id)}
+                      key={p.slugForLang || p.slug || p.id}
+                      to={getProductDetailPath(lang, activeCategory.key, p.slugForLang || p.slug || p.id)}
                       role="menuitem"
-                      onMouseEnter={() => setActiveProductKey(p.slug || p.id)}
-                      onFocus={() => setActiveProductKey(p.slug || p.id)}
+                      onMouseEnter={() => setActiveProductKey(p.slugForLang || p.slug || p.id)}
+                      onFocus={() => setActiveProductKey(p.slugForLang || p.slug || p.id)}
                       className={styles.productLink}
                     >
                       {p.name}
@@ -507,7 +509,7 @@ const Navigation = ({
                   // Domyślne zdjęcie: pierwsza kategoria -> pierwszy produkt
                   const firstProd = activeCategoryProducts?.[0];
                   if (!activeProductKey && firstProd) {
-                    setActiveProductKey(firstProd.slug || firstProd.id);
+                    setActiveProductKey(firstProd.slugForLang || firstProd.slug || firstProd.id);
                   }
                 }}
                 onMouseLeave={handleMouseLeave}
@@ -518,7 +520,7 @@ const Navigation = ({
                   }
                   const firstProd = activeCategoryProducts?.[0];
                   if (!activeProductKey && firstProd) {
-                    setActiveProductKey(firstProd.slug || firstProd.id);
+                    setActiveProductKey(firstProd.slugForLang || firstProd.slug || firstProd.id);
                   }
                 }}
                 onBlur={(e) => {
