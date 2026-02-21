@@ -33,6 +33,8 @@ TRANSLATE_SHARED_SECRET=your-long-random-secret
 # CORS for production Sanity Studio (comma-separated list)
 # preferred (dedicated only for translation function)
 TRANSLATE_ALLOWED_ORIGINS=https://your-studio.sanity.studio,http://localhost:3333
+# when Studio has random subdomain, wildcard is supported:
+# TRANSLATE_ALLOWED_ORIGINS=https://*.sanity.studio,http://localhost:3333
 # optional single value variant
 TRANSLATE_ALLOWED_ORIGIN=https://your-studio.sanity.studio
 
@@ -80,3 +82,7 @@ SANITY_STUDIO_TRANSLATE_SECRET=CHANGE_ME_SAME_AS_NETLIFY_TRANSLATE_SHARED_SECRET
 ```
 
 Then rebuild/redeploy Studio after env changes.
+
+If you still see CORS mismatch, check the exact browser origin in DevTools error.
+For example, if origin is `https://rojekoid.sanity.studio`, allow that exact host
+or use wildcard `https://*.sanity.studio` in `TRANSLATE_ALLOWED_ORIGINS`.

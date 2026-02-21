@@ -37,9 +37,25 @@ const getAllowedOrigins = () => {
 const pickCorsOrigin = (requestOrigin) => {
   const configured = getAllowedOrigins()
 
+  const matchesConfiguredOrigin = (candidate, request) => {
+    if (!candidate || !request) return false
+    if (candidate === request) return true
+
+    if (candidate.includes('*')) {
+      const escaped = candidate.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*')
+      return new RegExp(`^${escaped}$`).test(request)
+    }
+
+    return false
+  }
+
   if (configured.length === 0) return '*'
   if (configured.includes('*')) return '*'
-  if (requestOrigin && configured.includes(requestOrigin)) return requestOrigin
+
+  if (requestOrigin) {
+    const matched = configured.find((candidate) => matchesConfiguredOrigin(candidate, requestOrigin))
+    if (matched) return requestOrigin
+  }
 
   return configured[0]
 }
