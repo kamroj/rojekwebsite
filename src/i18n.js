@@ -17,7 +17,7 @@ i18n
   .init({
     // debug: true, // Enable logs in development
     fallbackLng: 'pl', // Use Polish if detected language is not available
-    supportedLngs: ['pl', 'en', 'de'], // Define supported languages
+    supportedLngs: ['pl', 'en', 'de', 'fr'], // Define supported languages
     interpolation: {
       escapeValue: false, // React already safes from xss
     },

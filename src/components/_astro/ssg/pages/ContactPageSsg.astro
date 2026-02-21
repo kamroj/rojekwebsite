@@ -38,7 +38,7 @@ const phoneHref = `tel:${String(phoneLabel).replace(/\s/g, '')}`;
 const address = `${COMPANY.address.streetAddress}, ${COMPANY.address.postalCode} ${COMPANY.address.addressLocality}`;
 const nip = COMPANY.nip ? `NIP: ${COMPANY.nip}` : '';
 const regon = COMPANY.regon ? `REGON: ${COMPANY.regon}` : '';
-const hours = COMPANY.openingHoursLabel || '';
+const hours = t('contactPage.direct.values.hours', COMPANY.openingHoursLabel || '');
 ---
 
 <div>
@@ -121,6 +121,7 @@ const hours = COMPANY.openingHoursLabel || '';
     </section>
   </div>
 </div>
+
 
 
 

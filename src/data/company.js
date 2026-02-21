@@ -7,7 +7,7 @@ export const COMPANY = {
 
   email: 'biuro@rojekokna.pl',
   // Main phone displayed on the contact page (general contact)
-  phone: '+48 601 789 888',
+  phone: '+48 603 923 011',
 
   address: {
     streetAddress: 'Kryspinów 399',

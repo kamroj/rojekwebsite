@@ -2,7 +2,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 const LOCALES_DIR = path.join(process.cwd(), 'public', 'locales');
-const LANGS = ['pl', 'en', 'de'];
+const LANGS = ['pl', 'en', 'de', 'fr'];
 const FILE_NAME = 'translation.json';
 
 function isObject(val) {

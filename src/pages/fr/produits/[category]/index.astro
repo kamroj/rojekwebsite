@@ -1,0 +1,70 @@
+---
+// @ts-nocheck
+import SiteLayout from '../../../../layouts/SiteLayout.astro';
+import { getI18nResources } from '../../../../lib/i18n/resources.js';
+import ProductCategorySsg from '../../../../components/_astro/ssg/ProductCategorySsg.jsx';
+
+import { productCategories } from '../../../../data/products/index.js';
+import { CATEGORY_SLUGS } from '../../../../lib/i18n/routing.js';
+import {
+  fetchHsListForBuild,
+  fetchDoorsListForBuild,
+  fetchProductsCategoryHeaderImagesForBuild,
+  fetchWindowsListForBuild,
+} from '../../../../lib/sanity/build.js';
+import { getProductCategoryMeta } from '../../../../lib/seo/productsMeta.js';
+
+const { category } = Astro.params;
+
+const initialSanityProducts = Astro.props?.initialSanityProducts;
+const categoryHeaderImage = Astro.props?.categoryHeaderImage || null;
+
+const resources = await getI18nResources('fr');
+
+const meta = getProductCategoryMeta({ lang: 'fr', categorySlug: category });
+
+export async function getStaticPaths() {
+  const paths = [];
+  const categoryHeaderImages = await fetchProductsCategoryHeaderImagesForBuild();
+
+  for (const categoryKey of Object.keys(productCategories || {})) {
+    const categorySlug = CATEGORY_SLUGS?.fr?.[categoryKey] || categoryKey;
+
+    const props = {};
+    if (categoryKey === 'okna') {
+      const windows = await fetchWindowsListForBuild('fr');
+      if (windows) props.initialSanityProducts = windows;
+      props.categoryHeaderImage = categoryHeaderImages?.okna || null;
+    } else if (categoryKey === 'oknaPrzesuwne') {
+      const hs = await fetchHsListForBuild('fr');
+      if (hs) props.initialSanityProducts = hs;
+      props.categoryHeaderImage = categoryHeaderImages?.oknaPrzesuwne || null;
+    } else if (categoryKey === 'drzwi') {
+      const doors = await fetchDoorsListForBuild('fr');
+      if (doors) props.initialSanityProducts = doors;
+      props.categoryHeaderImage = categoryHeaderImages?.drzwi || null;
+    }
+
+    paths.push({
+      params: { category: categorySlug },
+      props,
+    });
+  }
+
+  return paths;
+}
+---
+
+<SiteLayout
+  lang="fr"
+  title={meta.title}
+  description={meta.description}
+>
+  <ProductCategorySsg
+    lang="fr"
+    resources={resources}
+    category={category}
+    initialSanityProducts={initialSanityProducts}
+    categoryHeaderImage={categoryHeaderImage}
+  />
+</SiteLayout>

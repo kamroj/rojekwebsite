@@ -556,12 +556,14 @@
       "switchTo": {
         "pl": "Przełącz na polski",
         "en": "Przełącz na angielski",
-        "de": "Przełącz na niemiecki"
+        "de": "Przełącz na niemiecki",
+        "fr": "Przełącz na francuski"
       }
     },
     "pl": "Polski",
     "en": "Angielski",
-    "de": "Niemiecki"
+    "de": "Niemiecki",
+    "fr": "Francuski"
   },
   "breadcrumbs": {
     "home": "Strona główna",
@@ -681,7 +683,7 @@
       },
       "values": {
         "email": "biuro@rojekoid.pl",
-        "phone": "+48 601 789 888",
+        "phone": "+48 603 923 011",
         "address": "Kryspinów 399, 32-060 Kryspinów",
         "nip": "NIP: 679-104-25-29",
         "regon": "REGON: 356780524",

@@ -41,7 +41,7 @@ const netlifyContext = process.env.CONTEXT; // 'production' | 'deploy-preview' |
 const shouldIndex = netlifyContext ? netlifyContext === 'production' : import.meta.env.PROD;
 
 // hreflang (absolute alternate URLs)
-const hreflangs = ['pl', 'en', 'de'].map((l) => ({
+const hreflangs = ['pl', 'en', 'de', 'fr'].map((l) => ({
   lang: l,
   href: Astro.site ? new URL(translatePathname(pathname, l), Astro.site).toString() : undefined,
 }));
@@ -52,6 +52,7 @@ const ogLocaleMap = {
   pl: 'pl_PL',
   en: 'en_US',
   de: 'de_DE',
+  fr: 'fr_FR',
 };
 const ogLocale = ogLocaleMap[lang] || 'pl_PL';
 ---
@@ -363,6 +364,46 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
             description: 'Ermöglicht die Anzeige von Karten und eingebetteten Videos.',
           },
         },
+        fr: {
+          consentNotice: {
+            description: 'Ce site utilise des technologies tierces (par exemple des outils analytiques) pour mesurer le trafic et améliorer nos services. Vous pouvez retirer ou modifier votre consentement à tout moment pour l’avenir.',
+            learnMore: 'Paramètres',
+          },
+          consentModal: {
+            title: 'Paramètres de confidentialité',
+            description: 'Ici, vous pouvez choisir quels services externes peuvent être activés.',
+          },
+          ok: 'Tout accepter',
+          acceptAll: 'Tout accepter',
+          decline: 'Tout refuser',
+          save: 'Enregistrer les paramètres',
+          close: 'Fermer',
+          privacyPolicy: {
+            text: 'Politique de confidentialité',
+            name: 'politique de confidentialité',
+          },
+          purposeItem: {
+            service: 'service',
+            services: 'services',
+          },
+          purposes: {
+            security: 'Sécurité',
+            externalMedia: 'Médias externes',
+            analytics: 'Analytique',
+          },
+          security: {
+            title: 'Google reCAPTCHA',
+            description: 'Protège le formulaire de contact contre le spam.',
+          },
+          analytics: {
+            title: 'Google Analytics 4',
+            description: 'Permet de mesurer les statistiques de visite et d’améliorer le site.',
+          },
+          externalMedia: {
+            title: 'Cartes et vidéo (Google Maps / YouTube)',
+            description: 'Permet d’afficher la carte et les vidéos intégrées.',
+          },
+        },
       };
 
       function emitConsentChanged() {
@@ -386,11 +427,12 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
       }
 
       const pageLang = document?.documentElement?.lang || 'pl';
-      const activeLang = ['pl', 'en', 'de'].includes(pageLang) ? pageLang : 'pl';
+      const activeLang = ['pl', 'en', 'de', 'fr'].includes(pageLang) ? pageLang : 'pl';
       const privacyPolicyUrlByLang = {
         pl: '/polityka-prywatnosci',
         en: '/en/privacy-policy',
         de: '/de/datenschutzerklaerung',
+        fr: '/fr/politique-de-confidentialite',
       };
 
       const config = {

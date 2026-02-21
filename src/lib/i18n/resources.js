@@ -6,7 +6,7 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const SUPPORTED_LANGS = ['pl', 'en', 'de'];
+const SUPPORTED_LANGS = ['pl', 'en', 'de', 'fr'];
 
 export function normalizeLang(lang) {
   if (!lang) return 'pl';

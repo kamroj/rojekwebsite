@@ -10,7 +10,7 @@ const Footer = ({ lang = 'pl' }) => {
   const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
   const [mapConsent, setMapConsent] = useState(false);
-  const activeLang = ['pl', 'en', 'de'].includes(lang) ? lang : 'pl';
+  const activeLang = ['pl', 'en', 'de', 'fr'].includes(lang) ? lang : 'pl';
 
   const privacyPolicyPath = getSectionPath(activeLang, 'privacyPolicy');
   const cookiePolicyPath = getSectionPath(activeLang, 'cookiePolicy');
@@ -19,16 +19,19 @@ const Footer = ({ lang = 'pl' }) => {
     pl: 'Polityka prywatności',
     en: 'Privacy policy',
     de: 'Datenschutzerklärung',
+    fr: 'Politique de confidentialité',
   };
   const cookiePolicyFallbackByLang = {
     pl: 'Polityka cookies',
     en: 'Cookies policy',
     de: 'Cookie-Richtlinie',
+    fr: 'Politique de cookies',
   };
   const sitemapFallbackByLang = {
     pl: 'Mapa strony',
     en: 'Sitemap',
     de: 'Sitemap',
+    fr: 'Plan du site',
   };
 
   const contactData = [
@@ -159,6 +162,7 @@ const Footer = ({ lang = 'pl' }) => {
 };
 
 export default Footer;
+
 
 
 

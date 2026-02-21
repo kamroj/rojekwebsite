@@ -1,0 +1,22 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import RealizationsPageSsg from '../../components/_astro/ssg/pages/RealizationsPageSsg.astro';
+import { fetchRealizationsPageData } from '../../lib/sanity/realizations.js';
+import { paginateRealizations, getRealizationsPagination } from '../../lib/realizationsPagination.js';
+
+const allRealizations = await fetchRealizationsPageData({ lang: 'fr' });
+const pageData = paginateRealizations(allRealizations, 1);
+const pagination = getRealizationsPagination({
+  lang: 'fr',
+  currentPage: pageData.currentPage,
+  totalItems: pageData.totalItems,
+});
+---
+
+<SiteLayout
+  lang="fr"
+  title="Projects – ROJEK | Our realizations"
+  description="ROJEK projects gallery: windows, doors and sliding systems. See installation examples and finishing details."
+>
+  <RealizationsPageSsg lang="fr" realizations={pageData.items} pagination={pagination} />
+</SiteLayout>

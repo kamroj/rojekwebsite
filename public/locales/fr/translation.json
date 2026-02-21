@@ -1,0 +1,725 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "articles": "Actualités",
+    "mobileMenuQuestion": "Vous avez des questions ?",
+    "products": "Produits",
+    "realizations": "Réalisations",
+    "about": "À propos",
+    "contact": "Contact",
+    "mainNavigation": "Navigation principale",
+    "mobileNavigation": "Navigation mobile",
+    "toggleMenu": "Ouvrir/fermer le menu",
+    "logoAlt": "Logo ROJEK fenêtres et portes",
+    "hsConfigurator": "Configurateur HS"
+  },
+  "pageTitle": {
+    "home": "Page d'accueil",
+    "products": "Produits",
+    "realizations": "Réalisations",
+    "about": "À propos",
+    "contact": "Contact",
+    "okna": "Fenêtres",
+    "oknaPrzesuwne": "Fenêtres coulissantes",
+    "drzwi": "Portes",
+    "bramy": "Portails",
+    "rolety": "Volets"
+  },
+  "hsConfigurator": {
+    "loading": "Chargement du configurateur…",
+    "title": "Configurateur HS",
+    "header": "Configurateur HS",
+    "subtitle": "Créez votre baie coulissante idéale",
+    "sections": {
+      "elements": "Éléments",
+      "dimensions": "Dimensions",
+      "preview": "APERÇU"
+    },
+    "labels": {
+      "frameMaterial": "Matériau du cadre :",
+      "handleColor": "Couleur de la poignée :",
+      "type": "Type :",
+      "thresholdColor": "Couleur du seuil :",
+      "width": "Largeur de la fenêtre :",
+      "height": "Hauteur de la fenêtre :"
+    },
+    "warnings": {
+      "animationOnlyDefault": "L'animation est disponible uniquement pour les dimensions par défaut"
+    },
+    "buttons": {
+      "resetDimensions": "RÉINITIALISER LES DIMENSIONS",
+      "open": "OUVRIR",
+      "close": "FERMER"
+    },
+    "options": {
+      "textures": {
+        "natur": "Naturel",
+        "honeyPine": "Pin miel"
+      },
+      "handleTextures": {
+        "silver": "Argent",
+        "gold": "Or"
+      },
+      "thresholds": {
+        "silver": "Argent",
+        "black": "Noir",
+        "gold": "Or"
+      }
+    }
+  },
+  "footer": {
+    "copy": "© {{year}} ROJEK fenêtres et portes. Tous droits réservés."
+  },
+  "intro": {
+    "text1": "Découvrez nos réalisations",
+    "text2": "Découvrez les fenêtres bois-alu",
+    "text3": "Portes extérieures pour votre maison",
+    "text4": "Systèmes coulissants modernes",
+    "text5": "Configurateur HS"
+  },
+  "buttons": {
+    "details": "Voir les détails",
+    "backToHome": "Retour au menu principal",
+    "backToMainMenu": "Retour au menu principal",
+    "backToProducts": "Retour aux produits",
+    "contact": "Nous contacter",
+    "viewMore": "Voir plus",
+    "close": "Fermer",
+    "pause": "Pause",
+    "play": "Lecture",
+    "see": "Voir"
+  },
+  "common": {
+    "contactUs": "Contactez-nous",
+    "warranty": "Garantie",
+    "viewMore": "Voir plus",
+    "learnMore": "En savoir plus",
+    "seeAll": "Voir tout",
+    "loading": "Chargement..."
+  },
+  "sections": {
+    "products": "PRODUITS",
+    "productsSubtitle": "Modernité, style, écologie",
+    "realizations": "RÉALISATIONS",
+    "whyUs": "POURQUOI NOUS ?",
+    "companyPresentation": "PRÉSENTATION DE L’ENTREPRISE",
+    "partners": "NOS PARTENAIRES",
+    "aboutUs": "À PROPOS DE NOUS",
+    "contactInfo": "CONTACT",
+    "history": "HISTOIRE",
+    "headquarters": "SIÈGE DE L’ENTREPRISE"
+  },
+  "products": {
+    "doors": {
+      "name": "PORTES EXTÉRIEURES",
+      "description": "Des portes extérieures élégantes et fonctionnelles"
+    },
+    "terraceDoors": {
+      "name": "FENÊTRES COULISSANTES",
+      "description": "Systèmes coulissants HS modernes"
+    },
+    "fireResistant": {
+      "name": "FENÊTRES ET PORTES COUPE-FEU",
+      "description": "Solutions sûres de protection incendie"
+    },
+    "windows": {
+      "name": "FENÊTRES EN BOIS",
+      "description": "Les fenêtres en bois sont une solution classique alliant matériaux naturels, excellente isolation et esthétique élégante donnant du caractère aux intérieurs.",
+      "benefits": [
+        "Bois naturel de la plus haute qualité",
+        "Écologiques et sains pour les habitants",
+        "Design et esthétique uniques",
+        "Large palette de couleurs et de finitions",
+        "Très longue durée de vie et grande solidité",
+        "Excellents paramètres d'isolation thermique et acoustique"
+      ]
+    },
+    "woodAlu": {
+      "name": "FENÊTRES BOIS-ALUMINIUM",
+      "description": "Les fenêtres bois-aluminium associent la chaleur naturelle du bois à l’intérieur à une protection extérieure en aluminium, durable et résistante aux intempéries.",
+      "benefits": [
+        "Intérieur en bois, extérieur en aluminium",
+        "Grande durabilité et faible entretien",
+        "Excellente isolation thermique et acoustique",
+        "Large choix de finitions et de couleurs extérieures",
+        "Adaptées aux projets modernes et classiques",
+        "Protection aluminium résistante aux UV et aux intempéries"
+      ]
+    },
+    "exteriorDoors": {
+      "name": "PORTES D’ENTRÉE",
+      "description": "Les portes d’entrée sont la carte de visite de la maison. Nos portes combinent sécurité, esthétique raffinée et excellente isolation thermique.",
+      "benefits": [
+        "Construction robuste garantissant la sécurité",
+        "Isolation thermique et acoustique élevée",
+        "Résistance aux intempéries et aux déformations",
+        "Large choix de modèles, du classique au moderne",
+        "Possibilité d’intégrer des systèmes de contrôle d’accès modernes",
+        "Personnalisation des dimensions et des accessoires"
+      ]
+    },
+    "fireDoors": {
+      "name": "PORTES COUPE-FEU",
+      "description": "Les portes coupe-feu assurent la résistance au feu et la protection exigées par les normes de sécurité, tout en offrant une construction solide et certifiée.",
+      "benefits": [
+        "Classes de résistance au feu certifiées",
+        "Sécurité incendie renforcée du bâtiment",
+        "Construction robuste et résistante au feu",
+        "Options d’amélioration anti-effraction",
+        "Conserve les performances d’isolation en conditions extrêmes",
+        "Adaptation aux exigences du projet et de la réglementation"
+      ]
+    },
+    "interiorDoors": {
+      "name": "PORTES INTÉRIEURES",
+      "description": "Les portes intérieures sont un élément d’aménagement qui associe fonctionnalité et élégance. Elles complètent parfaitement chaque style d’intérieur.",
+      "benefits": [
+        "Design élégant harmonisé avec la décoration intérieure",
+        "Nombreuses possibilités de personnalisation",
+        "Excellente isolation acoustique entre les pièces",
+        "Construction durable à partir de matériaux de qualité",
+        "Fabrication précise pour un fonctionnement fluide",
+        "Large choix de quincaillerie et d’accessoires"
+      ]
+    },
+    "sliding": {
+      "name": "FENÊTRES COULISSANTES (HS)",
+      "description": "Les systèmes coulissants HS sont une solution moderne permettant de créer de grandes baies vitrées et une transition fluide vers la terrasse ou le jardin.",
+      "benefits": [
+        "Apport maximal de lumière grâce aux grandes surfaces vitrées",
+        "Gain de place par rapport aux portes de balcon classiques",
+        "Utilisation simple et confortable, même pour de grands ouvrants",
+        "Design moderne et vues panoramiques",
+        "Excellente étanchéité et isolation thermique",
+        "Disponible en version à seuil bas pour plus de confort"
+      ]
+    },
+    "psk": {
+      "name": "PSK",
+      "description": "Le système PSK est une solution oscillo-coulissante pratique, combinant ventilation et coulissement confortable pour de grandes baies vitrées.",
+      "benefits": [
+        "Fonctions oscillo-coulissantes dans un seul système",
+        "Utilisation confortable et aération sécurisée",
+        "Bonnes performances thermiques",
+        "Adapté aux ouvrants de grandes dimensions",
+        "Finition esthétique et adaptation à la façade",
+        "Option de seuil bas pour un meilleur accès"
+      ]
+    },
+    "notFound": "Introuvable",
+    "selectProduct": "Choisissez un produit",
+    "noProducts": "Aucun produit",
+    "emptyCategory": "Aucun produit dans cette catégorie.",
+    "categoryNotFoundTitle": "Catégorie introuvable",
+    "categoryNotFoundSubtitle": "La catégorie de produits sélectionnée n’existe pas."
+  },
+  "productCategories": {
+    "okna": {
+      "title": "Produits de fenêtre",
+      "subtitle": "Découvrez nos systèmes de fenêtres modernes."
+    },
+    "oknaPrzesuwne": {
+      "title": "Fenêtres coulissantes",
+      "subtitle": "Choisissez la variante du système HS la mieux adaptée à votre projet."
+    },
+    "drzwi": {
+      "title": "Produits de porte",
+      "subtitle": "Découvrez nos systèmes de portes modernes."
+    },
+    "bramy": {
+      "title": "Portes de garage",
+      "subtitle": "Découvrez nos systèmes modernes de portes de garage."
+    },
+    "rolety": {
+      "title": "Volets roulants et stores",
+      "subtitle": "Découvrez nos systèmes modernes de volets et de stores."
+    }
+  },
+  "productDetail": {
+    "downloadCatalogPdf": "Télécharger le catalogue PDF",
+    "windows": {
+      "featuresTitle": "Qu’est-ce qui distingue la fenêtre {{product}} ?",
+      "colorsTitle": "COULEURS",
+      "colorsRalTab": "RAL",
+      "colorsLazurTab": "LAZURE",
+      "colorsMostPopular": "Couleurs les plus populaires",
+      "colorsFullPalette": "Palette complète RAL",
+      "advantagesTitle": "Pourquoi choisir {{product}} ?",
+      "warranty": {
+        "title": "Une qualité fiable pendant des années",
+        "text": "Nous sommes convaincus de la qualité de nos produits, c’est pourquoi pendant <strong>5 ans</strong> après la pose vous pouvez signaler tout défaut de la menuiserie. De plus, nous offrons une <strong>garantie de 10 ans</strong> sur l’étanchéité des vitrages avec intercalaire Warmatec.",
+        "highlight": "Service de garantie gratuit"
+      },
+      "cta": {
+        "title": "Intéressé par les fenêtres {{product}} ?",
+        "description": "Nos experts vous aideront à choisir la solution idéale pour votre maison. Contactez-nous pour un devis gratuit.",
+        "note": "Nous répondons sous 24 heures"
+      }
+    },
+    "doors": {
+      "featuresTitle": "Qu’est-ce qui distingue la porte {{product}} ?",
+      "colorsTitle": "COULEURS",
+      "colorsRalTab": "RAL",
+      "colorsLazurTab": "LAZURE",
+      "colorsMostPopular": "Couleurs les plus populaires",
+      "colorsFullPalette": "Palette complète RAL",
+      "advantagesTitle": "Pourquoi choisir {{product}} ?",
+      "warranty": {
+        "title": "Une qualité fiable pendant des années",
+        "text": "Nous sommes convaincus de la qualité de nos produits, c’est pourquoi pendant <strong>5 ans</strong> après la pose vous pouvez signaler tout défaut de la menuiserie. De plus, nous offrons une <strong>garantie de 10 ans</strong> sur l’étanchéité des vitrages avec intercalaire Warmatec.",
+        "highlight": "Service de garantie gratuit"
+      },
+      "cta": {
+        "title": "Intéressé par les portes {{product}} ?",
+        "description": "Nos experts vous aideront à choisir la solution idéale pour votre maison. Contactez-nous pour un devis gratuit.",
+        "note": "Nous répondons sous 24 heures"
+      },
+      "sections": {
+        "lock": {
+          "kicker": "Sécurité",
+          "title": "Serrure 3 points en standard",
+          "description": "La sécurité commence par une fermeture fiable. Une serrure 3 points sécurise l’ouvrant à plusieurs endroits, améliorant la résistance à l’effraction et la compression des joints.",
+          "b1": "Verrouillage 3 points",
+          "b2": "Meilleure pression et étanchéité",
+          "b3": "Résistance accrue à l’effraction"
+        },
+        "threshold": {
+          "kicker": "Confort",
+          "title": "Seuil bas en aluminium",
+          "description": "Un seuil bas améliore le confort au quotidien : passage facilité, meilleure accessibilité et meilleure évacuation de l’eau.",
+          "b1": "Passage et accessibilité facilités",
+          "b2": "Matériau durable et résistant aux intempéries",
+          "b3": "Favorise l’évacuation de l’eau"
+        }
+      }
+    },
+    "faq": {
+      "title": "<product>{{product}}</product> – Questions fréquentes",
+      "subtitle": "Retrouvez les réponses aux questions les plus importantes sur notre produit"
+    },
+    "errors": {
+      "productNotFoundTitle": "Produit introuvable",
+      "productNotFoundText": "Le produit sélectionné n’existe pas.",
+      "backToCategory": "Retour à la catégorie",
+      "noTemplateTitle": "Aucun modèle de produit",
+      "noTemplateText": "Nous n’avons pas encore préparé de page de détail pour cette catégorie."
+    },
+    "hsOverview": {
+      "overline": "Éléments clés",
+      "title": "Dans le système HS",
+      "subtitle": "Configuration adaptée à votre projet"
+    },
+    "hsSchemes": {
+      "sectionTitle": "Schémas / configurations",
+      "selectorAriaLabel": "Sélection du schéma HS",
+      "configurationLabel": "Configuration :",
+      "usageLabel": "Application :",
+      "cta": "Ouvrir le configurateur HS",
+      "items": {
+        "A": {
+          "buttonLabel": "Schéma A",
+          "title": "2 parties (1 vantail fixe + 1 vantail coulissant)",
+          "description": "La configuration la plus simple et la plus choisie. Un vantail est fixe, l’autre coulisse en parallèle.",
+          "usage": "Accès à la terrasse, au balcon ou au jardin pour des largeurs standards."
+        },
+        "A3": {
+          "buttonLabel": "Schéma A3",
+          "title": "2 parties (1 vantail fixe + 1 vantail coulissant – version miroir)",
+          "description": "Disposition équivalente au schéma A, avec coulissement dans le sens opposé.",
+          "usage": "Lorsque l’ouverture à gauche est requise ou selon la disposition intérieure."
+        },
+        "C": {
+          "buttonLabel": "Schéma C",
+          "title": "4 parties (2 vantaux coulissants + 2 fixes)",
+          "description": "Deux vantaux coulissants permettent une grande ouverture; les fixes stabilisent la structure.",
+          "usage": "Grandes baies de terrasse dans des maisons modernes."
+        },
+        "D": {
+          "buttonLabel": "Schéma D",
+          "title": "2 parties (2 vantaux coulissants)",
+          "description": "Les deux vantaux sont mobiles et coulissent dans des directions opposées.",
+          "usage": "Pour les terrasses et jardins nécessitant une ouverture bilatérale."
+        },
+        "E": {
+          "buttonLabel": "Schéma E",
+          "title": "3 parties (2 vantaux coulissants + 1 fixe)",
+          "description": "Combine une large ouverture de passage avec une grande partie vitrée fixe.",
+          "usage": "Salons modernes avec grandes baies et vue panoramique."
+        },
+        "F": {
+          "buttonLabel": "Schéma F",
+          "title": "4 parties (4 vantaux coulissants)",
+          "description": "Tous les vantaux sont mobiles et coulissent à gauche et à droite pour une ouverture maximale.",
+          "usage": "Grandes baies représentatives dans les maisons et résidences modernes."
+        },
+        "G2": {
+          "buttonLabel": "Schéma G2",
+          "title": "3 parties asymétriques avec montant fixe (1 coulissant + 2 fixes)",
+          "description": "Disposition asymétrique avec montant structurel visible.",
+          "usage": "Grandes vitrages avec stabilité structurelle renforcée."
+        },
+        "G3": {
+          "buttonLabel": "Schéma G3",
+          "title": "3 parties asymétriques sans montant fixe (1 coulissant + 2 fixes)",
+          "description": "Variante moderne sans montant central visible, pour une surface vitrée plus uniforme.",
+          "usage": "Projets architecturaux minimalistes axés sur l’esthétique et la vue."
+        },
+        "H": {
+          "buttonLabel": "Schéma H",
+          "title": "3 parties (3 vantaux coulissants)",
+          "description": "Tous les vantaux sont mobiles, offrant une ouverture large et flexible.",
+          "usage": "Grandes baies de terrasse dans les maisons haut de gamme."
+        },
+        "K": {
+          "buttonLabel": "Schéma K",
+          "title": "3 parties (2 vantaux coulissants + 1 fixe central)",
+          "description": "L’élément fixe est au centre; les vantaux coulissants sont de chaque côté.",
+          "usage": "Façades larges avec sortie représentative vers terrasse ou jardin."
+        }
+      }
+    }
+  },
+  "realizations": {
+    "subtitle": "Découvrez nos réalisations",
+    "description": "Voici une sélection de projets réalisés pour nos clients. Chaque commande est un nouveau défi que nous relevons avec passion et professionnalisme.",
+    "items": [
+      {
+        "title": "Maison individuelle, Wrocław"
+      },
+      {
+        "title": "Ensemble résidentiel moderne, Poznań"
+      },
+      {
+        "title": "Rénovation d’immeuble, Cracovie"
+      },
+      {
+        "title": "Immeuble de bureaux classe A, Varsovie"
+      },
+      {
+        "title": "Lofts dans une ancienne usine, Łódź"
+      },
+      {
+        "title": "Villa en périphérie, Gdańsk"
+      },
+      {
+        "title": "Résidence urbaine, Wrocław"
+      },
+      {
+        "title": "Complexe résidentiel, Gdańsk"
+      }
+    ]
+  },
+  "whyUs": {
+    "title": "Pourquoi choisir ROJEK ?",
+    "items": [
+      {
+        "title": "Expérience",
+        "description": "Plus de 20 ans d'expérience dans le secteur des fenêtres et portes"
+      },
+      {
+        "title": "Qualité",
+        "description": "Nous utilisons uniquement des matériaux et composants de la plus haute qualité"
+      },
+      {
+        "title": "Service",
+        "description": "Accompagnement complet : du conseil au montage et au service"
+      },
+      {
+        "title": "Garantie",
+        "description": "Garantie longue durée sur tous nos produits"
+      }
+    ],
+    "tradition": {
+      "title": "Tradition et expérience",
+      "description": "Depuis 1981, nous créons des menuiseries de la plus haute qualité, en alliant expérience et technologies modernes."
+    },
+    "individual": {
+      "title": "Approche individuelle",
+      "description": "Chaque projet est traité individuellement, avec des solutions adaptées aux besoins de nos clients."
+    },
+    "ecological": {
+      "title": "Matériaux écologiques",
+      "description": "Nous utilisons uniquement des matériaux certifiés, écologiques et de haute qualité."
+    },
+    "precision": {
+      "title": "Précision d'exécution",
+      "description": "Le souci du détail et une finition irréprochable sont notre marque de fabrique."
+    },
+    "warranty": {
+      "title": "Garantie et service",
+      "description": "Nous offrons une garantie de plusieurs années et un service professionnel pour nos produits."
+    },
+    "delivery": {
+      "title": "Livraison ponctuelle",
+      "description": "Nous respectons les délais convenus, en tenant compte du temps de nos clients."
+    }
+  },
+  "company": {
+    "title": "À propos de notre entreprise",
+    "subtitle": "Apprenez à mieux nous connaître",
+    "description": "ROJEK est une entreprise familiale avec de nombreuses années d'expérience dans la fabrication de fenêtres et de portes. Nous sommes spécialisés dans les solutions bois et bois-alu de haute qualité."
+  },
+  "presentation": {
+    "playVideo": "Lire la vidéo de présentation",
+    "title": "Présentation de l’entreprise ROJEK"
+  },
+  "cookies": {
+    "actions": {
+      "openSettings": "Paramètres des cookies",
+      "privacyPolicy": "Politique de confidentialité",
+      "cookiePolicy": "Politique des cookies",
+      "sitemap": "Plan du site"
+    },
+    "placeholders": {
+      "map": "Pour afficher la carte, acceptez les médias externes (Google Maps).",
+      "video": "Pour lire la vidéo, acceptez les médias externes (YouTube).",
+      "recaptcha": "Pour envoyer le formulaire, acceptez le service de sécurité (reCAPTCHA)."
+    }
+  },
+  "partners": {
+    "title": "Nous collaborons avec les meilleurs",
+    "subtitle": "Les entreprises avec lesquelles nous travaillons",
+    "visitWebsite": "Visiter le site de {{name}}"
+  },
+  "aboutPage": {
+    "headers": {
+      "whyUsSubtitle": "Ce qui nous distingue",
+      "historySubtitle": "Comment nous avons évolué au fil des ans"
+    }
+  },
+  "tags": {
+    "categories": {
+      "door": "Porte",
+      "window": "Fenêtre",
+      "color": "Couleur"
+    }
+  },
+  "contact": {
+    "title": "Contactez-nous",
+    "address": "Adresse",
+    "phone": "Téléphone",
+    "email": "E-mail",
+    "hours": "Heures d'ouverture",
+    "contactTitle": "Contact",
+    "locationTitle": "Notre localisation",
+    "roles": {
+      "quotes": "Devis, demandes",
+      "distribution": "Distribution, marketing, production"
+    },
+    "people": {
+      "wieslaw": "Wiesław Rojek",
+      "przemyslaw": "Przemysław Rojek",
+      "tomasz": "Tomasz Rojek"
+    }
+  },
+  "errors": {
+    "404": {
+      "title": "404 - Page introuvable",
+      "message": "Désolé, la page que vous recherchez n’existe pas."
+    },
+    "general": "Une erreur est survenue. Veuillez réessayer."
+  },
+  "loading": "Chargement...",
+  "loading.resources": "ressources",
+  "navigation": {
+    "previous": "Précédent",
+    "next": "Suivant",
+    "goToSlide": "Aller à la diapositive"
+  },
+  "realizationsPage": {
+    "title": "Réalisations",
+    "filters": {
+      "doors": "Portes",
+      "windows": "Fenêtres",
+      "color": "Couleur",
+      "clear": "Effacer",
+      "apply": "Appliquer",
+      "filtersTitle": "Filtres",
+      "close": "Fermer"
+    },
+    "productTypes": {
+      "interiorDoors": "Intérieures",
+      "exteriorDoors": "Extérieures",
+      "woodWindows": "Bois",
+      "woodAluWindows": "Bois-alu",
+      "pvcWindows": "PVC"
+    },
+    "colors": {
+      "ral9017": "RAL 9017",
+      "ral7016": "RAL 7016",
+      "ral9016": "RAL 9016"
+    },
+    "results": {
+      "found": "{{count}} réalisations trouvées",
+      "found_one": "{{count}} réalisation trouvée",
+      "found_few": "{{count}} réalisations trouvées",
+      "found_many": "{{count}} réalisations trouvées",
+      "found_other": "{{count}} réalisations trouvées",
+      "noResults": "Aucun résultat",
+      "noResultsMessage": "Aucune réalisation trouvée pour les filtres sélectionnés."
+    }
+  },
+  "language": {
+    "switcher": {
+      "label": "Langue",
+      "changeLanguage": "Changer de langue",
+      "switchTo": {
+        "pl": "Passer au polonais",
+        "en": "Passer à l'anglais",
+        "de": "Passer à l'allemand",
+        "fr": "Passer au français"
+      }
+    },
+    "pl": "Polonais",
+    "en": "Anglais",
+    "de": "Allemand",
+    "fr": "Français"
+  },
+  "breadcrumbs": {
+    "home": "Accueil",
+    "products": "Produits",
+    "realizations": "Réalisations",
+    "about": "À propos",
+    "contact": "Contact",
+    "configurator": "Configurateur HS",
+    "categories": {
+      "okna": "Fenêtres",
+      "oknaPrzesuwne": "Fenêtres coulissantes",
+      "drzwi": "Portes",
+      "oknaDrzwiPrzeciwpozarowe": "Fenêtres et portes coupe-feu",
+      "bramy": "Portails",
+      "rolety": "Volets"
+    }
+  },
+  "history": {
+    "title": "Notre histoire",
+    "subtitle": "Plus de 40 ans d’expérience dans le secteur",
+    "headerAlt": "Histoire de l’entreprise ROJEK",
+    "intro1": "ROJEK est une entreprise familiale avec plus de 40 ans de tradition. Dès le début, nous misons sur la plus haute qualité, une approche individuelle et un développement continu.",
+    "intro2": "Notre histoire est celle de la passion, de la détermination et de la recherche constante d’excellence. Chaque étape de notre développement a été pensée pour offrir des produits répondant aux plus hauts standards.",
+    "item1": {
+      "title": "Rénovations historiques",
+      "text": "Sous ma direction, nous avons réalisé des centaines de rénovations prestigieuses de bâtiments historiques à Cracovie, en Pologne et en Europe."
+    },
+    "item2": {
+      "title": "Nouvelle ligne de production",
+      "text": "Nous avons lancé une ligne moderne de production de fenêtres en bois monobloc. Cela nous a permis de produire des milliers de mètres carrés de menuiseries pour les promoteurs et les clients particuliers."
+    },
+    "item3": {
+      "title": "PRZ Stolarnia",
+      "text": "À la suite d’une restructuration, PRZ Stolarnia a été créée comme entreprise indépendante, où je poursuis l’activité avec mes fils."
+    },
+    "item4": {
+      "title": "Fenêtres coulissantes",
+      "text": "Nous avons introduit la production de fenêtres coulissantes HS et PSK, équipées de ferrures innovantes et de seuils composites thermiques."
+    },
+    "item5": {
+      "title": "Fenêtres bois-aluminium",
+      "text": "Nous avons lancé la production de fenêtres bois-aluminium — la beauté du bois à l’intérieur et une protection durable à l’extérieur."
+    },
+    "item6": {
+      "title": "Projets historiques",
+      "text": "Avec nos partenaires en France, nous avons développé et mis en œuvre un modèle de fenêtre inspiré de modèles historiques traditionnels, avec ferrures à l’ancienne type Cremone."
+    },
+    "item7": {
+      "title": "Modèle pour le marché belge",
+      "text": "Nous avons enrichi notre offre d’un modèle de fenêtre modifié avec larmier en bois, conçu pour le marché belge."
+    },
+    "ctaTitle": "Apprenez à mieux nous connaître",
+    "ctaText": "Contactez-nous et découvrez nos produits et services",
+    "ctaButton": "Nous contacter"
+  },
+  "headquarters": {
+    "title": "Siège de l’entreprise",
+    "subtitle": "Notre localisation",
+    "description1": "Notre site de production est situé à Kryspinów 399, à proximité de l’autoroute A4.",
+    "description2": "Nous vous invitons dans notre showroom pour découvrir notre gamme complète et bénéficier de conseils experts.",
+    "imageAlt": "Siège de l’entreprise ROJEK"
+  },
+  "management": {
+    "label": "DIRECTION",
+    "title": "Direction",
+    "members": [
+      {
+        "name": "Wiesław Rojek",
+        "role": "Propriétaire"
+      },
+      {
+        "name": "Przemysław Rojek",
+        "role": "Propriétaire"
+      },
+      {
+        "name": "Tomasz Rojek",
+        "role": "Propriétaire"
+      },
+      {
+        "name": "Anna Nowak",
+        "role": "Responsable de production"
+      }
+    ]
+  },
+  "contactPage": {
+    "header": {
+      "title": "Informations de contact",
+      "subtitle": "Vous avez des questions ? Nous sommes là pour vous aider !"
+    },
+    "form": {
+      "useForm": "Utilisez notre formulaire",
+      "nameLabel": "Nom",
+      "namePlaceholder": "Jean",
+      "emailLabel": "E-mail",
+      "emailPlaceholder": "jean.dupont@example.com",
+      "phoneLabel": "Téléphone",
+      "phonePlaceholder": "+48 601 234 567",
+      "messageLabel": "Message",
+      "messagePlaceholder": "Contenu du message..."
+    },
+    "actions": {
+      "sending": "Envoi...",
+      "send": "Envoyer"
+    },
+    "success": "Merci ! Votre message a bien été envoyé.",
+    "errors": {
+      "nameRequired": "Le nom est requis.",
+      "emailRequired": "L’adresse e-mail est requise.",
+      "emailInvalid": "Veuillez saisir une adresse e-mail valide.",
+      "messageRequired": "Le message est requis.",
+      "recaptchaRequired": "Veuillez confirmer le reCAPTCHA.",
+      "sendFailed": "Échec de l’envoi du message. Veuillez réessayer."
+    },
+    "direct": {
+      "header": "Contactez-nous directement",
+      "labels": {
+        "registrationData": "Données d’enregistrement"
+      },
+      "values": {
+        "email": "biuro@rojekoid.pl",
+        "phone": "+48 601 789 888",
+        "address": "Kryspinów 399, 32-060 Kryspinów",
+        "nip": "NIP: 679-104-25-29",
+        "regon": "REGON: 356780524",
+        "hours": "Lun–Ven: 8:00–16:00"
+      }
+    },
+    "gdpr": {
+      "notice": "Le responsable du traitement de vos données personnelles est ROJEK Okna i Drzwi Sp. z o.o., dont le siège est à Kraków (Kryspinów 399, 32-060 Kryspinów). Les données seront traitées afin de répondre à votre demande et d’assurer la meilleure qualité de service. L’envoi du formulaire vaut consentement volontaire à être contacté par e-mail ou téléphone pour le traitement de la demande. Vous pouvez retirer votre consentement à tout moment en envoyant un message à biuro@rojekoid.pl."
+    }
+  },
+  "productSpecs": {
+    "labels": {
+      "profileThickness": "épaisseur du profilé",
+      "thermalTransmittance": "transmission thermique (Uw)",
+      "waterTightness": "étanchéité à l’eau",
+      "lockSystem": "système de verrouillage",
+      "threshold": "seuil"
+    },
+    "tooltipAria": "Explication du paramètre : {{spec}}",
+    "tooltips": {
+      "profileThickness": "L’épaisseur du profilé (par ex. 70–86 mm) influence la rigidité de la structure et permet l’utilisation de vitrages plus épais.",
+      "thermalTransmittance": "La transmission thermique (Uw) indique la quantité de chaleur qui s’échappe par la fenêtre. Plus la valeur est basse, meilleure est l’isolation.",
+      "waterTightness": "L’étanchéité à l’eau (par ex. classe 9A) indique la résistance à la pénétration de l’eau sous pluie et vent.",
+      "lockSystem": "Une serrure multipoints offre une sécurité nettement supérieure à une serrure standard.",
+      "threshold": "Un seuil bas en aluminium améliore l’accessibilité et facilite l’évacuation de l’eau."
+    }
+  }
+}

@@ -32,8 +32,8 @@ let introMedia = {
   posterLqip: null,
 };
 
-let homeRealizations = [];
-let latestArticles = [];
+let homeRealizations = /** @type {any[]} */ ([]);
+let latestArticles = /** @type {any[]} */ ([]);
 
 try {
   const intro = await fetchHomePageIntro();
@@ -53,7 +53,8 @@ try {
 }
 
 try {
-  const result = await fetchArticlesList({ page: 1, perPage: 3 });
+  const articlesController = new AbortController();
+  const result = await fetchArticlesList({ page: 1, perPage: 3, signal: articlesController.signal });
   latestArticles = result?.articles || [];
 } catch (e) {
   console.warn('[sanity][home] latest articles fetch failed', e);
@@ -94,7 +95,7 @@ const fallbackRealizations = REALIZATION_IMAGES.map((img, idx) => ({
   title: t(`realizations.items.${idx}.title`, `Realization ${idx + 1}`),
 }));
 
-const sourceRealizations = homeRealizations?.length ? homeRealizations : fallbackRealizations;
+const sourceRealizations = /** @type {any[]} */ (homeRealizations?.length ? homeRealizations : fallbackRealizations);
 
 const realizationsData = sourceRealizations.map((img, idx) => {
   const fallbackTitle = t(`realizations.items.${idx}.title`, `Realization ${idx + 1}`);
@@ -118,17 +119,24 @@ const homeArticlesCopy = {
   },
   en: {
     title: 'Articles',
-    subtitle: 'Przeczytaj nasze ostatnie artykuły',
+    subtitle: 'Read our latest articles',
     readMore: 'Read more',
     viewAll: 'View all articles',
     fallbackDate: 'Publication date unavailable',
   },
   de: {
     title: 'Artikel',
-    subtitle: 'Przeczytaj nasze ostatnie artykuły',
+    subtitle: 'Lesen Sie unsere neuesten Artikel',
     readMore: 'Weiterlesen',
     viewAll: 'Alle Artikel anzeigen',
     fallbackDate: 'Veröffentlichungsdatum nicht verfügbar',
+  },
+  fr: {
+    title: 'Articles',
+    subtitle: 'Lisez nos derniers articles',
+    readMore: 'Lire la suite',
+    viewAll: 'Voir tous les articles',
+    fallbackDate: 'Date de publication indisponible',
   },
 };
 
@@ -138,6 +146,7 @@ const homeH1ByLang = {
   pl: 'ROJEK Kraków – Producent okien i drzwi drewnianych, HS, EI30 i EI60',
   en: 'ROJEK Kraków – Manufacturer of Wooden Windows and Doors, HS, EI30 & EI60',
   de: 'ROJEK Kraków – Hersteller von Holzfenstern und Holztüren, HS, EI30 und EI60',
+  fr: 'ROJEK Cracovie – Fabricant de fenêtres et portes en bois, HS, EI30 et EI60',
 };
 
 const homeH1 = homeH1ByLang[lang] || homeH1ByLang.pl;
@@ -229,7 +238,7 @@ const homeH1 = homeH1ByLang[lang] || homeH1ByLang.pl;
 <!-- COMPANY PRESENTATION (island; youtube iframe on click) -->
 <CompanyPresentationIslandWithResources lang={lang} hydrate="load" />
 
-<!-- LATEST ARTICLES (SSG, tylko PL) -->
+<!-- LATEST ARTICLES (SSG, only PL) -->
 {lang === 'pl' && latestArticles.length > 0 && (
   <section class="home-articles-section" aria-labelledby="home-articles-heading">
     <div class={MaxWidthContainerStyles.root} data-max-width-container="true">
@@ -239,7 +248,7 @@ const homeH1 = homeH1ByLang[lang] || homeH1ByLang.pl;
       </div>
 
       <div class="home-articles-grid">
-        {latestArticles.map((article) => {
+        {(/** @type {any[]} */ (latestArticles)).map((article) => {
           const articleHref = getArticleDetailPath(lang, article.slug);
           const imageUrl = article?.featuredImage?.asset?.url;
           const dateLabel = article?.publishedAtFormatted || articleCopy.fallbackDate;

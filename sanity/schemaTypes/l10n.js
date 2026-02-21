@@ -1,15 +1,16 @@
 // sanity/schemaTypes/l10n.js
-// Helpers for localized fields (PL/EN/DE)
+// Helpers for localized fields (PL/EN/DE/FR)
 
 export const SUPPORTED_LANGUAGES = [
   {id: 'pl', title: 'Polski'},
   {id: 'en', title: 'English'},
   {id: 'de', title: 'Deutsch'},
+  {id: 'fr', title: 'Français'},
 ]
 
 export const localizedString = {
   name: 'localizedString',
-  title: 'Tekst (PL/EN/DE)',
+  title: 'Tekst (PL/EN/DE/FR)',
   type: 'object',
   fields: SUPPORTED_LANGUAGES.map((lang) => ({
     name: lang.id,
@@ -21,11 +22,12 @@ export const localizedString = {
       pl: 'pl',
       en: 'en',
       de: 'de',
+      fr: 'fr',
     },
-    prepare({pl, en, de}) {
+    prepare({pl, en, de, fr}) {
       return {
-        title: pl || en || de || '(empty)',
-        subtitle: 'Tekst (PL/EN/DE)',
+        title: pl || en || de || fr || '(empty)',
+        subtitle: 'Tekst (PL/EN/DE/FR)',
       }
     },
   },
@@ -33,7 +35,7 @@ export const localizedString = {
 
 export const localizedText = {
   name: 'localizedText',
-  title: 'Tekst wieloliniowy (PL/EN/DE)',
+  title: 'Tekst wieloliniowy (PL/EN/DE/FR)',
   type: 'object',
   fields: SUPPORTED_LANGUAGES.map((lang) => ({
     name: lang.id,
@@ -46,12 +48,13 @@ export const localizedText = {
       pl: 'pl',
       en: 'en',
       de: 'de',
+      fr: 'fr',
     },
-    prepare({pl, en, de}) {
-      const v = pl || en || de || ''
+    prepare({pl, en, de, fr}) {
+      const v = pl || en || de || fr || ''
       return {
         title: v ? `${v}`.slice(0, 60) : '(empty)',
-        subtitle: 'Tekst wieloliniowy (PL/EN/DE)',
+        subtitle: 'Tekst wieloliniowy (PL/EN/DE/FR)',
       }
     },
   },
@@ -102,7 +105,7 @@ export const blockContent = {
 
 export const localizedBlockContent = {
   name: 'localizedBlockContent',
-  title: 'Treść (PL/EN/DE)',
+  title: 'Treść (PL/EN/DE/FR)',
   type: 'object',
   fields: SUPPORTED_LANGUAGES.map((lang) => ({
     name: lang.id,

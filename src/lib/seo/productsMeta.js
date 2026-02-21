@@ -7,6 +7,7 @@ const PRODUCTS_SECTION_LABEL = {
   pl: 'Produkty',
   en: 'Products',
   de: 'Produkte',
+  fr: 'Produits',
 };
 
 const CATEGORY_LABELS = {
@@ -34,18 +35,28 @@ const CATEGORY_LABELS = {
     bramy: 'Garagentore',
     rolety: 'Rollläden',
   },
+  fr: {
+    okna: 'Fenêtres',
+    oknaPrzesuwne: 'Fenêtres coulissantes HS',
+    drzwi: 'Portes',
+    oknaDrzwiPrzeciwpozarowe: 'Fenêtres et portes coupe-feu',
+    bramy: 'Portails',
+    rolety: 'Volets',
+  },
 };
 
 const DEFAULT_CATEGORY_DESCRIPTION = {
   pl: (label) => `Produkty ROJEK – kategoria: ${label}. Zobacz dostępne modele, warianty i szczegóły.`,
   en: (label) => `ROJEK products – category: ${label}. Browse available models, variants and details.`,
   de: (label) => `ROJEK Produkte – Kategorie: ${label}. Modelle, Varianten und Details ansehen.`,
+  fr: (label) => `Produits ROJEK – catégorie : ${label}. Découvrez les modèles, variantes et détails disponibles.`,
 };
 
 const DEFAULT_PRODUCT_DESCRIPTION = {
   pl: (label) => `Szczegóły produktu ROJEK (${label}): specyfikacja, cechy, kolory i warianty.`,
   en: (label) => `ROJEK ${label} product details: specifications, features, colours and options.`,
   de: (label) => `ROJEK ${label} Produktdetails: Spezifikation, Eigenschaften, Farben und Optionen.`,
+  fr: (label) => `Détails du produit ROJEK (${label}) : spécifications, caractéristiques, couleurs et variantes.`,
 };
 
 function truncate(text, max = 160) {
@@ -153,11 +164,13 @@ export function getProductsIndexMeta({ lang = 'pl' } = {}) {
     pl: `Produkty – ${DEFAULT_SITE_NAME} | Okna, drzwi, bramy i rolety`,
     en: `Products – ${DEFAULT_SITE_NAME} | Windows, doors, gates & shutters`,
     de: `Produkte – ${DEFAULT_SITE_NAME} | Fenster, Türen, Tore & Rollläden`,
+    fr: `Produits – ${DEFAULT_SITE_NAME} | Fenêtres, portes, portails et volets`,
   };
   const descriptionByLang = {
     pl: 'Produkty ROJEK: okna, drzwi, bramy i rolety. Zobacz kategorie i wybierz rozwiązanie dopasowane do potrzeb.',
     en: 'ROJEK products: windows, doors, gates and shutters. Browse categories and choose the right solution.',
     de: 'ROJEK Produkte: Fenster, Türen, Garagentore und Rollläden. Kategorien ansehen und passende Lösung wählen.',
+    fr: 'Produits ROJEK : fenêtres, portes, portails et volets. Parcourez les catégories et choisissez la solution adaptée.',
   };
   return {
     title: titleByLang[l] || titleByLang.pl,

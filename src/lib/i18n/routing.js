@@ -38,6 +38,15 @@ export const SECTION_SLUGS = {
     hsConfigurator: 'hs-konfigurator',
     products: 'produkte',
   },
+  fr: {
+    realizations: 'realisations',
+    about: 'a-propos',
+    contact: 'contact',
+    privacyPolicy: 'politique-de-confidentialite',
+    cookiePolicy: 'politique-de-cookies',
+    hsConfigurator: 'configurateur-hs',
+    products: 'produits',
+  },
 }
 
 /**
@@ -69,6 +78,14 @@ export const CATEGORY_SLUGS = {
     bramy: 'garagentore',
     rolety: 'rolllaeden',
   },
+  fr: {
+    okna: 'fenetres',
+    oknaPrzesuwne: 'fenetres-coulissantes',
+    drzwi: 'portes',
+    oknaDrzwiPrzeciwpozarowe: 'fenetres-et-portes-coupe-feu',
+    bramy: 'portails',
+    rolety: 'volets',
+  },
 }
 
 const invertMap = (obj) => {
@@ -83,12 +100,14 @@ export const SECTION_SLUGS_INV = {
   pl: invertMap(SECTION_SLUGS.pl),
   en: invertMap(SECTION_SLUGS.en),
   de: invertMap(SECTION_SLUGS.de),
+  fr: invertMap(SECTION_SLUGS.fr),
 }
 
 export const CATEGORY_SLUGS_INV = {
   pl: invertMap(CATEGORY_SLUGS.pl),
   en: invertMap(CATEGORY_SLUGS.en),
   de: invertMap(CATEGORY_SLUGS.de),
+  fr: invertMap(CATEGORY_SLUGS.fr),
 }
 
 export const normalizeLang = (lang) => {
@@ -159,6 +178,7 @@ export const REALIZATIONS_PAGE_SEGMENT = {
   pl: 'strona',
   en: 'page',
   de: 'seite',
+  fr: 'page',
 }
 
 export const getRealizationsPagePath = (lang, page = 1) => {
@@ -179,6 +199,7 @@ export const ARTICLES_PAGE_SEGMENT = {
   pl: 'strona',
   en: 'page',
   de: 'seite',
+  fr: 'page',
 }
 
 export const getArticlesPagePath = (lang, page = 1) => {

@@ -44,14 +44,15 @@ export const GALLERY_CONFIG = {
   AUTOPLAY_DELAY: 4000
 };
 
-export const SUPPORTED_LANGUAGES = ['pl', 'en', 'de'];
+export const SUPPORTED_LANGUAGES = ['pl', 'en', 'de', 'fr'];
 
 export const DEFAULT_LANGUAGE = 'pl';
 
 export const COUNTRY_CODES = {
   pl: 'PL',
   en: 'GB',
-  de: 'DE'
+  de: 'DE',
+  fr: 'FR'
 };
 
 export const VIDEO_SOURCES = {

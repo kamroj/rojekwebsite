@@ -1,6 +1,7 @@
 {
   "nav": {
     "home": "Startseite",
+    "articles": "Artikel",
     "mobileMenuQuestion": "Haben Sie Fragen?",
     "products": "Produkte",
     "realizations": "Projekte",
@@ -548,6 +549,8 @@
     "results": {
       "found": "{{count}} Realisierungen gefunden",
       "found_one": "{{count}} Realisierung gefunden",
+      "found_few": "{{count}} Realisierungen gefunden",
+      "found_many": "{{count}} Realisierungen gefunden",
       "found_other": "{{count}} Realisierungen gefunden",
       "noResults": "Keine Ergebnisse",
       "noResultsMessage": "Keine Realisierungen für die ausgewählten Filter gefunden."
@@ -560,12 +563,14 @@
       "switchTo": {
         "pl": "Auf Polnisch wechseln",
         "en": "Auf Englisch wechseln",
-        "de": "Auf Deutsch wechseln"
+        "de": "Auf Deutsch wechseln",
+        "fr": "Auf Französisch wechseln"
       }
     },
     "pl": "Polnisch",
     "en": "Englisch",
-    "de": "Deutsch"
+    "de": "Deutsch",
+    "fr": "Französisch"
   },
   "breadcrumbs": {
     "home": "Startseite",
@@ -685,7 +690,7 @@
       },
       "values": {
         "email": "biuro@rojekoid.pl",
-        "phone": "+48 601 789 888",
+        "phone": "+48 603 923 011",
         "address": "Kryspinów 399, 32-060 Kryspinów",
         "nip": "NIP: 679-104-25-29",
         "regon": "REGON: 356780524",

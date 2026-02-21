@@ -23,7 +23,7 @@ export default function I18nBoundary({ lang = 'pl', resources, children }) {
       .init({
         lng: lang,
         fallbackLng: 'pl',
-        supportedLngs: ['pl', 'en', 'de'],
+        supportedLngs: ['pl', 'en', 'de', 'fr'],
         resources,
         initImmediate: false,
         interpolation: { escapeValue: false },

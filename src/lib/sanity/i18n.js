@@ -8,8 +8,10 @@ export const pickLocale = (localizedValue, lang) => {
     localizedValue?.[lang] ??
     localizedValue?.pl ??
     localizedValue?.en ??
+    localizedValue?.fr ??
     localizedValue?.de ??
     null
   );
 };
+
 
