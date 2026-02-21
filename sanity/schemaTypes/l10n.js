@@ -1,6 +1,8 @@
 // sanity/schemaTypes/l10n.js
 // Helpers for localized fields (PL/EN/DE/FR)
 
+import I18nAutoTranslateInput from '../components/I18nAutoTranslateInput'
+
 export const SUPPORTED_LANGUAGES = [
   {id: 'pl', title: 'Polski'},
   {id: 'en', title: 'English'},
@@ -12,6 +14,9 @@ export const localizedString = {
   name: 'localizedString',
   title: 'Tekst (PL/EN/DE/FR)',
   type: 'object',
+  components: {
+    input: I18nAutoTranslateInput,
+  },
   fields: SUPPORTED_LANGUAGES.map((lang) => ({
     name: lang.id,
     title: lang.title,
@@ -37,6 +42,9 @@ export const localizedText = {
   name: 'localizedText',
   title: 'Tekst wieloliniowy (PL/EN/DE/FR)',
   type: 'object',
+  components: {
+    input: I18nAutoTranslateInput,
+  },
   fields: SUPPORTED_LANGUAGES.map((lang) => ({
     name: lang.id,
     title: lang.title,
@@ -107,6 +115,9 @@ export const localizedBlockContent = {
   name: 'localizedBlockContent',
   title: 'Treść (PL/EN/DE/FR)',
   type: 'object',
+  components: {
+    input: I18nAutoTranslateInput,
+  },
   fields: SUPPORTED_LANGUAGES.map((lang) => ({
     name: lang.id,
     title: lang.title,

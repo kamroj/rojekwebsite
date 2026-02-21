@@ -3,6 +3,7 @@ import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './schemaTypes'
 import {structure} from './structure'
+import {FillMissingTranslationsAction} from './components/FillMissingTranslationsAction'
 
 export default defineConfig({
   name: 'default',
@@ -12,6 +13,10 @@ export default defineConfig({
   dataset: 'production',
 
   plugins: [structureTool({structure}), visionTool()],
+
+  document: {
+    actions: (prev) => [...prev, FillMissingTranslationsAction],
+  },
 
   schema: {
     types: schemaTypes,

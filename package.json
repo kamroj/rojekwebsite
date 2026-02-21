@@ -14,7 +14,8 @@
     "build:vite": "vite build",
     "preview:vite": "vite preview",
     "lint": "eslint .",
-    "i18n:audit": "node scripts/i18n-audit.mjs"
+    "i18n:audit": "node scripts/i18n-audit.mjs",
+    "sanity:repair-array-keys": "node scripts/repair-sanity-array-keys.mjs"
   },
   "dependencies": {
     "@portabletext/react": "^6.0.2",
