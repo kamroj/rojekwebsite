@@ -1,11 +1,52 @@
-const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || '*'
+const TRANSLATE_ALLOWED_ORIGIN = process.env.TRANSLATE_ALLOWED_ORIGIN || ''
+const TRANSLATE_ALLOWED_ORIGINS = process.env.TRANSLATE_ALLOWED_ORIGINS || ''
+const TRANSLATE_SHARED_SECRET = process.env.TRANSLATE_SHARED_SECRET || ''
+const ALLOWED_ORIGIN = process.env.ALLOWED_ORIGIN || ''
+const ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS || ''
 
 const MAX_TEXT_LENGTH = 12000
 const translationCache = new Map()
 
-const getCorsHeaders = () => ({
-  'Access-Control-Allow-Origin': ALLOWED_ORIGIN,
-  'Access-Control-Allow-Headers': 'Content-Type',
+const getAllowedOrigins = () => {
+  const fromTranslateSingle = TRANSLATE_ALLOWED_ORIGIN
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+
+  const fromTranslateList = TRANSLATE_ALLOWED_ORIGINS
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+
+  const fromSingle = ALLOWED_ORIGIN
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+
+  const fromList = ALLOWED_ORIGINS
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean)
+
+  const preferred = [...fromTranslateSingle, ...fromTranslateList]
+  if (preferred.length > 0) return [...new Set(preferred)]
+
+  return [...new Set([...fromSingle, ...fromList])]
+}
+
+const pickCorsOrigin = (requestOrigin) => {
+  const configured = getAllowedOrigins()
+
+  if (configured.length === 0) return '*'
+  if (configured.includes('*')) return '*'
+  if (requestOrigin && configured.includes(requestOrigin)) return requestOrigin
+
+  return configured[0]
+}
+
+const getCorsHeaders = (requestOrigin) => ({
+  'Access-Control-Allow-Origin': pickCorsOrigin(requestOrigin),
+  'Access-Control-Allow-Headers': 'Content-Type, x-translate-secret',
   'Access-Control-Allow-Methods': 'POST,OPTIONS',
 })
 
@@ -173,7 +214,13 @@ const translateWithOpenAI = async (text) => {
 }
 
 exports.handler = async (event) => {
-  const corsHeaders = getCorsHeaders()
+  const requestOrigin = event?.headers?.origin || event?.headers?.Origin || ''
+  const corsHeaders = getCorsHeaders(requestOrigin)
+  const requestSecret =
+    event?.headers?.['x-translate-secret'] ||
+    event?.headers?.['X-Translate-Secret'] ||
+    event?.headers?.['x-Translate-Secret'] ||
+    ''
 
   if (event.httpMethod === 'OPTIONS') {
     return {statusCode: 200, headers: corsHeaders}
@@ -184,6 +231,14 @@ exports.handler = async (event) => {
       statusCode: 405,
       headers: corsHeaders,
       body: JSON.stringify({error: 'method-not-allowed'}),
+    }
+  }
+
+  if (TRANSLATE_SHARED_SECRET && requestSecret !== TRANSLATE_SHARED_SECRET) {
+    return {
+      statusCode: 401,
+      headers: {...corsHeaders, 'Content-Type': 'application/json'},
+      body: JSON.stringify({error: 'unauthorized'}),
     }
   }
 

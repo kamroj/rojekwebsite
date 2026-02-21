@@ -2,6 +2,7 @@ import {useMemo, useState} from 'react'
 import {useClient} from 'sanity'
 
 const TRANSLATE_ENDPOINT = import.meta.env?.SANITY_STUDIO_TRANSLATE_ENDPOINT
+const TRANSLATE_SECRET = import.meta.env?.SANITY_STUDIO_TRANSLATE_SECRET
 const TARGET_LANGUAGES = ['en', 'de', 'fr']
 const SYSTEM_FIELDS = new Set(['_id', '_rev', '_createdAt', '_updatedAt'])
 
@@ -111,7 +112,10 @@ const requestTranslations = async (text, cache, onRequestCompleted) => {
     try {
       const response = await fetch(endpoint, {
         method: 'POST',
-        headers: {'Content-Type': 'application/json'},
+        headers: {
+          'Content-Type': 'application/json',
+          ...(TRANSLATE_SECRET ? {'x-translate-secret': TRANSLATE_SECRET} : {}),
+        },
         body: JSON.stringify({text}),
       })
 

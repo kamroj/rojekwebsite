@@ -26,6 +26,19 @@ Sanity Studio includes an auto-translation button for localized fields with `pl/
 OPENAI_API_KEY=xxxx
 # optional
 OPENAI_MODEL=gpt-5-mini
+
+# required secret for Studio -> Netlify auth
+TRANSLATE_SHARED_SECRET=your-long-random-secret
+
+# CORS for production Sanity Studio (comma-separated list)
+# preferred (dedicated only for translation function)
+TRANSLATE_ALLOWED_ORIGINS=https://your-studio.sanity.studio,http://localhost:3333
+# optional single value variant
+TRANSLATE_ALLOWED_ORIGIN=https://your-studio.sanity.studio
+
+# fallback (global variables, still supported)
+ALLOWED_ORIGINS=https://your-studio.sanity.studio,http://localhost:3333
+ALLOWED_ORIGIN=https://your-studio.sanity.studio
 ```
 
 ### Local run
@@ -35,3 +48,35 @@ netlify dev
 ```
 
 This enables `POST /.netlify/functions/translate`, used by the custom Sanity input.
+
+### Production Sanity Studio (important)
+
+If your Studio is hosted on `*.sanity.studio`, `/.netlify/functions/translate` will not work as a relative URL there.
+Set a full endpoint URL in Studio env:
+
+```bash
+SANITY_STUDIO_TRANSLATE_ENDPOINT=https://your-netlify-site.netlify.app/.netlify/functions/translate
+SANITY_STUDIO_TRANSLATE_SECRET=your-long-random-secret
+```
+
+And make sure Netlify function CORS allows your Studio origin via `ALLOWED_ORIGINS`.
+
+### File-based Studio env setup (your case)
+
+If your Studio reads env from files in `sanity/`, use:
+
+- `sanity/.env.production`
+
+```bash
+SANITY_STUDIO_TRANSLATE_ENDPOINT=https://rojekokna.pl/.netlify/functions/translate
+SANITY_STUDIO_TRANSLATE_SECRET=CHANGE_ME_SAME_AS_NETLIFY_TRANSLATE_SHARED_SECRET
+```
+
+- `sanity/.env.development`
+
+```bash
+SANITY_STUDIO_TRANSLATE_ENDPOINT=http://localhost:8888/.netlify/functions/translate
+SANITY_STUDIO_TRANSLATE_SECRET=CHANGE_ME_SAME_AS_NETLIFY_TRANSLATE_SHARED_SECRET
+```
+
+Then rebuild/redeploy Studio after env changes.

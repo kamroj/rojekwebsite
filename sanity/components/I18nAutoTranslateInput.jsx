@@ -4,6 +4,7 @@ import {set} from 'sanity'
 
 const EMPTY_TRANSLATIONS = {en: '', de: '', fr: ''}
 const TRANSLATE_ENDPOINT = import.meta.env?.SANITY_STUDIO_TRANSLATE_ENDPOINT
+const TRANSLATE_SECRET = import.meta.env?.SANITY_STUDIO_TRANSLATE_SECRET
 
 const getTranslateEndpoints = () => {
   const candidates = [
@@ -147,7 +148,10 @@ export default function I18nAutoTranslateInput(props) {
       try {
         const response = await fetch(endpoint, {
           method: 'POST',
-          headers: {'Content-Type': 'application/json'},
+          headers: {
+            'Content-Type': 'application/json',
+            ...(TRANSLATE_SECRET ? {'x-translate-secret': TRANSLATE_SECRET} : {}),
+          },
           body: JSON.stringify({text}),
         })
 
