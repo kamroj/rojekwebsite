@@ -255,6 +255,37 @@ export const getProductDetailPath = (lang, categoryKey, productId) => {
   return `${base}/${pid}`.replace(/\/+/g, '/')
 }
 
+// Product detail slug aliases used by language switcher path translation.
+// Needed for products that have different localized slugs per language.
+// Structure:
+// categoryKey -> canonicalProductKey -> { pl, en, de, fr }
+const PRODUCT_DETAIL_SLUG_ALIASES = {
+  oknaDrzwiPrzeciwpozarowe: {
+    windowsEi30Ei60: {
+      pl: 'okna-ei30-ei60',
+      en: 'windows-ei30-ei60',
+      de: 'fenster-ei30-ei60',
+      fr: 'fenetres-ei30-ei60',
+    },
+  },
+}
+
+const translateProductIdByCategory = (categoryKey, productId, fromLang, toLang) => {
+  const categoryAliases = PRODUCT_DETAIL_SLUG_ALIASES?.[categoryKey]
+  if (!categoryAliases || !productId) return productId
+
+  for (const aliases of Object.values(categoryAliases)) {
+    if (!aliases) continue
+    const fromMatch = aliases?.[fromLang] === productId
+    const anyMatch = Object.values(aliases).includes(productId)
+    if (fromMatch || anyMatch) {
+      return aliases?.[toLang] || productId
+    }
+  }
+
+  return productId
+}
+
 /**
  * Translates current URL between languages including localized slugs.
  * Example:
@@ -281,7 +312,10 @@ export const translatePathname = (pathname, targetLang) => {
     const productId = parts[2]
     const categoryKey = categorySlug ? getCategoryKeyFromSlug(fromLang, categorySlug) : undefined
     if (categoryKey) {
-      if (productId) return getProductDetailPath(toLang, categoryKey, productId)
+      if (productId) {
+        const translatedProductId = translateProductIdByCategory(categoryKey, productId, fromLang, toLang)
+        return getProductDetailPath(toLang, categoryKey, translatedProductId)
+      }
       return getProductCategoryPath(toLang, categoryKey)
     }
     // Products index
