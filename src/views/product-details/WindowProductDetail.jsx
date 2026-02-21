@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Page from '../../components/ui/Page';
 import Section from '../../components/ui/Section';
 import {
-  WINDOW_COLORS_PALETTE,
+  getLocalizedWindowColorsPalette,
   WINDOW_LAZUR_PALETTE,
   WINDOW_SPECS_DEFS,
   WINDOW_SPECS_ORDER_LIST,
@@ -26,7 +26,8 @@ import { WINDOW_FAQ_FALLBACK } from '../../data/products/faqFallback.js';
 
 
 const WindowProductDetail = ({ product, breadcrumbPathname }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = (i18n.language || 'pl').split('-')[0];
 
   const specTooltipKeyMap = {
     profileThickness: 'productSpecs.tooltips.profileThickness',
@@ -36,7 +37,7 @@ const WindowProductDetail = ({ product, breadcrumbPathname }) => {
 
   // W CMS okna nie mają kolorów (kolory są wspólne i zdefiniowane w kodzie),
   // więc jeśli produkt nie ma `colors`, używamy palety domyślnej.
-  const colors = product?.colors?.length ? product.colors : WINDOW_COLORS_PALETTE;
+  const colors = product?.colors?.length ? product.colors : getLocalizedWindowColorsPalette(locale);
 
   // Long description: local data uses string, Sanity uses PortableText blocks.
   const longDescriptionContent = Array.isArray(product?.longDescription) ? (

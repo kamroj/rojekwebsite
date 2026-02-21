@@ -1,11 +1,14 @@
 ## Sanity publish -> Netlify rebuild (Astro SSG)
 
-Target workflow:
+## New workflow (manual website publish only)
 
-1. When content is published in Sanity, Netlify rebuilds the frontend from branch `main`.
-2. When code is pushed to Git, Netlify rebuilds the branch that was pushed (for example `main` or `develop`).
+Content publishing and website deployment are now intentionally separated:
 
-This keeps CMS content refresh predictable (always `main`) and code deploys branch-aware.
+1. In Studio go to **Panel treści -> Akcje**.
+2. Click **Opublikuj wszystkie wersje robocze** (publishes drafts only, no website build).
+3. Then click **Opublikuj na stronę** (triggers exactly one Netlify build hook call).
+
+Important: normal single-document publish in Sanity should not trigger Netlify. Only **Opublikuj na stronę** should do that.
 
 ## 1) Netlify setup
 
@@ -26,24 +29,48 @@ In Netlify site settings:
 4. Name it for example: `sanity-publish-main`.
 5. Copy the generated URL.
 
-## 2) Sanity setup
+## 2) Sanity Studio env setup (required)
 
-1. Go to **Sanity Manage -> API -> Webhooks**.
-2. Click **Create webhook**.
-3. URL: paste the Netlify build hook URL created in step 1B.
-4. Triggers: enable publish-related events (at least create/update/delete).
-5. Save.
+Set this in Studio env files:
 
-Optional: add a GROQ filter if only selected document types should trigger a rebuild.
+```bash
+SANITY_STUDIO_NETLIFY_BUILD_HOOK=https://api.netlify.com/build_hooks/...
+```
 
-## 3) Verify
+Suggested files:
 
-### A. CMS change test
+- `sanity/.env.development`
+- `sanity/.env.production`
 
-1. Publish a document in Sanity.
-2. In Netlify Deploys, confirm a new build starts from `main`.
+## 3) Disable old per-document publish triggers (critical)
 
-### B. Code push test
+In **Sanity Manage -> API -> Webhooks**, disable or remove all webhooks that call Netlify for document publish events.
+
+If these remain enabled, old behavior returns (automatic build after normal publish).
+
+### What exactly to remove/disable
+
+- Any webhook URL pointing to Netlify Build Hook endpoints (`https://api.netlify.com/build_hooks/...`)
+- Any webhook configured for create/update/publish of documents and intended for frontend rebuild
+- Any duplicate/legacy "Sanity -> Netlify rebuild" webhook entries
+
+Keep only integrations unrelated to website build (if you use any).
+
+## 4) Verify
+
+### A. Draft publish test (no build expected)
+
+1. Open Studio and click **Akcje -> Opublikuj wszystkie wersje robocze**.
+2. Confirm drafts are published.
+3. In Netlify Deploys, confirm that no new build starts.
+
+### B. Website publish test (single build expected)
+
+1. Ensure draft count is 0 in **Akcje**.
+2. Click **Opublikuj na stronę** and confirm popup.
+3. In Netlify Deploys, confirm exactly one new build starts.
+
+### C. Code push test
 
 1. Push commit to `develop`.
 2. Confirm Netlify builds `develop` branch deploy.
@@ -51,5 +78,6 @@ Optional: add a GROQ filter if only selected document types should trigger a reb
 
 ## Notes
 
-- No custom script is required in this repository for this flow.
 - Keep the Netlify build hook URL secret.
+- "Opublikuj na stronę" is blocked when drafts exist.
+- The single-trigger model depends on disabling legacy Sanity publish webhooks.

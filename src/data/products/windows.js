@@ -145,6 +145,245 @@ export const WINDOW_COLORS_PALETTE = [
   },
 ]
 
+const WINDOW_RAL_TRANSLATIONS = {
+  ral9016: {
+    en: {
+      name: 'Traffic white',
+      description:
+        'Classic white in a matte finish. Perfect for modern interiors, adding lightness and freshness.',
+    },
+    de: {
+      name: 'Verkehrsweiß',
+      description:
+        'Klassisches Weiß in matter Ausführung. Ideal für moderne Innenräume und eine helle, klare Optik.',
+    },
+    fr: {
+      name: 'Blanc signalisation',
+      description:
+        'Blanc classique en finition mate. Idéal pour les intérieurs modernes, avec une impression de légèreté.',
+    },
+  },
+  ral7016: {
+    en: {
+      name: 'Anthracite grey',
+      description:
+        'Deep anthracite tone with a satin finish. Elegant and modern, ideal for minimalist architecture.',
+    },
+    de: {
+      name: 'Anthrazitgrau',
+      description:
+        'Tiefer Anthrazitton mit satinierter Oberfläche. Elegant und modern, ideal für minimalistische Architektur.',
+    },
+    fr: {
+      name: 'Gris anthracite',
+      description:
+        'Teinte anthracite profonde en finition satinée. Élégante et moderne, parfaite pour une architecture minimaliste.',
+    },
+  },
+  ral9005: {
+    en: {
+      name: 'Jet black',
+      description: 'Intense black with a deep satin look. Gives windows a distinctive, premium character.',
+    },
+    de: {
+      name: 'Tiefschwarz',
+      description: 'Intensives Schwarz mit tiefer, satinierter Wirkung. Verleiht Fenstern einen markanten Premium-Look.',
+    },
+    fr: {
+      name: 'Noir foncé',
+      description: 'Noir intense à l’aspect satiné profond. Donne aux fenêtres un caractère haut de gamme.',
+    },
+  },
+  ral7035: {
+    en: {
+      name: 'Light grey',
+      description: 'Light neutral grey. A versatile and very popular choice in modern projects.',
+    },
+    de: {
+      name: 'Lichtgrau',
+      description: 'Helles, neutrales Grau. Universell einsetzbar und sehr beliebt in modernen Projekten.',
+    },
+    fr: {
+      name: 'Gris clair',
+      description: 'Gris clair et neutre. Un choix polyvalent et très populaire dans les projets contemporains.',
+    },
+  },
+  ral8017: {
+    en: {
+      name: 'Chocolate brown',
+      description: 'Deep brown with a classic character, matching wood and warm-toned façades very well.',
+    },
+    de: {
+      name: 'Schokoladenbraun',
+      description: 'Tiefes Braun mit klassischem Charakter, passend zu Holz und Fassaden in warmen Tönen.',
+    },
+    fr: {
+      name: 'Brun chocolat',
+      description: 'Brun profond au caractère classique, en harmonie avec le bois et les façades aux tons chauds.',
+    },
+  },
+  ral6005: {
+    en: {
+      name: 'Moss green',
+      description: 'Dark, elegant green. Great for buildings with a natural architectural character.',
+    },
+    de: {
+      name: 'Moosgrün',
+      description: 'Dunkles, elegantes Grün. Ideal für Gebäude mit natürlichem architektonischem Charakter.',
+    },
+    fr: {
+      name: 'Vert mousse',
+      description: 'Vert foncé et élégant. Très adapté aux bâtiments avec un caractère naturel.',
+    },
+  },
+  ral7021: {
+    en: {
+      name: 'Black grey',
+      description: 'Very dark grey close to black. Minimalist and modern in appearance.',
+    },
+    de: {
+      name: 'Schwarzgrau',
+      description: 'Sehr dunkles Grau, nahe an Schwarz. Minimalistisch und modern im Erscheinungsbild.',
+    },
+    fr: {
+      name: 'Gris noir',
+      description: 'Gris très foncé proche du noir. Un rendu minimaliste et contemporain.',
+    },
+  },
+  ral1015: {
+    en: {
+      name: 'Light ivory',
+      description: 'Warm, light beige tone. Subtle and timeless for both classic and modern projects.',
+    },
+    de: {
+      name: 'Hellelfenbein',
+      description: 'Warmer, heller Beigeton. Dezent und zeitlos für klassische und moderne Projekte.',
+    },
+    fr: {
+      name: 'Ivoire clair',
+      description: 'Teinte beige claire et chaleureuse. Subtile et intemporelle, en style classique ou moderne.',
+    },
+  },
+  ral9006: {
+    en: {
+      name: 'White aluminium',
+      description: 'Metallic light grey. Works perfectly with modern façades and aluminium details.',
+    },
+    de: {
+      name: 'Weißaluminium',
+      description: 'Metallisches Hellgrau. Passt hervorragend zu modernen Fassaden und Aluminiumdetails.',
+    },
+    fr: {
+      name: 'Aluminium blanc',
+      description: 'Gris clair métallisé. S’accorde parfaitement avec les façades modernes et les détails en aluminium.',
+    },
+  },
+  ral7039: {
+    en: {
+      name: 'Quartz grey',
+      description: 'Balanced dark grey. A refined middle ground between anthracite and light grey.',
+    },
+    de: {
+      name: 'Quarzgrau',
+      description: 'Ausgewogenes, dunkleres Grau. Ein eleganter Mittelweg zwischen Anthrazit und Hellgrau.',
+    },
+    fr: {
+      name: 'Gris quartz',
+      description: 'Gris soutenu et équilibré. Un compromis élégant entre l’anthracite et le gris clair.',
+    },
+  },
+  ral8019: {
+    en: {
+      name: 'Grey brown',
+      description: 'Dark, muted brown with a grey undertone. A distinctly architectural shade.',
+    },
+    de: {
+      name: 'Graubraun',
+      description: 'Dunkles, gedämpftes Braun mit grauer Note. Ein deutlich architektonischer Farbton.',
+    },
+    fr: {
+      name: 'Brun gris',
+      description: 'Brun sombre et atténué avec une nuance de gris. Une teinte très architecturale.',
+    },
+  },
+  ral5011: {
+    en: {
+      name: 'Steel blue',
+      description: 'Deep navy-blue with a steel character. Distinctive while still elegant.',
+    },
+    de: {
+      name: 'Stahlblau',
+      description: 'Tiefes Blau mit stählernem Charakter. Ausdrucksstark und zugleich elegant.',
+    },
+    fr: {
+      name: 'Bleu acier',
+      description: 'Bleu profond au caractère acier. Une teinte marquée qui reste élégante.',
+    },
+  },
+  ral3005: {
+    en: {
+      name: 'Wine red',
+      description: 'Dark, noble red. Works especially well with classic façades and traditional forms.',
+    },
+    de: {
+      name: 'Weinrot',
+      description: 'Dunkles, nobles Rot. Harmoniert besonders mit klassischen Fassaden und traditionellen Formen.',
+    },
+    fr: {
+      name: 'Rouge vin',
+      description: 'Rouge sombre et noble. Très adapté aux façades classiques et aux formes traditionnelles.',
+    },
+  },
+  ral9001: {
+    en: {
+      name: 'Cream',
+      description: 'Warm off-white. A softer alternative to pure white in more classic concepts.',
+    },
+    de: {
+      name: 'Cremeweiß',
+      description: 'Warmes Cremeweiß. Eine sanftere Alternative zu Reinweiß in klassischeren Konzepten.',
+    },
+    fr: {
+      name: 'Blanc crème',
+      description: 'Blanc chaud légèrement cassé. Une alternative douce au blanc pur dans les projets plus classiques.',
+    },
+  },
+  ral7022: {
+    en: {
+      name: 'Umbra grey',
+      description: 'Dark grey with a subtle earthy undertone. Stable, contemporary façade colour.',
+    },
+    de: {
+      name: 'Umbragrau',
+      description: 'Dunkles Grau mit leicht erdigem Unterton. Ein stabiler, zeitgemäßer Fassadenfarbton.',
+    },
+    fr: {
+      name: 'Gris ombre',
+      description: 'Gris foncé avec une légère nuance terreuse. Une couleur de façade stable et contemporaine.',
+    },
+  },
+}
+
+export function getLocalizedWindowColorsPalette(locale = 'pl') {
+  if (locale === 'pl') {
+    return WINDOW_COLORS_PALETTE;
+  }
+
+  return WINDOW_COLORS_PALETTE.map((color) => {
+    const translation = WINDOW_RAL_TRANSLATIONS[color.id]?.[locale];
+
+    if (!translation) {
+      return color;
+    }
+
+    return {
+      ...color,
+      name: translation.name,
+      description: translation.description,
+    };
+  });
+}
+
 export const WINDOW_LAZUR_PALETTE = [
   {
     id: 'lazur-e4-16-46t',

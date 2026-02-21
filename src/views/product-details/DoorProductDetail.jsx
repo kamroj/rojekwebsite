@@ -4,7 +4,10 @@ import { useTranslation } from 'react-i18next';
 import Page from '../../components/ui/Page';
 import Section from '../../components/ui/Section';
 import { DOOR_SPECS_DEFS, DOOR_SPECS_ORDER_LIST } from '../../data/products/doors';
-import { WINDOW_COLORS_PALETTE, WINDOW_LAZUR_PALETTE } from '../../data/products/windows';
+import {
+  WINDOW_LAZUR_PALETTE,
+  getLocalizedWindowColorsPalette,
+} from '../../data/products/windows';
 import SanityPortableText from '../../components/portable/SanityPortableText';
 import ImageWithSpinner from '../../components/ui/ImageWithSpinner.jsx';
 import styles from './DoorProductDetail.module.css';
@@ -258,7 +261,8 @@ const DoorStandardFeaturesSection = ({ t }) => {
 // ============================================
 
 const DoorProductDetail = ({ product, breadcrumbPathname }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = (i18n.language || 'pl').split('-')[0];
 
   const specTooltipKeyMap = {
     profileThickness: 'productSpecs.tooltips.profileThickness',
@@ -267,7 +271,7 @@ const DoorProductDetail = ({ product, breadcrumbPathname }) => {
   };
 
   // Keep colors static by requirement (independent from CMS product data).
-  const colors = WINDOW_COLORS_PALETTE;
+  const colors = getLocalizedWindowColorsPalette(locale);
 
   const longDescriptionContent = Array.isArray(product?.longDescription) ? (
     <SanityPortableText value={product.longDescription} />

@@ -16,7 +16,10 @@ import {
 import HsDetailsSection from '../../components/sections/products/detail/HsDetailsSection.jsx';
 import ImageWithSpinner from '../../components/ui/ImageWithSpinner.jsx';
 import { HS_SPECS_DEFS, HS_SPECS_ORDER_LIST } from '../../data/products/hs.js';
-import { WINDOW_COLORS_PALETTE, WINDOW_LAZUR_PALETTE } from '../../data/products/windows.js';
+import {
+  WINDOW_LAZUR_PALETTE,
+  getLocalizedWindowColorsPalette,
+} from '../../data/products/windows.js';
 import { WINDOW_FAQ_FALLBACK } from '../../data/products/faqFallback.js';
 import { getSectionPath } from '../../lib/i18n/routing.js';
 
@@ -283,7 +286,7 @@ export default function HsProductDetail({ product, breadcrumbPathname }) {
 
       <ProductDetailColors
         title={colorsTitle}
-        colorsRal={WINDOW_COLORS_PALETTE}
+        colorsRal={getLocalizedWindowColorsPalette(locale)}
         colorsLazur={WINDOW_LAZUR_PALETTE}
         ralTabLabel={colorsRalTabLabel}
         lazurTabLabel={colorsLazurTabLabel}

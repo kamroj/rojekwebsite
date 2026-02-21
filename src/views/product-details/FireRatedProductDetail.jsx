@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import Page from '../../components/ui/Page';
 import Section from '../../components/ui/Section';
 import { DOOR_SPECS_DEFS, DOOR_SPECS_ORDER_LIST } from '../../data/products/doors';
-import { WINDOW_COLORS_PALETTE, WINDOW_LAZUR_PALETTE } from '../../data/products/windows';
+import { WINDOW_LAZUR_PALETTE, getLocalizedWindowColorsPalette } from '../../data/products/windows';
 import SanityPortableText from '../../components/portable/SanityPortableText';
 import ImageWithSpinner from '../../components/ui/ImageWithSpinner.jsx';
 import {
@@ -374,7 +374,7 @@ export default function FireRatedProductDetail({ product, breadcrumbPathname }) 
     waterTightness: 'productSpecs.tooltips.waterTightness',
   };
 
-  const colors = WINDOW_COLORS_PALETTE;
+  const colors = getLocalizedWindowColorsPalette(locale);
 
   const translatedShortDescription = t('productDetail.fireRated.hero.shortDescription', {
     defaultValue:

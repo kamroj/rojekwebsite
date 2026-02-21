@@ -1,6 +1,7 @@
 // sanity/structure.js
 // Custom Desk Structure (left sidebar) to match the website IA (PL)
 import React from 'react'
+import {PublishAllDraftsPane} from './components/PublishAllDraftsPane'
 
 /**
  * @param {import('sanity/structure').StructureBuilder} S
@@ -9,6 +10,12 @@ export const structure = (S) =>
   S.list()
     .title('Panel treści')
     .items([
+      S.listItem()
+        .title('Akcje')
+        .child(S.component().id('publish-all-drafts-pane').title('Akcje publikacji').component(PublishAllDraftsPane)),
+
+      S.divider(),
+
       // --- Strona główna ---
       S.listItem()
         .title('Strona główna')
