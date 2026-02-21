@@ -262,7 +262,8 @@
       "cta": {
         "title": "Zainteresowany drzwiami {{product}}?",
         "description": "Nasi eksperci pomogą Ci dobrać idealne rozwiązanie dla Twojego domu. Skontaktuj się z nami, aby uzyskać bezpłatną wycenę.",
-        "note": "Odpowiadamy w ciągu 24 godzin"
+        "note": "Odpowiadamy w ciągu 24 godzin",
+        "fireRatedDescription": "Producent Kraków – realizacje w Małopolsce i całej Polsce. Wsparcie dla architektów i wykonawców."
       },
       "sections": {
         "lock": {
@@ -365,6 +366,51 @@
           "title": "3-elementowy (2 skrzydła przesuwne + 1 stałe – układ centralny)",
           "description": "Stały element znajduje się pośrodku, a skrzydła przesuwne pracują po bokach. Rozwiązanie o wysokiej estetyce i symetrycznym wyglądzie.",
           "usage": "Szerokie elewacje z reprezentacyjnym wyjściem na taras lub ogród."
+        }
+      }
+    },
+    "fireRated": {
+      "hero": {
+        "primaryCta": "Wycena i konsultacja",
+        "secondaryCta": "Pobierz kartę techniczną",
+        "shortDescription": "Certyfikowana stolarka ognioodporna do budownictwa mieszkaniowego i komercyjnego. Dokumentacja, badania, wsparcie projektowe.",
+        "longDescription": "Rozwiązania przeciwpożarowe w klasach EI30 i EI60 projektujemy z myślą o bezpieczeństwie użytkowników oraz zgodności z wymaganiami dokumentacji technicznej. Stolarka drewniana łączy estetykę, stabilność konstrukcji i możliwość dopasowania do charakteru inwestycji."
+      },
+      "faq": {
+        "title": "FAQ – drzwi i okna przeciwpożarowe drewniane",
+        "subtitle": "Najczęściej zadawane pytania dotyczące doboru, dokumentacji i realizacji stolarki EI30/EI60."
+      },
+      "features": {
+        "items": {
+          "1": "<strong>Klasy odporności EI30 / EI60</strong> – wariant dobierany do wymagań obiektu i scenariusza pożarowego",
+          "2": "<strong>Szklenie ognioodporne i uszczelnienia pęczniejące</strong> – kompletne rozwiązania zgodne z zakresem oferty",
+          "3": "<strong>Produkcja i doradztwo: Kraków / Małopolska / Polska</strong> – wsparcie projektowe od doboru po dokumentację",
+          "4": "<strong>Wykończenia i kolorystyka</strong> – lazury i kolory dopasowane do standardowej stolarki drewnianej",
+          "5": "<strong>Kompletacja pod wymagania inwestycji</strong> – dobór okuć, wyposażenia i detali montażowych pod konkretny projekt"
+        }
+      },
+      "advantages": {
+        "items": {
+          "1": {
+            "title": "Bezpieczeństwo potwierdzone dokumentacją",
+            "description": "Rozwiązania przygotowywane z uwzględnieniem klas odporności ogniowej i wymagań formalnych projektu."
+          },
+          "2": {
+            "title": "Elastyczna konfiguracja EI30 / EI60",
+            "description": "Dobór konstrukcji, szklenia i okuć zgodnie z przeznaczeniem obiektu oraz oczekiwaniami inwestora."
+          },
+          "3": {
+            "title": "Spójność estetyczna",
+            "description": "Stolarka przeciwpożarowa może zachować charakter i kolorystykę pozostałych elementów drewnianych."
+          },
+          "4": {
+            "title": "Wsparcie techniczne",
+            "description": "Pomoc na etapie koncepcji, projektu wykonawczego i przygotowania dokumentacji do odbioru."
+          },
+          "5": {
+            "title": "Obsługa lokalna i ogólnopolska",
+            "description": "Realizacje prowadzimy w Krakowie, Małopolsce i na terenie całej Polski."
+          }
         }
       }
     }

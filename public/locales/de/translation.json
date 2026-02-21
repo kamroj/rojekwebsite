@@ -269,6 +269,7 @@
       "cta": {
         "title": "Interessiert an {{product}} Türen?",
         "description": "Unsere Experten helfen Ihnen, die ideale Lösung für Ihr Zuhause zu wählen. Kontaktieren Sie uns für ein kostenloses Angebot.",
+        "fireRatedDescription": "Hersteller aus Krakau – Projekte in Kleinpolen und in ganz Polen. Unterstützung für Architekten und Ausführende.",
         "note": "Wir antworten innerhalb von 24 Stunden"
       },
       "sections": {
@@ -288,6 +289,16 @@
           "b2": "Langlebiges, witterungsbeständiges Material",
           "b3": "Unterstützt die Wasserableitung"
         }
+      }
+    },
+    "fireRated": {
+      "hero": {
+        "primaryCta": "Angebot und Beratung",
+        "secondaryCta": "Technisches Datenblatt herunterladen"
+      },
+      "faq": {
+        "title": "FAQ – feuerfeste Holzfenster und -türen",
+        "subtitle": "Die häufigsten Fragen zu Auswahl, Dokumentation und Umsetzung von EI30/EI60-Elementen."
       }
     },
     "faq": {

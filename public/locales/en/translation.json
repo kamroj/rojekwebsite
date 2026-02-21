@@ -269,6 +269,7 @@
       "cta": {
         "title": "Interested in {{product}} doors?",
         "description": "Our experts will help you choose the perfect solution for your home. Contact us to get a free quote.",
+        "fireRatedDescription": "Manufacturer based in Kraków – projects across Lesser Poland and all over Poland. Support for architects and contractors.",
         "note": "We respond within 24 hours"
       },
       "sections": {
@@ -288,6 +289,16 @@
           "b2": "Durable and weather‑resistant material",
           "b3": "Supports water drainage"
         }
+      }
+    },
+    "fireRated": {
+      "hero": {
+        "primaryCta": "Quote and consultation",
+        "secondaryCta": "Download technical sheet"
+      },
+      "faq": {
+        "title": "FAQ – fire-rated wooden windows and doors",
+        "subtitle": "Most common questions about selection, documentation and implementation of EI30/EI60 joinery."
       }
     },
     "faq": {

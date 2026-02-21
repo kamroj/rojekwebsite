@@ -4,8 +4,12 @@
 export const pickLocale = (localizedValue, lang) => {
   if (!localizedValue || typeof localizedValue !== 'object') return localizedValue;
 
+  const rawLang = typeof lang === 'string' ? lang.trim() : '';
+  const baseLang = rawLang.split('-')[0] || '';
+
   return (
-    localizedValue?.[lang] ??
+    localizedValue?.[rawLang] ??
+    localizedValue?.[baseLang] ??
     localizedValue?.pl ??
     localizedValue?.en ??
     localizedValue?.fr ??
@@ -13,5 +17,6 @@ export const pickLocale = (localizedValue, lang) => {
     null
   );
 };
+
 
 

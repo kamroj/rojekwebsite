@@ -31,6 +31,81 @@ const DEFAULT_PROFILE_TABS = [
   },
 ];
 
+const DEFAULT_PROFILE_TABS_EN = [
+  {
+    tabId: '78',
+    tabLabel: '78 mm',
+    overline: 'PROFILE',
+    title: '78 mm profile thickness',
+    paragraphs: [
+      'The 78 mm HS profile is an excellent choice for modern single-family homes and projects with elevated aesthetic expectations. Its engineered laminated timber core provides high dimensional stability and good resistance to deformation, even with large glazed areas. The system supports triple-glazed units, improving both thermal and acoustic performance.',
+      'A 78 mm construction offers a balanced combination of slim profile lines and strong technical performance. It allows an elegant, light visual effect while keeping the sash stable and reliable during everyday use. This option works especially well in terrace and garden openings, where design quality, functionality and user comfort matter equally.',
+    ],
+    image: null,
+  },
+  {
+    tabId: '90',
+    tabLabel: '90 mm',
+    overline: 'PROFILE',
+    title: '90 mm profile thickness',
+    paragraphs: [
+      'The 90 mm HS profile is dedicated to premium projects with the highest requirements for energy efficiency, airtightness and long-term durability. Its increased installation depth enables thicker glazing packages, which can significantly improve the thermal transmittance of the whole system.',
+      'This more robust profile also brings greater stability in very large-format glazing. The 90 mm version is ideal for passive and low-energy buildings, where investors expect top technical values without compromising the elegant character of natural wood joinery.',
+    ],
+    image: '/images/hs/hs-profil-90.png',
+  },
+];
+
+const DEFAULT_PROFILE_TABS_DE = [
+  {
+    tabId: '78',
+    tabLabel: '78 mm',
+    overline: 'PROFIL',
+    title: 'Profilstärke 78 mm',
+    paragraphs: [
+      'Das 78-mm-HS-Profil ist eine sehr gute Lösung für moderne Einfamilienhäuser und Projekte mit hohen ästhetischen Anforderungen. Die Konstruktion aus verleimtem Schichtholz sorgt für hohe Formstabilität und gute Widerstandsfähigkeit gegen Verzug – auch bei großen Glasflächen. Das System ermöglicht den Einsatz von Dreifachverglasung und verbessert damit Wärme- und Schalldämmung.',
+      'Mit 78 mm bietet das Profil ein ausgewogenes Verhältnis zwischen schlanker Optik und soliden technischen Parametern. Dadurch wirkt die Konstruktion leicht und elegant, bleibt aber im täglichen Betrieb stabil und komfortabel. Besonders gut eignet sich diese Variante für Terrassen- und Gartenausgänge.',
+    ],
+    image: null,
+  },
+  {
+    tabId: '90',
+    tabLabel: '90 mm',
+    overline: 'PROFIL',
+    title: 'Profilstärke 90 mm',
+    paragraphs: [
+      'Das 90-mm-HS-Profil wurde für Projekte mit höchsten Anforderungen an Energieeffizienz, Dichtheit und Langlebigkeit entwickelt. Die größere Bautiefe erlaubt den Einsatz dickerer Verglasungspakete und kann so den Wärmedurchgang des gesamten Systems deutlich verbessern.',
+      'Die massivere Konstruktion erhöht zusätzlich die Stabilität bei sehr großen Glasformaten. Diese Ausführung ist besonders für Passiv- und Niedrigenergiehäuser geeignet, in denen maximale technische Leistung ohne ästhetische Kompromisse erwartet wird.',
+    ],
+    image: '/images/hs/hs-profil-90.png',
+  },
+];
+
+const DEFAULT_PROFILE_TABS_FR = [
+  {
+    tabId: '78',
+    tabLabel: '78 mm',
+    overline: 'PROFIL',
+    title: 'Épaisseur du profil 78 mm',
+    paragraphs: [
+      'Le profil HS de 78 mm convient parfaitement aux maisons individuelles modernes et aux projets exigeants sur le plan esthétique. Sa structure en bois lamellé-collé assure une bonne stabilité dimensionnelle et une résistance élevée aux déformations, même avec de grandes surfaces vitrées. Le système permet l’intégration de vitrages triples, avec de bonnes performances thermiques et acoustiques.',
+      'Avec 78 mm, on obtient un excellent compromis entre finesse visuelle et solidité technique. Le profil garde une ligne élégante tout en offrant une utilisation confortable au quotidien. Cette option est particulièrement adaptée aux ouvertures sur terrasse ou jardin.',
+    ],
+    image: null,
+  },
+  {
+    tabId: '90',
+    tabLabel: '90 mm',
+    overline: 'PROFIL',
+    title: 'Épaisseur du profil 90 mm',
+    paragraphs: [
+      'Le profil HS de 90 mm est conçu pour les projets premium avec des exigences élevées en matière d’efficacité énergétique, d’étanchéité et de durabilité. Sa profondeur plus importante permet l’utilisation de vitrages plus épais, ce qui améliore sensiblement les performances thermiques du système.',
+      'Cette construction renforcée apporte aussi davantage de stabilité aux très grandes surfaces vitrées. C’est une solution idéale pour les bâtiments passifs et basse consommation, lorsque l’on recherche des performances maximales sans compromis sur l’esthétique du bois.',
+    ],
+    image: '/images/hs/hs-profil-90.png',
+  },
+];
+
 const DEFAULT_THRESHOLD_TABS = [
   {
     tabId: '67',
@@ -51,6 +126,81 @@ const DEFAULT_THRESHOLD_TABS = [
     paragraphs: [
       'Próg płaski o wysokości 50 mm to rozwiązanie dedykowane nowoczesnym realizacjom, w których kluczową rolę odgrywa komfort przejścia oraz estetyka minimalizmu. Obniżona wysokość progu pozwala uzyskać niemal bezbarierowe połączenie wnętrza z tarasem lub ogrodem, co znacząco poprawia ergonomię użytkowania – szczególnie w domach z małymi dziećmi lub dla osób starszych.',
       'Pomimo smuklejszej konstrukcji, system zachowuje wysokie parametry szczelności dzięki zastosowaniu odpowiednich uszczelnień oraz rozwiązań konstrukcyjnych ograniczających mostki termiczne. Płaski próg podkreśla nowoczesny charakter przeszklenia HS i pozwala uzyskać efekt płynnego przejścia między strefą wewnętrzną a zewnętrzną, bez kompromisów w zakresie trwałości i bezpieczeństwa.',
+    ],
+    image: '/images/hs/prog-50mm.png',
+  },
+];
+
+const DEFAULT_THRESHOLD_TABS_EN = [
+  {
+    tabId: '67',
+    tabLabel: '67 mm',
+    overline: 'HS THRESHOLD',
+    title: '67 mm – standard solution',
+    paragraphs: [
+      'A 67 mm threshold is the classic HS solution, offering strong tightness and high long-term durability. Its stable profile with a thermal break supports effective insulation and protection against water and air infiltration.',
+      'The higher threshold also improves structural rigidity in the bottom zone, which is especially important for large and heavy sliding sashes. It is recommended where priority is maximum sealing performance and intensive everyday use.',
+    ],
+    image: '/images/hs/prog-67mm.png',
+  },
+  {
+    tabId: '50',
+    tabLabel: '50 mm',
+    overline: 'HS THRESHOLD',
+    title: '50 mm – flat and comfortable',
+    paragraphs: [
+      'The 50 mm flat threshold is designed for modern projects where comfort and accessibility are key. The reduced threshold height creates an almost barrier-free transition between interior and terrace or garden.',
+      'Despite its slimmer geometry, the system maintains high sealing performance through dedicated gasket and thermal-bridge-limiting solutions. This option highlights a clean contemporary look while keeping everyday use safe and practical.',
+    ],
+    image: '/images/hs/prog-50mm.png',
+  },
+];
+
+const DEFAULT_THRESHOLD_TABS_DE = [
+  {
+    tabId: '67',
+    tabLabel: '67 mm',
+    overline: 'HS-SCHWELLE',
+    title: '67 mm – Standardlösung',
+    paragraphs: [
+      'Die 67-mm-Schwelle ist die klassische HS-Lösung mit sehr guter Dichtheit und hoher Dauerhaftigkeit. Die Konstruktion mit thermischer Trennung unterstützt eine wirksame Wärmedämmung und schützt vor dem Eindringen von Wasser und Luft.',
+      'Durch die höhere Schwelle steigt zudem die Steifigkeit im unteren Konstruktionsbereich – ein wichtiger Vorteil bei großen und schweren Schiebeflügeln. Diese Variante wird überall dort empfohlen, wo maximale Dichtheit und intensive Nutzung im Vordergrund stehen.',
+    ],
+    image: '/images/hs/prog-67mm.png',
+  },
+  {
+    tabId: '50',
+    tabLabel: '50 mm',
+    overline: 'HS-SCHWELLE',
+    title: '50 mm – flach und komfortabel',
+    paragraphs: [
+      'Die flache 50-mm-Schwelle ist für moderne Projekte konzipiert, bei denen Komfort und Barrierearmut entscheidend sind. Die reduzierte Höhe schafft einen nahezu schwellenlosen Übergang zwischen Innenraum und Terrasse oder Garten.',
+      'Trotz der schlankeren Bauform bleiben dank spezieller Dichtungen und konstruktiver Maßnahmen gegen Wärmebrücken sehr gute Dichtwerte erhalten. So verbindet diese Lösung modernes Design mit hoher Alltagstauglichkeit.',
+    ],
+    image: '/images/hs/prog-50mm.png',
+  },
+];
+
+const DEFAULT_THRESHOLD_TABS_FR = [
+  {
+    tabId: '67',
+    tabLabel: '67 mm',
+    overline: 'SEUIL HS',
+    title: '67 mm – solution standard',
+    paragraphs: [
+      'Le seuil de 67 mm est la solution HS classique, offrant une excellente étanchéité et une grande durabilité. Sa conception avec rupture thermique assure une bonne isolation et protège efficacement contre les infiltrations d’air et d’eau.',
+      'Ce seuil plus haut améliore aussi la rigidité de la zone basse, ce qui est particulièrement utile pour les vantaux coulissants de grandes dimensions. Il est recommandé lorsque la priorité est la performance d’étanchéité et la robustesse en usage intensif.',
+    ],
+    image: '/images/hs/prog-67mm.png',
+  },
+  {
+    tabId: '50',
+    tabLabel: '50 mm',
+    overline: 'SEUIL HS',
+    title: '50 mm – plat et confortable',
+    paragraphs: [
+      'Le seuil plat de 50 mm est destiné aux réalisations modernes où le confort de passage est prioritaire. Sa hauteur réduite permet une transition presque sans obstacle entre l’intérieur et la terrasse ou le jardin.',
+      'Malgré son profil plus fin, le système conserve de bonnes performances d’étanchéité grâce à des solutions spécifiques de joints et de limitation des ponts thermiques. Cette version associe esthétique contemporaine et praticité au quotidien.',
     ],
     image: '/images/hs/prog-50mm.png',
   },
@@ -91,6 +241,116 @@ const DEFAULT_USAGE_TABS = [
     benefitText: 'Cichsze domykanie, lepsza kontrola ruchu i większe bezpieczeństwo codziennej obsługi.',
   },
 ];
+
+const DEFAULT_USAGE_TABS_EN = [
+  {
+    tabId: 'glazing',
+    tabLabel: 'Glazing',
+    title: 'Beaded and beadless glazing',
+    paragraphs: [
+      'The HS system supports two glazing concepts: traditional beaded glazing and a beadless option. This allows you to match not only technical performance but also the final visual character of the construction.',
+      'Beaded glazing is often preferred for easy serviceability and proven durability, while beadless glazing emphasizes large, clean glass surfaces and a more minimalist architectural look.',
+    ],
+    benefitLabel: 'Benefit:',
+    benefitText: 'Greater design flexibility without compromising tightness and durability.',
+  },
+  {
+    tabId: 'hardware',
+    tabLabel: 'Hardware',
+    title: 'GU hardware for heavy HS sashes',
+    paragraphs: [
+      'GU hardware ensures smooth, stable operation even for large and heavy sliding HS sashes. It is designed for high loads, frequent use and long-term operating comfort.',
+      'Precise mechanism performance improves user experience: the sash movement feels lighter, more predictable and better controlled throughout daily operation.',
+    ],
+    benefitLabel: 'Benefit:',
+    benefitText: 'Reliable handling and long-term mechanical durability.',
+  },
+  {
+    tabId: 'silentClose',
+    tabLabel: 'Closing comfort',
+    title: 'Smooth closing and sash movement control',
+    paragraphs: [
+      'For closing comfort, HS systems can combine Silent Close with Stop Unit functionality. This setup improves the movement culture of the entire system and reduces hard end impacts.',
+      'The combination is especially valuable with large, heavy glazing units, where better end-of-travel control translates directly into comfort, safety and acoustic quality.',
+    ],
+    benefitLabel: 'Benefit:',
+    benefitText: 'Quieter closing and better control in everyday use.',
+  },
+];
+
+const DEFAULT_USAGE_TABS_DE = [
+  {
+    tabId: 'glazing',
+    tabLabel: 'Verglasung',
+    title: 'Verglasung mit und ohne Leiste',
+    paragraphs: [
+      'Das HS-System bietet zwei Varianten der Verglasung: die klassische Verglasung mit Leiste sowie eine moderne leistelose Ausführung. So lassen sich technische Anforderungen und gewünschte Optik flexibel kombinieren.',
+      'Die Variante mit Leiste wird häufig wegen einfacher Wartung und bewährter Dauerhaftigkeit gewählt. Die leistelose Ausführung betont dagegen große, ruhige Glasflächen und einen minimalistischen Architekturcharakter.',
+    ],
+    benefitLabel: 'Vorteil:',
+    benefitText: 'Mehr Gestaltungsfreiheit ohne Kompromisse bei Dichtheit und Haltbarkeit.',
+  },
+  {
+    tabId: 'hardware',
+    tabLabel: 'Beschläge',
+    title: 'GU-Beschläge für schwere HS-Flügel',
+    paragraphs: [
+      'GU-Beschläge gewährleisten eine stabile und leichtgängige Bedienung auch bei großen und schweren HS-Schiebeflügeln. Das System ist für hohe Belastungen und häufige Nutzung ausgelegt.',
+      'Die präzise Mechanik verbessert den Bedienkomfort im Alltag: Der Flügel läuft ruhiger, kontrollierter und mit gleichbleibender Qualität über lange Zeit.',
+    ],
+    benefitLabel: 'Vorteil:',
+    benefitText: 'Zuverlässige Funktion und hohe mechanische Lebensdauer.',
+  },
+  {
+    tabId: 'silentClose',
+    tabLabel: 'Schließkomfort',
+    title: 'Sanftes Schließen und Bewegungsführung',
+    paragraphs: [
+      'Für höheren Schließkomfort kann das HS-System Funktionen wie Silent Close und Stop Unit kombinieren. Dadurch wird die Endphase der Bewegung deutlich sanfter und kontrollierter.',
+      'Gerade bei großen und schweren Verglasungen erhöht dies Komfort, Sicherheit und akustische Qualität im täglichen Gebrauch.',
+    ],
+    benefitLabel: 'Vorteil:',
+    benefitText: 'Leiseres Schließen und bessere Kontrolle im Alltag.',
+  },
+];
+
+const DEFAULT_USAGE_TABS_FR = [
+  {
+    tabId: 'glazing',
+    tabLabel: 'Vitrage',
+    title: 'Vitrage avec ou sans parclose',
+    paragraphs: [
+      'Le système HS propose deux approches de vitrage : avec parclose (version classique) ou sans parclose (version moderne). Cela permet d’adapter à la fois les paramètres techniques et le rendu visuel final.',
+      'Le vitrage parclosé facilite la maintenance et offre une durabilité éprouvée. Le vitrage sans parclose met en valeur de grandes surfaces vitrées et une esthétique plus minimaliste.',
+    ],
+    benefitLabel: 'Avantage :',
+    benefitText: 'Plus de liberté de conception sans compromis sur l’étanchéité.',
+  },
+  {
+    tabId: 'hardware',
+    tabLabel: 'Quincaillerie',
+    title: 'Quincaillerie GU pour vantaux lourds',
+    paragraphs: [
+      'Les ferrures GU assurent un fonctionnement stable et fluide, même avec des vantaux HS lourds et de grande dimension. Elles sont conçues pour des charges élevées et une utilisation fréquente.',
+      'La précision du mécanisme améliore le confort d’usage : le mouvement du vantail est plus doux, plus maîtrisé et plus fiable dans le temps.',
+    ],
+    benefitLabel: 'Avantage :',
+    benefitText: 'Utilisation fiable et durable au quotidien.',
+  },
+  {
+    tabId: 'silentClose',
+    tabLabel: 'Confort de fermeture',
+    title: 'Fermeture douce et contrôle du mouvement',
+    paragraphs: [
+      'Pour le confort de fermeture, le système HS peut associer les fonctions Silent Close et Stop Unit. Cette combinaison adoucit la fin de course et améliore la qualité de mouvement.',
+      'Sur les grandes baies coulissantes, cela apporte un meilleur contrôle, plus de sécurité d’usage et un meilleur confort acoustique au quotidien.',
+    ],
+    benefitLabel: 'Avantage :',
+    benefitText: 'Fermeture plus silencieuse et meilleur contrôle.',
+  },
+];
+
+const pickByLocale = (locale, values) => values[locale] || values.pl;
 
 const getStringParagraphs = (value) => {
   if (typeof value === 'string' && value.trim()) return [value];
@@ -158,22 +418,41 @@ export default function HsDetailsSection({
   commonSections = null,
   specialSections = [],
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const locale = (i18n.language || 'pl').split('-')[0];
+  const defaultProfileTabs = pickByLocale(locale, {
+    pl: DEFAULT_PROFILE_TABS,
+    en: DEFAULT_PROFILE_TABS_EN,
+    de: DEFAULT_PROFILE_TABS_DE,
+    fr: DEFAULT_PROFILE_TABS_FR,
+  });
+  const defaultThresholdTabs = pickByLocale(locale, {
+    pl: DEFAULT_THRESHOLD_TABS,
+    en: DEFAULT_THRESHOLD_TABS_EN,
+    de: DEFAULT_THRESHOLD_TABS_DE,
+    fr: DEFAULT_THRESHOLD_TABS_FR,
+  });
+  const defaultUsageTabs = pickByLocale(locale, {
+    pl: DEFAULT_USAGE_TABS,
+    en: DEFAULT_USAGE_TABS_EN,
+    de: DEFAULT_USAGE_TABS_DE,
+    fr: DEFAULT_USAGE_TABS_FR,
+  });
   const profileSection = commonSections?.profileThickness || {};
   const thresholdSection = commonSections?.threshold || {};
   const usageSection = commonSections?.usageDetails || {};
 
   const profileTabs = React.useMemo(
-    () => buildTabs({ defaultTabs: DEFAULT_PROFILE_TABS, section: profileSection, type: 'profile' }),
-    [profileSection]
+    () => buildTabs({ defaultTabs: defaultProfileTabs, section: profileSection, type: 'profile' }),
+    [defaultProfileTabs, profileSection]
   );
   const thresholdTabs = React.useMemo(
-    () => buildTabs({ defaultTabs: DEFAULT_THRESHOLD_TABS, section: thresholdSection, type: 'threshold' }),
-    [thresholdSection]
+    () => buildTabs({ defaultTabs: defaultThresholdTabs, section: thresholdSection, type: 'threshold' }),
+    [defaultThresholdTabs, thresholdSection]
   );
   const usageTabs = React.useMemo(
-    () => buildTabs({ defaultTabs: DEFAULT_USAGE_TABS, section: usageSection, type: 'usage' }),
-    [usageSection]
+    () => buildTabs({ defaultTabs: defaultUsageTabs, section: usageSection, type: 'usage' }),
+    [defaultUsageTabs, usageSection]
   );
 
   const [activeProfileThickness, setActiveProfileThickness] = React.useState(profileTabs[0]?.tabId || '78');
@@ -248,7 +527,20 @@ export default function HsDetailsSection({
             <div className={styles.profileThicknessTitleBlock}>
               <div className={styles.profileThicknessTopLine}>
                 <span className={styles.profileThicknessOverline}>{activeProfile?.overline || 'PROFIL'}</span>
-                <div className={styles.profileThicknessSwitch} role="tablist" aria-label="Wybór grubości profilu HS">
+                <div
+                  className={styles.profileThicknessSwitch}
+                  role="tablist"
+                  aria-label={t('productDetail.hsOverview.profileSelectorAriaLabel', {
+                    defaultValue:
+                      locale === 'de'
+                        ? 'Auswahl der HS-Profilstärke'
+                        : locale === 'fr'
+                          ? 'Sélection de l’épaisseur du profil HS'
+                          : locale === 'en'
+                            ? 'HS profile thickness selector'
+                            : 'Wybór grubości profilu HS',
+                  })}
+                >
                   {profileTabs.map((item) => (
                     <button
                       key={item.tabId}
@@ -275,9 +567,27 @@ export default function HsDetailsSection({
           <div className={styles.thresholdDescription}>
             <div className={styles.thresholdTitleBlock}>
               <div className={styles.thresholdTopLine}>
-                <span className={styles.thresholdOverline}>{thresholdSection?.sectionOverline || 'PRÓG'}</span>
+                <span className={styles.thresholdOverline}>
+                  {thresholdSection?.sectionOverline
+                    || t('productDetail.hsOverview.thresholdOverline', {
+                      defaultValue: locale === 'de' ? 'SCHWELLE' : locale === 'fr' ? 'SEUIL' : locale === 'en' ? 'THRESHOLD' : 'PRÓG',
+                    })}
+                </span>
 
-                <div className={styles.thresholdSwitch} role="tablist" aria-label="Wybór progu HS">
+                <div
+                  className={styles.thresholdSwitch}
+                  role="tablist"
+                  aria-label={t('productDetail.hsOverview.thresholdSelectorAriaLabel', {
+                    defaultValue:
+                      locale === 'de'
+                        ? 'Auswahl der HS-Schwelle'
+                        : locale === 'fr'
+                          ? 'Sélection du seuil HS'
+                          : locale === 'en'
+                            ? 'HS threshold selector'
+                            : 'Wybór progu HS',
+                  })}
+                >
                   {thresholdTabs.map((item) => (
                     <button
                       key={item.tabId}
@@ -330,8 +640,26 @@ export default function HsDetailsSection({
       {usageSection?.enabled !== false && activeUsage ? <div className={styles.usageSection}>
         <div className={styles.usageTitleBlock}>
           <div className={styles.usageTopLine}>
-            <span className={styles.usageOverline}>{usageSection?.sectionOverline || 'DETALE'}</span>
-            <div className={styles.usageSwitch} role="tablist" aria-label="Wybór parametrów użytkowych HS">
+            <span className={styles.usageOverline}>
+              {usageSection?.sectionOverline
+                || t('productDetail.hsOverview.usageOverline', {
+                  defaultValue: locale === 'de' ? 'DETAILS' : locale === 'fr' ? 'DÉTAILS' : locale === 'en' ? 'DETAILS' : 'DETALE',
+                })}
+            </span>
+            <div
+              className={styles.usageSwitch}
+              role="tablist"
+              aria-label={t('productDetail.hsOverview.usageSelectorAriaLabel', {
+                defaultValue:
+                  locale === 'de'
+                    ? 'Auswahl der HS-Nutzungsparameter'
+                    : locale === 'fr'
+                      ? 'Sélection des paramètres d’utilisation HS'
+                      : locale === 'en'
+                        ? 'HS usage parameters selector'
+                        : 'Wybór parametrów użytkowych HS',
+              })}
+            >
               {usageTabs.map((item) => (
                 <button
                   key={item.tabId}
@@ -347,7 +675,17 @@ export default function HsDetailsSection({
             </div>
           </div>
           <h3 className={styles.usageMainTitle}>
-            {usageSection?.sectionTitle || 'Szczegóły, które robią różnicę w codziennym użytkowaniu'}
+            {usageSection?.sectionTitle
+              || t('productDetail.hsOverview.usageSectionTitle', {
+                defaultValue:
+                  locale === 'de'
+                    ? 'Details, die den Unterschied im Alltag machen'
+                    : locale === 'fr'
+                      ? 'Des détails qui font la différence au quotidien'
+                      : locale === 'en'
+                        ? 'Details that make a difference in everyday use'
+                        : 'Szczegóły, które robią różnicę w codziennym użytkowaniu',
+              })}
           </h3>
         </div>
 
@@ -356,7 +694,13 @@ export default function HsDetailsSection({
             <h4 className={styles.usageItemTitle}>{activeUsage.title}</h4>
             {renderContent(activeUsage.description || activeUsage.paragraphs, styles.usageParagraph)}
             <p className={styles.usageBenefit}>
-              <span>{activeUsage.benefitLabel || 'Korzyść:'}</span> {activeUsage.benefitText || activeUsage.benefit}
+              <span>
+                {activeUsage.benefitLabel
+                  || t('productDetail.hsOverview.benefitLabel', {
+                    defaultValue: locale === 'de' ? 'Vorteil:' : locale === 'fr' ? 'Avantage :' : locale === 'en' ? 'Benefit:' : 'Korzyść:',
+                  })}
+              </span>{' '}
+              {activeUsage.benefitText || activeUsage.benefit}
             </p>
           </div>
         </div>

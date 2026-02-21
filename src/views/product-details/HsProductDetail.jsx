@@ -25,29 +25,84 @@ import styles from './HsProductDetail.module.css';
 export default function HsProductDetail({ product, breadcrumbPathname }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
+  const locale = (lang || 'pl').split('-')[0];
   const [activeSchemeId, setActiveSchemeId] = useState('A');
 
   const categoryLabel = t('products.terraceDoors.name', 'Okna przesuwne');
 
-  const ctaTitle = `Zainteresowany systemem ${product?.name}?`;
-  const ctaDescription =
-    'Nasi eksperci pomogą dobrać konfigurację HS dopasowaną do projektu. Skontaktuj się z nami i zamów bezpłatną wycenę.';
+  const ctaTitle = t('productDetail.hs.cta.title', {
+    product: product?.name || '',
+    defaultValue:
+      locale === 'de'
+        ? 'Interessiert am System {{product}}?'
+        : locale === 'fr'
+          ? 'Intéressé par le système {{product}} ?'
+          : locale === 'en'
+            ? 'Interested in the {{product}} system?'
+            : 'Zainteresowany systemem {{product}}?',
+  });
+  const ctaDescription = t('productDetail.hs.cta.description', {
+    defaultValue:
+      locale === 'de'
+        ? 'Unsere Experten helfen Ihnen bei der Auswahl einer HS-Konfiguration, die zu Ihrem Projekt passt. Kontaktieren Sie uns für ein kostenloses Angebot.'
+        : locale === 'fr'
+          ? 'Nos experts vous aideront à choisir la configuration HS adaptée à votre projet. Contactez-nous pour un devis gratuit.'
+          : locale === 'en'
+            ? 'Our experts will help you choose an HS configuration tailored to your project. Contact us for a free quote.'
+            : 'Nasi eksperci pomogą dobrać konfigurację HS dopasowaną do projektu. Skontaktuj się z nami i zamów bezpłatną wycenę.',
+  });
   const ctaNote = t('productDetail.windows.cta.note', 'Odpowiadamy w ciągu 24 godzin');
 
   const featuresTitle = t('productDetail.windows.featuresTitle', {
     product: product.name,
-    defaultValue: 'Co wyróżnia okno {{product}}?',
+    defaultValue:
+      locale === 'de'
+        ? 'Was zeichnet das Fenster {{product}} aus?'
+        : locale === 'fr'
+          ? 'Qu’est-ce qui distingue la fenêtre {{product}} ?'
+          : locale === 'en'
+            ? 'What makes the {{product}} window stand out?'
+            : 'Co wyróżnia okno {{product}}?',
   });
 
-  const colorsTitle = t('productDetail.windows.colorsTitle', 'KOLORYSTYKA');
+  const colorsTitle = t('productDetail.windows.colorsTitle', {
+    defaultValue: locale === 'de' ? 'FARBEN' : locale === 'fr' ? 'COULEURS' : locale === 'en' ? 'COLORS' : 'KOLORYSTYKA',
+  });
   const colorsRalTabLabel = t('productDetail.windows.colorsRalTab', 'RAL');
-  const colorsLazurTabLabel = t('productDetail.windows.colorsLazurTab', 'LAZUR');
-  const colorsMostPopular = t('productDetail.windows.colorsMostPopular', 'Najczęściej wybierane kolory');
-  const colorsFullPalette = t('productDetail.windows.colorsFullPalette', 'Pełna paleta kolorów RAL');
+  const colorsLazurTabLabel = t('productDetail.windows.colorsLazurTab', {
+    defaultValue: locale === 'fr' ? 'LAZURE' : 'LAZUR',
+  });
+  const colorsMostPopular = t('productDetail.windows.colorsMostPopular', {
+    defaultValue:
+      locale === 'de'
+        ? 'Beliebteste Farben'
+        : locale === 'fr'
+          ? 'Couleurs les plus populaires'
+          : locale === 'en'
+            ? 'Most popular colours'
+            : 'Najczęściej wybierane kolory',
+  });
+  const colorsFullPalette = t('productDetail.windows.colorsFullPalette', {
+    defaultValue:
+      locale === 'de'
+        ? 'Vollständige RAL-Farbkarte'
+        : locale === 'fr'
+          ? 'Palette complète des couleurs RAL'
+          : locale === 'en'
+            ? 'Full RAL colour chart'
+            : 'Pełna paleta kolorów RAL',
+  });
 
   const advantagesTitle = t('productDetail.windows.advantagesTitle', {
     product: product.name,
-    defaultValue: 'Dlaczego warto wybrać {{product}}?',
+    defaultValue:
+      locale === 'de'
+        ? 'Warum {{product}} wählen?'
+        : locale === 'fr'
+          ? 'Pourquoi choisir {{product}} ?'
+          : locale === 'en'
+            ? 'Why choose {{product}}?'
+            : 'Dlaczego warto wybrać {{product}}?',
   });
 
   const faqItems = Array.isArray(product?.faq) && product.faq.length > 0 ? product.faq : WINDOW_FAQ_FALLBACK;
@@ -78,7 +133,16 @@ export default function HsProductDetail({ product, breadcrumbPathname }) {
 
         return {
           id,
-          buttonLabel: t(`productDetail.hsSchemes.items.${id}.buttonLabel`, { defaultValue: `Schemat ${id}` }),
+          buttonLabel: t(`productDetail.hsSchemes.items.${id}.buttonLabel`, {
+            defaultValue:
+              locale === 'de'
+                ? `Schema ${id}`
+                : locale === 'fr'
+                  ? `Schéma ${id}`
+                  : locale === 'en'
+                    ? `Scheme ${id}`
+                    : `Schemat ${id}`,
+          }),
           image,
           title: content.title,
           description: content.description,
@@ -136,16 +200,38 @@ export default function HsProductDetail({ product, breadcrumbPathname }) {
       >
         <section className={styles.schemesSection} id="hs-schemes">
           <div className={styles.schemesTitleBlock}>
-            <span className={styles.schemesOverline}>{t('productDetail.hsSchemes.sectionOverline', 'SCHEMATY')}</span>
+            <span className={styles.schemesOverline}>
+              {t('productDetail.hsSchemes.sectionOverline', {
+                defaultValue: locale === 'de' ? 'SCHEMATA' : locale === 'fr' ? 'SCHÉMAS' : locale === 'en' ? 'SCHEMES' : 'SCHEMATY',
+              })}
+            </span>
             <h2 className={styles.schemesMainTitle}>
-              {t('productDetail.hsSchemes.sectionSubtitle', 'Konfiguracja dopasowana do Twoich wymagań')}
+              {t('productDetail.hsSchemes.sectionSubtitle', {
+                defaultValue:
+                  locale === 'de'
+                    ? 'Konfiguration passend zu Ihren Anforderungen'
+                    : locale === 'fr'
+                      ? 'Configuration adaptée à vos besoins'
+                      : locale === 'en'
+                        ? 'Configuration tailored to your needs'
+                        : 'Konfiguracja dopasowana do Twoich wymagań',
+              })}
             </h2>
           </div>
 
           <div
             className={styles.schemeTiles}
             role="tablist"
-            aria-label={t('productDetail.hsSchemes.selectorAriaLabel', 'Wybór schematu HS')}
+            aria-label={t('productDetail.hsSchemes.selectorAriaLabel', {
+              defaultValue:
+                locale === 'de'
+                  ? 'Auswahl des HS-Schemas'
+                  : locale === 'fr'
+                    ? 'Sélection du schéma HS'
+                    : locale === 'en'
+                      ? 'HS scheme selection'
+                      : 'Wybór schematu HS',
+            })}
           >
             {schemeItems.map((scheme) => (
               <button

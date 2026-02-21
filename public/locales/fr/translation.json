@@ -272,6 +272,7 @@
       "cta": {
         "title": "Intéressé par les portes {{product}} ?",
         "description": "Nos experts vous aideront à choisir la solution idéale pour votre maison. Contactez-nous pour un devis gratuit.",
+        "fireRatedDescription": "Fabricant de Cracovie – réalisations en Petite-Pologne et dans toute la Pologne. Accompagnement des architectes et des entreprises.",
         "note": "Nous répondons sous 24 heures"
       },
       "sections": {
@@ -291,6 +292,16 @@
           "b2": "Matériau durable et résistant aux intempéries",
           "b3": "Favorise l’évacuation de l’eau"
         }
+      }
+    },
+    "fireRated": {
+      "hero": {
+        "primaryCta": "Devis et consultation",
+        "secondaryCta": "Télécharger la fiche technique"
+      },
+      "faq": {
+        "title": "FAQ – fenêtres et portes coupe-feu en bois",
+        "subtitle": "Questions les plus fréquentes sur le choix, la documentation et la mise en œuvre des menuiseries EI30/EI60."
       }
     },
     "faq": {

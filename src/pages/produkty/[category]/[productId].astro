@@ -107,13 +107,13 @@ export async function getStaticPaths() {
       if (detailType === 'windows') {
         // Prefetch detail so HTML is generated at build-time.
         const detail = await fetchWindowDetailForBuild(pid, 'pl');
-        if (detail) props.initialSanityProduct = detail;
+        props.initialSanityProduct = detail || null;
       } else if (detailType === 'hs') {
         const detail = await fetchHsDetailForBuild(pid, 'pl');
-        if (detail) props.initialSanityProduct = detail;
+        props.initialSanityProduct = detail || null;
       } else if (detailType === 'doors') {
         const detail = await fetchDoorDetailForBuild(pid, 'pl');
-        if (detail) props.initialSanityProduct = detail;
+        props.initialSanityProduct = detail || null;
       }
       paths.push({ params: { category: categorySlug, productId: pid }, props });
     }
