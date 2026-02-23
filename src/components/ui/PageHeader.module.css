@@ -80,6 +80,22 @@
     height: var(--header-height-mobile, 400px);
   }
 
+  .headerContent {
+    left: auto;
+    right: 22px;
+    transform: none;
+    width: auto;
+    max-width: calc(100% - 44px);
+    white-space: normal;
+  }
+
+  .headerContent h1 {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.2;
+  }
+
   .headerContentMobileCentered {
     left: 50%;
     right: auto;

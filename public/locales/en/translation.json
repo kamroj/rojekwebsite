@@ -277,6 +277,51 @@
         "fireRatedDescription": "Manufacturer based in Kraków – projects across Lesser Poland and all over Poland. Support for architects and contractors.",
         "note": "We respond within 24 hours"
       },
+      "standard": {
+        "overline": "Everything you need",
+        "title": "As standard",
+        "subtitle": "No extra charges"
+      },
+      "lock": {
+        "overline": "Security",
+        "title": "3-point lock",
+        "description": "Security starts with solid locking. Our standard 3-point lock secures the door leaf in three places at once — improving resistance to forced entry and ensuring better gasket pressure across the full door height.",
+        "imageAlt": "3-point lock",
+        "feature1": {
+          "title": "Locking in 3 points",
+          "desc": "Locking at the top, middle and bottom of the leaf"
+        },
+        "feature2": {
+          "title": "Better gasket pressure",
+          "desc": "Even force distribution across the full height"
+        },
+        "feature3": {
+          "title": "High burglary resistance",
+          "desc": "Much harder to force than standard locks"
+        }
+      },
+      "threshold": {
+        "overline": "Comfort of use",
+        "title": "Low aluminium threshold",
+        "description": "A well-thought-out detail that truly improves everyday comfort. With only 20 mm height, it provides smooth passage without tripping.",
+        "imageAlt": "Low aluminium threshold",
+        "benefit1": {
+          "title": "Easy passage",
+          "desc": "Minimal height reduces tripping risk"
+        },
+        "benefit2": {
+          "title": "Barrier-free",
+          "desc": "Accessible for wheelchairs and elderly users"
+        },
+        "benefit3": {
+          "title": "Durable aluminium",
+          "desc": "Resistant to corrosion and weather conditions"
+        },
+        "benefit4": {
+          "title": "Water drainage",
+          "desc": "Special profile directs water outside"
+        }
+      },
       "sections": {
         "lock": {
           "kicker": "Security",

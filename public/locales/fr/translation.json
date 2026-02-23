@@ -280,6 +280,51 @@
         "fireRatedDescription": "Fabricant de Cracovie – réalisations en Petite-Pologne et dans toute la Pologne. Accompagnement des architectes et des entreprises.",
         "note": "Nous répondons sous 24 heures"
       },
+      "standard": {
+        "overline": "Tout ce qu’il vous faut",
+        "title": "De série",
+        "subtitle": "Sans supplément"
+      },
+      "lock": {
+        "overline": "Sécurité",
+        "title": "Serrure 3 points",
+        "description": "La sécurité commence par un verrouillage solide. Notre serrure 3 points standard verrouille l’ouvrant à trois endroits en même temps — augmentant la résistance à l’effraction et assurant une meilleure pression des joints sur toute la hauteur de la porte.",
+        "imageAlt": "Serrure 3 points",
+        "feature1": {
+          "title": "Verrouillage en 3 points",
+          "desc": "Blocage en haut, au milieu et en bas de l’ouvrant"
+        },
+        "feature2": {
+          "title": "Meilleure pression des joints",
+          "desc": "Répartition uniforme de la force sur toute la hauteur"
+        },
+        "feature3": {
+          "title": "Haute résistance à l’effraction",
+          "desc": "Beaucoup plus difficile à forcer qu’un verrou standard"
+        }
+      },
+      "threshold": {
+        "overline": "Confort d’utilisation",
+        "title": "Seuil bas en aluminium",
+        "description": "Un détail bien pensé qui améliore réellement le confort au quotidien. Avec seulement 20 mm de hauteur, il permet un passage fluide sans trébucher.",
+        "imageAlt": "Seuil bas en aluminium",
+        "benefit1": {
+          "title": "Passage facile",
+          "desc": "La faible hauteur réduit le risque de trébuchement"
+        },
+        "benefit2": {
+          "title": "Sans barrière",
+          "desc": "Accessible aux fauteuils roulants et aux personnes âgées"
+        },
+        "benefit3": {
+          "title": "Aluminium durable",
+          "desc": "Résistant à la corrosion et aux intempéries"
+        },
+        "benefit4": {
+          "title": "Évacuation de l’eau",
+          "desc": "Un profil spécial dirige l’eau vers l’extérieur"
+        }
+      },
       "sections": {
         "lock": {
           "kicker": "Sécurité",

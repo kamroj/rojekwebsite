@@ -439,17 +439,20 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
                   </RouterAgnosticLink>
 
                   <div className={styles.mobileSubList}>
-                    {(mobileCategories.find((c) => c.key === mobileActiveCategoryKey)?.products || []).map((p) => (
+                    {(mobileCategories.find((c) => c.key === mobileActiveCategoryKey)?.products || []).map((p) => {
+                      const productRouteKey = p.slugForLang || p.slug || p.id;
+                      return (
                       <RouterAgnosticLink
-                        key={p.slug || p.id}
-                        to={getProductDetailPath(lang, mobileActiveCategoryKey, p.slug || p.id)}
+                        key={productRouteKey}
+                        to={getProductDetailPath(lang, mobileActiveCategoryKey, productRouteKey)}
                         onClick={closeMobileMenu}
                         className={styles.mobileNavItem}
                         style={{ animationDelay: '0s' }}
                       >
                         {p.name}
                       </RouterAgnosticLink>
-                    ))}
+                      );
+                    })}
                   </div>
                 </>
               )}

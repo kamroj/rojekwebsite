@@ -277,6 +277,51 @@
         "fireRatedDescription": "Hersteller aus Krakau – Projekte in Kleinpolen und in ganz Polen. Unterstützung für Architekten und Ausführende.",
         "note": "Wir antworten innerhalb von 24 Stunden"
       },
+      "standard": {
+        "overline": "Alles, was Sie brauchen",
+        "title": "Serienmäßig",
+        "subtitle": "Ohne Aufpreis"
+      },
+      "lock": {
+        "overline": "Sicherheit",
+        "title": "3-Punkt-Schloss",
+        "description": "Sicherheit beginnt mit einer soliden Verriegelung. Unser serienmäßiges 3-Punkt-Schloss verriegelt das Türblatt gleichzeitig an drei Stellen — erhöht den Widerstand gegen Aufhebeln und sorgt für einen besseren Anpressdruck der Dichtungen über die gesamte Türhöhe.",
+        "imageAlt": "3-Punkt-Schloss",
+        "feature1": {
+          "title": "Verriegelung an 3 Punkten",
+          "desc": "Verriegelung oben, mittig und unten am Türblatt"
+        },
+        "feature2": {
+          "title": "Besserer Dichtungsandruck",
+          "desc": "Gleichmäßige Kraftverteilung über die gesamte Höhe"
+        },
+        "feature3": {
+          "title": "Hohe Einbruchhemmung",
+          "desc": "Deutlich schwerer aufzubrechen als Standardlösungen"
+        }
+      },
+      "threshold": {
+        "overline": "Bedienkomfort",
+        "title": "Niedrige Aluminiumschwelle",
+        "description": "Ein durchdachtes Detail, das den täglichen Komfort spürbar verbessert. Mit nur 20 mm Höhe ermöglicht sie einen bequemen Durchgang ohne Stolpern.",
+        "imageAlt": "Niedrige Aluminiumschwelle",
+        "benefit1": {
+          "title": "Einfacher Durchgang",
+          "desc": "Die geringe Höhe reduziert Stolpergefahr"
+        },
+        "benefit2": {
+          "title": "Barrierefrei",
+          "desc": "Zugänglich für Rollstühle und ältere Personen"
+        },
+        "benefit3": {
+          "title": "Langlebiges Aluminium",
+          "desc": "Beständig gegen Korrosion und Witterung"
+        },
+        "benefit4": {
+          "title": "Wasserableitung",
+          "desc": "Spezialprofil leitet Wasser nach außen"
+        }
+      },
       "sections": {
         "lock": {
           "kicker": "Sicherheit",
