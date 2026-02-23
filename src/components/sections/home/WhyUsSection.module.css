@@ -9,7 +9,7 @@
 .seoLead {
   position: relative;
   width: 100%;
-  margin-bottom: 2rem;
+  margin-bottom: 4rem;
 }
 
 .seoLead p {
@@ -27,8 +27,8 @@
   content: '';
   display: block;
   height: 1px;
-  background: linear-gradient(90deg, rgba(1, 81, 35, 0) 0%, rgba(1, 81, 36, 0.766) 50%, rgba(1, 81, 35, 0) 100%);
-  margin: 2.2rem auto 0;
+  background: linear-gradient(90deg, rgba(1, 81, 35, 0) 0%, rgb(1 81 36 / 27%) 50%, rgba(1, 81, 35, 0) 100%);
+  margin: 4rem auto 0;
   border-radius: 999px;
 }
 
