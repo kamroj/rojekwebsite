@@ -62,10 +62,65 @@ const features = [
 ];
 
 const WhyUsSection = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const swiperRef = useRef(null);
   const [isBeginning, setIsBeginning] = useState(true);
   const [isEnd, setIsEnd] = useState(false);
+
+  const currentLang = (i18n?.language || 'pl').split('-')[0];
+
+  const seoLeadByLang = {
+    pl: [
+      <>
+        <strong>ROJEK to lokalna marka z Krakowa i doświadczony producent okien i drzwi drewnianych</strong>,
+        {' '}specjalizujący się w projektowaniu oraz produkcji wysokiej jakości stolarki dla inwestycji prywatnych i komercyjnych. Tworzymy okna i drzwi drewniane na wymiar, łącząc tradycyjne rzemiosło, precyzję wykonania oraz nowoczesne technologie produkcji, co gwarantuje trwałość, estetykę i bardzo dobre parametry użytkowe.
+      </>,
+      <>
+        W naszej ofercie znajdują się m.in. <strong>okna przesuwne HS drewniane oraz drewno-aluminium</strong>,
+        {' '}które umożliwiają wykonanie dużych przeszkleń i zapewniają wysoki komfort użytkowania. Produkujemy również <strong>okna i drzwi przeciwpożarowe EI30 i EI60</strong>,
+        {' '}przeznaczone do budynków mieszkalnych, użyteczności publicznej i obiektów komercyjnych. Jako producent z Krakowa realizujemy także <strong>okna zabytkowe drewniane</strong>,
+        {' '}wymagające indywidualnego podejścia, zgodności z architekturą obiektu oraz najwyższej jakości wykonania.
+      </>,
+    ],
+    en: [
+      <>
+        <strong>ROJEK is a local brand from Kraków and an experienced manufacturer of wooden windows and doors</strong>,
+        {' '}specializing in the design and production of high-quality joinery for private and commercial projects. We create made-to-measure wooden windows and doors, combining traditional craftsmanship, precision workmanship, and modern production technologies, which guarantees durability, aesthetics, and very good performance parameters.
+      </>,
+      <>
+        Our offer includes, among others, <strong>wooden and wood-aluminium HS sliding windows</strong>,
+        {' '}which make it possible to create large glazed areas and ensure high user comfort. We also produce <strong>EI30 and EI60 fire-rated windows and doors</strong>,
+        {' '}intended for residential, public-use, and commercial buildings. As a manufacturer from Kraków, we also deliver <strong>heritage wooden windows</strong>,
+        {' '}which require an individual approach, compatibility with the building architecture, and the highest quality of workmanship.
+      </>,
+    ],
+    de: [
+      <>
+        <strong>ROJEK ist eine lokale Marke aus Kraków und ein erfahrener Hersteller von Holzfenstern und Holztüren</strong>,
+        {' '}spezialisiert auf die Planung und Produktion hochwertiger Tischlerelemente für private und gewerbliche Investitionen. Wir fertigen maßgefertigte Holzfenster und Holztüren und verbinden traditionelles Handwerk, präzise Ausführung und moderne Produktionstechnologien, was Langlebigkeit, Ästhetik und sehr gute Nutzungsparameter garantiert.
+      </>,
+      <>
+        Unser Angebot umfasst unter anderem <strong>HS-Schiebefenster aus Holz sowie Holz-Aluminium</strong>,
+        {' '}die die Ausführung großer Verglasungen ermöglichen und einen hohen Nutzungskomfort gewährleisten. Darüber hinaus produzieren wir <strong>EI30- und EI60-Brandschutzfenster und -türen</strong>,
+        {' '}die für Wohngebäude, öffentliche Einrichtungen und gewerbliche Objekte bestimmt sind. Als Hersteller aus Kraków realisieren wir außerdem <strong>historische Holzfenster</strong>,
+        {' '}die eine individuelle Herangehensweise, die Übereinstimmung mit der Architektur des Objekts sowie höchste Ausführungsqualität erfordern.
+      </>,
+    ],
+    fr: [
+      <>
+        <strong>ROJEK est une marque locale de Cracovie et un fabricant expérimenté de fenêtres et portes en bois</strong>,
+        {' '}spécialisé dans la conception et la production de menuiseries de haute qualité pour des investissements privés et commerciaux. Nous créons des fenêtres et portes en bois sur mesure, en combinant artisanat traditionnel, précision d’exécution et technologies de production modernes, ce qui garantit durabilité, esthétique et de très bons paramètres d’utilisation.
+      </>,
+      <>
+        Notre offre comprend notamment <strong>des fenêtres coulissantes HS en bois et bois-aluminium</strong>,
+        {' '}qui permettent la réalisation de grandes surfaces vitrées et assurent un confort d’utilisation élevé. Nous produisons également <strong>des fenêtres et portes coupe-feu EI30 et EI60</strong>,
+        {' '}destinées aux bâtiments résidentiels, aux établissements publics et aux bâtiments commerciaux. En tant que fabricant de Cracovie, nous réalisons également <strong>des fenêtres patrimoniales en bois</strong>,
+        {' '}qui exigent une approche individuelle, la conformité avec l’architecture du bâtiment et la plus haute qualité d’exécution.
+      </>,
+    ],
+  };
+
+  const seoLeadParagraphs = seoLeadByLang[currentLang] || seoLeadByLang.pl;
 
   const handleSlideChange = (swiper) => {
     setIsBeginning(swiper.isBeginning);
@@ -114,6 +169,13 @@ const WhyUsSection = () => {
           </ProductHeader>
           <ProductHeaderSubtitle>{t('aboutPage.headers.whyUsSubtitle', 'Co odróżnia nas od innych')}</ProductHeaderSubtitle>
         </HeaderWrap>
+
+        <div className={styles.seoLead}>
+          {seoLeadParagraphs.map((paragraph, index) => (
+            <p key={`why-us-seo-lead-${index}`}>{paragraph}</p>
+          ))}
+        </div>
+
         <div className={styles.desktopGrid}>
           {features.map(renderFeatureCard)}
         </div>
