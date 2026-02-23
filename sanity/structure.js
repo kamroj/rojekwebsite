@@ -54,7 +54,7 @@ export const structure = (S) =>
               }),
               categorySection(S, {
                 id: 'category_ppoz',
-                title: 'Okna i Drzwi przeciwpożarowe',
+                title: 'Okna i drzwi ppoż.',
                 initialSlug: 'okna-i-drzwi-przeciwpozarowe',
               }),
             ])

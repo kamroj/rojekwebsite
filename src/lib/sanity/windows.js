@@ -306,7 +306,7 @@ export const fetchDoorProductDetail = async (slug, lang, { signal } = {}) => {
     localizedSlug,
     categoryRef: p?.categoryRef || null,
 
-    category: p?.categoryRef === FIRE_RATED_CATEGORY_ID ? 'Okna i drzwi przeciwpożarowe' : 'Drzwi zewnętrzne',
+    category: p?.categoryRef === FIRE_RATED_CATEGORY_ID ? 'Okna i drzwi ppoż.' : 'Drzwi zewnętrzne',
     categoryKey: p?.categoryRef === FIRE_RATED_CATEGORY_ID ? 'oknaDrzwiPrzeciwpozarowe' : 'exteriorDoors',
 
     headerImageSanity: p.headerImage || null,

@@ -55,9 +55,9 @@ export const productCategories = {
   oknaDrzwiPrzeciwpozarowe: {
     id: 'oknaDrzwiPrzeciwpozarowe',
     detailType: 'doors',
-    title: 'Okna i drzwi przeciwpożarowe',
+    title: 'Okna i drzwi ppoż.',
     subtitle: 'Certyfikowana stolarka EI30 / EI60 do inwestycji mieszkaniowych i komercyjnych.',
-    pageTitle: 'Okna i drzwi przeciwpożarowe',
+    pageTitle: 'Okna i drzwi ppoż.',
     headerImage: '/images/aboutus/drzwi-ppoz-kafelka.webp',
     products: FIRE_RATED_DOOR ? [{
       id: FIRE_RATED_DOOR.id,

@@ -22,6 +22,7 @@
     "okna": "Windows",
     "oknaPrzesuwne": "Sliding windows",
     "drzwi": "Doors",
+    "oknaDrzwiPrzeciwpozarowe": "Fire-rated windows & doors",
     "bramy": "Gates",
     "rolety": "Shutters"
   },
@@ -118,7 +119,7 @@
       "description": "Modern HS sliding systems"
     },
     "fireResistant": {
-      "name": "Fire-resistant windows and doors",
+      "name": "Fire-rated windows & doors",
       "description": "Safe fire protection solutions"
     },
     "windows": {
@@ -222,6 +223,10 @@
     "drzwi": {
       "title": "Door products",
       "subtitle": "Discover our modern door systems."
+    },
+    "oknaDrzwiPrzeciwpozarowe": {
+      "title": "Fire-rated windows & doors",
+      "subtitle": "Certified EI30/EI60 joinery for residential and commercial projects."
     },
     "bramy": {
       "title": "Garage doors",
@@ -594,6 +599,7 @@
       "okna": "Windows",
       "oknaPrzesuwne": "Sliding windows",
       "drzwi": "Doors",
+      "oknaDrzwiPrzeciwpozarowe": "Fire-rated windows & doors",
       "bramy": "Gates",
       "rolety": "Shutters"
     }

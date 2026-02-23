@@ -500,12 +500,12 @@ export default function FireRatedProductDetail({ product, breadcrumbPathname }) 
 
   const categoryLabel = t('products.fireResistant.name', {
     defaultValue: locale === 'de'
-      ? 'Feuerfeste Fenster und Türen'
+      ? 'Feuerfeste Fenster & Türen'
       : locale === 'fr'
-        ? 'Fenêtres et portes coupe-feu'
+        ? 'Fenêtres & portes coupe-feu'
         : locale === 'en'
-          ? 'Fire-rated windows and doors'
-          : 'Okna i Drzwi przeciwpożarowe',
+          ? 'Fire-rated windows & doors'
+          : 'Okna i drzwi ppoż.',
   });
 
   const featuresTitle = t('productDetail.doors.featuresTitle', {
@@ -621,26 +621,6 @@ export default function FireRatedProductDetail({ product, breadcrumbPathname }) 
       <ProductDetailFAQ
         items={faqItems}
         productName={product.name}
-        titleOverride={t('productDetail.fireRated.faq.title', {
-          defaultValue:
-            locale === 'de'
-              ? 'FAQ – feuerfeste Holzfenster und -türen'
-              : locale === 'fr'
-                ? 'FAQ – fenêtres et portes coupe-feu en bois'
-                : locale === 'en'
-                  ? 'FAQ – fire-rated wooden windows and doors'
-                  : 'FAQ – drzwi i okna przeciwpożarowe drewniane',
-        })}
-        subtitleOverride={t('productDetail.fireRated.faq.subtitle', {
-          defaultValue:
-            locale === 'de'
-              ? 'Die häufigsten Fragen zu Auswahl, Dokumentation und Umsetzung von EI30/EI60-Elementen.'
-              : locale === 'fr'
-                ? 'Questions les plus fréquentes sur le choix, la documentation et la mise en œuvre des menuiseries EI30/EI60.'
-                : locale === 'en'
-                  ? 'Most common questions about selection, documentation and implementation of EI30/EI60 joinery.'
-                  : 'Najczęściej zadawane pytania dotyczące doboru, dokumentacji i realizacji stolarki EI30/EI60.',
-        })}
         t={t}
       />
 

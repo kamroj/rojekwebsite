@@ -22,6 +22,7 @@
     "okna": "Fenêtres",
     "oknaPrzesuwne": "Fenêtres coulissantes",
     "drzwi": "Portes",
+    "oknaDrzwiPrzeciwpozarowe": "Fenêtres & portes coupe-feu",
     "bramy": "Portails",
     "rolety": "Volets"
   },
@@ -119,7 +120,7 @@
       "description": "Systèmes coulissants HS modernes"
     },
     "fireResistant": {
-      "name": "FENÊTRES ET PORTES COUPE-FEU",
+      "name": "FENÊTRES & PORTES COUPE-FEU",
       "description": "Solutions sûres de protection incendie"
     },
     "windows": {
@@ -225,6 +226,10 @@
     "drzwi": {
       "title": "Produits de porte",
       "subtitle": "Découvrez nos systèmes de portes modernes."
+    },
+    "oknaDrzwiPrzeciwpozarowe": {
+      "title": "Fenêtres & portes coupe-feu",
+      "subtitle": "Menuiseries certifiées EI30/EI60 pour les projets résidentiels et commerciaux."
     },
     "bramy": {
       "title": "Portes de garage",
@@ -597,7 +602,7 @@
       "okna": "Fenêtres",
       "oknaPrzesuwne": "Fenêtres coulissantes",
       "drzwi": "Portes",
-      "oknaDrzwiPrzeciwpozarowe": "Fenêtres et portes coupe-feu",
+      "oknaDrzwiPrzeciwpozarowe": "Fenêtres & portes coupe-feu",
       "bramy": "Portails",
       "rolety": "Volets"
     }

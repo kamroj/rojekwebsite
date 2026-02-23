@@ -11,7 +11,7 @@ export const DOORS_MOCK_DATA = [
     id: 'okna-ei30-ei60',
     slug: 'okna-ei30-ei60',
     name: 'Okna EI30 / EI60',
-    category: 'Okna i drzwi przeciwpożarowe',
+    category: 'Okna i drzwi ppoż.',
     categoryKey: 'exteriorDoors',
     shortDescription: 'Certyfikowana stolarka ognioodporna do budownictwa mieszkaniowego i komercyjnego. Dokumentacja, badania, wsparcie projektowe.',
     longDescription: 'Rozwiązania przeciwpożarowe w klasach EI30 i EI60 projektujemy z myślą o bezpieczeństwie użytkowników oraz zgodności z wymaganiami dokumentacji technicznej. Stolarka drewniana łączy estetykę, stabilność konstrukcji i możliwość dopasowania do charakteru inwestycji.',

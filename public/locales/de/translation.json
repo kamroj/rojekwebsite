@@ -22,6 +22,7 @@
     "okna": "Fenster",
     "oknaPrzesuwne": "Schiebefenster",
     "drzwi": "Türen",
+    "oknaDrzwiPrzeciwpozarowe": "Brandschutzfenster & -türen",
     "bramy": "Garagentore",
     "rolety": "Rollläden"
   },
@@ -118,7 +119,7 @@
       "description": "Moderne HS-Schiebesysteme"
     },
     "fireResistant": {
-      "name": "Brandschutzfenster und -türen",
+      "name": "Brandschutzfenster & -türen",
       "description": "Sichere Brandschutzlösungen"
     },
     "windows": {
@@ -222,6 +223,10 @@
     "drzwi": {
       "title": "Türprodukte",
       "subtitle": "Entdecken Sie unsere modernen Türsysteme."
+    },
+    "oknaDrzwiPrzeciwpozarowe": {
+      "title": "Brandschutzfenster & -türen",
+      "subtitle": "Zertifizierte EI30/EI60-Tischlerei für Wohn- und Gewerbeprojekte."
     },
     "bramy": {
       "title": "Garagentore",
@@ -594,6 +599,7 @@
       "okna": "Fenster",
       "oknaPrzesuwne": "Schiebefenster",
       "drzwi": "Türen",
+      "oknaDrzwiPrzeciwpozarowe": "Brandschutzfenster & -türen",
       "bramy": "Garagentore",
       "rolety": "Rollläden"
     }
