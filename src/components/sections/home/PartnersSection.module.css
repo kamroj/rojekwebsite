@@ -66,13 +66,12 @@
 }
 
 .partnerItem:hover {
-  transform: translateY(-4px);
   box-shadow: var(--shadow-home-product-card);
   border-color: rgba(2, 92, 17, 0.686);
 }
 
 .partnerItem:active {
-  transform: translateY(-4px);
+  transform: none;
 }
 
 .mobilePartnerItem {
@@ -96,7 +95,6 @@
 }
 
 .mobilePartnerItem:hover {
-  transform: translateY(-4px);
   box-shadow: var(--shadow-home-product-card);
   border-color: rgba(2, 92, 17, 0.686);
 }
