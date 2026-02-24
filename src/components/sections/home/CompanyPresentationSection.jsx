@@ -15,8 +15,8 @@ const CompanyPresentationSection = () => {
   const [mediaConsent, setMediaConsent] = useState(false);
   const sectionRef = useRef(null);
 
-  const videoId = 'XhAN4U4bngs';
-  const thumbnailUrl = `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
+  const videoId = '2XaCZhUxIMU';
+  const thumbnailUrl = '/images/logo.png';
 
   useEffect(() => {
     const observer = new IntersectionObserver(

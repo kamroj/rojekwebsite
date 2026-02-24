@@ -1,6 +1,7 @@
 .swiperContainer {
   max-width: var(--max-width);
-  margin: 40px auto;
+  margin: 0 auto;
+  padding: 0 0 3rem;
   position: relative;
 }
 
