@@ -216,7 +216,7 @@
 
 .dynamicText {
   color: #2e8b57;
-  font-size: clamp(2.4rem, 5vw, 4rem);
+  font-size: clamp(2rem, 5vw, 3.2rem);
   font-weight: 100;
   line-height: 1.2;
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
@@ -235,7 +235,7 @@
 
 @media (--bp-sm) {
   .dynamicText {
-    font-size: clamp(2rem, 5vw, 3.2rem);
+    font-size: clamp(1.8rem, 5vw, 1.8rem);
   }
 }
 

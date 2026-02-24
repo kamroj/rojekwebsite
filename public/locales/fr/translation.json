@@ -72,11 +72,12 @@
     "copy": "© {{year}} ROJEK fenêtres et portes. Tous droits réservés."
   },
   "intro": {
-    "text1": "Découvrez nos réalisations",
-    "text2": "Découvrez les fenêtres bois-alu",
-    "text3": "Portes extérieures pour votre maison",
-    "text4": "Systèmes coulissants modernes",
-    "text5": "Configurateur HS"
+    "text1": "Choisissez des portes d’entrée adaptées à votre projet",
+    "text2": "Créez une configuration personnalisée de fenêtre coulissante HS",
+    "text3": "Découvrez les modèles disponibles de fenêtres en bois",
+    "text4": "Découvrez les menuiseries coupe-feu certifiées EI30 et EI60",
+    "text5": "Découvrez nos réalisations effectuées",
+    "text6": "Consultez notre offre de fenêtres coulissantes HS"
   },
   "buttons": {
     "details": "Voir les détails",

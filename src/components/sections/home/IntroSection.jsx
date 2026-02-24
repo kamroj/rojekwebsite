@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import RouterAgnosticLink from '../../_astro/RouterAgnosticLink.jsx';
 import { FiPlay, FiPause } from 'react-icons/fi';
 import MaxWidthContainer from '../../ui/MaxWidthContainer.jsx';
-import { getSectionPath } from '../../../lib/i18n/routing';
+import { getSectionPath, getProductCategoryPath } from '../../../lib/i18n/routing';
 import { runSanityTask } from '../../../lib/sanity/runSanityTask';
 import { fetchHomePageIntro } from '../../../lib/sanity/homePage';
 import { isSanityConfigured } from '../../../lib/sanity/config';
@@ -113,14 +113,15 @@ export default function IntroSection({ id, introMedia }) {
     };
   }, [videoSrc]);
 
-  const introLinks = {
-    'intro.text1': 'realizations',
-    'intro.text2': 'about',
-    'intro.text3': 'contact',
-    'intro.text4': 'realizations',
-    'intro.text5': 'hsConfigurator',
-  };
-  const keys = Object.keys(introLinks);
+  const introItems = [
+    { key: 'intro.text1', type: 'category', value: 'drzwi' },
+    { key: 'intro.text2', type: 'section', value: 'hsConfigurator' },
+    { key: 'intro.text3', type: 'category', value: 'okna' },
+    { key: 'intro.text4', type: 'category', value: 'oknaDrzwiPrzeciwpozarowe' },
+    { key: 'intro.text5', type: 'section', value: 'realizations' },
+    { key: 'intro.text6', type: 'category', value: 'oknaPrzesuwne' },
+  ];
+  const keys = introItems.map((item) => item.key);
   const [idx, setIdx] = useState(0);
   const [keyAnim, setKeyAnim] = useState(0);
 
@@ -201,6 +202,10 @@ export default function IntroSection({ id, introMedia }) {
   const R = (SIZE - STROKE) / 2;
   const C = 2 * Math.PI * R;
   const dashOffset = C * (1 - progress);
+  const currentIntroItem = introItems[idx] || introItems[0];
+  const ctaHref = currentIntroItem?.type === 'category'
+    ? getProductCategoryPath(lang, currentIntroItem.value)
+    : getSectionPath(lang, currentIntroItem?.value || 'home');
 
   return (
     <section className={styles.introWrapper} id={id} ref={wrapperRef}>
@@ -294,7 +299,7 @@ export default function IntroSection({ id, introMedia }) {
             <p className={styles.dynamicText} key={keyAnim}>
             {t(keys[idx], '')}
             </p>
-            <RouterAgnosticLink className={styles.ctaButton} href={getSectionPath(lang, introLinks[keys[idx]] || 'home')}>
+            <RouterAgnosticLink className={styles.ctaButton} href={ctaHref}>
             {t('buttons.see','Zobacz')}
             </RouterAgnosticLink>
           </div>
