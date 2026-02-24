@@ -1,7 +1,6 @@
 import React from 'react';
 import { FiCheck } from 'react-icons/fi';
 import { Trans } from 'react-i18next';
-import ImageWithSpinner from '../../../ui/ImageWithSpinner.jsx';
 
 import styles from './ProductDetailAdvantages.module.css';
 
@@ -10,7 +9,7 @@ export default function ProductDetailAdvantages({
   title,
   i18nPrefix,
   t,
-  warrantyImageSrc = '/images/products/windows/gwarancja.png',
+  warrantyImageSrc = '/images/products/gwarancja.png',
 }) {
   if (!product?.advantages?.length) return null;
 
@@ -39,14 +38,23 @@ export default function ProductDetailAdvantages({
 
       <div className={styles.warrantySection}>
         <div className={styles.warrantyBadge}>
-          <ImageWithSpinner
-            wrapperClassName={styles.warrantyImageWrap}
-            className={styles.warrantyImage}
-            src={warrantyImageSrc}
-            alt={t('common.warranty', 'Gwarancja')}
-            loading="lazy"
-            decoding="async"
-          />
+          <div className={styles.warrantyBadgeRow}>
+            <img
+              className={styles.warrantyImage}
+              src={warrantyImageSrc}
+              alt={t('common.warranty', 'Gwarancja')}
+              loading="lazy"
+              decoding="async"
+            />
+
+            <div className={styles.warrantyBadgeText}>
+              <p className={styles.warrantyBadgeTop}>
+                <span className={styles.warrantyBadgeNumber}>5</span>
+                <span className={styles.warrantyBadgeUnit}>lat</span>
+              </p>
+              <p className={styles.warrantyBadgeBottom}>gwarancji</p>
+            </div>
+          </div>
         </div>
 
         <div className={styles.warrantyContent}>

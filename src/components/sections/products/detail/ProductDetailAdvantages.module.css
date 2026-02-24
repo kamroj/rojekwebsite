@@ -128,15 +128,28 @@
 
 .warrantyBadge {
   display: flex;
-  flex-direction: column;
   align-items: center;
   flex-shrink: 0;
+  height: 150px;
   position: relative;
 }
 
+@media (--bp-md) {
+  .warrantyBadge {
+    height: 130px;
+  }
+}
+
+.warrantyBadgeRow {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+  height: 150px;
+}
+
 .warrantyImage {
-  width: 350px;
-  height: auto;
+  width: auto;
+  height: 150px;
 }
 
 .warrantyImageWrap {
@@ -145,7 +158,7 @@
 
 @media (--bp-md) {
   .warrantyImage {
-    width: 250px;
+    height: 130px;
   }
 }
 
@@ -163,6 +176,57 @@
 @media (--bp-sm) {
   .warrantyTitle {
     font-size: 1.5rem;
+  }
+}
+
+.warrantyBadgeText {
+  color: #325e1a;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.warrantyBadgeTop {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin: 0;
+  line-height: 1;
+}
+
+.warrantyBadgeNumber {
+  font-size: 10rem;
+  font-weight: 300;
+  line-height: 0.9;
+}
+
+@media (--bp-md) {
+  .warrantyBadgeNumber {
+    font-size: 8rem;
+  }
+}
+
+.warrantyBadgeUnit {
+  font-size: 5rem;
+  font-weight: 400;
+}
+
+@media (--bp-md) {
+  .warrantyBadgeUnit {
+    font-size: 4rem;
+  }
+}
+
+.warrantyBadgeBottom {
+  margin: 0.2rem 0 0;
+  font-size: 4rem;
+  font-weight: 400;
+  line-height: 1.1;
+}
+
+@media (--bp-md) {
+  .warrantyBadgeBottom {
+    font-size: 3rem;
   }
 }
 
