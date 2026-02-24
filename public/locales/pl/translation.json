@@ -95,7 +95,11 @@
     "warranty": "Gwarancja",
     "viewMore": "Zobacz więcej",
     "learnMore": "Dowiedz się więcej",
-    "seeAll": "Zobacz wszystkie"
+    "seeAll": "Zobacz wszystkie",
+    "warrantyBadge": {
+      "years": "lat",
+      "label": "gwarancji"
+    }
   },
   "sections": {
     "products": "PRODUKTY",

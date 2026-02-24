@@ -97,7 +97,11 @@
     "viewMore": "Voir plus",
     "learnMore": "En savoir plus",
     "seeAll": "Voir tout",
-    "loading": "Chargement..."
+    "loading": "Chargement...",
+    "warrantyBadge": {
+      "years": "ans",
+      "label": "de garantie"
+    }
   },
   "sections": {
     "products": "PRODUITS",

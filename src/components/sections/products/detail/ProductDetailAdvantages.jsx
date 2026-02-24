@@ -50,9 +50,9 @@ export default function ProductDetailAdvantages({
             <div className={styles.warrantyBadgeText}>
               <p className={styles.warrantyBadgeTop}>
                 <span className={styles.warrantyBadgeNumber}>5</span>
-                <span className={styles.warrantyBadgeUnit}>lat</span>
+                <span className={styles.warrantyBadgeUnit}>{t('common.warrantyBadge.years', 'lat')}</span>
               </p>
-              <p className={styles.warrantyBadgeBottom}>gwarancji</p>
+              <p className={styles.warrantyBadgeBottom}>{t('common.warrantyBadge.label', 'gwarancji')}</p>
             </div>
           </div>
         </div>

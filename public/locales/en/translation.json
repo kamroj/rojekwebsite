@@ -96,7 +96,11 @@
     "warranty": "Warranty",
     "viewMore": "View more",
     "learnMore": "Learn more",
-    "seeAll": "See all"
+    "seeAll": "See all",
+    "warrantyBadge": {
+      "years": "years",
+      "label": "warranty"
+    }
   },
   "sections": {
     "products": "PRODUCTS",
