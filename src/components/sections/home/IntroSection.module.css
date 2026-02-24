@@ -240,13 +240,13 @@
 
 @media (--bp-md) {
   .dynamicText {
-    font-size: clamp(2.4rem, 5vw, 4rem);
+    font-size: clamp(2rem, 4.5vw, 3rem);
   }
 }
 
 @media (--bp-sm) {
   .dynamicText {
-    font-size: clamp(1.8rem, 5vw, 1.8rem);
+    font-size: clamp(1.6rem, 4.2vw, 1.6em);
   }
 }
 
