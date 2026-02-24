@@ -203,14 +203,25 @@
   }
 }
 
-@keyframes fadeIn {
-  from {
+@keyframes introTextCycle {
+  0% {
     opacity: 0;
-    transform: translateY(15px);
+    transform: translateY(16px);
   }
-  to {
+
+  12% {
     opacity: 1;
     transform: translateY(0);
+  }
+
+  88% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(12px);
   }
 }
 
@@ -222,7 +233,7 @@
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
   margin: 0;
   opacity: 0;
-  animation: fadeIn 1.4s ease-out forwards;
+  animation: introTextCycle 7s ease-in-out forwards;
   word-wrap: break-word;
   width: 100%;
 }
