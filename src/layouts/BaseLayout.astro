@@ -77,7 +77,8 @@ const ogLocale = ogLocaleMap[lang] || 'pl_PL';
     <meta name="robots" content={shouldIndex ? 'index,follow' : 'noindex,nofollow'} />
 
     <!-- icons -->
-    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="48x48" />
     <link rel="apple-touch-icon" sizes="180x180" href="/favicon.png" />
 
     {canonical ? <link rel="canonical" href={canonical} /> : null}
