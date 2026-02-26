@@ -10,6 +10,7 @@ export default function ProductDetailSpecs({
   tooltipKeyMap,
   t,
 }) {
+  const safeSpecsOrderList = Array.isArray(specsOrderList) ? specsOrderList : [];
   const [openSpecTooltip, setOpenSpecTooltip] = React.useState(null);
 
   React.useEffect(() => {
@@ -22,7 +23,7 @@ export default function ProductDetailSpecs({
 
   return (
     <div className={styles.specsSection}>
-      {specsOrderList.map((specKey) => {
+      {safeSpecsOrderList.map((specKey) => {
         const def = specsDefs?.[specKey];
         const value = product?.specs?.[specKey];
         if (!def || !value) return null;

@@ -2,7 +2,7 @@
 import React from 'react';
 import Page from '../components/ui/Page';
 import Section from '../components/ui/Section';
-import { productCategories, productDetailsByType } from '../data/products/index.js';
+import { productCategories } from '../data/products/index.js';
 import WindowProductDetail from './product-details/WindowProductDetail';
 import DoorProductDetail from './product-details/DoorProductDetail';
 import FireRatedProductDetail from './product-details/FireRatedProductDetail';
@@ -89,7 +89,6 @@ function ProductDetailPageBase({ category, productId, initialSanityProduct }) {
       .catch((e) => {
         if (controller.signal.aborted) return;
         console.warn('Sanity product detail fetch failed', e);
-        // Fallback to local data.
         setSanityProduct(null);
       });
 
@@ -98,15 +97,7 @@ function ProductDetailPageBase({ category, productId, initialSanityProduct }) {
     };
   }, [supportsSanityDetail, isWindows, isDoors, productId, lang, initialSanityProduct, beginTask, endTask, addResources]);
 
-  // Fallback: local data when Sanity is not configured / no data found.
-  const productFromLocal = detailType
-    ? productDetailsByType?.[detailType]?.[productId]
-    : undefined;
-
-  // For Sanity-integrated detail types:
-  // - if Sanity returned a product object, use it
-  // - if Sanity explicitly returned `null` (not found), fallback to local mock
-  const product = supportsSanityDetail && sanityProduct ? sanityProduct : productFromLocal;
+  const product = supportsSanityDetail && sanityProduct ? sanityProduct : null;
 
   // Keep existing behavior for missing product/category
   if (!categoryInfo || !product) {

@@ -29,6 +29,7 @@ export default defineConfig({
       exclude: ['@react-three/drei'],
     },
     resolve: {
+      dedupe: ['react', 'react-dom', 'react/jsx-runtime'],
       conditions: ['module-sync', 'import', 'module', 'browser', 'default'],
     },
     ssr: {

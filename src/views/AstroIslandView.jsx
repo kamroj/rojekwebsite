@@ -2,6 +2,7 @@ import React from 'react';
 import '../styles/global.css';
 import { ResourceCollectorProvider } from '../context/ResourceCollectorContext.jsx';
 import I18nBoundary from '../components/_astro/I18nBoundary.jsx';
+import ErrorBoundary from '../components/_astro/ErrorBoundary.jsx';
 
 /**
  * AstroIslandView
@@ -18,8 +19,10 @@ export default function AstroIslandView({ lang = 'pl', resources, View, viewProp
   return (
     <I18nBoundary lang={lang} resources={resources}>
       <ResourceCollectorProvider>
-        {/* Spread `viewProps` so Astro pages can pass props without React Router context. */}
-        <View {...(viewProps || {})} />
+        <ErrorBoundary showDetails={import.meta.env?.DEV}>
+          {/* Spread `viewProps` so Astro pages can pass props without React Router context. */}
+          <View {...(viewProps || {})} />
+        </ErrorBoundary>
       </ResourceCollectorProvider>
     </I18nBoundary>
   );

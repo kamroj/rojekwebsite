@@ -1,4 +1,4 @@
-import { productCategories, productDetailsByType } from '../../data/products/index.js';
+import { productCategories } from '../../data/products/index.js';
 import { getCategoryKeyFromSlug, CATEGORY_SLUGS, normalizeLang } from '../i18n/routing.js';
 
 const DEFAULT_SITE_NAME = 'ROJEK';
@@ -87,20 +87,6 @@ function getLocalizedCategoryLabel(lang, categoryKey) {
   return CATEGORY_LABELS?.[l]?.[categoryKey] || CATEGORY_LABELS?.pl?.[categoryKey] || categoryKey;
 }
 
-function findLocalProductBySlug(categoryKey, productId) {
-  const category = productCategories?.[categoryKey];
-  const detailType = category?.detailType;
-  if (!detailType) return null;
-
-  const details = productDetailsByType?.[detailType];
-  const byType = details?.[productId] || null;
-  if (byType) return byType;
-
-  // Fallback: look into category.products array.
-  const listItem = (category?.products || []).find((p) => (p?.slug || p?.id) === productId);
-  return listItem || null;
-}
-
 /**
  * Category meta based on URL slug.
  *
@@ -125,8 +111,7 @@ export function getProductCategoryMeta({ lang = 'pl', categorySlug }) {
 /**
  * Product meta based on URL slug.
  *
- * Note: we keep it conservative and language-aware, but without Sanity fetches here.
- * For Windows category, details may come from Sanity in Astro props (initialSanityProduct).
+ * Note: details come from Sanity (via Astro `initialSanityProduct`).
  *
  * @returns {{ title: string, description: string, categoryKey?: string, categoryLabel?: string, productName?: string }}
  */
@@ -140,18 +125,13 @@ export function getProductDetailMeta({
   const categoryKey = getCategoryKeyFromSlug(l, categorySlug);
   const categoryLabel = categoryKey ? getLocalizedCategoryLabel(l, categoryKey) : categorySlug;
 
-  const local = categoryKey ? findLocalProductBySlug(categoryKey, productId) : null;
-  const productName = initialSanityProduct?.name || local?.name || local?.title || productId;
+  const productName = initialSanityProduct?.name || productId;
 
   const sectionLabel = PRODUCTS_SECTION_LABEL[l] || PRODUCTS_SECTION_LABEL.pl;
   const title = `${productName} – ${DEFAULT_SITE_NAME} | ${categoryLabel} (${sectionLabel})`;
 
   const fallback = DEFAULT_PRODUCT_DESCRIPTION[l](categoryLabel);
-  const rawDesc =
-    initialSanityProduct?.shortDescription ||
-    local?.shortDescription ||
-    local?.description ||
-    '';
+  const rawDesc = initialSanityProduct?.shortDescription || '';
 
   const description = pickMetaDescription({ preferred: rawDesc, fallback });
 

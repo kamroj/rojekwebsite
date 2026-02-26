@@ -11,7 +11,7 @@ import {
   SECTION_SLUGS_INV,
   stripLangPrefix,
 } from '../../lib/i18n/routing';
-import { productCategories, productDetailsByType } from '../../data/products/index.js';
+import { productCategories } from '../../data/products/index.js';
 
 function AppBreadcrumbsNoRouter({ pathname: pathnameProp }) {
   const { t, i18n } = useTranslation();
@@ -79,12 +79,8 @@ function AppBreadcrumbsNoRouter({ pathname: pathnameProp }) {
     const productId = parts[2];
     if (!productId) return itemsOut;
 
-    // Match SPA: try to resolve a human label from local detail maps.
-    const detailType = c?.detailType;
-    const p = detailType ? productDetailsByType?.[detailType]?.[productId] : undefined;
-
     itemsOut.push({
-      label: p?.name || productId,
+      label: productId,
       to: getProductDetailPath(lang, categoryKey, productId),
     });
 

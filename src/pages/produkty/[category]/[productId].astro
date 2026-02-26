@@ -4,9 +4,10 @@ import SiteLayout from '../../../layouts/SiteLayout.astro';
 import { getI18nResources } from '../../../lib/i18n/resources.js';
 import ProductDetailSsg from '../../../components/_astro/ssg/ProductDetailSsg.jsx';
 
-import { productCategories, productDetailsByType } from '../../../data/products/index.js';
+import { productCategories } from '../../../data/products/index.js';
 import { CATEGORY_SLUGS } from '../../../lib/i18n/routing.js';
 import {
+  fetchFireRatedListForBuild,
   fetchHsDetailForBuild,
   fetchHsListForBuild,
   fetchDoorDetailForBuild,
@@ -36,8 +37,7 @@ const meta = getProductDetailMeta({
 // Build-time: prefer prefetched Sanity product (windows) and fallback to local data.
 const categoryKey = getCategoryKeyFromSlug('pl', category) || category;
 const detailType = productCategories?.[categoryKey]?.detailType;
-const productFromLocal = detailType ? productDetailsByType?.[detailType]?.[productId] : undefined;
-const product = initialSanityProduct || productFromLocal;
+const product = initialSanityProduct || null;
 
 const faqItems = Array.isArray(product?.faq) && product.faq.length > 0
   ? product.faq
@@ -63,44 +63,28 @@ const faqJsonLd = getFaqPageJsonLd({
 const structuredData = [productJsonLd, faqJsonLd].filter(Boolean);
 
 export async function getStaticPaths() {
-  // PL routes only (no language prefix).
-  // We generate product detail pages from local mock data.
-  // NOTE: In later steps we will expand this to Sanity-driven products + EN/DE URL variants.
-
   const paths = [];
 
   for (const [categoryKey, c] of Object.entries(productCategories || {})) {
     const categorySlug = CATEGORY_SLUGS?.pl?.[categoryKey] || categoryKey;
 
     const detailType = c?.detailType;
-    const details = detailType ? (productDetailsByType?.[detailType] || null) : null;
+    let productIds = [];
 
-    // Prefer category-specific products list.
-    // This allows dedicated categories (e.g. fire-rated) to expose only selected product slugs.
-    let productIds = (c?.products || [])
-      .map((p) => (typeof p === 'string' ? p : (p?.slug || p?.id)))
-      .filter(Boolean);
-
-    // Fallback to all detail keys only when category list is empty.
-    if (!productIds.length && details) {
-      productIds = Object.keys(details);
-    }
-
-    // IMPORTANT: In SSG, if a URL is not returned by getStaticPaths(), Astro returns 404.
-    // For CMS-integrated categories, we must include *all* slugs from Sanity, not only local mock data.
     if (detailType === 'windows') {
       const sanityList = await fetchWindowsListForBuild('pl');
-      const sanitySlugs = (sanityList || []).map((p) => p?.slug).filter(Boolean);
-      productIds = Array.from(new Set([...(productIds || []), ...sanitySlugs]));
+      productIds = (sanityList || []).map((p) => p?.slug).filter(Boolean);
     } else if (detailType === 'hs') {
       const sanityList = await fetchHsListForBuild('pl');
-      const sanitySlugs = (sanityList || []).map((p) => p?.slug).filter(Boolean);
-      productIds = Array.from(new Set([...(productIds || []), ...sanitySlugs]));
+      productIds = (sanityList || []).map((p) => p?.slug).filter(Boolean);
     } else if (detailType === 'doors') {
-      const sanityList = await fetchDoorsListForBuild('pl');
-      const sanitySlugs = (sanityList || []).map((p) => p?.slugForLang || p?.slug).filter(Boolean);
-      productIds = Array.from(new Set([...(productIds || []), ...sanitySlugs]));
+      const sanityList = categoryKey === 'oknaDrzwiPrzeciwpozarowe'
+        ? await fetchFireRatedListForBuild('pl')
+        : await fetchDoorsListForBuild('pl');
+      productIds = (sanityList || []).map((p) => p?.slugForLang || p?.slug).filter(Boolean);
     }
+
+    productIds = Array.from(new Set(productIds));
 
     for (const pid of productIds) {
       const props = {};
