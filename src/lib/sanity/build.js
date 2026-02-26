@@ -104,16 +104,18 @@ export const fetchProductsIndexCountsForBuild = async (lang) => {
   if (!isSanityConfigured()) return null;
 
   try {
-    const [windows, doors, hs] = await Promise.all([
+    const [windows, doors, hs, fireRated] = await Promise.all([
       fetchWindowProductsList(lang),
       fetchDoorProductsList(lang),
       fetchHsProductsList(lang),
+      fetchFireRatedProductsList(lang),
     ]);
 
     return {
       okna: Array.isArray(windows) ? windows.length : 0,
       drzwi: Array.isArray(doors) ? doors.length : 0,
       oknaPrzesuwne: Array.isArray(hs) ? hs.length : 0,
+      oknaDrzwiPrzeciwpozarowe: Array.isArray(fireRated) ? fireRated.length : 0,
     };
   } catch (e) {
     console.warn('[sanity][build] products index counts fetch failed', { lang, e });
