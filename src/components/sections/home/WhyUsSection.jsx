@@ -72,7 +72,7 @@ const WhyUsSection = () => {
   const seoLeadByLang = {
     pl: [
       <>
-        <strong>ROJEK to lokalna marka z Krakowa i doświadczony producent okien i drzwi drewnianych</strong>,
+        <strong>ROJEK Okna i drzwi to lokalna marka z Krakowa i doświadczony producent okien i drzwi drewnianych</strong>,
         {' '}specjalizujący się w projektowaniu oraz produkcji wysokiej jakości stolarki dla inwestycji prywatnych i komercyjnych. Tworzymy okna i drzwi drewniane na wymiar, łącząc tradycyjne rzemiosło, precyzję wykonania oraz nowoczesne technologie produkcji, co gwarantuje trwałość, estetykę i bardzo dobre parametry użytkowe.
       </>,
       <>
@@ -84,7 +84,7 @@ const WhyUsSection = () => {
     ],
     en: [
       <>
-        <strong>ROJEK is a local brand from Kraków and an experienced manufacturer of wooden windows and doors</strong>,
+        <strong>ROJEK Okna i drzwi is a local brand from Kraków and an experienced manufacturer of wooden windows and doors</strong>,
         {' '}specializing in the design and production of high-quality joinery for private and commercial projects. We create made-to-measure wooden windows and doors, combining traditional craftsmanship, precision workmanship, and modern production technologies, which guarantees durability, aesthetics, and very good performance parameters.
       </>,
       <>
@@ -96,7 +96,7 @@ const WhyUsSection = () => {
     ],
     de: [
       <>
-        <strong>ROJEK ist eine lokale Marke aus Kraków und ein erfahrener Hersteller von Holzfenstern und Holztüren</strong>,
+        <strong>ROJEK Okna i drzwi ist eine lokale Marke aus Kraków und ein erfahrener Hersteller von Holzfenstern und Holztüren</strong>,
         {' '}spezialisiert auf die Planung und Produktion hochwertiger Tischlerelemente für private und gewerbliche Investitionen. Wir fertigen maßgefertigte Holzfenster und Holztüren und verbinden traditionelles Handwerk, präzise Ausführung und moderne Produktionstechnologien, was Langlebigkeit, Ästhetik und sehr gute Nutzungsparameter garantiert.
       </>,
       <>
@@ -108,7 +108,7 @@ const WhyUsSection = () => {
     ],
     fr: [
       <>
-        <strong>ROJEK est une marque locale de Cracovie et un fabricant expérimenté de fenêtres et portes en bois</strong>,
+        <strong>ROJEK Okna i drzwi est une marque locale de Cracovie et un fabricant expérimenté de fenêtres et portes en bois</strong>,
         {' '}spécialisé dans la conception et la production de menuiseries de haute qualité pour des investissements privés et commerciaux. Nous créons des fenêtres et portes en bois sur mesure, en combinant artisanat traditionnel, précision d’exécution et technologies de production modernes, ce qui garantit durabilité, esthétique et de très bons paramètres d’utilisation.
       </>,
       <>

@@ -9,7 +9,8 @@ import {
 
 const WINDOWS_CATEGORY_ID = 'category_okna';
 const SLIDING_WINDOWS_CATEGORY_ID = 'category_okna_przesuwne';
-const DOORS_CATEGORY_IDS = ['category_drzwi_zewnetrzne', 'category_ppoz'];
+const EXTERIOR_DOORS_CATEGORY_ID = 'category_drzwi_zewnetrzne';
+const DOORS_CATEGORY_IDS = [EXTERIOR_DOORS_CATEGORY_ID];
 const FIRE_RATED_CATEGORY_ID = 'category_ppoz';
 
 const localizeRich = (value, lang) => pickLocale(value, lang) || [];
