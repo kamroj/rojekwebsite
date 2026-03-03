@@ -207,7 +207,7 @@
   border-radius: 12px;
   overflow: hidden;
   background: #fff;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.14);
+  box-shadow: var(--shadow-home-product-card);
   border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
@@ -397,10 +397,21 @@
   line-height: 1;
 }
 
+.megaMenuInnerPastThreshold .specBadge {
+  background: #eef7ef;
+  border-color: rgba(0, 88, 42, 0.28);
+  color: #0b3b1c;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
 .specBadge span:last-child {
   font-size: 0.92rem;
   font-weight: 700;
   letter-spacing: 0.2px;
+}
+
+.megaMenuInnerPastThreshold .specBadge span:last-child {
+  color: #0b3b1c;
 }
 
 .specBadge span:first-child {
@@ -409,4 +420,8 @@
   color: rgb(213, 213, 213);
   text-transform: uppercase;
   letter-spacing: 0.6px;
+}
+
+.megaMenuInnerPastThreshold .specBadge span:first-child {
+  color: #3d5f48;
 }
