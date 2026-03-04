@@ -5,7 +5,7 @@ export const COMPANY = {
   brand: 'ROJEK',
   legalName: 'ROJEK Okna i Drzwi Sp. z o.o.',
 
-  email: 'biuro@rojekokna.pl',
+  email: 'biuro@okno-expert.pl',
   // Main phone displayed on the contact page (general contact)
   phone: '+48 603 923 011',
 
@@ -35,7 +35,7 @@ export const COMPANY = {
       {
         name: 'Wiesław Rojek',
         phone: '+48 603 923 011',
-        emails: ['biuro@rojekokna.pl', 'wieslaw@rojekokna.pl'],
+        emails: ['biuro@okno-expert.pl', 'wieslaw@rojekokna.pl'],
       },
     ],
     distribution: [
