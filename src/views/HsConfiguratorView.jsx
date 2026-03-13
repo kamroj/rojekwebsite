@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Page from '../components/ui/Page';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomeView';
@@ -40,61 +40,6 @@ const HsConfiguratorPage = () => {
   const [selectedThreshold, setSelectedThreshold] = useState(THRESHOLDS[0].value);
   const [width, setWidth] = useState(BASE_WIDTH);
   const [height, setHeight] = useState(BASE_HEIGHT);
-
-  const [isOpen, setIsOpen] = useState(false);
-  const [isAnimating, setIsAnimating] = useState(false);
-  const [animationState, setAnimationState] = useState(null);
-  const [forceCloseAnimation, setForceCloseAnimation] = useState(false);
-
-  const [modelResetKey, setModelResetKey] = useState(0); // NEW – klucz do remountu HsModel
-
-  // Sprawdź czy wymiary są domyślne
-  const hasDefaultDimensions = width === BASE_WIDTH && height === BASE_HEIGHT;
-
-  const handleAnimationToggle = () => {
-    // Jeśli wymiary nie są domyślne – reset do bazowych i pełny reset modelu
-    if (!hasDefaultDimensions) {
-      setWidth(BASE_WIDTH);
-      setHeight(BASE_HEIGHT);
-
-      // pełny reset stanu animacji po stronie konfiguratora
-      setIsOpen(false);
-      setIsAnimating(false);
-      setAnimationState(null);
-      setForceCloseAnimation(false);
-
-      // wymuś pełny remount HsModel, żeby wyczyścić lastAnimationState / mixer itd.
-      setModelResetKey((k) => k + 1); // NEW
-
-      return;
-    }
-
-    // Normalna obsługa animacji tylko przy domyślnych wymiarach
-    if (isAnimating) return;
-    setIsAnimating(true);
-    if (!isOpen) setAnimationState('opening');
-    else setAnimationState('closing');
-  };
-
-  const handleAnimationComplete = () => {
-    setIsAnimating(false);
-    setIsOpen(!isOpen);
-    setAnimationState(null);
-  };
-
-  // Obsługa zmiany wymiarów – gdy w trakcie animacji zmienisz wymiary, wymuś zamknięcie
-  useEffect(() => {
-    if (!hasDefaultDimensions) {
-      if (isOpen || isAnimating) {
-        setForceCloseAnimation(true);
-        setIsOpen(false);
-        setIsAnimating(false);
-        setAnimationState(null);
-
-        setTimeout(() => setForceCloseAnimation(false), 100);
-      }
-    }
-  }, [width, height, hasDefaultDimensions, isOpen, isAnimating]);
 
   return (
     <Page
@@ -212,28 +157,6 @@ const HsConfiguratorPage = () => {
 
         <div className={styles.viewerWrap}>
           <div className={styles.previewLabel}>{t('hsConfigurator.sections.preview', 'PODGLĄD')}</div>
-          {!hasDefaultDimensions && (
-            <div className={styles.dimensionWarning}>
-              {t('hsConfigurator.warnings.animationOnlyDefault', 'Animacja dostępna tylko przy domyślnych wymiarach')}
-            </div>
-          )}
-          <button
-            className={styles.animationButton}
-            onClick={handleAnimationToggle}
-            disabled={isAnimating}
-            style={{
-              '--button-bg': isAnimating ? '#ccccccab' : (!hasDefaultDimensions ? '#362f9ebb' : '#013a06bd'),
-              '--button-color': isAnimating ? '#000000a8' : '#f8f9fa',
-              '--button-border': isAnimating ? '#909090' : (!hasDefaultDimensions ? '#0c065cba' : '#01790bb2'),
-              '--button-hover-bg': isAnimating ? '#ccccccab' : (!hasDefaultDimensions ? '#d47300' : '#013a06'),
-              '--button-outline': !hasDefaultDimensions ? '#ff8c00' : '#01790b',
-              '--button-cursor': isAnimating ? 'not-allowed' : 'pointer'
-            }}
-          >
-            {!hasDefaultDimensions
-              ? t('hsConfigurator.buttons.resetDimensions', 'RESETUJ WYMIARY')
-              : (isOpen ? t('hsConfigurator.buttons.close', 'ZAMKNIJ') : t('hsConfigurator.buttons.open', 'OTWÓRZ'))}
-          </button>
           <Suspense fallback={
             <div className={styles.canvasFallback} aria-live="polite">
               {t('hsConfigurator.loading', 'Ładowanie konfiguratora…')}
@@ -245,10 +168,6 @@ const HsConfiguratorPage = () => {
               selectedThreshold={selectedThreshold}
               width={width}
               height={height}
-              animationState={animationState}
-              onAnimationComplete={handleAnimationComplete}
-              forceCloseAnimation={forceCloseAnimation}
-              modelResetKey={modelResetKey}
             />
           </Suspense>
         </div>

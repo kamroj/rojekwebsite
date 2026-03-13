@@ -1,11 +1,10 @@
-import React, { Suspense, useEffect, useMemo, useRef, useState } from 'react';
+import React, { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import {
   Center,
   ContactShadows,
   Environment,
   OrbitControls,
-  useAnimations,
   useGLTF,
   useTexture,
 } from '@react-three/drei';
@@ -15,7 +14,6 @@ import {
   Box3,
   LinearFilter,
   LinearMipMapLinearFilter,
-  LoopOnce,
   RepeatWrapping,
   Sphere,
   SRGBColorSpace,
@@ -87,7 +85,8 @@ function updateDimensions(scene, width, height) {
         const originalWidth = origSize.x * origScale.x;
         const newWidth = originalWidth + halfWidthDiff;
         const newScale = newWidth / originalWidth;
-        obj.scale.x = origScale.x + halfWidthDiff / 2;
+        obj.scale.x = origScale.x * newScale;
+        obj.position.x = origPos.x + halfWidthDiff / 2;
       }
     }
 
@@ -172,19 +171,12 @@ function HsModel({
   width,
   height,
   onReady,
-  animationState,
-  onAnimationComplete,
-  forceCloseAnimation,
   ...props
 }) {
   const group = useRef();
-  const { scene, animations } = useGLTF('/models/example3.glb');
+  const { scene } = useGLTF('/models/example3.glb');
   const texture = useTexture(texturePath);
   const handleTexture = useTexture(handleTexturePath);
-  const { actions, mixer } = useAnimations(animations, group);
-
-  const [lastAnimationState, setLastAnimationState] = useState(null);
-  const [_animationFinishedCount, setAnimationFinishedCount] = useState(0);
 
   // Konfiguracja tekstur
   const textures = useMemo(() => {
@@ -297,101 +289,6 @@ function HsModel({
     return root;
   }, [scene, textures, thresholdType, width, height]);
 
-  // Efekt do zamykania animacji gdy wymiary się zmieniają
-  useEffect(() => {
-    if (forceCloseAnimation && actions) {
-      const actionEntries = Object.entries(actions);
-
-      // Zatrzymaj wszystkie animacje i zresetuj do pozycji zamkniętej
-      actionEntries.forEach(([_, action]) => {
-        action.stop();
-        action.reset();
-      });
-
-      setLastAnimationState(null);
-      setAnimationFinishedCount(0);
-    }
-  }, [forceCloseAnimation, actions]);
-
-  // Obsługa animacji - tylko gdy wymiary są domyślne
-  useEffect(() => {
-    if (!actions || Object.keys(actions).length === 0) return;
-    if (width !== BASE_WIDTH || height !== BASE_HEIGHT) return; // Blokuj animacje przy zmienionych wymiarach
-
-    const actionEntries = Object.entries(actions);
-    const totalAnimations = actionEntries.length;
-
-    let maxDuration = 0;
-    actionEntries.forEach(([_, action]) => {
-      const duration = action.getClip().duration;
-      if (duration > maxDuration) maxDuration = duration;
-    });
-
-    if (animationState === 'opening' && lastAnimationState !== 'opening') {
-      setAnimationFinishedCount(0);
-
-      actionEntries.forEach(([_, action]) => {
-        action.clampWhenFinished = true;
-        action.loop = LoopOnce;
-        action.reset();
-        action.timeScale = 1;
-        action.play();
-      });
-
-      setLastAnimationState('opening');
-    } else if (animationState === 'closing' && lastAnimationState !== 'closing') {
-      setAnimationFinishedCount(0);
-
-      actionEntries.forEach(([name, action]) => {
-        action.clampWhenFinished = true;
-        action.loop = LoopOnce;
-        action.reset();
-
-        const clipDuration = action.getClip().duration;
-
-        if (name.toLowerCase().includes('handle') || name.toLowerCase().includes('klamka')) {
-          action.time = clipDuration;
-          action.timeScale = -1;
-          action.paused = false;
-
-          const delay = maxDuration - clipDuration;
-          if (delay > 0) {
-            action.paused = true;
-            setTimeout(() => {
-              action.paused = false;
-              action.play();
-            }, delay * 1000);
-          } else {
-            action.play();
-          }
-        } else {
-          action.time = clipDuration;
-          action.timeScale = -1;
-          action.play();
-        }
-      });
-
-      setLastAnimationState('closing');
-    }
-
-    const handleFinished = () => {
-      setAnimationFinishedCount((prev) => {
-        const newCount = prev + 1;
-        if (newCount >= totalAnimations) {
-          onAnimationComplete();
-          return 0;
-        }
-        return newCount;
-      });
-    };
-
-    mixer.addEventListener('finished', handleFinished);
-
-    return () => {
-      mixer.removeEventListener('finished', handleFinished);
-    };
-  }, [animationState, actions, mixer, onAnimationComplete, lastAnimationState, width, height]);
-
   useEffect(() => {
     onReady?.();
   }, [processed, onReady]);
@@ -403,13 +300,16 @@ function HsModel({
   );
 }
 
-function FrontFit({ modelRef }) {
+function FrontFit({ modelRef, width, height }) {
   const controls = useThree((state) => state.controls);
-  const { camera, size } = useThree();
-  const [fitted, setFitted] = useState(false);
+  const { camera } = useThree();
+  const lastFittedDimensions = useRef(null);
 
   useEffect(() => {
-    if (fitted || !modelRef?.current) return;
+    if (!modelRef?.current) return;
+
+    const dimensionsKey = `${width}x${height}`;
+    if (lastFittedDimensions.current === dimensionsKey) return;
 
     const box = new Box3().setFromObject(modelRef.current);
     const minOk = Number.isFinite(box.min.x) && Number.isFinite(box.min.y) && Number.isFinite(box.min.z);
@@ -447,8 +347,8 @@ function FrontFit({ modelRef }) {
       camera.lookAt(center);
     }
 
-    setFitted(true);
-  }, [modelRef, camera, controls, size, fitted]);
+    lastFittedDimensions.current = dimensionsKey;
+  }, [modelRef, camera, controls, width, height]);
 
   return null;
 }
@@ -463,10 +363,6 @@ export default function HsConfiguratorCanvas({
   selectedThreshold,
   width,
   height,
-  animationState,
-  onAnimationComplete,
-  forceCloseAnimation,
-  modelResetKey,
 }) {
   const modelRef = useRef();
 
@@ -495,20 +391,16 @@ export default function HsConfiguratorCanvas({
         <Center>
           <group ref={modelRef}>
             <HsModel
-              key={modelResetKey}
               texturePath={selectedTexture}
               handleTexturePath={selectedHandleTexture}
               thresholdType={selectedThreshold}
               width={width}
               height={height}
-              animationState={animationState}
-              onAnimationComplete={onAnimationComplete}
-              forceCloseAnimation={forceCloseAnimation}
               onReady={() => {}}
             />
           </group>
         </Center>
-        <FrontFit modelRef={modelRef} />
+        <FrontFit modelRef={modelRef} width={width} height={height} />
         <ContactShadows opacity={0.35} blur={2.5} far={10} resolution={256} color="#000000" />
       </Suspense>
     </Canvas>
