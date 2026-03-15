@@ -29,6 +29,12 @@ export default defineConfig({
       exclude: ['@react-three/drei'],
     },
     resolve: {
+      alias: {
+        // Fix SSR/dev import mismatch in @react-three/drei:
+        // it imports named export `getGPUTier` from `detect-gpu`,
+        // so force ESM entry instead of CJS main.
+        'detect-gpu': 'detect-gpu/dist/detect-gpu.esm.js',
+      },
       dedupe: ['react', 'react-dom', 'react/jsx-runtime'],
       conditions: ['module-sync', 'import', 'module', 'browser', 'default'],
     },

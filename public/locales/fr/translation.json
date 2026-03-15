@@ -31,10 +31,27 @@
     "title": "Configurateur HS",
     "header": "Configurateur HS",
     "subtitle": "Créez votre baie coulissante idéale",
+    "sectionsLabel": {
+      "materials": "Finitions",
+      "dimensions": "Proportions"
+    },
     "sections": {
       "elements": "Éléments",
       "dimensions": "Dimensions",
       "preview": "APERÇU"
+    },
+    "info": {
+      "title": "Aperçu en temps réel",
+      "description": "Le modèle met à jour instantanément les matériaux et les proportions, afin de comparer plus facilement les variantes avant de parler à notre équipe."
+    },
+    "viewer": {
+      "note": "Cette visualisation est fournie à titre indicatif et présente les proportions, les couleurs et le caractère général du système."
+    },
+    "sections": {
+      "elements": "Éléments",
+      "dimensions": "Dimensions",
+      "preview": "APERÇU",
+      "previewTag": "APERÇU"
     },
     "labels": {
       "frameMaterial": "Matériau du cadre :",

@@ -31,10 +31,27 @@
     "title": "HS‑Konfigurator",
     "header": "HS‑Konfigurator",
     "subtitle": "Erstellen Sie Ihr Traum-Schiebefenster",
+    "sectionsLabel": {
+      "materials": "Ausführung",
+      "dimensions": "Proportionen"
+    },
     "sections": {
       "elements": "Elemente",
       "dimensions": "Abmessungen",
       "preview": "VORSCHAU"
+    },
+    "info": {
+      "title": "Vorschau in Echtzeit",
+      "description": "Das Modell aktualisiert Materialien und Proportionen laufend, damit Sie Varianten vor dem Gespräch mit unserem Team leichter vergleichen können."
+    },
+    "viewer": {
+      "note": "Die Darstellung hat einen Vorschaucharakter und zeigt Proportionen, Farbgebung sowie den allgemeinen Charakter des Systems."
+    },
+    "sections": {
+      "elements": "Elemente",
+      "dimensions": "Abmessungen",
+      "preview": "VORSCHAU",
+      "previewTag": "VORSCHAU"
     },
     "labels": {
       "frameMaterial": "Rahmenmaterial:",

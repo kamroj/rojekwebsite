@@ -31,10 +31,27 @@
     "title": "HS Configurator",
     "header": "HS Configurator",
     "subtitle": "Create your dream sliding window",
+    "sectionsLabel": {
+      "materials": "Finishing",
+      "dimensions": "Proportions"
+    },
     "sections": {
       "elements": "Elements",
       "dimensions": "Dimensions",
       "preview": "PREVIEW"
+    },
+    "info": {
+      "title": "Real-time preview",
+      "description": "The model updates materials and proportions instantly, so you can compare variants more easily before speaking with our team."
+    },
+    "viewer": {
+      "note": "This preview is for reference only and presents proportions, colours and the overall character of the system."
+    },
+    "sections": {
+      "elements": "Elements",
+      "dimensions": "Dimensions",
+      "preview": "PREVIEW",
+      "previewTag": "PREVIEW"
     },
     "labels": {
       "frameMaterial": "Frame material:",

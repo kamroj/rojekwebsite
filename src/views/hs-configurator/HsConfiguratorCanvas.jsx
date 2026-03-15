@@ -363,6 +363,7 @@ export default function HsConfiguratorCanvas({
   selectedThreshold,
   width,
   height,
+  onReady,
 }) {
   const modelRef = useRef();
 
@@ -396,7 +397,7 @@ export default function HsConfiguratorCanvas({
               thresholdType={selectedThreshold}
               width={width}
               height={height}
-              onReady={() => {}}
+              onReady={onReady}
             />
           </group>
         </Center>
