@@ -15,7 +15,7 @@ const CompanyPresentationSection = () => {
   const [mediaConsent, setMediaConsent] = useState(false);
   const sectionRef = useRef(null);
 
-  const videoId = '2XaCZhUxIMU';
+  const vimeoVideoId = '1185088641';
   const thumbnailUrl = '/images/logo.png';
 
   useEffect(() => {
@@ -94,7 +94,7 @@ const CompanyPresentationSection = () => {
                     <p>
                       {t(
                         'cookies.placeholders.video',
-                        'Aby odtworzyć wideo, zaakceptuj treści zewnętrzne (YouTube).'
+                        'Aby odtworzyć wideo, zaakceptuj treści zewnętrzne (Vimeo).'
                       )}
                     </p>
                     <button
@@ -114,7 +114,7 @@ const CompanyPresentationSection = () => {
             ) : (
               <iframe
                 className={styles.videoFrame}
-                src={`https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&rel=0&modestbranding=1&showinfo=0`}
+                src={`https://player.vimeo.com/video/${vimeoVideoId}?autoplay=1`}
                 title={t('presentation.title', 'Prezentacja firmy ROJEK')}
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowFullScreen
