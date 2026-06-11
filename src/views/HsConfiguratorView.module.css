@@ -594,6 +594,21 @@
   }
 }
 
+@media (min-width: 1101px) {
+  /* Keep the 3D preview and the price card in view while scrolling the long config panel. */
+  .viewerColumn {
+    position: sticky;
+    top: calc(var(--header-height) + 1rem);
+    align-self: start;
+  }
+
+  /* Shrink the viewer so the whole sticky column (preview + price + note) fits the viewport. */
+  .viewerWrap {
+    height: calc(100vh - var(--header-height) - 24rem);
+    min-height: 440px;
+  }
+}
+
 @media (max-width: 1100px) {
   .configuratorGrid {
     grid-template-columns: 1fr;
