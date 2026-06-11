@@ -10,10 +10,13 @@ import {
 
 import {
   Box3,
+  ExtrudeGeometry,
   LinearFilter,
   LinearMipMapLinearFilter,
+  Matrix4,
   NeutralToneMapping,
   RepeatWrapping,
+  Shape,
   Sphere,
   SRGBColorSpace,
   Vector3,
@@ -175,6 +178,92 @@ function BoxPart({ position, size, material, castShadow = true, receiveShadow = 
   );
 }
 
+// Listwa przyszybowa wg przekroju producenta: zaokrąglony profil (ćwierćwałek
+// z krótkimi przylgami) docięty na końcach pod 45°, by w narożach schodził się
+// na ucios jak w stolarce
+const BEAD = { width: PROFILE.bead, depth: 0.022, land: 0.005 };
+
+function createBeadGeometry(length) {
+  const { width: B, depth: D, land } = BEAD;
+
+  // Przekrój w (u, v): u=0 przy ramie skrzydła, u=B przy szybie; v wzdłuż osi Z
+  const shape = new Shape();
+  shape.moveTo(0, 0);
+  shape.lineTo(B, 0);
+  shape.lineTo(B, land);
+  shape.quadraticCurveTo(B, D, land, D);
+  shape.lineTo(0, D);
+  shape.closePath();
+
+  const geo = new ExtrudeGeometry(shape, {
+    depth: length,
+    steps: 1,
+    bevelEnabled: false,
+    curveSegments: 10,
+  });
+
+  // Ucios 45°: krawędź zewnętrzna (u=0) zachowuje pełną długość, krawędź przy
+  // szybie jest krótsza o szerokość listwy z każdej strony. Przy steps=1
+  // wszystkie wierzchołki leżą na końcach, więc wystarczy je ściąć w płaszczyźnie
+  // szyby. Słoje (UV) biegną wzdłuż listwy.
+  const pos = geo.attributes.position;
+  const uvAttr = geo.attributes.uv;
+  for (let i = 0; i < pos.count; i += 1) {
+    const u = pos.getX(i);
+    const z = pos.getZ(i) < length / 2 ? u : length - u;
+    pos.setZ(i, z);
+    uvAttr.setXY(i, z / length, u / B);
+  }
+  geo.computeVertexNormals();
+  geo.translate(0, -D / 2, -length / 2);
+  return geo;
+}
+
+// Orientacje czterech listew ringu: oś u (głębokość profilu) zawsze do środka
+// otworu, oś v (zaokrąglenie) na +Z, długość wzdłuż boku
+const BEAD_ORIENTATIONS = {
+  bottom: new Matrix4().makeBasis(new Vector3(0, 1, 0), new Vector3(0, 0, 1), new Vector3(1, 0, 0)),
+  top: new Matrix4().makeBasis(new Vector3(0, -1, 0), new Vector3(0, 0, 1), new Vector3(-1, 0, 0)),
+  left: new Matrix4().makeBasis(new Vector3(1, 0, 0), new Vector3(0, 0, 1), new Vector3(0, -1, 0)),
+  right: new Matrix4().makeBasis(new Vector3(-1, 0, 0), new Vector3(0, 0, 1), new Vector3(0, 1, 0)),
+};
+
+function MiteredBeadRing({ cx, cy, z, width, height, material, flip = false }) {
+  const geometries = useMemo(
+    () => ({
+      bottom: createBeadGeometry(width).applyMatrix4(BEAD_ORIENTATIONS.bottom),
+      top: createBeadGeometry(width).applyMatrix4(BEAD_ORIENTATIONS.top),
+      left: createBeadGeometry(height).applyMatrix4(BEAD_ORIENTATIONS.left),
+      right: createBeadGeometry(height).applyMatrix4(BEAD_ORIENTATIONS.right),
+    }),
+    [width, height]
+  );
+
+  useEffect(
+    () => () => {
+      Object.values(geometries).forEach((geometry) => geometry.dispose());
+    },
+    [geometries]
+  );
+
+  return (
+    <group position={[cx, cy, z]} rotation={flip ? [0, Math.PI, 0] : [0, 0, 0]}>
+      <mesh geometry={geometries.bottom} position={[0, -height / 2, 0]} castShadow receiveShadow>
+        {material}
+      </mesh>
+      <mesh geometry={geometries.top} position={[0, height / 2, 0]} castShadow receiveShadow>
+        {material}
+      </mesh>
+      <mesh geometry={geometries.left} position={[-width / 2, 0, 0]} castShadow receiveShadow>
+        {material}
+      </mesh>
+      <mesh geometry={geometries.right} position={[width / 2, 0, 0]} castShadow receiveShadow>
+        {material}
+      </mesh>
+    </group>
+  );
+}
+
 // Prostokątna rama z czterech belek (pionowe słoje na stojakach, poziome na ryglach)
 function FrameRing({ cx, cy, z, width, height, profile, depth, materialV, materialH }) {
   const railWidth = Math.max(width - profile * 2, 0.01);
@@ -264,30 +353,26 @@ function GlazedPanel({ panel, openingWidth, openingBottom, openingTop, materials
         materialH={materials.woodH}
       />
       {/* Listwy przyszybowe po obu stronach pakietu (przy szkleniu w ościeżnicy
-          rolę listew pełni główna rama panelu) */}
+          rolę listew pełni główna rama panelu). UV listew biegnie wzdłuż sztuki,
+          więc wszystkie używają nieobróconej tekstury drewna */}
       {!isGlazing && (
         <>
-          <FrameRing
+          <MiteredBeadRing
             cx={cx}
             cy={cy}
             z={z + depth / 2 - 0.011}
             width={openW + 0.008}
             height={openH + 0.008}
-            profile={PROFILE.bead}
-            depth={0.022}
-            materialV={materials.woodV}
-            materialH={materials.woodH}
+            material={materials.woodH}
           />
-          <FrameRing
+          <MiteredBeadRing
             cx={cx}
             cy={cy}
             z={z - depth / 2 + 0.011}
             width={openW + 0.008}
             height={openH + 0.008}
-            profile={PROFILE.bead}
-            depth={0.022}
-            materialV={materials.woodV}
-            materialH={materials.woodH}
+            material={materials.woodH}
+            flip
           />
         </>
       )}
