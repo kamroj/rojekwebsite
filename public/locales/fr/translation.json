@@ -28,6 +28,7 @@
   },
   "hsConfigurator": {
     "loading": "Chargement du configurateur…",
+    "clickHint": "Cliquez sur le vantail pour l'ouvrir ou le fermer",
     "title": "Configurateur HS",
     "header": "Configurateur HS",
     "subtitle": "Créez votre baie coulissante idéale",

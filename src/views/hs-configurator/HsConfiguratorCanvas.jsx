@@ -1,5 +1,5 @@
-import React, { Suspense, useEffect, useMemo, useRef } from 'react';
-import { Canvas, useThree } from '@react-three/fiber';
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import {
   Center,
   ContactShadows,
@@ -128,6 +128,82 @@ const SCHEME_DEFINITIONS = {
 const TRACK_Z = {
   inner: PROFILE.trackInnerZ,
   outer: PROFILE.trackOuterZ,
+};
+
+// Klamka skrzydła na torze zewnętrznym wystaje do przodu, w płaszczyznę toru
+// wewnętrznego. Skrzydła muszą się zatrzymywać, zanim klamka (własna lub
+// sąsiada) uderzy w drugie skrzydło: pół płytki klamki + odsadzenie od
+// krawędzi skrzydła + luz
+const HANDLE_CLEARANCE = 0.085;
+
+// Animacja otwierania: kierunek i dystans przesuwu każdego skrzydła aktywnego
+// (indeks = pozycja w panels schematu). Dystanse wyliczone tak, by skrzydło
+// kończyło w licu sąsiedniego pola i nie wjeżdżało w ościeżnicę, pola stałe na
+// tym samym torze ani w klamki sąsiadów. `conflicts` to pary skrzydeł, które
+// otwarte naraz musiałyby się przeniknąć — drugie można otworzyć dopiero po
+// zamknięciu pierwszego.
+const SCHEME_ANIMATIONS = {
+  a: { panels: { 0: { dir: 1, distance: (w) => w / 2 - OV } } },
+  a3: { panels: { 1: { dir: -1, distance: (w) => w / 2 - OV } } },
+  c: {
+    panels: {
+      1: { dir: -1, distance: (w) => w / 4 - OV },
+      2: { dir: 1, distance: (w) => w / 4 - OV },
+    },
+  },
+  d: {
+    // Skrzydła mijają się torami, ale klamka tylnego (zewnętrznego) wystaje w
+    // tor przedniego — każde dojeżdża tylko do klamki/krawędzi sąsiada i naraz
+    // otwarte może być jedno z nich
+    panels: {
+      0: { dir: 1, distance: (w) => w / 2 - OV - HANDLE_CLEARANCE },
+      1: { dir: -1, distance: (w) => w / 2 - OV - HANDLE_CLEARANCE },
+    },
+    conflicts: [[0, 1]],
+  },
+  e: {
+    panels: {
+      // Lewe (zewnętrzne) zatrzymuje klamkę przed środkowym skrzydłem
+      0: { dir: 1, distance: (w) => w / 3 - OV - HANDLE_CLEARANCE },
+      1: { dir: 1, distance: (w) => w / 3 - OV },
+    },
+  },
+  f: {
+    // Środkowa para rozjeżdża się na boki, skrajne dojeżdżają do środka;
+    // wszystkie dystanse skrócone o strefę klamek skrzydeł zewnętrznych,
+    // a skrzydła mijające się w parze nie mogą być otwarte naraz
+    panels: {
+      0: { dir: 1, distance: (w) => w / 4 - OV - HANDLE_CLEARANCE },
+      1: { dir: -1, distance: (w) => w / 4 - OV - HANDLE_CLEARANCE },
+      2: { dir: 1, distance: (w) => w / 4 - OV - HANDLE_CLEARANCE },
+      3: { dir: -1, distance: (w) => w / 4 - OV - HANDLE_CLEARANCE },
+    },
+    conflicts: [
+      [0, 1],
+      [2, 3],
+    ],
+  },
+  g2: { panels: { 1: { dir: 1, distance: (w) => w / 3 } } },
+  g3: { panels: { 1: { dir: 1, distance: (w) => w / 3 - OV } } },
+  h: {
+    panels: {
+      0: { dir: 1, distance: (w) => w / 3 - OV - HANDLE_CLEARANCE },
+      1: { dir: 1, distance: (w) => w / 3 - OV - HANDLE_CLEARANCE },
+      2: { dir: -1, distance: (w) => w / 3 - OV - HANDLE_CLEARANCE },
+    },
+    // Skrajne skrzydła celują w to samo środkowe pole na wspólnym torze, a
+    // środkowe przy przesuwie w prawo zmiotłoby klamkę otwartego prawego
+    conflicts: [
+      [0, 2],
+      [1, 2],
+    ],
+  },
+  k: {
+    panels: {
+      0: { dir: 1, distance: (w) => w / 4 - OV },
+      2: { dir: -1, distance: (w) => w / 4 - OV },
+    },
+  },
 };
 
 // Wykończenia klamki: szczotkowane aluminium srebrne / złote F4 — anizotropia
@@ -295,23 +371,48 @@ function FrameRing({ cx, cy, z, width, height, profile, depth, materialV, materi
 }
 
 // Klamka HS wg rysunku: płytka 57 x 143,5, dźwignia ~312 mm w górę,
-// odsadzenie uchwytu 61 mm od powierzchni skrzydła
-function PullHandle({ position, material }) {
+// odsadzenie uchwytu 61 mm od powierzchni skrzydła. Szyjka i dźwignia siedzą
+// w grupie obracanej wokół osi trzpienia (animacja otwierania)
+function PullHandle({ position, material, leverRef }) {
   return (
     <group position={position}>
       {/* płytka montażowa */}
       <BoxPart position={[0, 0, 0.006]} size={[0.057, 0.1435, 0.012]} material={material} />
       {/* trzpień obrotowy */}
       <BoxPart position={[0, -0.03, 0.025]} size={[0.034, 0.036, 0.026]} material={material} />
-      {/* szyjka łącząca trzpień z dźwignią */}
-      <BoxPart position={[0, -0.03, 0.05]} size={[0.028, 0.045, 0.024]} material={material} />
-      {/* dźwignia pionowa (płaskownik) */}
-      <BoxPart position={[0, 0.098, 0.061]} size={[0.025, 0.3, 0.019]} material={material} />
+      <group ref={leverRef} position={[0, -0.03, 0]}>
+        {/* szyjka łącząca trzpień z dźwignią */}
+        <BoxPart position={[0, 0, 0.05]} size={[0.028, 0.045, 0.024]} material={material} />
+        {/* dźwignia pionowa (płaskownik) */}
+        <BoxPart position={[0, 0.128, 0.061]} size={[0.025, 0.3, 0.019]} material={material} />
+      </group>
     </group>
   );
 }
 
-function GlazedPanel({ panel, openingWidth, openingBottom, openingTop, materials }) {
+// Animacja unoszono-przesuwna (Hebe-Schiebe): obrót klamki 180° zwalnia rygle
+// i unosi skrzydło na wózki, dopiero wtedy skrzydło jedzie w bok. Zamykanie to
+// ta sama oś czasu odtwarzana wstecz — skrzydło dosuwa się, opada na uszczelki
+// i klamka wraca
+const SASH_ANIMATION = { duration: 2.6, lift: 0.006, phases: { handle: [0, 0.3], lift: [0.3, 0.45], slide: [0.45, 1] } };
+
+const easeInOut = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
+
+const phaseProgress = (p, [start, end]) => Math.min(Math.max((p - start) / (end - start), 0), 1);
+
+function GlazedPanel({
+  panel,
+  panelIndex,
+  openingWidth,
+  openingBottom,
+  openingTop,
+  materials,
+  animatable = false,
+  slideDirection = 1,
+  slideDistance = 0,
+  open = false,
+  onToggle,
+}) {
   const isSliding = panel.type === 'sliding';
   const isGlazing = panel.type === 'glazing';
   const profile = isGlazing ? GLAZING.profile : isSliding ? PROFILE.sash : PROFILE.fixed;
@@ -339,8 +440,64 @@ function GlazedPanel({ panel, openingWidth, openingBottom, openingTop, materials
   const handleX = panel.handle === 'left' ? xLeft + profile / 2 : xRight - profile / 2;
   const handleY = Math.min(bottom + 1.0, cy);
 
+  // Animacja otwierania (tylko skrzydła oznaczone jako animatable)
+  const sashRef = useRef();
+  const leverRef = useRef();
+  const progressRef = useRef(0);
+  const { gl } = useThree();
+
+  const handleClick = useCallback(
+    (event) => {
+      event.stopPropagation();
+      // Obrót modelu (OrbitControls) kończy się pointerupem nad skrzydłem —
+      // odróżniamy go od kliknięcia po dystansie kursora między down a up
+      if (event.delta > 4) return;
+      onToggle?.(panelIndex);
+    },
+    [onToggle, panelIndex]
+  );
+  const handlePointerOver = useCallback(
+    (event) => {
+      event.stopPropagation();
+      gl.domElement.style.cursor = 'pointer';
+    },
+    [gl]
+  );
+  const handlePointerOut = useCallback(() => {
+    gl.domElement.style.cursor = '';
+  }, [gl]);
+
+  useFrame((_, delta) => {
+    if (!animatable || !sashRef.current) return;
+    const target = open ? 1 : 0;
+    const previous = progressRef.current;
+    if (previous === target) return;
+
+    const step = delta / SASH_ANIMATION.duration;
+    const p = previous < target ? Math.min(previous + step, target) : Math.max(previous - step, target);
+    progressRef.current = p;
+
+    if (leverRef.current) {
+      // Dźwignia przechodzi przez stronę zgodną z kierunkiem otwierania skrzydła
+      leverRef.current.rotation.z =
+        -slideDirection * Math.PI * easeInOut(phaseProgress(p, SASH_ANIMATION.phases.handle));
+    }
+    sashRef.current.position.y = SASH_ANIMATION.lift * easeInOut(phaseProgress(p, SASH_ANIMATION.phases.lift));
+    sashRef.current.position.x =
+      slideDirection * slideDistance * easeInOut(phaseProgress(p, SASH_ANIMATION.phases.slide));
+  });
+
+  const groupProps = animatable
+    ? {
+        ref: sashRef,
+        onClick: handleClick,
+        onPointerOver: handlePointerOver,
+        onPointerOut: handlePointerOut,
+      }
+    : {};
+
   return (
-    <group>
+    <group {...groupProps}>
       <FrameRing
         cx={cx}
         cy={cy}
@@ -396,15 +553,21 @@ function GlazedPanel({ panel, openingWidth, openingBottom, openingTop, materials
         castShadow={false}
         receiveShadow={false}
       />
+      {/* Listwa maskująca nad polem stałym — renderowana w licu skrzydła
+          (pełna głębokość 115 mm wystawałaby poza profil i psuła bryłę) */}
       {!isSliding && !isGlazing && (
         <BoxPart
           position={[cx, top + PROFILE.filler.height / 2, z]}
-          size={[panelWidth, PROFILE.filler.height, PROFILE.filler.depth]}
+          size={[panelWidth, PROFILE.filler.height, depth]}
           material={materials.woodH}
         />
       )}
       {isSliding && (
-        <PullHandle position={[handleX, handleY, z + depth / 2]} material={materials.handle} />
+        <PullHandle
+          position={[handleX, handleY, z + depth / 2]}
+          material={materials.handle}
+          leverRef={animatable ? leverRef : undefined}
+        />
       )}
     </group>
   );
@@ -424,6 +587,32 @@ function ProceduralHsModel({
   const schemeDef = SCHEME_DEFINITIONS[scheme] ?? SCHEME_DEFINITIONS.a;
   const panels = schemeDef.panels;
   const mullions = schemeDef.mullions ?? [];
+  const animationSpec = SCHEME_ANIMATIONS[scheme] ?? SCHEME_ANIMATIONS.a;
+
+  // Stan otwarcia skrzydeł trzymany na poziomie modelu, bo skrzydła z par
+  // kolizyjnych muszą znać stan sąsiada
+  const [openPanels, setOpenPanels] = useState({});
+
+  useEffect(() => {
+    setOpenPanels({});
+  }, [scheme, width, height]);
+
+  const togglePanel = useCallback(
+    (index) => {
+      setOpenPanels((prev) => {
+        const willOpen = !prev[index];
+        if (willOpen) {
+          const blocked = (animationSpec.conflicts ?? []).some(
+            (pair) => pair.includes(index) && pair.some((other) => other !== index && prev[other])
+          );
+          // Skrzydło kolizyjne: najpierw trzeba zamknąć drugie z pary
+          if (blocked) return prev;
+        }
+        return { ...prev, [index]: willOpen };
+      });
+    },
+    [animationSpec]
+  );
 
   const modelWidth = width / 1000;
   const modelHeight = height / 1000;
@@ -561,16 +750,26 @@ function ProceduralHsModel({
         />
       ))}
 
-      {panels.map((panel, index) => (
-        <GlazedPanel
-          key={`${scheme}-${index}-${panel.type}`}
-          panel={panel}
-          openingWidth={openingWidth}
-          openingBottom={openingBottom}
-          openingTop={openingTop}
-          materials={materials}
-        />
-      ))}
+      {panels.map((panel, index) => {
+        const panelAnimation = panel.type === 'sliding' ? animationSpec.panels?.[index] : undefined;
+        return (
+          <GlazedPanel
+            // Wymiary w kluczu resetują transformacje przy zmianie schematu/rozmiaru
+            key={`${scheme}-${width}-${height}-${index}-${panel.type}`}
+            panel={panel}
+            panelIndex={index}
+            openingWidth={openingWidth}
+            openingBottom={openingBottom}
+            openingTop={openingTop}
+            materials={materials}
+            animatable={Boolean(panelAnimation)}
+            slideDirection={panelAnimation?.dir ?? 1}
+            slideDistance={panelAnimation ? panelAnimation.distance(openingWidth) : 0}
+            open={Boolean(openPanels[index])}
+            onToggle={togglePanel}
+          />
+        );
+      })}
     </group>
   );
 }

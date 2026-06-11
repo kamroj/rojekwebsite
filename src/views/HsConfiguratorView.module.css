@@ -428,6 +428,25 @@
   user-select: none;
 }
 
+.viewerHint {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  padding: 0.45rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(2, 99, 3, 0.14);
+  background: rgba(255, 255, 255, 0.78);
+  color: #27432a;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  user-select: none;
+}
+
 .checkboxRow {
   display: flex;
   align-items: center;

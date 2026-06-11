@@ -28,6 +28,7 @@
   },
   "hsConfigurator": {
     "loading": "Konfigurator wird geladen…",
+    "clickHint": "Klicken Sie auf den Flügel, um ihn zu öffnen oder zu schließen",
     "title": "HS‑Konfigurator",
     "header": "HS‑Konfigurator",
     "subtitle": "Erstellen Sie Ihr Traum-Schiebefenster",

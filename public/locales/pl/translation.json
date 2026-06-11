@@ -27,6 +27,7 @@
   },
   "hsConfigurator": {
     "loading": "Ładowanie konfiguratora…",
+    "clickHint": "Kliknij skrzydło, aby otworzyć lub zamknąć",
     "title": "Konfigurator HS",
     "header": "Konfigurator HS",
     "subtitle": "Stwórz swoje wymarzone okno przesuwne",

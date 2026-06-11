@@ -497,6 +497,9 @@ const HsConfiguratorPage = ({ pricing = null }) => {
               <div className={styles.activeSchemeBadge}>
                 {t('hsConfigurator.activeScheme', 'Aktywny wariant')}: {t(selectedTypeData.labelKey, selectedTypeData.fallback)}
               </div>
+              <div className={styles.viewerHint}>
+                {t('hsConfigurator.clickHint', 'Kliknij skrzydło, aby otworzyć lub zamknąć')}
+              </div>
               {!isCanvasReady && (
                 <div className={styles.viewerLoadingOverlay} aria-live="polite" aria-busy="true">
                   <div className={styles.viewerSpinner} />

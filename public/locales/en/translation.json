@@ -28,6 +28,7 @@
   },
   "hsConfigurator": {
     "loading": "Loading configurator…",
+    "clickHint": "Click the sash to open or close it",
     "title": "HS Configurator",
     "header": "HS Configurator",
     "subtitle": "Create your dream sliding window",
