@@ -9,10 +9,10 @@ import {
 } from '@react-three/drei';
 
 import {
-  ACESFilmicToneMapping,
   Box3,
   LinearFilter,
   LinearMipMapLinearFilter,
+  NeutralToneMapping,
   RepeatWrapping,
   Sphere,
   SRGBColorSpace,
@@ -127,11 +127,12 @@ const TRACK_Z = {
   outer: PROFILE.trackOuterZ,
 };
 
-// Wykończenia klamki: szczotkowane aluminium srebrne / złote F4
-// (niepełny metalness, by profil nie gasł na tle ciemnych partii otoczenia HDRI)
+// Wykończenia klamki: szczotkowane aluminium srebrne / złote F4 — anizotropia
+// daje podłużne odbicia szczotkowanego metalu; niepełny metalness, by profil
+// nie gasł na tle ciemnych partii otoczenia HDRI
 const HANDLE_FINISHES = {
-  silver: { color: '#d6d9dc', roughness: 0.38, metalness: 0.9 },
-  gold: { color: '#c79f57', roughness: 0.34, metalness: 0.9 },
+  silver: { color: '#dadde0', roughness: 0.35, metalness: 0.95, anisotropy: 0.65 },
+  gold: { color: '#d8b06a', roughness: 0.32, metalness: 0.95, anisotropy: 0.65 },
 };
 
 // Funkcja do tworzenia materiału progu
@@ -388,22 +389,24 @@ function ProceduralHsModel({
           transmission={0.85}
           thickness={0.02}
           ior={1.52}
-          envMapIntensity={1.4}
+          envMapIntensity={1.5}
         />
       ),
       handle: (
-        <meshStandardMaterial
+        <meshPhysicalMaterial
           color={handleMat.color}
           roughness={handleMat.roughness}
           metalness={handleMat.metalness}
-          envMapIntensity={1.15}
+          anisotropy={handleMat.anisotropy}
+          envMapIntensity={1.3}
         />
       ),
       threshold: (
-        <meshStandardMaterial
+        <meshPhysicalMaterial
           color={thresholdMat.color}
           roughness={thresholdMat.roughness}
           metalness={thresholdMat.metalness}
+          anisotropy={0.5}
           envMapIntensity={1.2}
         />
       ),
@@ -558,16 +561,18 @@ export default function HsConfiguratorCanvas({
       gl={{
         logarithmicDepthBuffer: true,
         antialias: true,
-        toneMapping: ACESFilmicToneMapping,
-        toneMappingExposure: 1.2,
+        toneMapping: NeutralToneMapping,
+        toneMappingExposure: 1.0,
       }}
     >
       <Suspense fallback={null}>
         <color attach="background" args={['#fffefe']} />
-        <ambientLight intensity={0.55} />
+        {/* Ambient rozjaśnia powierzchnie rozproszone (drewno); metale (metalness
+            ~0.95) prawie go nie odbierają, więc nie przepala klamki ani progu */}
+        <ambientLight intensity={0.45} />
         <directionalLight
           position={[5, 6, 9]}
-          intensity={1.1}
+          intensity={1.4}
           castShadow
           shadow-mapSize={[2048, 2048]}
           shadow-bias={-0.0004}

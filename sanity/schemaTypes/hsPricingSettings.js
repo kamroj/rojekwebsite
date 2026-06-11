@@ -15,7 +15,7 @@ export default defineType({
       title: 'SilentClose / StopUnit (PLN/szt.)',
       type: 'number',
       description: 'Cena jednostkowa dopłaty SilentClose / StopUnit.',
-      initialValue: 3000,
+      initialValue: 1500,
       validation: (rule) => rule.required().min(0),
     }),
     defineField({
