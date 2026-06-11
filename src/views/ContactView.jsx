@@ -108,6 +108,16 @@ const ContactPage = (props = {}) => {
   const [phone, setPhone] = useState('');
   const [message, setMessage] = useState('');
   const [errors, setErrors] = useState({ name: '', email: '', message: '', recaptcha: '', submit: '' });
+
+  // Prefill the message from a ?message= query param (e.g. the HS configurator's
+  // "ask for a quote" CTA passes the chosen configuration this way).
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const prefill = new URLSearchParams(window.location.search).get('message');
+    if (prefill) {
+      setMessage((prev) => prev || prefill);
+    }
+  }, []);
   const [submitting, setSubmitting] = useState(false);
   const [sent, setSent] = useState(false);
   const [recaptchaToken, setRecaptchaToken] = useState(null);

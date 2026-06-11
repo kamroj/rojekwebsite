@@ -32,6 +32,7 @@
     "header": "HS‑Konfigurator",
     "subtitle": "Erstellen Sie Ihr Traum-Schiebefenster",
     "sectionsLabel": {
+      "scheme": "Schema",
       "materials": "Ausführung",
       "dimensions": "Proportionen",
       "addons": "Zubehör"
@@ -50,13 +51,13 @@
     "price": {
       "estimatedLabel": "Geschätzter Preis",
       "disclaimer": "Der Preis ist unverbindlich und kann geringfügig vom endgültigen Angebot abweichen.",
-      "individualQuote": "Für diese Konfiguration erstellen wir ein individuelles Angebot – kontaktieren Sie uns."
+      "individualQuote": "Für diese Konfiguration erstellen wir ein individuelles Angebot – kontaktieren Sie uns.",
+      "detailsLabel": "Preisdetails",
+      "baseLabel": "Grundpreis",
+      "cta": "Angebot anfragen",
+      "messageIntro": "Guten Tag, ich bitte um ein Angebot für die folgende HS-Konfiguration:"
     },
-    "sections": {
-      "elements": "Elemente",
-      "dimensions": "Abmessungen",
-      "preview": "VORSCHAU"
-    },
+    "activeScheme": "Aktive Variante",
     "info": {
       "title": "Vorschau in Echtzeit",
       "description": "Das Modell aktualisiert Materialien und Proportionen laufend, damit Sie Varianten vor dem Gespräch mit unserem Team leichter vergleichen können."
@@ -100,6 +101,48 @@
         "silver": "Silber",
         "black": "Schwarz",
         "gold": "Gold"
+      },
+      "schemes": {
+        "a": {
+          "label": "Schema A",
+          "description": "Zwei Felder mit einem Schiebeflügel."
+        },
+        "a3": {
+          "label": "Schema A3",
+          "description": "Gespiegeltes A – Schiebeflügel auf der rechten Seite."
+        },
+        "d": {
+          "label": "Schema D",
+          "description": "Zwei Felder, beide Flügel verschiebbar."
+        },
+        "e": {
+          "label": "Schema E",
+          "description": "Drei Felder, zwei Schiebeflügel in eine Richtung."
+        },
+        "g2": {
+          "label": "Schema G2",
+          "description": "Drei Felder, mittlerer Schiebeflügel, feste Pfosten."
+        },
+        "g3": {
+          "label": "Schema G3",
+          "description": "Drei Felder, mittlerer Schiebeflügel, ohne feste Pfosten."
+        },
+        "h": {
+          "label": "Schema H",
+          "description": "Drei Felder, alle Flügel verschiebbar."
+        },
+        "k": {
+          "label": "Schema K",
+          "description": "Breites festes Feld in der Mitte, Schiebeflügel an den Seiten."
+        },
+        "c": {
+          "label": "Schema C",
+          "description": "Vier Felder mit zwei mittleren Schiebeflügeln."
+        },
+        "f": {
+          "label": "Schema F",
+          "description": "Vier Felder, alle Flügel verschiebbar."
+        }
       }
     }
   },

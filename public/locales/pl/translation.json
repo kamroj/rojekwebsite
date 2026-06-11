@@ -31,6 +31,7 @@
     "header": "Konfigurator HS",
     "subtitle": "Stwórz swoje wymarzone okno przesuwne",
     "sectionsLabel": {
+      "scheme": "Schemat",
       "materials": "Wykończenie",
       "dimensions": "Proporcje",
       "addons": "Dodatki"
@@ -49,12 +50,25 @@
     "price": {
       "estimatedLabel": "Szacunkowa cena",
       "disclaimer": "Cena ma charakter poglądowy i może nieznacznie odbiegać od rzeczywistej wyceny.",
-      "individualQuote": "Dla tej konfiguracji przygotujemy wycenę indywidualną — skontaktuj się z nami."
+      "individualQuote": "Dla tej konfiguracji przygotujemy wycenę indywidualną — skontaktuj się z nami.",
+      "detailsLabel": "Szczegóły wyceny",
+      "baseLabel": "Cena bazowa",
+      "cta": "Zapytaj o wycenę",
+      "messageIntro": "Dzień dobry, proszę o wycenę poniższej konfiguracji HS:"
     },
     "sections": {
       "elements": "Elementy",
       "dimensions": "Wymiary",
-      "preview": "PODGLĄD"
+      "preview": "PODGLĄD",
+      "previewTag": "PODGLĄD"
+    },
+    "activeScheme": "Aktywny wariant",
+    "info": {
+      "title": "Wizualizacja w czasie rzeczywistym",
+      "description": "Model aktualizuje materiały i proporcje na bieżąco, dzięki czemu łatwiej porównasz warianty przed rozmową handlową."
+    },
+    "viewer": {
+      "note": "Prezentacja ma charakter poglądowy i pokazuje proporcje, kolorystykę oraz ogólny charakter systemu."
     },
     "labels": {
       "frameMaterial": "Materiał ramy:",
@@ -86,6 +100,48 @@
         "silver": "Srebrny",
         "black": "Czarny",
         "gold": "Złoty"
+      },
+      "schemes": {
+        "a": {
+          "label": "Schemat A",
+          "description": "Dwa pola z jednym skrzydłem przesuwnym."
+        },
+        "a3": {
+          "label": "Schemat A3",
+          "description": "Lustrzane A — skrzydło przesuwne z prawej strony."
+        },
+        "d": {
+          "label": "Schemat D",
+          "description": "Dwa pola, oba skrzydła przesuwne."
+        },
+        "e": {
+          "label": "Schemat E",
+          "description": "Trzy pola, dwa skrzydła przesuwne w jedną stronę."
+        },
+        "g2": {
+          "label": "Schemat G2",
+          "description": "Trzy pola, środkowe skrzydło przesuwne, słupki statyczne."
+        },
+        "g3": {
+          "label": "Schemat G3",
+          "description": "Trzy pola, środkowe skrzydło przesuwne, bez słupków statycznych."
+        },
+        "h": {
+          "label": "Schemat H",
+          "description": "Trzy pola, wszystkie skrzydła przesuwne."
+        },
+        "k": {
+          "label": "Schemat K",
+          "description": "Szerokie pole stałe pośrodku, skrzydła przesuwne po bokach."
+        },
+        "c": {
+          "label": "Schemat C",
+          "description": "Cztery pola z dwoma środkowymi skrzydłami przesuwnymi."
+        },
+        "f": {
+          "label": "Schemat F",
+          "description": "Cztery pola, wszystkie skrzydła przesuwne."
+        }
       }
     }
   },

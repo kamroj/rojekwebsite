@@ -32,6 +32,7 @@
     "header": "Configurateur HS",
     "subtitle": "Créez votre baie coulissante idéale",
     "sectionsLabel": {
+      "scheme": "Schéma",
       "materials": "Finitions",
       "dimensions": "Proportions",
       "addons": "Options"
@@ -50,13 +51,13 @@
     "price": {
       "estimatedLabel": "Prix estimé",
       "disclaimer": "Ce prix est donné à titre indicatif et peut légèrement différer du devis final.",
-      "individualQuote": "Cette configuration nécessite un devis individuel — contactez-nous."
+      "individualQuote": "Cette configuration nécessite un devis individuel — contactez-nous.",
+      "detailsLabel": "Détails du prix",
+      "baseLabel": "Prix de base",
+      "cta": "Demander un devis",
+      "messageIntro": "Bonjour, je souhaite un devis pour la configuration HS suivante :"
     },
-    "sections": {
-      "elements": "Éléments",
-      "dimensions": "Dimensions",
-      "preview": "APERÇU"
-    },
+    "activeScheme": "Variante active",
     "info": {
       "title": "Aperçu en temps réel",
       "description": "Le modèle met à jour instantanément les matériaux et les proportions, afin de comparer plus facilement les variantes avant de parler à notre équipe."
@@ -100,6 +101,48 @@
         "silver": "Argent",
         "black": "Noir",
         "gold": "Or"
+      },
+      "schemes": {
+        "a": {
+          "label": "Schéma A",
+          "description": "Deux champs avec un vantail coulissant."
+        },
+        "a3": {
+          "label": "Schéma A3",
+          "description": "A inversé — vantail coulissant à droite."
+        },
+        "d": {
+          "label": "Schéma D",
+          "description": "Deux champs, les deux vantaux coulissants."
+        },
+        "e": {
+          "label": "Schéma E",
+          "description": "Trois champs, deux vantaux coulissants dans le même sens."
+        },
+        "g2": {
+          "label": "Schéma G2",
+          "description": "Trois champs, vantail central coulissant, meneaux fixes."
+        },
+        "g3": {
+          "label": "Schéma G3",
+          "description": "Trois champs, vantail central coulissant, sans meneaux fixes."
+        },
+        "h": {
+          "label": "Schéma H",
+          "description": "Trois champs, tous les vantaux coulissants."
+        },
+        "k": {
+          "label": "Schéma K",
+          "description": "Large champ fixe au centre, vantaux coulissants sur les côtés."
+        },
+        "c": {
+          "label": "Schéma C",
+          "description": "Quatre champs avec deux vantaux centraux coulissants."
+        },
+        "f": {
+          "label": "Schéma F",
+          "description": "Quatre champs, tous les vantaux coulissants."
+        }
       }
     }
   },

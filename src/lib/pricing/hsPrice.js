@@ -45,7 +45,7 @@ export const getBasePrice = (matrix, widthMm, heightMm) => {
  * @param {number} params.widthMm
  * @param {number} params.heightMm
  * @param {object} params.options Selected add-ons: { woodKey, silentClose, cylinderLock, outerHandle, temperedGlass }.
- * @returns {{ status: 'ok', total: number, base: number } | { status: 'unavailable' | 'noPricing' }}
+ * @returns {{ status: 'ok', total: number, base: number, breakdown: Array<{key: string, amount: number, percent?: number, quantity?: number}> } | { status: 'unavailable' | 'noPricing' }}
  */
 export const calculateHsPrice = ({ matrix, addonQuantities, settings, widthMm, heightMm, options }) => {
   if (!matrix) return { status: PRICE_STATUS.NO_PRICING };
@@ -54,26 +54,37 @@ export const calculateHsPrice = ({ matrix, addonQuantities, settings, widthMm, h
   if (baseResult.status !== PRICE_STATUS.OK) return baseResult;
 
   const base = baseResult.price;
+  const breakdown = [{ key: 'base', amount: base }];
 
   const woodPercent =
     settings?.woodSpecies?.find((species) => species.key === options?.woodKey)?.surchargePercent ?? 0;
   const woodSurcharge = (base * woodPercent) / 100;
+  if (woodSurcharge > 0) {
+    breakdown.push({ key: 'wood', amount: woodSurcharge, percent: woodPercent });
+  }
 
   const fixedSurcharge = ['silentClose', 'cylinderLock', 'outerHandle'].reduce((sum, key) => {
     if (!options?.[key]) return sum;
     const unitPrice = settings?.fixed?.[key] ?? 0;
     const quantity = addonQuantities?.[key] ?? 1;
-    return sum + unitPrice * quantity;
+    const amount = unitPrice * quantity;
+    if (amount > 0) {
+      breakdown.push({ key, amount, quantity });
+    }
+    return sum + amount;
   }, 0);
 
   const glassSurcharge = options?.temperedGlass
     ? (settings?.temperedGlassPerM2 ?? 0) * (widthMm / 1000) * (heightMm / 1000)
     : 0;
+  if (glassSurcharge > 0) {
+    breakdown.push({ key: 'temperedGlass', amount: glassSurcharge });
+  }
 
   const total = base + woodSurcharge + fixedSurcharge + glassSurcharge;
 
   // Round only the final value, to the nearest 10 PLN — the price is an estimate anyway.
-  return { status: PRICE_STATUS.OK, total: Math.round(total / 10) * 10, base };
+  return { status: PRICE_STATUS.OK, total: Math.round(total / 10) * 10, base, breakdown };
 };
 
 const plnFormatter = new Intl.NumberFormat('pl-PL', {

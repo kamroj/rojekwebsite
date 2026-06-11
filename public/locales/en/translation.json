@@ -32,6 +32,7 @@
     "header": "HS Configurator",
     "subtitle": "Create your dream sliding window",
     "sectionsLabel": {
+      "scheme": "Scheme",
       "materials": "Finishing",
       "dimensions": "Proportions",
       "addons": "Add-ons"
@@ -50,13 +51,13 @@
     "price": {
       "estimatedLabel": "Estimated price",
       "disclaimer": "This price is indicative and may differ slightly from the final quote.",
-      "individualQuote": "This configuration requires an individual quote — please contact us."
+      "individualQuote": "This configuration requires an individual quote — please contact us.",
+      "detailsLabel": "Price details",
+      "baseLabel": "Base price",
+      "cta": "Ask for a quote",
+      "messageIntro": "Hello, I would like a quote for the following HS configuration:"
     },
-    "sections": {
-      "elements": "Elements",
-      "dimensions": "Dimensions",
-      "preview": "PREVIEW"
-    },
+    "activeScheme": "Active variant",
     "info": {
       "title": "Real-time preview",
       "description": "The model updates materials and proportions instantly, so you can compare variants more easily before speaking with our team."
@@ -100,6 +101,48 @@
         "silver": "Silver",
         "black": "Black",
         "gold": "Gold"
+      },
+      "schemes": {
+        "a": {
+          "label": "Scheme A",
+          "description": "Two fields with one sliding sash."
+        },
+        "a3": {
+          "label": "Scheme A3",
+          "description": "Mirrored A — sliding sash on the right side."
+        },
+        "d": {
+          "label": "Scheme D",
+          "description": "Two fields, both sashes sliding."
+        },
+        "e": {
+          "label": "Scheme E",
+          "description": "Three fields, two sashes sliding in one direction."
+        },
+        "g2": {
+          "label": "Scheme G2",
+          "description": "Three fields, sliding centre sash, fixed mullions."
+        },
+        "g3": {
+          "label": "Scheme G3",
+          "description": "Three fields, sliding centre sash, no fixed mullions."
+        },
+        "h": {
+          "label": "Scheme H",
+          "description": "Three fields, all sashes sliding."
+        },
+        "k": {
+          "label": "Scheme K",
+          "description": "Wide fixed field in the centre, sliding sashes on the sides."
+        },
+        "c": {
+          "label": "Scheme C",
+          "description": "Four fields with two sliding centre sashes."
+        },
+        "f": {
+          "label": "Scheme F",
+          "description": "Four fields, all sashes sliding."
+        }
       }
     }
   },

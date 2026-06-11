@@ -1,5 +1,6 @@
 import React, { Suspense, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { FiArrowRight } from 'react-icons/fi';
 import Page from '../components/ui/Page';
 import { PRICE_STATUS, calculateHsPrice, deriveRanges, formatPln } from '../lib/pricing/hsPrice.js';
 import { pickLocale } from '../lib/sanity/i18n.js';
@@ -145,6 +146,8 @@ const ADDON_OPTIONS = [
 
 const WOOD_LABEL_FALLBACKS = { pine: 'Sosna', meranti: 'Meranti', oak: 'Dąb' };
 
+const CONTACT_PATHS = { pl: '/kontakt', en: '/en/contact', de: '/de/kontakt', fr: '/fr/contact' };
+
 const getDefaultWoodKey = (woodSpecies) => {
   if (!woodSpecies?.length) return 'pine';
   const baseSpecies = woodSpecies.find((species) => species.surchargePercent === 0) ?? woodSpecies[0];
@@ -228,6 +231,85 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     });
   }, [pricing, schemePricing, width, height, selectedWood, addons]);
 
+  const languageKey = (i18n.language || 'pl').split('-')[0];
+  const contactPath = CONTACT_PATHS[languageKey] ?? CONTACT_PATHS.pl;
+
+  // Exact-language Sanity title wins; otherwise the site translation;
+  // as a last resort any language from Sanity or the hardcoded fallback.
+  const woodLabels = useMemo(() => {
+    const labels = {};
+    for (const species of pricing?.settings?.woodSpecies ?? []) {
+      labels[species.key] =
+        species.title?.[languageKey] ||
+        t(
+          `hsConfigurator.addons.wood.${species.key}`,
+          pickLocale(species.title, languageKey) || WOOD_LABEL_FALLBACKS[species.key] || species.key
+        );
+    }
+    return labels;
+  }, [pricing, languageKey, t]);
+
+  const getBreakdownLabel = (item) => {
+    if (item.key === 'base') return t('hsConfigurator.price.baseLabel', 'Cena bazowa');
+    if (item.key === 'wood') return `${woodLabels[selectedWood] ?? selectedWood} (+${item.percent}%)`;
+    const addon = ADDON_OPTIONS.find((option) => option.key === item.key);
+    const label = addon ? t(addon.labelKey, addon.fallback) : item.key;
+    return item.quantity > 1 ? `${label} ×${item.quantity}` : label;
+  };
+
+  // Contact link with the current configuration prefilled into the form's message field.
+  const quoteHref = useMemo(() => {
+    const stripColon = (label) => label.replace(/:\s*$/, '');
+    const lines = [
+      t('hsConfigurator.price.messageIntro', 'Dzień dobry, proszę o wycenę poniższej konfiguracji HS:'),
+      `- ${stripColon(t('hsConfigurator.sectionsLabel.scheme', 'Schemat'))}: ${selectedTypeData.label}`,
+      `- ${stripColon(t('hsConfigurator.sections.dimensions', 'Wymiary'))}: ${width} × ${height} mm`,
+    ];
+
+    const texture = TEXTURES.find((item) => item.value === selectedTexture);
+    if (texture) {
+      lines.push(`- ${stripColon(t('hsConfigurator.labels.frameMaterial', 'Materiał ramy'))}: ${t(texture.labelKey, texture.fallback)}`);
+    }
+    const handleFinish = HANDLE_FINISHES.find((item) => item.value === selectedHandleFinish);
+    if (handleFinish) {
+      lines.push(`- ${stripColon(t('hsConfigurator.labels.handleColor', 'Kolor klamki'))}: ${t(handleFinish.labelKey, handleFinish.fallback)}`);
+    }
+    const threshold = THRESHOLDS.find((item) => item.value === selectedThreshold);
+    if (threshold) {
+      lines.push(`- ${stripColon(t('hsConfigurator.labels.thresholdColor', 'Kolor progu'))}: ${t(threshold.labelKey, threshold.fallback)}`);
+    }
+
+    if (pricing) {
+      lines.push(`- ${stripColon(t('hsConfigurator.labels.woodSpecies', 'Gatunek drewna'))}: ${woodLabels[selectedWood] ?? selectedWood}`);
+      const selectedAddons = ADDON_OPTIONS.filter((addon) => addons[addon.key]).map((addon) =>
+        t(addon.labelKey, addon.fallback)
+      );
+      if (selectedAddons.length) {
+        lines.push(`- ${stripColon(t('hsConfigurator.sectionsLabel.addons', 'Dodatki'))}: ${selectedAddons.join(', ')}`);
+      }
+    }
+
+    if (priceResult?.status === PRICE_STATUS.OK) {
+      lines.push(`- ${stripColon(t('hsConfigurator.price.estimatedLabel', 'Szacunkowa cena'))}: ≈ ${formatPln(priceResult.total)}`);
+    }
+
+    return `${contactPath}?message=${encodeURIComponent(lines.join('\n'))}`;
+  }, [
+    t,
+    selectedTypeData,
+    width,
+    height,
+    selectedTexture,
+    selectedHandleFinish,
+    selectedThreshold,
+    pricing,
+    woodLabels,
+    selectedWood,
+    addons,
+    priceResult,
+    contactPath,
+  ]);
+
   return (
     <Page imageSrc="/images/hs/top.jpg" title={t('hsConfigurator.title', 'Konfigurator HS')}>
       <HeaderWrap>
@@ -243,35 +325,16 @@ const HsConfiguratorPage = ({ pricing = null }) => {
             <div className={styles.controlPanel}>
               <div className={`${styles.controlSection} ${styles.controlSectionFirst}`}>
                 <div className={styles.sectionHeaderWrap}>
-                  <span className={styles.sectionOverline}>{t('hsConfigurator.sectionsLabel.materials', 'Wykończenie')}</span>
+                  <span className={styles.sectionOverline}>{t('hsConfigurator.sectionsLabel.scheme', 'Schemat')}</span>
                 </div>
 
                 <div className={styles.controlGroup}>
-                  <label className={styles.label}>{t('hsConfigurator.labels.frameMaterial', 'Materiał ramy')}</label>
-                  <select className={styles.select} value={selectedTexture} onChange={handleTextureChange(setSelectedTexture)}>
-                    {TEXTURES.map((tex) => (
-                      <option key={tex.value} value={tex.value}>
-                        {t(tex.labelKey, tex.fallback)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className={styles.controlGroup}>
-                  <label className={styles.label}>{t('hsConfigurator.labels.handleColor', 'Kolor klamki')}</label>
-                  <select className={styles.select} value={selectedHandleFinish} onChange={handleTextureChange(setSelectedHandleFinish)}>
-                    {HANDLE_FINISHES.map((finish) => (
-                      <option key={finish.value} value={finish.value}>
-                        {t(finish.labelKey, finish.fallback)}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div className={styles.controlGroup}>
-                  <span className={styles.label}>{t('hsConfigurator.labels.type', 'Typ')}</span>
                   <div className={styles.schemeScrollWrap}>
-                    <div className={styles.schemeGrid} role="radiogroup" aria-label={t('hsConfigurator.labels.type', 'Typ')}>
+                    <div
+                      className={styles.schemeGrid}
+                      role="radiogroup"
+                      aria-label={t('hsConfigurator.sectionsLabel.scheme', 'Schemat')}
+                    >
                       {TYPES.map((type) => {
                         const isSelected = selectedType === type.value;
 
@@ -296,6 +359,34 @@ const HsConfiguratorPage = ({ pricing = null }) => {
                       })}
                     </div>
                   </div>
+                </div>
+              </div>
+
+              <div className={`${styles.controlSection} ${styles.controlSectionDivided}`}>
+                <div className={styles.sectionHeaderWrap}>
+                  <span className={styles.sectionOverline}>{t('hsConfigurator.sectionsLabel.materials', 'Wykończenie')}</span>
+                </div>
+
+                <div className={styles.controlGroup}>
+                  <label className={styles.label}>{t('hsConfigurator.labels.frameMaterial', 'Materiał ramy')}</label>
+                  <select className={styles.select} value={selectedTexture} onChange={handleTextureChange(setSelectedTexture)}>
+                    {TEXTURES.map((tex) => (
+                      <option key={tex.value} value={tex.value}>
+                        {t(tex.labelKey, tex.fallback)}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className={styles.controlGroup}>
+                  <label className={styles.label}>{t('hsConfigurator.labels.handleColor', 'Kolor klamki')}</label>
+                  <select className={styles.select} value={selectedHandleFinish} onChange={handleTextureChange(setSelectedHandleFinish)}>
+                    {HANDLE_FINISHES.map((finish) => (
+                      <option key={finish.value} value={finish.value}>
+                        {t(finish.labelKey, finish.fallback)}
+                      </option>
+                    ))}
+                  </select>
                 </div>
 
                 <div className={styles.controlGroup}>
@@ -372,17 +463,7 @@ const HsConfiguratorPage = ({ pricing = null }) => {
                     <label className={styles.label}>{t('hsConfigurator.labels.woodSpecies', 'Gatunek drewna')}</label>
                     <select className={styles.select} value={selectedWood} onChange={handleWoodChange}>
                       {pricing.settings.woodSpecies.map((species) => {
-                        // Exact-language Sanity title wins; otherwise the site translation;
-                        // as a last resort any language from Sanity or the hardcoded fallback.
-                        const languageKey = (i18n.language || 'pl').split('-')[0];
-                        const label =
-                          species.title?.[languageKey] ||
-                          t(
-                            `hsConfigurator.addons.wood.${species.key}`,
-                            pickLocale(species.title, languageKey) ||
-                              WOOD_LABEL_FALLBACKS[species.key] ||
-                              species.key
-                          );
+                        const label = woodLabels[species.key] ?? species.key;
                         return (
                           <option key={species.key} value={species.key}>
                             {species.surchargePercent > 0 ? `${label} (+${species.surchargePercent}%)` : label}
@@ -445,6 +526,21 @@ const HsConfiguratorPage = ({ pricing = null }) => {
                       </span>
                       <span className={styles.priceValue}>≈ {formatPln(priceResult.total)}</span>
                     </div>
+                    {priceResult.breakdown.length > 1 ? (
+                      <details className={styles.priceDetails}>
+                        <summary className={styles.priceDetailsSummary}>
+                          {t('hsConfigurator.price.detailsLabel', 'Szczegóły wyceny')}
+                        </summary>
+                        <ul className={styles.priceDetailsList}>
+                          {priceResult.breakdown.map((item) => (
+                            <li key={item.key} className={styles.priceDetailsItem}>
+                              <span>{getBreakdownLabel(item)}</span>
+                              <span className={styles.priceDetailsAmount}>{formatPln(item.amount)}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </details>
+                    ) : null}
                     <p className={styles.priceDisclaimer}>
                       {t(
                         'hsConfigurator.price.disclaimer',
@@ -460,6 +556,10 @@ const HsConfiguratorPage = ({ pricing = null }) => {
                     )}
                   </p>
                 )}
+                <a className={styles.priceCta} href={quoteHref}>
+                  {t('hsConfigurator.price.cta', 'Zapytaj o wycenę')}
+                  <FiArrowRight aria-hidden="true" />
+                </a>
               </div>
             ) : null}
 
@@ -473,6 +573,15 @@ const HsConfiguratorPage = ({ pricing = null }) => {
             </div>
           </section>
         </div>
+
+        {priceResult?.status === PRICE_STATUS.OK ? (
+          <div className={styles.stickyPriceBar} aria-hidden="true">
+            <span className={styles.stickyPriceLabel}>
+              {t('hsConfigurator.price.estimatedLabel', 'Szacunkowa cena')}
+            </span>
+            <span className={styles.stickyPriceValue}>≈ {formatPln(priceResult.total)}</span>
+          </div>
+        ) : null}
       </div>
     </Page>
   );
