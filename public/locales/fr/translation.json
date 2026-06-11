@@ -33,7 +33,24 @@
     "subtitle": "Créez votre baie coulissante idéale",
     "sectionsLabel": {
       "materials": "Finitions",
-      "dimensions": "Proportions"
+      "dimensions": "Proportions",
+      "addons": "Options"
+    },
+    "addons": {
+      "wood": {
+        "pine": "Pin",
+        "meranti": "Méranti",
+        "oak": "Chêne"
+      },
+      "silentClose": "SilentClose / StopUnit",
+      "cylinderLock": "Cylindre à clé",
+      "outerHandle": "Poignée extérieure",
+      "temperedGlass": "Vitrage trempé"
+    },
+    "price": {
+      "estimatedLabel": "Prix estimé",
+      "disclaimer": "Ce prix est donné à titre indicatif et peut légèrement différer du devis final.",
+      "individualQuote": "Cette configuration nécessite un devis individuel — contactez-nous."
     },
     "sections": {
       "elements": "Éléments",
@@ -59,7 +76,8 @@
       "type": "Type :",
       "thresholdColor": "Couleur du seuil :",
       "width": "Largeur de la fenêtre :",
-      "height": "Hauteur de la fenêtre :"
+      "height": "Hauteur de la fenêtre :",
+      "woodSpecies": "Essence de bois :"
     },
     "warnings": {
       "animationOnlyDefault": "L'animation est disponible uniquement pour les dimensions par défaut"

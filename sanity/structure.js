@@ -60,6 +60,32 @@ export const structure = (S) =>
             ])
         ),
 
+      // --- Cennik HS (konfigurator) ---
+      S.listItem()
+        .title('Cennik HS (konfigurator)')
+        .child(
+          S.list()
+            .title('Cennik HS')
+            .items([
+              S.listItem()
+                .title('Dodatki i dopłaty')
+                .child(
+                  S.document()
+                    .schemaType('hsPricingSettings')
+                    .documentId('hsPricingSettings')
+                    .title('Dodatki i dopłaty')
+                ),
+              S.divider(),
+              S.listItem()
+                .title('Cenniki schematów')
+                .child(
+                  S.documentTypeList('hsPricingScheme')
+                    .title('Cenniki schematów')
+                    .defaultOrdering([{field: 'scheme', direction: 'asc'}])
+                ),
+            ])
+        ),
+
       // --- Realizacje ---
       S.listItem()
         .title('Realizacje')

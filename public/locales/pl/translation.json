@@ -30,6 +30,27 @@
     "title": "Konfigurator HS",
     "header": "Konfigurator HS",
     "subtitle": "Stwórz swoje wymarzone okno przesuwne",
+    "sectionsLabel": {
+      "materials": "Wykończenie",
+      "dimensions": "Proporcje",
+      "addons": "Dodatki"
+    },
+    "addons": {
+      "wood": {
+        "pine": "Sosna",
+        "meranti": "Meranti",
+        "oak": "Dąb"
+      },
+      "silentClose": "SilentClose / StopUnit",
+      "cylinderLock": "Wkładka na klucz",
+      "outerHandle": "Klamka zewnętrzna",
+      "temperedGlass": "Szyba hartowana"
+    },
+    "price": {
+      "estimatedLabel": "Szacunkowa cena",
+      "disclaimer": "Cena ma charakter poglądowy i może nieznacznie odbiegać od rzeczywistej wyceny.",
+      "individualQuote": "Dla tej konfiguracji przygotujemy wycenę indywidualną — skontaktuj się z nami."
+    },
     "sections": {
       "elements": "Elementy",
       "dimensions": "Wymiary",
@@ -41,7 +62,8 @@
       "type": "Typ:",
       "thresholdColor": "Kolor progu:",
       "width": "Szerokość okna:",
-      "height": "Wysokość okna:"
+      "height": "Wysokość okna:",
+      "woodSpecies": "Gatunek drewna:"
     },
     "warnings": {
       "animationOnlyDefault": "Animacja dostępna tylko przy domyślnych wymiarach"

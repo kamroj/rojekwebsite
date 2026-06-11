@@ -1,6 +1,9 @@
 ---
 import SiteLayout from '../../layouts/SiteLayout.astro';
 import HsConfiguratorIslandWithResources from '../../components/_astro/islands-with-resources/HsConfiguratorIslandWithResources.astro';
+import { fetchHsPricing } from '../../lib/sanity/hsPricing.js';
+
+const hsPricing = await fetchHsPricing();
 ---
 
 <SiteLayout
@@ -8,5 +11,5 @@ import HsConfiguratorIslandWithResources from '../../components/_astro/islands-w
   title="HS Konfigurator – ROJEK | Hebe-Schiebetüren"
   description="Konfigurieren Sie ein HS-System: Varianten, Farben und Optionen. ROJEK Konfigurator für Hebe-Schiebetüren."
 >
-  <HsConfiguratorIslandWithResources lang="de" hydrate="load" />
+  <HsConfiguratorIslandWithResources lang="de" hydrate="load" viewProps={{ pricing: hsPricing }} />
 </SiteLayout>

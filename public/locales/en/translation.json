@@ -33,7 +33,24 @@
     "subtitle": "Create your dream sliding window",
     "sectionsLabel": {
       "materials": "Finishing",
-      "dimensions": "Proportions"
+      "dimensions": "Proportions",
+      "addons": "Add-ons"
+    },
+    "addons": {
+      "wood": {
+        "pine": "Pine",
+        "meranti": "Meranti",
+        "oak": "Oak"
+      },
+      "silentClose": "SilentClose / StopUnit",
+      "cylinderLock": "Key cylinder",
+      "outerHandle": "Outer handle",
+      "temperedGlass": "Tempered glass"
+    },
+    "price": {
+      "estimatedLabel": "Estimated price",
+      "disclaimer": "This price is indicative and may differ slightly from the final quote.",
+      "individualQuote": "This configuration requires an individual quote — please contact us."
     },
     "sections": {
       "elements": "Elements",
@@ -59,7 +76,8 @@
       "type": "Type:",
       "thresholdColor": "Threshold colour:",
       "width": "Window width:",
-      "height": "Window height:"
+      "height": "Window height:",
+      "woodSpecies": "Wood species:"
     },
     "warnings": {
       "animationOnlyDefault": "Animation is only available for the default dimensions"

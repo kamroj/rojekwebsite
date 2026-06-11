@@ -33,7 +33,24 @@
     "subtitle": "Erstellen Sie Ihr Traum-Schiebefenster",
     "sectionsLabel": {
       "materials": "Ausführung",
-      "dimensions": "Proportionen"
+      "dimensions": "Proportionen",
+      "addons": "Zubehör"
+    },
+    "addons": {
+      "wood": {
+        "pine": "Kiefer",
+        "meranti": "Meranti",
+        "oak": "Eiche"
+      },
+      "silentClose": "SilentClose / StopUnit",
+      "cylinderLock": "Schließzylinder",
+      "outerHandle": "Außengriff",
+      "temperedGlass": "Gehärtetes Glas"
+    },
+    "price": {
+      "estimatedLabel": "Geschätzter Preis",
+      "disclaimer": "Der Preis ist unverbindlich und kann geringfügig vom endgültigen Angebot abweichen.",
+      "individualQuote": "Für diese Konfiguration erstellen wir ein individuelles Angebot – kontaktieren Sie uns."
     },
     "sections": {
       "elements": "Elemente",
@@ -59,7 +76,8 @@
       "type": "Typ:",
       "thresholdColor": "Schwellenfarbe:",
       "width": "Fensterbreite:",
-      "height": "Fensterhöhe:"
+      "height": "Fensterhöhe:",
+      "woodSpecies": "Holzart:"
     },
     "warnings": {
       "animationOnlyDefault": "Animation ist nur bei den Standardabmessungen verfügbar"

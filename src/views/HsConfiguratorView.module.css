@@ -41,7 +41,8 @@
   padding: 1.7rem;
 }
 
-.controlSectionFirst {
+.controlSectionFirst,
+.controlSectionDivided {
   border-bottom: 1px solid rgba(2, 99, 3, 0.08);
 }
 
@@ -425,6 +426,74 @@
   backdrop-filter: blur(8px);
   pointer-events: none;
   user-select: none;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0;
+  cursor: pointer;
+}
+
+.checkbox {
+  width: 19px;
+  height: 19px;
+  flex-shrink: 0;
+  accent-color: #026303;
+  cursor: pointer;
+}
+
+.checkboxLabel {
+  font-size: 1.02rem;
+  color: #27432a;
+}
+
+.priceCard {
+  margin-top: 0.9rem;
+  padding: 1.15rem 1.3rem;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #f4faf5 0%, #edf6ee 100%);
+  border: 1px solid rgba(2, 99, 3, 0.12);
+  box-shadow: 0 10px 26px rgba(16, 72, 24, 0.06);
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.priceLabel {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #104818;
+}
+
+.priceValue {
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #026303;
+  white-space: nowrap;
+}
+
+.priceDisclaimer {
+  margin: 0.55rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: #5f7261;
+}
+
+.priceUnavailable {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.6;
+  font-weight: 600;
+  color: #27432a;
 }
 
 .viewerFooter {

@@ -24,6 +24,9 @@ import articleTag from './articleTag'
 import articlesPage from './articlesPage'
 import productsPage from './productsPage'
 
+import hsPricingSettings from './hsPricingSettings'
+import hsPricingScheme from './hsPricingScheme'
+
 export const schemaTypes = [
   // localized field types
   localizedString,
@@ -53,5 +56,7 @@ export const schemaTypes = [
   articlesPage,
   productsPage,
   realization,
-  article
+  article,
+  hsPricingSettings,
+  hsPricingScheme
 ]

@@ -173,6 +173,9 @@ dist/
 # Generated sitemap fallback (no longer versioned)
 public/sitemap.xml
 
+# HS price lists (managed in Sanity, never versioned)
+cennik_hs/
+
 # FuseBox cache
 .fusebox/
 

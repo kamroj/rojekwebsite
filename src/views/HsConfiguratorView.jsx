@@ -1,6 +1,8 @@
-import React, { Suspense, useCallback, useState } from 'react';
+import React, { Suspense, useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import Page from '../components/ui/Page';
+import { PRICE_STATUS, calculateHsPrice, deriveRanges, formatPln } from '../lib/pricing/hsPrice.js';
+import { pickLocale } from '../lib/sanity/i18n.js';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomeView';
 import styles from './HsConfiguratorView.module.css';
 
@@ -132,16 +134,43 @@ const THRESHOLDS = [
 
 // Standardowa wysokość okna HS — domyślna i przywracana przy zmianie schematu
 const DEFAULT_HEIGHT = 2040;
+const HEIGHT_RANGE = { min: 2000, max: 3000, default: DEFAULT_HEIGHT };
 
-const HsConfiguratorPage = () => {
-  const { t } = useTranslation();
+const ADDON_OPTIONS = [
+  { key: 'silentClose', labelKey: 'hsConfigurator.addons.silentClose', fallback: 'SilentClose / StopUnit' },
+  { key: 'cylinderLock', labelKey: 'hsConfigurator.addons.cylinderLock', fallback: 'Wkładka na klucz' },
+  { key: 'outerHandle', labelKey: 'hsConfigurator.addons.outerHandle', fallback: 'Klamka zewnętrzna' },
+  { key: 'temperedGlass', labelKey: 'hsConfigurator.addons.temperedGlass', fallback: 'Szyba hartowana' },
+];
+
+const WOOD_LABEL_FALLBACKS = { pine: 'Sosna', meranti: 'Meranti', oak: 'Dąb' };
+
+const getDefaultWoodKey = (woodSpecies) => {
+  if (!woodSpecies?.length) return 'pine';
+  const baseSpecies = woodSpecies.find((species) => species.surchargePercent === 0) ?? woodSpecies[0];
+  return baseSpecies.key;
+};
+
+const HsConfiguratorPage = ({ pricing = null }) => {
+  const { t, i18n } = useTranslation();
   const [isCanvasReady, setIsCanvasReady] = useState(false);
   const [selectedTexture, setSelectedTexture] = useState(TEXTURES[0].value);
   const [selectedHandleFinish, setSelectedHandleFinish] = useState(HANDLE_FINISHES[0].value);
   const [selectedType, setSelectedType] = useState(TYPES[0].value);
   const [selectedThreshold, setSelectedThreshold] = useState(THRESHOLDS[0].value);
-  const [width, setWidth] = useState(TYPES[0].widthRange.default);
-  const [height, setHeight] = useState(DEFAULT_HEIGHT);
+  const [width, setWidth] = useState(
+    () => deriveRanges(pricing?.schemes?.[TYPES[0].value]?.matrix, TYPES[0].widthRange, HEIGHT_RANGE).width.default
+  );
+  const [height, setHeight] = useState(
+    () => deriveRanges(pricing?.schemes?.[TYPES[0].value]?.matrix, TYPES[0].widthRange, HEIGHT_RANGE).height.default
+  );
+  const [selectedWood, setSelectedWood] = useState(() => getDefaultWoodKey(pricing?.settings?.woodSpecies));
+  const [addons, setAddons] = useState({
+    silentClose: false,
+    cylinderLock: false,
+    outerHandle: false,
+    temperedGlass: false,
+  });
 
   const handleCanvasReady = useCallback(() => {
     setIsCanvasReady(true);
@@ -157,17 +186,47 @@ const HsConfiguratorPage = () => {
     setter(Number(event.target.value));
   }, []);
 
-  const handleTypeChange = useCallback((type) => {
-    setIsCanvasReady(false);
-    setSelectedType(type);
-    const typeData = TYPES.find((item) => item.value === type);
-    if (typeData?.widthRange) {
-      setWidth(typeData.widthRange.default);
-    }
-    setHeight(DEFAULT_HEIGHT);
+  const handleTypeChange = useCallback(
+    (type) => {
+      setIsCanvasReady(false);
+      setSelectedType(type);
+      const typeData = TYPES.find((item) => item.value === type);
+      if (!typeData?.widthRange) return;
+      const nextRanges = deriveRanges(pricing?.schemes?.[type]?.matrix, typeData.widthRange, HEIGHT_RANGE);
+      setWidth(nextRanges.width.default);
+      setHeight(nextRanges.height.default);
+    },
+    [pricing]
+  );
+
+  const handleWoodChange = useCallback((event) => {
+    setSelectedWood(event.target.value);
+  }, []);
+
+  const handleAddonToggle = useCallback((key) => (event) => {
+    const { checked } = event.target;
+    setAddons((prev) => ({ ...prev, [key]: checked }));
   }, []);
 
   const selectedTypeData = TYPES.find((type) => type.value === selectedType) ?? TYPES[0];
+  const schemePricing = pricing?.schemes?.[selectedType] ?? null;
+
+  const ranges = useMemo(
+    () => deriveRanges(schemePricing?.matrix, selectedTypeData.widthRange, HEIGHT_RANGE),
+    [schemePricing, selectedTypeData]
+  );
+
+  const priceResult = useMemo(() => {
+    if (!pricing) return null;
+    return calculateHsPrice({
+      matrix: schemePricing?.matrix ?? null,
+      addonQuantities: schemePricing?.addonQuantities ?? null,
+      settings: pricing.settings,
+      widthMm: width,
+      heightMm: height,
+      options: { woodKey: selectedWood, ...addons },
+    });
+  }, [pricing, schemePricing, width, height, selectedWood, addons]);
 
   return (
     <Page imageSrc="/images/hs/top.jpg" title={t('hsConfigurator.title', 'Konfigurator HS')}>
@@ -251,7 +310,7 @@ const HsConfiguratorPage = () => {
                 </div>
               </div>
 
-              <div className={styles.controlSection}>
+              <div className={`${styles.controlSection} ${pricing ? styles.controlSectionDivided : ''}`}>
                 <div className={styles.sectionHeaderWrap}>
                   <span className={styles.sectionOverline}>{t('hsConfigurator.sectionsLabel.dimensions', 'Proporcje')}</span>
                 </div>
@@ -265,8 +324,8 @@ const HsConfiguratorPage = () => {
                     <input
                       className={styles.rangeInput}
                       type="range"
-                      min={selectedTypeData.widthRange.min}
-                      max={selectedTypeData.widthRange.max}
+                      min={ranges.width.min}
+                      max={ranges.width.max}
                       step="10"
                       value={width}
                       onChange={handleDimensionChange(setWidth)}
@@ -280,7 +339,15 @@ const HsConfiguratorPage = () => {
                     <span className={styles.rangeBadge}>{height} mm</span>
                   </div>
                   <div className={styles.rangeContainer}>
-                    <input className={styles.rangeInput} type="range" min="2000" max="3000" step="10" value={height} onChange={handleDimensionChange(setHeight)} />
+                    <input
+                      className={styles.rangeInput}
+                      type="range"
+                      min={ranges.height.min}
+                      max={ranges.height.max}
+                      step="10"
+                      value={height}
+                      onChange={handleDimensionChange(setHeight)}
+                    />
                   </div>
                 </div>
 
@@ -294,6 +361,52 @@ const HsConfiguratorPage = () => {
                   </p>
                 </div>
               </div>
+
+              {pricing ? (
+                <div className={styles.controlSection}>
+                  <div className={styles.sectionHeaderWrap}>
+                    <span className={styles.sectionOverline}>{t('hsConfigurator.sectionsLabel.addons', 'Dodatki')}</span>
+                  </div>
+
+                  <div className={styles.controlGroup}>
+                    <label className={styles.label}>{t('hsConfigurator.labels.woodSpecies', 'Gatunek drewna')}</label>
+                    <select className={styles.select} value={selectedWood} onChange={handleWoodChange}>
+                      {pricing.settings.woodSpecies.map((species) => {
+                        // Exact-language Sanity title wins; otherwise the site translation;
+                        // as a last resort any language from Sanity or the hardcoded fallback.
+                        const languageKey = (i18n.language || 'pl').split('-')[0];
+                        const label =
+                          species.title?.[languageKey] ||
+                          t(
+                            `hsConfigurator.addons.wood.${species.key}`,
+                            pickLocale(species.title, languageKey) ||
+                              WOOD_LABEL_FALLBACKS[species.key] ||
+                              species.key
+                          );
+                        return (
+                          <option key={species.key} value={species.key}>
+                            {species.surchargePercent > 0 ? `${label} (+${species.surchargePercent}%)` : label}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+
+                  <div className={styles.controlGroup}>
+                    {ADDON_OPTIONS.map((addon) => (
+                      <label key={addon.key} className={styles.checkboxRow}>
+                        <input
+                          type="checkbox"
+                          className={styles.checkbox}
+                          checked={addons[addon.key]}
+                          onChange={handleAddonToggle(addon.key)}
+                        />
+                        <span className={styles.checkboxLabel}>{t(addon.labelKey, addon.fallback)}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </div>
           </aside>
 
@@ -321,6 +434,34 @@ const HsConfiguratorPage = () => {
                 />
               </Suspense>
             </div>
+
+            {priceResult ? (
+              <div className={styles.priceCard}>
+                {priceResult.status === PRICE_STATUS.OK ? (
+                  <>
+                    <div className={styles.priceRow}>
+                      <span className={styles.priceLabel}>
+                        {t('hsConfigurator.price.estimatedLabel', 'Szacunkowa cena')}
+                      </span>
+                      <span className={styles.priceValue}>≈ {formatPln(priceResult.total)}</span>
+                    </div>
+                    <p className={styles.priceDisclaimer}>
+                      {t(
+                        'hsConfigurator.price.disclaimer',
+                        'Cena ma charakter poglądowy i może nieznacznie odbiegać od rzeczywistej wyceny.'
+                      )}
+                    </p>
+                  </>
+                ) : (
+                  <p className={styles.priceUnavailable}>
+                    {t(
+                      'hsConfigurator.price.individualQuote',
+                      'Dla tej konfiguracji przygotujemy wycenę indywidualną — skontaktuj się z nami.'
+                    )}
+                  </p>
+                )}
+              </div>
+            ) : null}
 
             <div className={styles.viewerFooter}>
               <div className={styles.viewerNote}>
