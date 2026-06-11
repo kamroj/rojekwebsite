@@ -130,7 +130,8 @@ const THRESHOLDS = [
   { value: 'gold', labelKey: 'hsConfigurator.options.thresholds.gold', fallback: 'Złoty' },
 ];
 
-const BASE_HEIGHT = 2040;
+// Standardowa wysokość okna HS — domyślna i przywracana przy zmianie schematu
+const DEFAULT_HEIGHT = 2040;
 
 const HsConfiguratorPage = () => {
   const { t } = useTranslation();
@@ -140,7 +141,7 @@ const HsConfiguratorPage = () => {
   const [selectedType, setSelectedType] = useState(TYPES[0].value);
   const [selectedThreshold, setSelectedThreshold] = useState(THRESHOLDS[0].value);
   const [width, setWidth] = useState(TYPES[0].widthRange.default);
-  const [height, setHeight] = useState(BASE_HEIGHT);
+  const [height, setHeight] = useState(DEFAULT_HEIGHT);
 
   const handleCanvasReady = useCallback(() => {
     setIsCanvasReady(true);
@@ -163,6 +164,7 @@ const HsConfiguratorPage = () => {
     if (typeData?.widthRange) {
       setWidth(typeData.widthRange.default);
     }
+    setHeight(DEFAULT_HEIGHT);
   }, []);
 
   const selectedTypeData = TYPES.find((type) => type.value === selectedType) ?? TYPES[0];
