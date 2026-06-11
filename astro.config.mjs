@@ -24,9 +24,11 @@ export default defineConfig({
   vite: {
     optimizeDeps: {
       // Stabilize dev prebundle for HS configurator (three.js stack)
-      include: ['three', '@react-three/fiber', '@react-three/drei'],
+      // qrcode is CJS — prebundle avoids a dev-server reload on first AR/QR modal open
+      include: ['three', '@react-three/fiber', '@react-three/drei', 'qrcode'],
       // Prevent stale optimized chunks for heavy 3D deps in long-running dev sessions
-      exclude: ['@react-three/drei'],
+      // model-viewer min bundle is self-contained ESM — no prebundling needed
+      exclude: ['@react-three/drei', '@google/model-viewer/dist/model-viewer.min.js'],
     },
     resolve: {
       alias: {
@@ -58,6 +60,22 @@ export default defineConfig({
           manualChunks(id) {
             if (!id) return;
             if (id.includes('node_modules')) {
+              // model-viewer (AR) ładowany dynamicznie — własny lazy chunk.
+              // MUSI być sprawdzany przed checkiem three: pakiet ma zagnieżdżoną
+              // kopię three (node_modules/@google/model-viewer/node_modules/three),
+              // która inaczej trafiłaby do eagerowego three-vendor
+              if (id.includes('@google/model-viewer')) {
+                return;
+              }
+              // Eksportery GLB/USDZ (AR) — używane tylko po tapnięciu przycisku AR,
+              // osobny chunk trzyma je poza eagerowym three-vendor. Importują z three
+              // core już załadowanego przez three-vendor, więc TDZ nie grozi
+              if (
+                id.includes('three/examples/jsm/exporters') ||
+                id.includes('three/examples/jsm/libs/fflate')
+              ) {
+                return 'three-exporters';
+              }
               // WAŻNE: Wszystkie pakiety Three.js MUSZĄ być w jednym CHUNCK
               // żeby uniknąć problemów z kolejnością inicjalizacji (TDZ errors)
               if (

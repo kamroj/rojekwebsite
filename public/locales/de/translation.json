@@ -29,6 +29,18 @@
   "hsConfigurator": {
     "loading": "Konfigurator wird geladen…",
     "clickHint": "Klicken Sie auf den Flügel, um ihn zu öffnen oder zu schließen",
+    "ar": {
+      "button": "In AR ansehen",
+      "qrButton": "AR auf dem Smartphone",
+      "qrTitle": "Code mit dem Smartphone scannen",
+      "qrDescription": "Der Konfigurator öffnet sich mit Ihrer Konfiguration, bereit für AR.",
+      "preparing": "Modell wird vorbereitet…",
+      "launch": "AR starten",
+      "readyHint": "Modell im Maßstab 1:1 — richten Sie das Smartphone auf den Boden.",
+      "error": "Das AR-Modell konnte nicht vorbereitet werden.",
+      "retry": "Erneut versuchen",
+      "close": "Schließen"
+    },
     "title": "HS‑Konfigurator",
     "header": "HS‑Konfigurator",
     "subtitle": "Erstellen Sie Ihr Traum-Schiebefenster",

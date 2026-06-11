@@ -29,6 +29,18 @@
   "hsConfigurator": {
     "loading": "Loading configurator…",
     "clickHint": "Click the sash to open or close it",
+    "ar": {
+      "button": "View in AR",
+      "qrButton": "AR on your phone",
+      "qrTitle": "Scan the code with your phone",
+      "qrDescription": "The configurator will open with your configuration, ready to launch AR.",
+      "preparing": "Preparing the model…",
+      "launch": "Launch AR",
+      "readyHint": "1:1 scale model — point your phone at the floor.",
+      "error": "Could not prepare the AR model.",
+      "retry": "Try again",
+      "close": "Close"
+    },
     "title": "HS Configurator",
     "header": "HS Configurator",
     "subtitle": "Create your dream sliding window",

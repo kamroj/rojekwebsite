@@ -28,6 +28,18 @@
   "hsConfigurator": {
     "loading": "Ładowanie konfiguratora…",
     "clickHint": "Kliknij skrzydło, aby otworzyć lub zamknąć",
+    "ar": {
+      "button": "Zobacz w AR",
+      "qrButton": "AR na telefonie",
+      "qrTitle": "Zeskanuj kod telefonem",
+      "qrDescription": "Otworzy się konfigurator z Twoją konfiguracją, gotowy do uruchomienia AR.",
+      "preparing": "Przygotowywanie modelu…",
+      "launch": "Uruchom AR",
+      "readyHint": "Model w skali 1:1 — skieruj telefon na podłogę.",
+      "error": "Nie udało się przygotować modelu AR.",
+      "retry": "Spróbuj ponownie",
+      "close": "Zamknij"
+    },
     "title": "Konfigurator HS",
     "header": "Konfigurator HS",
     "subtitle": "Stwórz swoje wymarzone okno przesuwne",

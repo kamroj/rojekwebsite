@@ -1,158 +1,28 @@
-import React, { Suspense, useCallback, useMemo, useState } from 'react';
+import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiArrowRight } from 'react-icons/fi';
 import Page from '../components/ui/Page';
+import { parseHsConfig } from '../lib/hs/configUrl.js';
 import { PRICE_STATUS, calculateHsPrice, deriveRanges, formatPln } from '../lib/pricing/hsPrice.js';
 import { pickLocale } from '../lib/sanity/i18n.js';
+import ArLauncher from './hs-configurator/ar/ArLauncher.jsx';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomeView';
+import {
+  ADDON_OPTIONS,
+  HANDLE_FINISHES,
+  HEIGHT_RANGE,
+  TEXTURES,
+  THRESHOLDS,
+  TYPES,
+  getDefaultWoodKey,
+} from './hs-configurator/hsOptions.js';
 import styles from './HsConfiguratorView.module.css';
 
 const HsConfiguratorCanvas = React.lazy(() => import('./hs-configurator/HsConfiguratorCanvas.jsx'));
 
-const TEXTURES = [
-  { value: '/models/remmers-natur.jpg', labelKey: 'hsConfigurator.options.textures.natur', fallback: 'Natur' },
-  { value: '/models/remmers-miodowa-sosna.jpg', labelKey: 'hsConfigurator.options.textures.honeyPine', fallback: 'Miodowa Sosna' },
-];
-
-const HANDLE_FINISHES = [
-  { value: 'silver', labelKey: 'hsConfigurator.options.handleTextures.silver', fallback: 'Srebrna' },
-  { value: 'gold', labelKey: 'hsConfigurator.options.handleTextures.gold', fallback: 'Złota' },
-];
-
-// Zakresy szerokości zależne od liczby pól schematu
-const WIDTH_2_FIELDS = { min: 2000, max: 4000, default: 2320 };
-const WIDTH_3_FIELDS = { min: 2500, max: 4500, default: 3000 };
-const WIDTH_4_FIELDS = { min: 3000, max: 5000, default: 3750 };
-
-const TYPES = [
-  {
-    value: 'a',
-    label: 'A',
-    image: '/images/hs/schemat-A.png',
-    labelKey: 'hsConfigurator.options.schemes.a.label',
-    fallback: 'Schemat A',
-    descriptionKey: 'hsConfigurator.options.schemes.a.description',
-    descriptionFallback: 'Dwa pola z jednym skrzydłem przesuwnym.',
-    widthRange: WIDTH_2_FIELDS,
-  },
-  {
-    value: 'a3',
-    label: 'A3',
-    image: '/images/hs/schemat-A3.png',
-    labelKey: 'hsConfigurator.options.schemes.a3.label',
-    fallback: 'Schemat A3',
-    descriptionKey: 'hsConfigurator.options.schemes.a3.description',
-    descriptionFallback: 'Lustrzane A — skrzydło przesuwne z prawej strony.',
-    widthRange: WIDTH_2_FIELDS,
-  },
-  {
-    value: 'd',
-    label: 'D',
-    image: '/images/hs/schemat-D.png',
-    labelKey: 'hsConfigurator.options.schemes.d.label',
-    fallback: 'Schemat D',
-    descriptionKey: 'hsConfigurator.options.schemes.d.description',
-    descriptionFallback: 'Dwa pola, oba skrzydła przesuwne.',
-    widthRange: WIDTH_2_FIELDS,
-  },
-  {
-    value: 'e',
-    label: 'E',
-    image: '/images/hs/schemat-E.png',
-    labelKey: 'hsConfigurator.options.schemes.e.label',
-    fallback: 'Schemat E',
-    descriptionKey: 'hsConfigurator.options.schemes.e.description',
-    descriptionFallback: 'Trzy pola, dwa skrzydła przesuwne w jedną stronę.',
-    widthRange: WIDTH_3_FIELDS,
-  },
-  {
-    value: 'g2',
-    label: 'G2',
-    image: '/images/hs/schemat-G2.png',
-    labelKey: 'hsConfigurator.options.schemes.g2.label',
-    fallback: 'Schemat G2',
-    descriptionKey: 'hsConfigurator.options.schemes.g2.description',
-    descriptionFallback: 'Trzy pola, środkowe skrzydło przesuwne, słupki statyczne.',
-    widthRange: WIDTH_3_FIELDS,
-  },
-  {
-    value: 'g3',
-    label: 'G3',
-    image: '/images/hs/schemat-G3.png',
-    labelKey: 'hsConfigurator.options.schemes.g3.label',
-    fallback: 'Schemat G3',
-    descriptionKey: 'hsConfigurator.options.schemes.g3.description',
-    descriptionFallback: 'Trzy pola, środkowe skrzydło przesuwne, bez słupków statycznych.',
-    widthRange: WIDTH_3_FIELDS,
-  },
-  {
-    value: 'h',
-    label: 'H',
-    image: '/images/hs/schemat-H.png',
-    labelKey: 'hsConfigurator.options.schemes.h.label',
-    fallback: 'Schemat H',
-    descriptionKey: 'hsConfigurator.options.schemes.h.description',
-    descriptionFallback: 'Trzy pola, wszystkie skrzydła przesuwne.',
-    widthRange: WIDTH_3_FIELDS,
-  },
-  {
-    value: 'k',
-    label: 'K',
-    image: '/images/hs/schemat-K.png',
-    labelKey: 'hsConfigurator.options.schemes.k.label',
-    fallback: 'Schemat K',
-    descriptionKey: 'hsConfigurator.options.schemes.k.description',
-    descriptionFallback: 'Szerokie pole stałe pośrodku, skrzydła przesuwne po bokach.',
-    widthRange: WIDTH_3_FIELDS,
-  },
-  {
-    value: 'c',
-    label: 'C',
-    image: '/images/hs/schemat-C.png',
-    labelKey: 'hsConfigurator.options.schemes.c.label',
-    fallback: 'Schemat C',
-    descriptionKey: 'hsConfigurator.options.schemes.c.description',
-    descriptionFallback: 'Cztery pola z dwoma środkowymi skrzydłami przesuwnymi.',
-    widthRange: WIDTH_4_FIELDS,
-  },
-  {
-    value: 'f',
-    label: 'F',
-    image: '/images/hs/schemat-F.png',
-    labelKey: 'hsConfigurator.options.schemes.f.label',
-    fallback: 'Schemat F',
-    descriptionKey: 'hsConfigurator.options.schemes.f.description',
-    descriptionFallback: 'Cztery pola, wszystkie skrzydła przesuwne.',
-    widthRange: WIDTH_4_FIELDS,
-  },
-];
-
-const THRESHOLDS = [
-  { value: 'silver', labelKey: 'hsConfigurator.options.thresholds.silver', fallback: 'Srebrny' },
-  { value: 'black', labelKey: 'hsConfigurator.options.thresholds.black', fallback: 'Czarny' },
-  { value: 'gold', labelKey: 'hsConfigurator.options.thresholds.gold', fallback: 'Złoty' },
-];
-
-// Standardowa wysokość okna HS — domyślna i przywracana przy zmianie schematu
-const DEFAULT_HEIGHT = 2040;
-const HEIGHT_RANGE = { min: 2000, max: 3000, default: DEFAULT_HEIGHT };
-
-const ADDON_OPTIONS = [
-  { key: 'silentClose', labelKey: 'hsConfigurator.addons.silentClose', fallback: 'SilentClose / StopUnit' },
-  { key: 'cylinderLock', labelKey: 'hsConfigurator.addons.cylinderLock', fallback: 'Wkładka na klucz' },
-  { key: 'outerHandle', labelKey: 'hsConfigurator.addons.outerHandle', fallback: 'Klamka zewnętrzna' },
-  { key: 'temperedGlass', labelKey: 'hsConfigurator.addons.temperedGlass', fallback: 'Szyba hartowana' },
-];
-
 const WOOD_LABEL_FALLBACKS = { pine: 'Sosna', meranti: 'Meranti', oak: 'Dąb' };
 
 const CONTACT_PATHS = { pl: '/kontakt', en: '/en/contact', de: '/de/kontakt', fr: '/fr/contact' };
-
-const getDefaultWoodKey = (woodSpecies) => {
-  if (!woodSpecies?.length) return 'pine';
-  const baseSpecies = woodSpecies.find((species) => species.surchargePercent === 0) ?? woodSpecies[0];
-  return baseSpecies.key;
-};
 
 const HsConfiguratorPage = ({ pricing = null }) => {
   const { t, i18n } = useTranslation();
@@ -174,6 +44,30 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     outerHandle: false,
     temperedGlass: false,
   });
+  const [arAutoPrompt, setArAutoPrompt] = useState(false);
+
+  // Ref do głównej grupy modelu w canvasie — ArLauncher klonuje ją do eksportu GLB/USDZ
+  const modelExportRef = useRef(null);
+
+  // Odtworzenie konfiguracji z parametrów URL (link z kodu QR). Celowo w efekcie,
+  // nie w inicjalizatorach stanu — wyspa jest prerenderowana (client:load), więc
+  // odczyt URL przy pierwszym renderze rozjechałby się z hydratacją.
+  const didHydrateFromUrl = useRef(false);
+  useEffect(() => {
+    if (didHydrateFromUrl.current) return;
+    didHydrateFromUrl.current = true;
+    const parsed = parseHsConfig(window.location.search, { pricing });
+    if (!parsed) return;
+    setSelectedType(parsed.scheme);
+    setWidth(parsed.width);
+    setHeight(parsed.height);
+    setSelectedTexture(parsed.texture);
+    setSelectedHandleFinish(parsed.handleFinish);
+    setSelectedThreshold(parsed.threshold);
+    setSelectedWood(parsed.wood);
+    setAddons(parsed.addons);
+    setArAutoPrompt(parsed.ar);
+  }, [pricing]);
 
   const handleCanvasReady = useCallback(() => {
     setIsCanvasReady(true);
@@ -230,6 +124,21 @@ const HsConfiguratorPage = ({ pricing = null }) => {
       options: { woodKey: selectedWood, ...addons },
     });
   }, [pricing, schemePricing, width, height, selectedWood, addons]);
+
+  // Migawka konfiguracji dla ArLaunchera (eksport AR + serializacja do QR)
+  const arConfig = useMemo(
+    () => ({
+      scheme: selectedType,
+      width,
+      height,
+      texture: selectedTexture,
+      handleFinish: selectedHandleFinish,
+      threshold: selectedThreshold,
+      wood: selectedWood,
+      addons,
+    }),
+    [selectedType, width, height, selectedTexture, selectedHandleFinish, selectedThreshold, selectedWood, addons]
+  );
 
   const languageKey = (i18n.language || 'pl').split('-')[0];
   const contactPath = CONTACT_PATHS[languageKey] ?? CONTACT_PATHS.pl;
@@ -500,6 +409,12 @@ const HsConfiguratorPage = ({ pricing = null }) => {
               <div className={styles.viewerHint}>
                 {t('hsConfigurator.clickHint', 'Kliknij skrzydło, aby otworzyć lub zamknąć')}
               </div>
+              <ArLauncher
+                modelRootRef={modelExportRef}
+                isModelReady={isCanvasReady}
+                config={arConfig}
+                autoPrepare={arAutoPrompt}
+              />
               {!isCanvasReady && (
                 <div className={styles.viewerLoadingOverlay} aria-live="polite" aria-busy="true">
                   <div className={styles.viewerSpinner} />
@@ -515,6 +430,7 @@ const HsConfiguratorPage = ({ pricing = null }) => {
                   width={width}
                   height={height}
                   onReady={handleCanvasReady}
+                  exportRef={modelExportRef}
                 />
               </Suspense>
             </div>

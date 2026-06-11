@@ -380,7 +380,8 @@ function PullHandle({ position, material, leverRef }) {
       <BoxPart position={[0, 0, 0.006]} size={[0.057, 0.1435, 0.012]} material={material} />
       {/* trzpień obrotowy */}
       <BoxPart position={[0, -0.03, 0.025]} size={[0.034, 0.036, 0.026]} material={material} />
-      <group ref={leverRef} position={[0, -0.03, 0]}>
+      {/* userData pozwala eksportowi AR znaleźć i wyzerować obrót dźwigni na klonie */}
+      <group ref={leverRef} position={[0, -0.03, 0]} userData={{ hsLever: true }}>
         {/* szyjka łącząca trzpień z dźwignią */}
         <BoxPart position={[0, 0, 0.05]} size={[0.028, 0.045, 0.024]} material={material} />
         {/* dźwignia pionowa (płaskownik) */}
@@ -493,6 +494,8 @@ function GlazedPanel({
         onClick: handleClick,
         onPointerOver: handlePointerOver,
         onPointerOut: handlePointerOut,
+        // Tag dla eksportu AR — pozwala wyzerować przesuw/uniesienie skrzydła na klonie
+        userData: { hsSash: true },
       }
     : {};
 
@@ -581,6 +584,7 @@ function ProceduralHsModel({
   width,
   height,
   onReady,
+  exportRef,
   ...props
 }) {
   const texture = useTexture(texturePath);
@@ -693,7 +697,9 @@ function ProceduralHsModel({
   }, [handleFinish, height, onReady, scheme, thresholdType, textures, width]);
 
   return (
-    <group {...props} position={[0, -modelHeight / 2, 0]}>
+    // exportRef wskazuje samą grupę modelu (bez Center/świateł/ContactShadows) —
+    // eksport AR klonuje ją bez elementów pomocniczych sceny
+    <group ref={exportRef} {...props} position={[0, -modelHeight / 2, 0]}>
       {/* Ościeżnica: stojaki i nadproże */}
       <BoxPart
         position={[
@@ -835,6 +841,7 @@ export default function HsConfiguratorCanvas({
   width,
   height,
   onReady,
+  exportRef,
 }) {
   const modelRef = useRef();
 
@@ -880,6 +887,7 @@ export default function HsConfiguratorCanvas({
               width={width}
               height={height}
               onReady={onReady}
+              exportRef={exportRef}
             />
           </group>
         </Center>

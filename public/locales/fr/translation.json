@@ -29,6 +29,18 @@
   "hsConfigurator": {
     "loading": "Chargement du configurateur…",
     "clickHint": "Cliquez sur le vantail pour l'ouvrir ou le fermer",
+    "ar": {
+      "button": "Voir en RA",
+      "qrButton": "RA sur votre téléphone",
+      "qrTitle": "Scannez le code avec votre téléphone",
+      "qrDescription": "Le configurateur s'ouvrira avec votre configuration, prêt à lancer la RA.",
+      "preparing": "Préparation du modèle…",
+      "launch": "Lancer la RA",
+      "readyHint": "Modèle à l'échelle 1:1 — pointez votre téléphone vers le sol.",
+      "error": "Impossible de préparer le modèle RA.",
+      "retry": "Réessayer",
+      "close": "Fermer"
+    },
     "title": "Configurateur HS",
     "header": "Configurateur HS",
     "subtitle": "Créez votre baie coulissante idéale",
