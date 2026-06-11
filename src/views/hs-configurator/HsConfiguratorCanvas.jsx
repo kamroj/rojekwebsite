@@ -5,7 +5,6 @@ import {
   ContactShadows,
   Environment,
   OrbitControls,
-  useGLTF,
   useTexture,
 } from '@react-three/drei';
 
@@ -20,118 +19,120 @@ import {
   Vector3,
 } from 'three';
 
-// Bazowe wymiary okna
-const BASE_WIDTH = 2320; // mm
-const BASE_HEIGHT = 2040; // mm
+// Wymiary profili systemu HS wg przekroju producenta (w metrach)
+const PROFILE = {
+  frame: 0.056, // ościeżnica 56 x 208 mm
+  frameDepth: 0.208,
+  sash: 0.09, // skrzydło (przesuwne i stałe) 90 x 92 mm
+  sashDepth: 0.092,
+  fixed: 0.09,
+  fixedDepth: 0.092,
+  filler: { height: 0.019, depth: 0.115 }, // listwa maskująca 19 x 115 mm nad polem stałym
+  bead: 0.022, // listwa przyszybowa
+  gasket: 0.012, // uszczelka wokół szyby
+  threshold: 0.05, // wysokość niskiego progu
+  trackInnerZ: 0.055, // tor wewnętrzny (skrzydła przesuwne)
+  trackOuterZ: -0.055, // tor zewnętrzny (pola stałe)
+  overlap: 0.045, // zakład skrzydła przesuwnego na pole stałe
+};
 
-// Funkcja do aktualizacji wymiarów elementów
-function updateDimensions(scene, width, height) {
-  const widthDiff = width - BASE_WIDTH;
-  const heightDiff = height - BASE_HEIGHT;
-  const halfWidthDiff = widthDiff / 2;
+const OV = PROFILE.overlap;
+// Słupek statyczny i szklenie stałe (G2/G3) wypełniają głębokość ościeżnicy
+// aż pod płaszczyznę skrzydła przesuwnego (tył skrzydła = +0.009), żeby z boku
+// nie było widać szczeliny między polem stałym a skrzydłem
+const MULLION = { width: 0.09, depth: 0.096, z: -0.041 };
+const MULLION_TUCK = MULLION.width / 2 - 0.003; // krawędź pola schowana 3 mm pod słupkiem
+const GLAZING = { profile: 0.045, depth: 0.09, z: -0.04 };
 
-  scene.traverse((obj) => {
-    if (!obj.isMesh) return;
+// Panele wg schematów: skrzydła przesuwne jeżdżą po torze wewnętrznym lub
+// zewnętrznym i zachodzą na sąsiadów (zakład `extend`); typy pól:
+// sliding = skrzydło przesuwne, fixed = skrzydło stałe ramowe,
+// glazing = szklenie stałe bezpośrednio w ościeżnicy (bez ramy skrzydła).
+// span = udział w szerokości światła ościeżnicy.
+const SCHEME_DEFINITIONS = {
+  a: {
+    panels: [
+      { type: 'sliding', span: [0, 0.5], track: 'inner', handle: 'left', extend: [0, OV] },
+      { type: 'fixed', span: [0.5, 1], track: 'outer', extend: [-OV, 0] },
+    ],
+  },
+  a3: {
+    panels: [
+      { type: 'fixed', span: [0, 0.5], track: 'outer', extend: [0, OV] },
+      { type: 'sliding', span: [0.5, 1], track: 'inner', handle: 'right', extend: [-OV, 0] },
+    ],
+  },
+  c: {
+    panels: [
+      { type: 'fixed', span: [0, 0.25], track: 'outer', extend: [0, OV] },
+      { type: 'sliding', span: [0.25, 0.5], track: 'inner', handle: 'right', extend: [-OV, 0] },
+      { type: 'sliding', span: [0.5, 0.75], track: 'inner', handle: 'left', extend: [0, OV] },
+      { type: 'fixed', span: [0.75, 1], track: 'outer', extend: [-OV, 0] },
+    ],
+  },
+  d: {
+    panels: [
+      { type: 'sliding', span: [0, 0.5], track: 'inner', handle: 'left', extend: [0, OV] },
+      { type: 'sliding', span: [0.5, 1], track: 'outer', handle: 'right', extend: [-OV, 0] },
+    ],
+  },
+  e: {
+    panels: [
+      { type: 'sliding', span: [0, 1 / 3], track: 'outer', handle: 'left', extend: [0, OV] },
+      { type: 'sliding', span: [1 / 3, 2 / 3], track: 'inner', handle: 'left', extend: [-OV, OV] },
+      { type: 'fixed', span: [2 / 3, 1], track: 'outer', extend: [-OV, 0] },
+    ],
+  },
+  f: {
+    panels: [
+      { type: 'sliding', span: [0, 0.25], track: 'outer', handle: 'left', extend: [0, OV] },
+      { type: 'sliding', span: [0.25, 0.5], track: 'inner', handle: 'right', extend: [-OV, 0] },
+      { type: 'sliding', span: [0.5, 0.75], track: 'inner', handle: 'left', extend: [0, OV] },
+      { type: 'sliding', span: [0.75, 1], track: 'outer', handle: 'right', extend: [-OV, 0] },
+    ],
+  },
+  g2: {
+    panels: [
+      { type: 'glazing', span: [0, 1 / 3], track: 'outer', extend: [0, -MULLION_TUCK] },
+      { type: 'sliding', span: [1 / 3, 2 / 3], track: 'inner', handle: 'left', extend: [MULLION_TUCK, -MULLION_TUCK] },
+      { type: 'glazing', span: [2 / 3, 1], track: 'outer', extend: [MULLION_TUCK, 0] },
+    ],
+    mullions: [1 / 3, 2 / 3],
+  },
+  g3: {
+    panels: [
+      { type: 'glazing', span: [0, 1 / 3], track: 'outer', extend: [0, OV] },
+      { type: 'sliding', span: [1 / 3, 2 / 3], track: 'inner', handle: 'left', extend: [-OV, OV] },
+      { type: 'glazing', span: [2 / 3, 1], track: 'outer', extend: [-OV, 0] },
+    ],
+  },
+  h: {
+    panels: [
+      { type: 'sliding', span: [0, 1 / 3], track: 'outer', handle: 'left', extend: [0, OV] },
+      { type: 'sliding', span: [1 / 3, 2 / 3], track: 'inner', handle: 'left', extend: [-OV, OV] },
+      { type: 'sliding', span: [2 / 3, 1], track: 'outer', handle: 'right', extend: [-OV, 0] },
+    ],
+  },
+  k: {
+    panels: [
+      { type: 'sliding', span: [0, 0.25], track: 'inner', handle: 'left', extend: [0, OV] },
+      { type: 'fixed', span: [0.25, 0.75], track: 'outer', extend: [-OV, OV] },
+      { type: 'sliding', span: [0.75, 1], track: 'inner', handle: 'right', extend: [-OV, 0] },
+    ],
+  },
+};
 
-    const name = obj.name.toLowerCase();
+const TRACK_Z = {
+  inner: PROFILE.trackInnerZ,
+  outer: PROFILE.trackOuterZ,
+};
 
-    // Zapisz oryginalne wartości przy pierwszym wywołaniu
-    if (!obj.userData.originalPosition) {
-      obj.userData.originalPosition = obj.position.clone();
-      obj.userData.originalScale = obj.scale.clone();
-      obj.userData.originalSize = new Vector3();
-      obj.geometry.computeBoundingBox();
-      obj.geometry.boundingBox.getSize(obj.userData.originalSize);
-    }
-
-    const origPos = obj.userData.originalPosition;
-    const origScale = obj.userData.originalScale;
-    const origSize = obj.userData.originalSize;
-
-    // LEWE SKRZYDŁO (sash-front)
-    if (name.includes('sash-front')) {
-      if (name.includes('frame-bottom') || name.includes('frame-top')) {
-        const originalWidth = origSize.x * origScale.x;
-        const newWidth = originalWidth + halfWidthDiff;
-        const newScale = newWidth / originalWidth;
-        obj.scale.x = origScale.x * newScale;
-        obj.position.x = origPos.x - halfWidthDiff / 2;
-      } else if (name.includes('frame-left')) {
-        obj.position.x = origPos.x - halfWidthDiff;
-      } else if (name.includes('frame-right')) {
-        obj.position.x = origPos.x;
-      } else if (name.includes('glass')) {
-        const originalWidth = origSize.x * origScale.x;
-        const newWidth = originalWidth + halfWidthDiff;
-        const newScale = newWidth / originalWidth;
-        obj.scale.x = origScale.x * newScale;
-        obj.position.x = origPos.x - halfWidthDiff / 2;
-      }
-    }
-
-    // PRAWE SKRZYDŁO (sash-back)
-    else if (name.includes('sash-back')) {
-      if (name.includes('frame-bottom') || name.includes('frame-top')) {
-        const originalWidth = origSize.x * origScale.x;
-        const newWidth = originalWidth + halfWidthDiff;
-        const newScale = newWidth / originalWidth;
-        obj.scale.x = origScale.x * newScale;
-        obj.position.x = origPos.x + halfWidthDiff / 2;
-      } else if (name.includes('frame-left')) {
-        obj.position.x = origPos.x;
-      } else if (name.includes('frame-right')) {
-        obj.position.x = origPos.x + halfWidthDiff;
-      } else if (name.includes('glass')) {
-        const originalWidth = origSize.x * origScale.x;
-        const newWidth = originalWidth + halfWidthDiff;
-        const newScale = newWidth / originalWidth;
-        obj.scale.x = origScale.x * newScale;
-        obj.position.x = origPos.x + halfWidthDiff / 2;
-      }
-    }
-
-    // KLAMKI
-    else if (name.includes('handle')) {
-      obj.position.x = origPos.x - halfWidthDiff;
-    }
-
-    // ZEWNĘTRZNA RAMA
-    else if ((name.includes('frame') || name.includes('threshold')) && !name.includes('sash')) {
-      if (name.includes('left')) {
-        obj.position.x = origPos.x - halfWidthDiff;
-      } else if (name.includes('right')) {
-        obj.position.x = origPos.x + halfWidthDiff;
-      } else if (name.includes('top') || name.includes('bottom') || name.includes('threshold')) {
-        const originalWidth = origSize.x * origScale.x;
-        const newWidth = originalWidth + widthDiff;
-        const newScale = newWidth / originalWidth;
-        obj.scale.x = origScale.x * newScale;
-        obj.position.x = origPos.x;
-      }
-    }
-
-    // WYSOKOŚĆ
-    if (name.includes('glass')) {
-      const originalHeight = origSize.y * origScale.y;
-      const newHeight = originalHeight + heightDiff;
-      const newScale = newHeight / originalHeight;
-      obj.scale.y = origScale.y * newScale;
-      obj.position.y = origPos.y + heightDiff / 2;
-    } else if (name.includes('frame')) {
-      if (name.includes('bottom')) {
-        obj.position.y = origPos.y;
-      } else if (name.includes('top')) {
-        obj.position.y = origPos.y + heightDiff;
-      } else if (name.includes('left') || name.includes('right')) {
-        const originalHeight = origSize.y * origScale.y;
-        const newHeight = originalHeight + heightDiff;
-        const newScale = newHeight / originalHeight;
-        obj.scale.y = origScale.y * newScale;
-        obj.position.y = origPos.y + heightDiff / 2;
-      }
-    }
-  });
-}
+// Wykończenia klamki: szczotkowane aluminium srebrne / złote F4
+// (niepełny metalness, by profil nie gasł na tle ciemnych partii otoczenia HDRI)
+const HANDLE_FINISHES = {
+  silver: { color: '#d6d9dc', roughness: 0.38, metalness: 0.9 },
+  gold: { color: '#c79f57', roughness: 0.34, metalness: 0.9 },
+};
 
 // Funkcja do tworzenia materiału progu
 function getThresholdMaterial(thresholdType) {
@@ -164,143 +165,329 @@ function getThresholdMaterial(thresholdType) {
   return material;
 }
 
-function HsModel({
+function BoxPart({ position, size, material, castShadow = true, receiveShadow = true }) {
+  return (
+    <mesh position={position} castShadow={castShadow} receiveShadow={receiveShadow}>
+      <boxGeometry args={size} />
+      {material}
+    </mesh>
+  );
+}
+
+// Prostokątna rama z czterech belek (pionowe słoje na stojakach, poziome na ryglach)
+function FrameRing({ cx, cy, z, width, height, profile, depth, materialV, materialH }) {
+  const railWidth = Math.max(width - profile * 2, 0.01);
+
+  return (
+    <group>
+      <BoxPart
+        position={[cx - width / 2 + profile / 2, cy, z]}
+        size={[profile, height, depth]}
+        material={materialV}
+      />
+      <BoxPart
+        position={[cx + width / 2 - profile / 2, cy, z]}
+        size={[profile, height, depth]}
+        material={materialV}
+      />
+      <BoxPart
+        position={[cx, cy + height / 2 - profile / 2, z]}
+        size={[railWidth, profile, depth]}
+        material={materialH}
+      />
+      <BoxPart
+        position={[cx, cy - height / 2 + profile / 2, z]}
+        size={[railWidth, profile, depth]}
+        material={materialH}
+      />
+    </group>
+  );
+}
+
+// Klamka HS wg rysunku: płytka 57 x 143,5, dźwignia ~312 mm w górę,
+// odsadzenie uchwytu 61 mm od powierzchni skrzydła
+function PullHandle({ position, material }) {
+  return (
+    <group position={position}>
+      {/* płytka montażowa */}
+      <BoxPart position={[0, 0, 0.006]} size={[0.057, 0.1435, 0.012]} material={material} />
+      {/* trzpień obrotowy */}
+      <BoxPart position={[0, -0.03, 0.025]} size={[0.034, 0.036, 0.026]} material={material} />
+      {/* szyjka łącząca trzpień z dźwignią */}
+      <BoxPart position={[0, -0.03, 0.05]} size={[0.028, 0.045, 0.024]} material={material} />
+      {/* dźwignia pionowa (płaskownik) */}
+      <BoxPart position={[0, 0.098, 0.061]} size={[0.025, 0.3, 0.019]} material={material} />
+    </group>
+  );
+}
+
+function GlazedPanel({ panel, openingWidth, openingBottom, openingTop, materials }) {
+  const isSliding = panel.type === 'sliding';
+  const isGlazing = panel.type === 'glazing';
+  const profile = isGlazing ? GLAZING.profile : isSliding ? PROFILE.sash : PROFILE.fixed;
+  const depth = isGlazing ? GLAZING.depth : isSliding ? PROFILE.sashDepth : PROFILE.fixedDepth;
+  const z = isGlazing ? GLAZING.z : TRACK_Z[panel.track] ?? PROFILE.trackOuterZ;
+
+  const xLeft = -openingWidth / 2 + panel.span[0] * openingWidth + panel.extend[0];
+  const xRight = -openingWidth / 2 + panel.span[1] * openingWidth + panel.extend[1];
+  const cx = (xLeft + xRight) / 2;
+  const panelWidth = xRight - xLeft;
+
+  // Skrzydło przesuwne jedzie po prowadnicy progu, skrzydło stałe siedzi na progu,
+  // a od góry skrzydło stałe domyka listwa maskująca 19 x 115
+  const bottom = openingBottom + (isSliding ? 0.012 : 0);
+  const top = openingTop - (isSliding ? 0.004 : isGlazing ? 0 : PROFILE.filler.height);
+  const cy = (bottom + top) / 2;
+  const panelHeight = top - bottom;
+
+  const openW = Math.max(panelWidth - profile * 2, 0.05);
+  const openH = Math.max(panelHeight - profile * 2, 0.05);
+  const glassInset = isGlazing ? 0 : PROFILE.bead;
+  const glassW = Math.max(openW - glassInset * 2 + 0.01, 0.04);
+  const glassH = Math.max(openH - glassInset * 2 + 0.01, 0.04);
+
+  const handleX = panel.handle === 'left' ? xLeft + profile / 2 : xRight - profile / 2;
+  const handleY = Math.min(bottom + 1.0, cy);
+
+  return (
+    <group>
+      <FrameRing
+        cx={cx}
+        cy={cy}
+        z={z}
+        width={panelWidth}
+        height={panelHeight}
+        profile={profile}
+        depth={depth}
+        materialV={materials.woodV}
+        materialH={materials.woodH}
+      />
+      {/* Listwy przyszybowe po obu stronach pakietu (przy szkleniu w ościeżnicy
+          rolę listew pełni główna rama panelu) */}
+      {!isGlazing && (
+        <>
+          <FrameRing
+            cx={cx}
+            cy={cy}
+            z={z + depth / 2 - 0.011}
+            width={openW + 0.008}
+            height={openH + 0.008}
+            profile={PROFILE.bead}
+            depth={0.022}
+            materialV={materials.woodV}
+            materialH={materials.woodH}
+          />
+          <FrameRing
+            cx={cx}
+            cy={cy}
+            z={z - depth / 2 + 0.011}
+            width={openW + 0.008}
+            height={openH + 0.008}
+            profile={PROFILE.bead}
+            depth={0.022}
+            materialV={materials.woodV}
+            materialH={materials.woodH}
+          />
+        </>
+      )}
+      {/* Uszczelka wokół szyby */}
+      <FrameRing
+        cx={cx}
+        cy={cy}
+        z={z}
+        width={glassW + PROFILE.gasket * 2 - 0.002}
+        height={glassH + PROFILE.gasket * 2 - 0.002}
+        profile={PROFILE.gasket}
+        depth={0.042}
+        materialV={materials.gasket}
+        materialH={materials.gasket}
+      />
+      {/* Pakiet szybowy */}
+      <BoxPart
+        position={[cx, cy, z]}
+        size={[glassW, glassH, 0.036]}
+        material={materials.glass}
+        castShadow={false}
+        receiveShadow={false}
+      />
+      {!isSliding && !isGlazing && (
+        <BoxPart
+          position={[cx, top + PROFILE.filler.height / 2, z]}
+          size={[panelWidth, PROFILE.filler.height, PROFILE.filler.depth]}
+          material={materials.woodH}
+        />
+      )}
+      {isSliding && (
+        <PullHandle position={[handleX, handleY, z + depth / 2]} material={materials.handle} />
+      )}
+    </group>
+  );
+}
+
+function ProceduralHsModel({
+  scheme,
   texturePath,
-  handleTexturePath,
+  handleFinish,
   thresholdType,
   width,
   height,
   onReady,
   ...props
 }) {
-  const group = useRef();
-  const { scene } = useGLTF('/models/example3.glb');
   const texture = useTexture(texturePath);
-  const handleTexture = useTexture(handleTexturePath);
+  const schemeDef = SCHEME_DEFINITIONS[scheme] ?? SCHEME_DEFINITIONS.a;
+  const panels = schemeDef.panels;
+  const mullions = schemeDef.mullions ?? [];
 
-  // Konfiguracja tekstur
+  const modelWidth = width / 1000;
+  const modelHeight = height / 1000;
+  const openingWidth = modelWidth - PROFILE.frame * 2;
+  const openingBottom = PROFILE.threshold;
+  const openingTop = modelHeight - PROFILE.frame;
+
+  // Konfiguracja tekstur — słoje drewna wzdłuż elementu (pion/poziom)
   const textures = useMemo(() => {
-    const wood = texture;
-    wood.wrapS = RepeatWrapping;
-    wood.wrapT = RepeatWrapping;
-    wood.colorSpace = SRGBColorSpace;
-    wood.anisotropy = 16;
-    wood.minFilter = LinearMipMapLinearFilter;
-    wood.magFilter = LinearFilter;
-    wood.repeat.set(0.2, 0.2);
-
-    const handleTex = handleTexture;
-    handleTex.wrapS = RepeatWrapping;
-    handleTex.wrapT = RepeatWrapping;
-    handleTex.colorSpace = SRGBColorSpace;
-    handleTex.anisotropy = 16;
-    handleTex.repeat.set(1, 1);
+    const setupWood = (rotate) => {
+      const tex = texture.clone();
+      tex.wrapS = RepeatWrapping;
+      tex.wrapT = RepeatWrapping;
+      tex.colorSpace = SRGBColorSpace;
+      tex.anisotropy = 16;
+      tex.minFilter = LinearMipMapLinearFilter;
+      tex.magFilter = LinearFilter;
+      if (rotate) {
+        tex.center.set(0.5, 0.5);
+        tex.rotation = Math.PI / 2;
+      }
+      tex.needsUpdate = true;
+      return tex;
+    };
 
     return {
-      wood,
-      handleTex,
+      woodV: setupWood(true),
+      woodH: setupWood(false),
     };
-  }, [texture, handleTexture]);
+  }, [texture]);
 
-  const processed = useMemo(() => {
-    const root = scene.clone(true);
+  const materials = useMemo(() => {
+    const thresholdMat = getThresholdMaterial(thresholdType);
+    const handleMat = HANDLE_FINISHES[handleFinish] ?? HANDLE_FINISHES.silver;
 
-    root.traverse((obj) => {
-      if (!obj.isMesh) return;
-
-      const n = (obj.name || '').toLowerCase();
-
-      // szyba
-      if (n.includes('glass')) {
-        obj.material = obj.material.clone();
-        obj.material.transparent = true;
-        obj.material.opacity = 0.3;
-        obj.material.color?.set?.('#e8f4f8');
-        obj.material.roughness = 0.1;
-        obj.material.metalness = 0.9;
-        obj.material.envMapIntensity = 1.5;
-        obj.material.needsUpdate = true;
-        obj.castShadow = false;
-        obj.receiveShadow = false;
-      }
-      // klamka
-      else if (n.includes('handle')) {
-        obj.material = obj.material.clone();
-        obj.material.map = textures.handleTex;
-        obj.material.color?.set?.('#ffffff');
-        obj.material.roughness = 0.4;
-        obj.material.metalness = 0.5;
-        obj.material.needsUpdate = true;
-        obj.castShadow = true;
-        obj.receiveShadow = true;
-      }
-      // próg - osobny materiał metalowy
-      else if (n.includes('threshold')) {
-        obj.material = obj.material.clone();
-        const thresholdMat = getThresholdMaterial(thresholdType);
-
-        obj.material.map = null;
-        obj.material.bumpMap = null;
-        obj.material.displacementMap = null;
-
-        obj.material.color?.set?.(thresholdMat.color);
-        obj.material.roughness = thresholdMat.roughness;
-        obj.material.metalness = thresholdMat.metalness;
-        obj.material.envMapIntensity = 1.2;
-
-        obj.material.needsUpdate = true;
-        obj.castShadow = true;
-        obj.receiveShadow = true;
-      }
-      // drewno – rama, skrzydła (bez progu)
-      else if (n.includes('frame')) {
-        obj.material = obj.material.clone();
-
-        const woodTexture = textures.wood.clone();
-
-        if (n.includes('left') || n.includes('right')) {
-          woodTexture.rotation = Math.PI / 2;
-          woodTexture.repeat.set(1, 1);
-          woodTexture.center.set(0.5, 0.5);
-        } else if (n.includes('top') || n.includes('bottom')) {
-          woodTexture.rotation = Math.PI / 2;
-          woodTexture.repeat.set(1, 1);
-        }
-
-        obj.material.map = woodTexture;
-        obj.material.color?.set?.('#ffffff');
-        obj.material.metalness = 0.0;
-
-        obj.material.bumpMap = woodTexture;
-        obj.material.bumpScale = 0.0;
-
-        obj.material.displacementMap = woodTexture;
-        obj.material.displacementScale = 0.01;
-
-        obj.material.needsUpdate = true;
-        obj.castShadow = true;
-        obj.receiveShadow = true;
-      }
-    });
-
-    // wymiary
-    updateDimensions(root, width, height);
-
-    return root;
-  }, [scene, textures, thresholdType, width, height]);
+    return {
+      woodV: (
+        <meshStandardMaterial map={textures.woodV} color="#ffffff" roughness={0.48} metalness={0.02} />
+      ),
+      woodH: (
+        <meshStandardMaterial map={textures.woodH} color="#ffffff" roughness={0.48} metalness={0.02} />
+      ),
+      glass: (
+        <meshPhysicalMaterial
+          color="#eef6f4"
+          roughness={0.04}
+          metalness={0}
+          transmission={0.85}
+          thickness={0.02}
+          ior={1.52}
+          envMapIntensity={1.4}
+        />
+      ),
+      handle: (
+        <meshStandardMaterial
+          color={handleMat.color}
+          roughness={handleMat.roughness}
+          metalness={handleMat.metalness}
+          envMapIntensity={1.15}
+        />
+      ),
+      threshold: (
+        <meshStandardMaterial
+          color={thresholdMat.color}
+          roughness={thresholdMat.roughness}
+          metalness={thresholdMat.metalness}
+          envMapIntensity={1.2}
+        />
+      ),
+      gasket: <meshStandardMaterial color="#1c1e1c" roughness={0.85} metalness={0.05} />,
+    };
+  }, [textures, thresholdType, handleFinish]);
 
   useEffect(() => {
     onReady?.();
-  }, [processed, onReady]);
+  }, [handleFinish, height, onReady, scheme, thresholdType, textures, width]);
 
   return (
-    <group ref={group}>
-      <primitive object={processed} {...props} />
+    <group {...props} position={[0, -modelHeight / 2, 0]}>
+      {/* Ościeżnica: stojaki i nadproże */}
+      <BoxPart
+        position={[
+          -modelWidth / 2 + PROFILE.frame / 2,
+          PROFILE.threshold + (modelHeight - PROFILE.threshold) / 2,
+          0,
+        ]}
+        size={[PROFILE.frame, modelHeight - PROFILE.threshold, PROFILE.frameDepth]}
+        material={materials.woodV}
+      />
+      <BoxPart
+        position={[
+          modelWidth / 2 - PROFILE.frame / 2,
+          PROFILE.threshold + (modelHeight - PROFILE.threshold) / 2,
+          0,
+        ]}
+        size={[PROFILE.frame, modelHeight - PROFILE.threshold, PROFILE.frameDepth]}
+        material={materials.woodV}
+      />
+      <BoxPart
+        position={[0, modelHeight - PROFILE.frame / 2, 0]}
+        size={[openingWidth, PROFILE.frame, PROFILE.frameDepth]}
+        material={materials.woodH}
+      />
+
+      {/* Niski próg aluminiowy z dwiema prowadnicami */}
+      <BoxPart
+        position={[0, PROFILE.threshold / 2, 0]}
+        size={[modelWidth, PROFILE.threshold, PROFILE.frameDepth + 0.03]}
+        material={materials.threshold}
+      />
+      <BoxPart
+        position={[0, PROFILE.threshold + 0.006, PROFILE.trackInnerZ]}
+        size={[openingWidth, 0.012, 0.014]}
+        material={materials.threshold}
+      />
+      <BoxPart
+        position={[0, PROFILE.threshold + 0.006, PROFILE.trackOuterZ]}
+        size={[openingWidth, 0.012, 0.014]}
+        material={materials.threshold}
+      />
+
+      {/* Słupki statyczne (np. schemat G2) */}
+      {mullions.map((fraction, index) => (
+        <BoxPart
+          key={`mullion-${scheme}-${index}`}
+          position={[
+            -openingWidth / 2 + fraction * openingWidth,
+            openingBottom + (openingTop - openingBottom) / 2,
+            MULLION.z,
+          ]}
+          size={[MULLION.width, openingTop - openingBottom, MULLION.depth]}
+          material={materials.woodV}
+        />
+      ))}
+
+      {panels.map((panel, index) => (
+        <GlazedPanel
+          key={`${scheme}-${index}-${panel.type}`}
+          panel={panel}
+          openingWidth={openingWidth}
+          openingBottom={openingBottom}
+          openingTop={openingTop}
+          materials={materials}
+        />
+      ))}
     </group>
   );
 }
 
-function FrontFit({ modelRef, width, height }) {
+function FrontFit({ modelRef, width, height, scheme }) {
   const controls = useThree((state) => state.controls);
   const { camera } = useThree();
   const lastFittedDimensions = useRef(null);
@@ -308,7 +495,7 @@ function FrontFit({ modelRef, width, height }) {
   useEffect(() => {
     if (!modelRef?.current) return;
 
-    const dimensionsKey = `${width}x${height}`;
+    const dimensionsKey = `${scheme}-${width}x${height}`;
     if (lastFittedDimensions.current === dimensionsKey) return;
 
     const box = new Box3().setFromObject(modelRef.current);
@@ -348,18 +535,15 @@ function FrontFit({ modelRef, width, height }) {
     }
 
     lastFittedDimensions.current = dimensionsKey;
-  }, [modelRef, camera, controls, width, height]);
+  }, [modelRef, camera, controls, width, height, scheme]);
 
   return null;
 }
 
-// USUNIĘTY TOP-LEVEL SIDE EFFECT:
-// useGLTF.preload('/models/example3.glb');
-// Preload jest teraz wywołany wewnątrz komponentu przy użyciu useEffect
-
 export default function HsConfiguratorCanvas({
+  selectedType = 'a',
   selectedTexture,
-  selectedHandleTexture,
+  selectedHandleFinish,
   selectedThreshold,
   width,
   height,
@@ -367,13 +551,9 @@ export default function HsConfiguratorCanvas({
 }) {
   const modelRef = useRef();
 
-  // Preload modelu - bezpieczne dla SSR, wykonuje się tylko w przeglądarce
-  useEffect(() => {
-    useGLTF.preload('/models/example3.glb');
-  }, []);
-
   return (
     <Canvas
+      shadows
       camera={{ position: [3, 2, 4], fov: 45 }}
       gl={{
         logarithmicDepthBuffer: true,
@@ -384,16 +564,29 @@ export default function HsConfiguratorCanvas({
     >
       <Suspense fallback={null}>
         <color attach="background" args={['#fffefe']} />
-        <ambientLight intensity={0.8} />
-        <directionalLight position={[5, 5, 8]} intensity={1.2} castShadow />
-        <directionalLight position={[-5, 3, -8]} intensity={0.5} />
+        <ambientLight intensity={0.55} />
+        <directionalLight
+          position={[5, 6, 9]}
+          intensity={1.1}
+          castShadow
+          shadow-mapSize={[2048, 2048]}
+          shadow-bias={-0.0004}
+          shadow-camera-left={-3.5}
+          shadow-camera-right={3.5}
+          shadow-camera-top={3.5}
+          shadow-camera-bottom={-3.5}
+          shadow-camera-near={0.5}
+          shadow-camera-far={40}
+        />
+        <directionalLight position={[-5, 3, -8]} intensity={0.45} />
         <Environment preset="city" />
         <OrbitControls makeDefault enablePan enableZoom enableRotate />
         <Center>
           <group ref={modelRef}>
-            <HsModel
+            <ProceduralHsModel
+              scheme={selectedType}
               texturePath={selectedTexture}
-              handleTexturePath={selectedHandleTexture}
+              handleFinish={selectedHandleFinish}
               thresholdType={selectedThreshold}
               width={width}
               height={height}
@@ -401,8 +594,16 @@ export default function HsConfiguratorCanvas({
             />
           </group>
         </Center>
-        <FrontFit modelRef={modelRef} width={width} height={height} />
-        <ContactShadows opacity={0.35} blur={2.5} far={10} resolution={256} color="#000000" />
+        <FrontFit modelRef={modelRef} width={width} height={height} scheme={selectedType} />
+        {/* Cień przyziemny pod modelem — model jest wyśrodkowany, więc podłoga leży na -h/2 */}
+        <ContactShadows
+          position={[0, -height / 2000 - 0.002, 0]}
+          opacity={0.35}
+          blur={2.5}
+          far={10}
+          resolution={256}
+          color="#000000"
+        />
       </Suspense>
     </Canvas>
   );

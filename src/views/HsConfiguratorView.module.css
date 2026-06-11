@@ -102,6 +102,121 @@
   box-shadow: none;
 }
 
+.schemeScrollWrap {
+  position: relative;
+}
+
+.schemeScrollWrap::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0.5rem;
+  bottom: 0;
+  height: 44px;
+  background: linear-gradient(180deg, rgba(251, 253, 251, 0) 0%, #fbfdfb 100%);
+  border-radius: 0 0 14px 14px;
+  pointer-events: none;
+}
+
+.schemeGrid {
+  display: grid;
+  gap: 0.8rem;
+  max-height: 380px;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  padding-bottom: 2.2rem;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(2, 99, 3, 0.3) transparent;
+}
+
+.schemeGrid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.schemeGrid::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.schemeGrid::-webkit-scrollbar-thumb {
+  background: rgba(2, 99, 3, 0.25);
+  border-radius: 999px;
+}
+
+.schemeGrid::-webkit-scrollbar-thumb:hover {
+  background: rgba(2, 99, 3, 0.45);
+}
+
+.schemeCard {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  gap: 0.85rem;
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid rgba(2, 99, 3, 0.14);
+  border-radius: 14px;
+  background: #ffffff;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.schemeCard:hover {
+  border-color: rgba(2, 99, 3, 0.35);
+  background: #fcfffc;
+  transform: translateY(-1px);
+}
+
+.schemeCard:focus-visible {
+  outline: 2px solid rgba(2, 99, 3, 0.45);
+  outline-offset: 3px;
+}
+
+.schemeCardActive {
+  border-color: #026303;
+  background: linear-gradient(180deg, #f7fff8 0%, #eef8ef 100%);
+  box-shadow: 0 10px 24px rgba(2, 99, 3, 0.1);
+}
+
+.schemeImageWrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px;
+  padding: 0.45rem;
+  border-radius: 10px;
+  background: #f6faf7;
+  border: 1px solid rgba(2, 99, 3, 0.08);
+}
+
+.schemeImage {
+  display: block;
+  max-width: 100%;
+  max-height: 58px;
+  object-fit: contain;
+}
+
+.schemeTextWrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.schemeTitle {
+  font-size: 1rem;
+  font-weight: 800;
+  color: #173319;
+}
+
+.schemeDescription {
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: #5f7261;
+}
+
 .rangeContainer {
   display: flex;
   align-items: center;
@@ -294,6 +409,24 @@
   user-select: none;
 }
 
+.activeSchemeBadge {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 10;
+  max-width: min(340px, calc(100% - 170px));
+  padding: 0.55rem 0.85rem;
+  border-radius: 999px;
+  border: 1px solid rgba(2, 99, 3, 0.14);
+  background: rgba(255, 255, 255, 0.78);
+  color: #27432a;
+  font-size: 0.85rem;
+  font-weight: 700;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  user-select: none;
+}
+
 .viewerFooter {
   margin-top: 0.9rem;
 }
@@ -339,5 +472,17 @@
     padding: 0.45rem 0.75rem;
     top: 15px;
     left: 15px;
+  }
+
+  .activeSchemeBadge {
+    top: 15px;
+    right: 15px;
+    max-width: calc(100% - 140px);
+    font-size: 0.76rem;
+    padding: 0.45rem 0.7rem;
+  }
+
+  .schemeCard {
+    grid-template-columns: 82px 1fr;
   }
 }

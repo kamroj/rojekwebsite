@@ -11,12 +11,118 @@ const TEXTURES = [
   { value: '/models/remmers-miodowa-sosna.jpg', labelKey: 'hsConfigurator.options.textures.honeyPine', fallback: 'Miodowa Sosna' },
 ];
 
-const HANDLE_TEXTURES = [
-  { value: '/models/textures/handle/hang-silver.jpg', labelKey: 'hsConfigurator.options.handleTextures.silver', fallback: 'Srebrna' },
-  { value: '/models/textures/handle/hang-gold.jpg', labelKey: 'hsConfigurator.options.handleTextures.gold', fallback: 'Złota' },
+const HANDLE_FINISHES = [
+  { value: 'silver', labelKey: 'hsConfigurator.options.handleTextures.silver', fallback: 'Srebrna' },
+  { value: 'gold', labelKey: 'hsConfigurator.options.handleTextures.gold', fallback: 'Złota' },
 ];
 
-const TYPES = [{ value: 'a', label: 'A' }];
+// Zakresy szerokości zależne od liczby pól schematu
+const WIDTH_2_FIELDS = { min: 2000, max: 4000, default: 2320 };
+const WIDTH_3_FIELDS = { min: 2500, max: 4500, default: 3000 };
+const WIDTH_4_FIELDS = { min: 3000, max: 5000, default: 3750 };
+
+const TYPES = [
+  {
+    value: 'a',
+    label: 'A',
+    image: '/images/hs/schemat-A.png',
+    labelKey: 'hsConfigurator.options.schemes.a.label',
+    fallback: 'Schemat A',
+    descriptionKey: 'hsConfigurator.options.schemes.a.description',
+    descriptionFallback: 'Dwa pola z jednym skrzydłem przesuwnym.',
+    widthRange: WIDTH_2_FIELDS,
+  },
+  {
+    value: 'a3',
+    label: 'A3',
+    image: '/images/hs/schemat-A3.png',
+    labelKey: 'hsConfigurator.options.schemes.a3.label',
+    fallback: 'Schemat A3',
+    descriptionKey: 'hsConfigurator.options.schemes.a3.description',
+    descriptionFallback: 'Lustrzane A — skrzydło przesuwne z prawej strony.',
+    widthRange: WIDTH_2_FIELDS,
+  },
+  {
+    value: 'd',
+    label: 'D',
+    image: '/images/hs/schemat-D.png',
+    labelKey: 'hsConfigurator.options.schemes.d.label',
+    fallback: 'Schemat D',
+    descriptionKey: 'hsConfigurator.options.schemes.d.description',
+    descriptionFallback: 'Dwa pola, oba skrzydła przesuwne.',
+    widthRange: WIDTH_2_FIELDS,
+  },
+  {
+    value: 'e',
+    label: 'E',
+    image: '/images/hs/schemat-E.png',
+    labelKey: 'hsConfigurator.options.schemes.e.label',
+    fallback: 'Schemat E',
+    descriptionKey: 'hsConfigurator.options.schemes.e.description',
+    descriptionFallback: 'Trzy pola, dwa skrzydła przesuwne w jedną stronę.',
+    widthRange: WIDTH_3_FIELDS,
+  },
+  {
+    value: 'g2',
+    label: 'G2',
+    image: '/images/hs/schemat-G2.png',
+    labelKey: 'hsConfigurator.options.schemes.g2.label',
+    fallback: 'Schemat G2',
+    descriptionKey: 'hsConfigurator.options.schemes.g2.description',
+    descriptionFallback: 'Trzy pola, środkowe skrzydło przesuwne, słupki statyczne.',
+    widthRange: WIDTH_3_FIELDS,
+  },
+  {
+    value: 'g3',
+    label: 'G3',
+    image: '/images/hs/schemat-G3.png',
+    labelKey: 'hsConfigurator.options.schemes.g3.label',
+    fallback: 'Schemat G3',
+    descriptionKey: 'hsConfigurator.options.schemes.g3.description',
+    descriptionFallback: 'Trzy pola, środkowe skrzydło przesuwne, bez słupków statycznych.',
+    widthRange: WIDTH_3_FIELDS,
+  },
+  {
+    value: 'h',
+    label: 'H',
+    image: '/images/hs/schemat-H.png',
+    labelKey: 'hsConfigurator.options.schemes.h.label',
+    fallback: 'Schemat H',
+    descriptionKey: 'hsConfigurator.options.schemes.h.description',
+    descriptionFallback: 'Trzy pola, wszystkie skrzydła przesuwne.',
+    widthRange: WIDTH_3_FIELDS,
+  },
+  {
+    value: 'k',
+    label: 'K',
+    image: '/images/hs/schemat-K.png',
+    labelKey: 'hsConfigurator.options.schemes.k.label',
+    fallback: 'Schemat K',
+    descriptionKey: 'hsConfigurator.options.schemes.k.description',
+    descriptionFallback: 'Szerokie pole stałe pośrodku, skrzydła przesuwne po bokach.',
+    widthRange: WIDTH_3_FIELDS,
+  },
+  {
+    value: 'c',
+    label: 'C',
+    image: '/images/hs/schemat-C.png',
+    labelKey: 'hsConfigurator.options.schemes.c.label',
+    fallback: 'Schemat C',
+    descriptionKey: 'hsConfigurator.options.schemes.c.description',
+    descriptionFallback: 'Cztery pola z dwoma środkowymi skrzydłami przesuwnymi.',
+    widthRange: WIDTH_4_FIELDS,
+  },
+  {
+    value: 'f',
+    label: 'F',
+    image: '/images/hs/schemat-F.png',
+    labelKey: 'hsConfigurator.options.schemes.f.label',
+    fallback: 'Schemat F',
+    descriptionKey: 'hsConfigurator.options.schemes.f.description',
+    descriptionFallback: 'Cztery pola, wszystkie skrzydła przesuwne.',
+    widthRange: WIDTH_4_FIELDS,
+  },
+];
 
 const THRESHOLDS = [
   { value: 'silver', labelKey: 'hsConfigurator.options.thresholds.silver', fallback: 'Srebrny' },
@@ -24,17 +130,16 @@ const THRESHOLDS = [
   { value: 'gold', labelKey: 'hsConfigurator.options.thresholds.gold', fallback: 'Złoty' },
 ];
 
-const BASE_WIDTH = 2320;
 const BASE_HEIGHT = 2040;
 
 const HsConfiguratorPage = () => {
   const { t } = useTranslation();
   const [isCanvasReady, setIsCanvasReady] = useState(false);
   const [selectedTexture, setSelectedTexture] = useState(TEXTURES[0].value);
-  const [selectedHandleTexture, setSelectedHandleTexture] = useState(HANDLE_TEXTURES[0].value);
+  const [selectedHandleFinish, setSelectedHandleFinish] = useState(HANDLE_FINISHES[0].value);
   const [selectedType, setSelectedType] = useState(TYPES[0].value);
   const [selectedThreshold, setSelectedThreshold] = useState(THRESHOLDS[0].value);
-  const [width, setWidth] = useState(BASE_WIDTH);
+  const [width, setWidth] = useState(TYPES[0].widthRange.default);
   const [height, setHeight] = useState(BASE_HEIGHT);
 
   const handleCanvasReady = useCallback(() => {
@@ -50,6 +155,17 @@ const HsConfiguratorPage = () => {
     setIsCanvasReady(false);
     setter(Number(event.target.value));
   }, []);
+
+  const handleTypeChange = useCallback((type) => {
+    setIsCanvasReady(false);
+    setSelectedType(type);
+    const typeData = TYPES.find((item) => item.value === type);
+    if (typeData?.widthRange) {
+      setWidth(typeData.widthRange.default);
+    }
+  }, []);
+
+  const selectedTypeData = TYPES.find((type) => type.value === selectedType) ?? TYPES[0];
 
   return (
     <Page imageSrc="/images/hs/top.jpg" title={t('hsConfigurator.title', 'Konfigurator HS')}>
@@ -82,24 +198,43 @@ const HsConfiguratorPage = () => {
 
                 <div className={styles.controlGroup}>
                   <label className={styles.label}>{t('hsConfigurator.labels.handleColor', 'Kolor klamki')}</label>
-                  <select className={styles.select} value={selectedHandleTexture} onChange={handleTextureChange(setSelectedHandleTexture)}>
-                    {HANDLE_TEXTURES.map((tex) => (
-                      <option key={tex.value} value={tex.value}>
-                        {t(tex.labelKey, tex.fallback)}
+                  <select className={styles.select} value={selectedHandleFinish} onChange={handleTextureChange(setSelectedHandleFinish)}>
+                    {HANDLE_FINISHES.map((finish) => (
+                      <option key={finish.value} value={finish.value}>
+                        {t(finish.labelKey, finish.fallback)}
                       </option>
                     ))}
                   </select>
                 </div>
 
                 <div className={styles.controlGroup}>
-                  <label className={styles.label}>{t('hsConfigurator.labels.type', 'Typ')}</label>
-                  <select className={styles.select} value={selectedType} onChange={handleTextureChange(setSelectedType)}>
-                    {TYPES.map((type) => (
-                      <option key={type.value} value={type.value}>
-                        {type.label}
-                      </option>
-                    ))}
-                  </select>
+                  <span className={styles.label}>{t('hsConfigurator.labels.type', 'Typ')}</span>
+                  <div className={styles.schemeScrollWrap}>
+                    <div className={styles.schemeGrid} role="radiogroup" aria-label={t('hsConfigurator.labels.type', 'Typ')}>
+                      {TYPES.map((type) => {
+                        const isSelected = selectedType === type.value;
+
+                        return (
+                          <button
+                            key={type.value}
+                            type="button"
+                            className={`${styles.schemeCard} ${isSelected ? styles.schemeCardActive : ''}`}
+                            onClick={() => handleTypeChange(type.value)}
+                            role="radio"
+                            aria-checked={isSelected}
+                          >
+                            <span className={styles.schemeImageWrap}>
+                              <img src={type.image} alt="" className={styles.schemeImage} loading="lazy" />
+                            </span>
+                            <span className={styles.schemeTextWrap}>
+                              <span className={styles.schemeTitle}>{t(type.labelKey, type.fallback)}</span>
+                              <span className={styles.schemeDescription}>{t(type.descriptionKey, type.descriptionFallback)}</span>
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
                 </div>
 
                 <div className={styles.controlGroup}>
@@ -125,7 +260,15 @@ const HsConfiguratorPage = () => {
                     <span className={styles.rangeBadge}>{width} mm</span>
                   </div>
                   <div className={styles.rangeContainer}>
-                    <input className={styles.rangeInput} type="range" min="2000" max="4000" step="10" value={width} onChange={handleDimensionChange(setWidth)} />
+                    <input
+                      className={styles.rangeInput}
+                      type="range"
+                      min={selectedTypeData.widthRange.min}
+                      max={selectedTypeData.widthRange.max}
+                      step="10"
+                      value={width}
+                      onChange={handleDimensionChange(setWidth)}
+                    />
                   </div>
                 </div>
 
@@ -155,6 +298,9 @@ const HsConfiguratorPage = () => {
           <section className={styles.viewerColumn}>
             <div className={styles.viewerWrap}>
               <div className={styles.previewLabel}>{t('hsConfigurator.sections.previewTag', 'PODGLĄD')}</div>
+              <div className={styles.activeSchemeBadge}>
+                {t('hsConfigurator.activeScheme', 'Aktywny wariant')}: {t(selectedTypeData.labelKey, selectedTypeData.fallback)}
+              </div>
               {!isCanvasReady && (
                 <div className={styles.viewerLoadingOverlay} aria-live="polite" aria-busy="true">
                   <div className={styles.viewerSpinner} />
@@ -164,7 +310,8 @@ const HsConfiguratorPage = () => {
               <Suspense fallback={<div className={styles.canvasFallback} />}>
                 <HsConfiguratorCanvas
                   selectedTexture={selectedTexture}
-                  selectedHandleTexture={selectedHandleTexture}
+                  selectedHandleFinish={selectedHandleFinish}
+                  selectedType={selectedType}
                   selectedThreshold={selectedThreshold}
                   width={width}
                   height={height}
