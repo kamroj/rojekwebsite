@@ -46,6 +46,7 @@
     "subtitle": "Create your dream sliding window",
     "sectionsLabel": {
       "scheme": "Scheme",
+      "material": "Material",
       "materials": "Finishing",
       "dimensions": "Proportions",
       "addons": "Add-ons"
@@ -89,6 +90,7 @@
       "handleColor": "Handle colour:",
       "type": "Type:",
       "thresholdColor": "Threshold colour:",
+      "aluColor": "Aluminium cladding colour:",
       "width": "Window width:",
       "height": "Window height:",
       "woodSpecies": "Wood species:"
@@ -114,6 +116,16 @@
         "silver": "Silver",
         "black": "Black",
         "gold": "Gold"
+      },
+      "materialTypes": {
+        "wood": "Wood",
+        "woodAlu": "Wood-Aluminium"
+      },
+      "aluColors": {
+        "anthracite": "Anthracite",
+        "black": "Black",
+        "gray": "Grey",
+        "white": "White"
       },
       "schemes": {
         "a": {

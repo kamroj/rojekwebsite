@@ -23,6 +23,22 @@ export const HANDLE_FINISHES = [
   { value: 'gold', urlCode: 'g', labelKey: 'hsConfigurator.options.handleTextures.gold', fallback: 'Złota' },
 ];
 
+// Wariant materiałowy stolarki: czyste drewno lub drewno z aluminiowymi
+// nakładkami maskującymi od zewnątrz (system nakładkowy typu Aluron Gemini)
+export const MATERIAL_TYPES = [
+  { value: 'wood', urlCode: 'w', labelKey: 'hsConfigurator.options.materialTypes.wood', fallback: 'Drewno' },
+  { value: 'woodAlu', urlCode: 'a', labelKey: 'hsConfigurator.options.materialTypes.woodAlu', fallback: 'Drewno-Aluminium' },
+];
+
+// Kolory nakładek aluminiowych (lakier proszkowy RAL); `hex` zasila materiał
+// w modelu 3D, `ral` jest doklejany do etykiety w UI
+export const ALU_COLORS = [
+  { value: 'anthracite', urlCode: 'a', hex: '#383e42', ral: 'RAL 7016', labelKey: 'hsConfigurator.options.aluColors.anthracite', fallback: 'Antracyt' },
+  { value: 'black', urlCode: 'b', hex: '#0e0e10', ral: 'RAL 9005', labelKey: 'hsConfigurator.options.aluColors.black', fallback: 'Czarny' },
+  { value: 'gray', urlCode: 'g', hex: '#9da3a6', ral: 'RAL 7040', labelKey: 'hsConfigurator.options.aluColors.gray', fallback: 'Szary' },
+  { value: 'white', urlCode: 'w', hex: '#f1f0ea', ral: 'RAL 9016', labelKey: 'hsConfigurator.options.aluColors.white', fallback: 'Biały' },
+];
+
 // Zakresy szerokości zależne od liczby pól schematu
 const WIDTH_2_FIELDS = { min: 2000, max: 4000, default: 2320 };
 const WIDTH_3_FIELDS = { min: 2500, max: 4500, default: 3000 };

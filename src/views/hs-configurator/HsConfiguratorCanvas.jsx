@@ -22,6 +22,8 @@ import {
   Vector3,
 } from 'three';
 
+import { ALU_COLORS } from './hsOptions.js';
+
 // Wymiary profili systemu HS wg przekroju producenta (w metrach)
 const PROFILE = {
   frame: 0.056, // ościeżnica 56 x 208 mm
@@ -50,6 +52,16 @@ const THRESHOLD = {
   rail: { radius: 0.004, width: 0.012 },
   plate: 0.003, // nakładki maskujące na górze bloku wewnętrznego
 };
+
+// Wariant drewno-aluminium: płaskie nakładki maskujące (system typu Aluron
+// Gemini Quadrat) doklejane do lic zewnętrznych ościeżnicy, skrzydeł i listew —
+// drewno zostaje widoczne od wewnątrz. `depth` to grubość nakładki, `side` to
+// grubość plakiet owijających boki profili (nakładka wraca po bokach skrzydła
+// do ok. połowy głębokości profilu, przez co środkowe słupki w strefie zakładu
+// czytają się od zewnątrz jako pełne aluminium). Kolory (hex lakieru
+// proszkowego RAL) pochodzą z palety ALU_COLORS w hsOptions
+const ALU = { depth: 0.016, side: 0.003 };
+const ALU_HEX = Object.fromEntries(ALU_COLORS.map((color) => [color.value, color.hex]));
 
 const OV = PROFILE.overlap;
 // Słupek statyczny i szklenie stałe (G2/G3) wypełniają głębokość ościeżnicy
@@ -343,6 +355,36 @@ function LowThreshold({ bodyWidth, openingWidth, material, outerRail }) {
   );
 }
 
+// Owinięcie boków profilu plakietami alu: cztery cienkie płytki na obwodzie
+// ramy, od lica zewnętrznego nakładki przez całą głębokość profilu (1 mm przed
+// licem wewnętrznym, żeby uniknąć z-fightingu z drewnem) — boki skrzydeł i
+// słupków czytają się jako aluminium z każdego kąta od zewnątrz, także przez
+// szczelinę zakładu; drewno zostaje wyłącznie na licach wewnętrznych
+function AluSideWrap({ xLeft, xRight, bottom, top, z, depth, material }) {
+  const wrapDepth = depth + ALU.depth - 0.001;
+  const wrapZ = z - depth / 2 - ALU.depth + wrapDepth / 2;
+  const cx = (xLeft + xRight) / 2;
+  const cy = (bottom + top) / 2;
+  const width = xRight - xLeft;
+  const height = top - bottom;
+  return (
+    <group>
+      <BoxPart position={[xLeft - ALU.side / 2, cy, wrapZ]} size={[ALU.side, height, wrapDepth]} material={material} />
+      <BoxPart position={[xRight + ALU.side / 2, cy, wrapZ]} size={[ALU.side, height, wrapDepth]} material={material} />
+      <BoxPart
+        position={[cx, top + ALU.side / 2, wrapZ]}
+        size={[width + ALU.side * 2, ALU.side, wrapDepth]}
+        material={material}
+      />
+      <BoxPart
+        position={[cx, bottom - ALU.side / 2, wrapZ]}
+        size={[width + ALU.side * 2, ALU.side, wrapDepth]}
+        material={material}
+      />
+    </group>
+  );
+}
+
 // Listwa przyszybowa wg przekroju producenta: zaokrąglony profil (ćwierćwałek
 // z krótkimi przylgami) docięty na końcach pod 45°, by w narożach schodził się
 // na ucios jak w stolarce
@@ -499,6 +541,7 @@ function GlazedPanel({
   openingBottom,
   openingTop,
   materials,
+  aluMaterial = null,
   animatable = false,
   slideDirection = 1,
   slideDistance = 0,
@@ -603,9 +646,38 @@ function GlazedPanel({
         materialV={materials.woodV}
         materialH={materials.woodH}
       />
+      {/* Nakładka aluminiowa na licu zewnętrznym ramy (wariant drewno-alu) —
+          renderowana w grupie skrzydła, więc jeździ razem z nim; plakiety
+          owijają boki profilu, żeby środkowe słupki w strefie zakładu nie
+          świeciły drewnem od zewnątrz */}
+      {aluMaterial && (
+        <>
+          <FrameRing
+            cx={cx}
+            cy={cy}
+            z={z - depth / 2 - ALU.depth / 2}
+            width={panelWidth}
+            height={panelHeight}
+            profile={profile}
+            depth={ALU.depth}
+            materialV={aluMaterial}
+            materialH={aluMaterial}
+          />
+          <AluSideWrap
+            xLeft={xLeft}
+            xRight={xRight}
+            bottom={bottom}
+            top={top}
+            z={z}
+            depth={depth}
+            material={aluMaterial}
+          />
+        </>
+      )}
       {/* Listwy przyszybowe po obu stronach pakietu (przy szkleniu w ościeżnicy
           rolę listew pełni główna rama panelu). UV listew biegnie wzdłuż sztuki,
-          więc wszystkie używają nieobróconej tekstury drewna */}
+          więc wszystkie używają nieobróconej tekstury drewna; w wariancie
+          drewno-alu listwa zewnętrzna jest aluminiowa */}
       {!isGlazing && (
         <>
           <MiteredBeadRing
@@ -622,7 +694,7 @@ function GlazedPanel({
             z={z - depth / 2 + 0.011}
             width={openW + 0.008}
             height={openH + 0.008}
-            material={materials.woodH}
+            material={aluMaterial ?? materials.woodH}
             flip
           />
         </>
@@ -650,11 +722,36 @@ function GlazedPanel({
       {/* Listwa maskująca nad polem stałym — renderowana w licu skrzydła
           (pełna głębokość 115 mm wystawałaby poza profil i psuła bryłę) */}
       {!isSliding && !isGlazing && (
-        <BoxPart
-          position={[cx, top + PROFILE.filler.height / 2, z]}
-          size={[panelWidth, PROFILE.filler.height, depth]}
-          material={materials.woodH}
-        />
+        <>
+          <BoxPart
+            position={[cx, top + PROFILE.filler.height / 2, z]}
+            size={[panelWidth, PROFILE.filler.height, depth]}
+            material={materials.woodH}
+          />
+          {aluMaterial && (
+            <>
+              <BoxPart
+                position={[cx, top + PROFILE.filler.height / 2, z - depth / 2 - ALU.depth / 2]}
+                size={[panelWidth, PROFILE.filler.height, ALU.depth]}
+                material={aluMaterial}
+              />
+              {/* Zaślepki czołowe listwy maskującej — jej końce w strefie
+                  zakładu są widoczne od zewnątrz i też muszą być aluminiowe */}
+              {[-1, 1].map((side) => (
+                <BoxPart
+                  key={`filler-end-${side}`}
+                  position={[
+                    cx + side * (panelWidth / 2 + ALU.side / 2),
+                    top + PROFILE.filler.height / 2,
+                    z - depth / 2 - ALU.depth + (depth + ALU.depth - 0.001) / 2,
+                  ]}
+                  size={[ALU.side, PROFILE.filler.height, depth + ALU.depth - 0.001]}
+                  material={aluMaterial}
+                />
+              ))}
+            </>
+          )}
+        </>
       )}
       {isSliding && (
         <PullHandle
@@ -672,12 +769,15 @@ function ProceduralHsModel({
   texturePath,
   handleFinish,
   thresholdType,
+  materialType,
+  aluColor,
   width,
   height,
   onReady,
   exportRef,
   ...props
 }) {
+  const isWoodAlu = materialType === 'woodAlu';
   const texture = useTexture(texturePath);
   const schemeDef = SCHEME_DEFINITIONS[scheme] ?? SCHEME_DEFINITIONS.a;
   const panels = schemeDef.panels;
@@ -783,12 +883,24 @@ function ProceduralHsModel({
         />
       ),
       gasket: <meshStandardMaterial color="#1c1e1c" roughness={0.85} metalness={0.05} />,
+      // Lakier proszkowy nakładek alu: matowy, lekko metaliczny — bez anizotropii,
+      // żeby płaskie lica czytały się jako jednolite płaszczyzny (Gemini Quadrat)
+      alu: (
+        <meshStandardMaterial
+          color={ALU_HEX[aluColor] ?? ALU_HEX.anthracite}
+          roughness={0.55}
+          metalness={0.3}
+          envMapIntensity={1.0}
+        />
+      ),
     };
-  }, [textures, thresholdType, handleFinish]);
+  }, [textures, thresholdType, handleFinish, aluColor]);
+
+  const aluMaterial = isWoodAlu ? materials.alu : null;
 
   useEffect(() => {
     onReady?.();
-  }, [handleFinish, height, onReady, scheme, thresholdType, textures, width]);
+  }, [aluColor, handleFinish, height, materialType, onReady, scheme, thresholdType, textures, width]);
 
   return (
     // exportRef wskazuje samą grupę modelu (bez Center/świateł/ContactShadows) —
@@ -821,6 +933,33 @@ function ProceduralHsModel({
             ]}
             material={materials.woodV}
           />
+          {/* Nakładka alu na licu zewnętrznym stojaka (do stopnia progu, żeby
+              stopka nie świeciła drewnem nad nosem okapowym) + plakieta na
+              wnęce (reveal) stojaka — od zewnątrz do płaszczyzny skrzydła
+              przesuwnego; głębiej wnęka zostaje drewniana, bo widać ją tylko
+              od wewnątrz */}
+          {aluMaterial && (
+            <>
+              <BoxPart
+                position={[
+                  side * (modelWidth / 2 - PROFILE.frame / 2),
+                  THRESHOLD.platform.height + (modelHeight - THRESHOLD.platform.height) / 2,
+                  -PROFILE.frameDepth / 2 - ALU.depth / 2,
+                ]}
+                size={[PROFILE.frame, modelHeight - THRESHOLD.platform.height, ALU.depth]}
+                material={aluMaterial}
+              />
+              <BoxPart
+                position={[
+                  side * (modelWidth / 2 - PROFILE.frame) - side * (ALU.side / 2),
+                  PROFILE.threshold + (openingTop - PROFILE.threshold) / 2,
+                  (-PROFILE.frameDepth / 2 - ALU.depth) / 2,
+                ]}
+                size={[ALU.side, openingTop - PROFILE.threshold, PROFILE.frameDepth / 2 + ALU.depth]}
+                material={aluMaterial}
+              />
+            </>
+          )}
         </group>
       ))}
       <BoxPart
@@ -828,6 +967,21 @@ function ProceduralHsModel({
         size={[openingWidth, PROFILE.frame, PROFILE.frameDepth]}
         material={materials.woodH}
       />
+      {aluMaterial && (
+        <>
+          <BoxPart
+            position={[0, modelHeight - PROFILE.frame / 2, -PROFILE.frameDepth / 2 - ALU.depth / 2]}
+            size={[openingWidth, PROFILE.frame, ALU.depth]}
+            material={aluMaterial}
+          />
+          {/* Plakieta na wnęce nadproża — analogicznie do wnęk stojaków */}
+          <BoxPart
+            position={[0, openingTop - ALU.side / 2, (-PROFILE.frameDepth / 2 - ALU.depth) / 2]}
+            size={[openingWidth, ALU.side, PROFILE.frameDepth / 2 + ALU.depth]}
+            material={aluMaterial}
+          />
+        </>
+      )}
 
       {/* Niski próg aluminiowy o schodkowym przekroju, pod całą ościeżnicą */}
       <LowThreshold
@@ -839,16 +993,39 @@ function ProceduralHsModel({
 
       {/* Słupki statyczne (np. schemat G2) — siedzą na zewnętrznym stopniu progu */}
       {mullions.map((fraction, index) => (
-        <BoxPart
-          key={`mullion-${scheme}-${index}`}
-          position={[
-            -openingWidth / 2 + fraction * openingWidth,
-            THRESHOLD.platform.height + (openingTop - THRESHOLD.platform.height) / 2,
-            MULLION.z,
-          ]}
-          size={[MULLION.width, openingTop - THRESHOLD.platform.height, MULLION.depth]}
-          material={materials.woodV}
-        />
+        <group key={`mullion-${scheme}-${index}`}>
+          <BoxPart
+            position={[
+              -openingWidth / 2 + fraction * openingWidth,
+              THRESHOLD.platform.height + (openingTop - THRESHOLD.platform.height) / 2,
+              MULLION.z,
+            ]}
+            size={[MULLION.width, openingTop - THRESHOLD.platform.height, MULLION.depth]}
+            material={materials.woodV}
+          />
+          {aluMaterial && (
+            <>
+              <BoxPart
+                position={[
+                  -openingWidth / 2 + fraction * openingWidth,
+                  THRESHOLD.platform.height + (openingTop - THRESHOLD.platform.height) / 2,
+                  MULLION.z - MULLION.depth / 2 - ALU.depth / 2,
+                ]}
+                size={[MULLION.width, openingTop - THRESHOLD.platform.height, ALU.depth]}
+                material={aluMaterial}
+              />
+              <AluSideWrap
+                xLeft={-openingWidth / 2 + fraction * openingWidth - MULLION.width / 2}
+                xRight={-openingWidth / 2 + fraction * openingWidth + MULLION.width / 2}
+                bottom={THRESHOLD.platform.height}
+                top={openingTop}
+                z={MULLION.z}
+                depth={MULLION.depth}
+                material={aluMaterial}
+              />
+            </>
+          )}
+        </group>
       ))}
 
       {panels.map((panel, index) => {
@@ -863,6 +1040,7 @@ function ProceduralHsModel({
             openingBottom={openingBottom}
             openingTop={openingTop}
             materials={materials}
+            aluMaterial={aluMaterial}
             animatable={Boolean(panelAnimation)}
             slideDirection={panelAnimation?.dir ?? 1}
             slideDistance={panelAnimation ? panelAnimation.distance(openingWidth) : 0}
@@ -933,6 +1111,8 @@ export default function HsConfiguratorCanvas({
   selectedTexture,
   selectedHandleFinish,
   selectedThreshold,
+  selectedMaterialType = 'wood',
+  selectedAluColor = 'anthracite',
   width,
   height,
   onReady,
@@ -979,6 +1159,8 @@ export default function HsConfiguratorCanvas({
               texturePath={selectedTexture}
               handleFinish={selectedHandleFinish}
               thresholdType={selectedThreshold}
+              materialType={selectedMaterialType}
+              aluColor={selectedAluColor}
               width={width}
               height={height}
               onReady={onReady}

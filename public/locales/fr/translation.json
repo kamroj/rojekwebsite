@@ -46,6 +46,7 @@
     "subtitle": "Créez votre baie coulissante idéale",
     "sectionsLabel": {
       "scheme": "Schéma",
+      "material": "Matériau",
       "materials": "Finitions",
       "dimensions": "Proportions",
       "addons": "Options"
@@ -89,6 +90,7 @@
       "handleColor": "Couleur de la poignée :",
       "type": "Type :",
       "thresholdColor": "Couleur du seuil :",
+      "aluColor": "Couleur des capotages aluminium :",
       "width": "Largeur de la fenêtre :",
       "height": "Hauteur de la fenêtre :",
       "woodSpecies": "Essence de bois :"
@@ -114,6 +116,16 @@
         "silver": "Argent",
         "black": "Noir",
         "gold": "Or"
+      },
+      "materialTypes": {
+        "wood": "Bois",
+        "woodAlu": "Bois-Aluminium"
+      },
+      "aluColors": {
+        "anthracite": "Anthracite",
+        "black": "Noir",
+        "gray": "Gris",
+        "white": "Blanc"
       },
       "schemes": {
         "a": {

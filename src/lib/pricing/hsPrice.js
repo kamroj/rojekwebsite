@@ -41,10 +41,10 @@ export const getBasePrice = (matrix, widthMm, heightMm) => {
  * @param {object} params
  * @param {object|null} params.matrix Scheme price matrix (null when the scheme has no pricing).
  * @param {object|null} params.addonQuantities Per-scheme add-on counts, e.g. { outerHandle: 2 }.
- * @param {object} params.settings Shared unit prices: { fixed: { silentClose, cylinderLock, outerHandle }, temperedGlassPerM2, woodSpecies: [{ key, surchargePercent }] }.
+ * @param {object} params.settings Shared unit prices: { fixed: { silentClose, cylinderLock, outerHandle }, temperedGlassPerM2, woodSpecies: [{ key, surchargePercent }], aluminiumSurchargePercent }.
  * @param {number} params.widthMm
  * @param {number} params.heightMm
- * @param {object} params.options Selected add-ons: { woodKey, silentClose, cylinderLock, outerHandle, temperedGlass }.
+ * @param {object} params.options Selected add-ons: { woodKey, materialType, silentClose, cylinderLock, outerHandle, temperedGlass }.
  * @returns {{ status: 'ok', total: number, base: number, breakdown: Array<{key: string, amount: number, percent?: number, quantity?: number}> } | { status: 'unavailable' | 'noPricing' }}
  */
 export const calculateHsPrice = ({ matrix, addonQuantities, settings, widthMm, heightMm, options }) => {
@@ -61,6 +61,13 @@ export const calculateHsPrice = ({ matrix, addonQuantities, settings, widthMm, h
   const woodSurcharge = (base * woodPercent) / 100;
   if (woodSurcharge > 0) {
     breakdown.push({ key: 'wood', amount: woodSurcharge, percent: woodPercent });
+  }
+
+  // Wariant drewno-aluminium: dopłata procentowa od ceny bazowej, jak za gatunek
+  const aluPercent = options?.materialType === 'woodAlu' ? (settings?.aluminiumSurchargePercent ?? 0) : 0;
+  const aluSurcharge = (base * aluPercent) / 100;
+  if (aluSurcharge > 0) {
+    breakdown.push({ key: 'aluminium', amount: aluSurcharge, percent: aluPercent });
   }
 
   const fixedSurcharge = ['silentClose', 'cylinderLock', 'outerHandle'].reduce((sum, key) => {
@@ -81,7 +88,7 @@ export const calculateHsPrice = ({ matrix, addonQuantities, settings, widthMm, h
     breakdown.push({ key: 'temperedGlass', amount: glassSurcharge });
   }
 
-  const total = base + woodSurcharge + fixedSurcharge + glassSurcharge;
+  const total = base + woodSurcharge + aluSurcharge + fixedSurcharge + glassSurcharge;
 
   // Round only the final value, to the nearest 10 PLN — the price is an estimate anyway.
   return { status: PRICE_STATUS.OK, total: Math.round(total / 10) * 10, base, breakdown };

@@ -53,6 +53,7 @@ const mapSettings = (settings) => {
     },
     temperedGlassPerM2: settings.temperedGlassPricePerM2 ?? 0,
     woodSpecies: woodSpecies.length ? woodSpecies : DEFAULT_WOOD_SPECIES,
+    aluminiumSurchargePercent: settings.aluminiumSurchargePercent ?? 0,
   };
 };
 
@@ -77,6 +78,7 @@ export const fetchHsPricing = async ({ signal } = {}) => {
       cylinderLockPrice,
       outerHandlePrice,
       temperedGlassPricePerM2,
+      aluminiumSurchargePercent,
       woodSpecies[]{ key, title, titlePl, surchargePercent }
     },
     "schemes": *[_type == "hsPricingScheme" && defined(scheme) && defined(matrix.rows)]{

@@ -9,8 +9,10 @@ import ArLauncher from './hs-configurator/ar/ArLauncher.jsx';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomeView';
 import {
   ADDON_OPTIONS,
+  ALU_COLORS,
   HANDLE_FINISHES,
   HEIGHT_RANGE,
+  MATERIAL_TYPES,
   TEXTURES,
   THRESHOLDS,
   TYPES,
@@ -31,6 +33,8 @@ const HsConfiguratorPage = ({ pricing = null }) => {
   const [selectedHandleFinish, setSelectedHandleFinish] = useState(HANDLE_FINISHES[0].value);
   const [selectedType, setSelectedType] = useState(TYPES[0].value);
   const [selectedThreshold, setSelectedThreshold] = useState(THRESHOLDS[0].value);
+  const [selectedMaterialType, setSelectedMaterialType] = useState(MATERIAL_TYPES[0].value);
+  const [selectedAluColor, setSelectedAluColor] = useState(ALU_COLORS[0].value);
   const [width, setWidth] = useState(
     () => deriveRanges(pricing?.schemes?.[TYPES[0].value]?.matrix, TYPES[0].widthRange, HEIGHT_RANGE).width.default
   );
@@ -64,6 +68,8 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     setSelectedTexture(parsed.texture);
     setSelectedHandleFinish(parsed.handleFinish);
     setSelectedThreshold(parsed.threshold);
+    setSelectedMaterialType(parsed.materialType);
+    setSelectedAluColor(parsed.aluColor);
     setSelectedWood(parsed.wood);
     setAddons(parsed.addons);
     setArAutoPrompt(parsed.ar);
@@ -96,6 +102,11 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     [pricing]
   );
 
+  const handleMaterialTypeChange = useCallback((value) => {
+    setIsCanvasReady(false);
+    setSelectedMaterialType(value);
+  }, []);
+
   const handleWoodChange = useCallback((event) => {
     setSelectedWood(event.target.value);
   }, []);
@@ -121,9 +132,9 @@ const HsConfiguratorPage = ({ pricing = null }) => {
       settings: pricing.settings,
       widthMm: width,
       heightMm: height,
-      options: { woodKey: selectedWood, ...addons },
+      options: { woodKey: selectedWood, materialType: selectedMaterialType, ...addons },
     });
-  }, [pricing, schemePricing, width, height, selectedWood, addons]);
+  }, [pricing, schemePricing, width, height, selectedWood, selectedMaterialType, addons]);
 
   // Migawka konfiguracji dla ArLaunchera (eksport AR + serializacja do QR)
   const arConfig = useMemo(
@@ -134,10 +145,23 @@ const HsConfiguratorPage = ({ pricing = null }) => {
       texture: selectedTexture,
       handleFinish: selectedHandleFinish,
       threshold: selectedThreshold,
+      materialType: selectedMaterialType,
+      aluColor: selectedAluColor,
       wood: selectedWood,
       addons,
     }),
-    [selectedType, width, height, selectedTexture, selectedHandleFinish, selectedThreshold, selectedWood, addons]
+    [
+      selectedType,
+      width,
+      height,
+      selectedTexture,
+      selectedHandleFinish,
+      selectedThreshold,
+      selectedMaterialType,
+      selectedAluColor,
+      selectedWood,
+      addons,
+    ]
   );
 
   const languageKey = (i18n.language || 'pl').split('-')[0];
@@ -161,6 +185,10 @@ const HsConfiguratorPage = ({ pricing = null }) => {
   const getBreakdownLabel = (item) => {
     if (item.key === 'base') return t('hsConfigurator.price.baseLabel', 'Cena bazowa');
     if (item.key === 'wood') return `${woodLabels[selectedWood] ?? selectedWood} (+${item.percent}%)`;
+    if (item.key === 'aluminium') {
+      const woodAlu = MATERIAL_TYPES.find((option) => option.value === 'woodAlu');
+      return `${t(woodAlu.labelKey, woodAlu.fallback)} (+${item.percent}%)`;
+    }
     const addon = ADDON_OPTIONS.find((option) => option.key === item.key);
     const label = addon ? t(addon.labelKey, addon.fallback) : item.key;
     return item.quantity > 1 ? `${label} ×${item.quantity}` : label;
@@ -174,6 +202,19 @@ const HsConfiguratorPage = ({ pricing = null }) => {
       `- ${stripColon(t('hsConfigurator.sectionsLabel.scheme', 'Schemat'))}: ${selectedTypeData.label}`,
       `- ${stripColon(t('hsConfigurator.sections.dimensions', 'Wymiary'))}: ${width} × ${height} mm`,
     ];
+
+    const materialType = MATERIAL_TYPES.find((item) => item.value === selectedMaterialType);
+    if (materialType) {
+      lines.push(`- ${stripColon(t('hsConfigurator.sectionsLabel.material', 'Materiał'))}: ${t(materialType.labelKey, materialType.fallback)}`);
+    }
+    if (selectedMaterialType === 'woodAlu') {
+      const aluColor = ALU_COLORS.find((item) => item.value === selectedAluColor);
+      if (aluColor) {
+        lines.push(
+          `- ${stripColon(t('hsConfigurator.labels.aluColor', 'Kolor nakładek aluminiowych'))}: ${t(aluColor.labelKey, aluColor.fallback)} (${aluColor.ral})`
+        );
+      }
+    }
 
     const texture = TEXTURES.find((item) => item.value === selectedTexture);
     if (texture) {
@@ -211,6 +252,8 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     selectedTexture,
     selectedHandleFinish,
     selectedThreshold,
+    selectedMaterialType,
+    selectedAluColor,
     pricing,
     woodLabels,
     selectedWood,
@@ -233,6 +276,56 @@ const HsConfiguratorPage = ({ pricing = null }) => {
           <aside className={styles.controlColumn}>
             <div className={styles.controlPanel}>
               <div className={`${styles.controlSection} ${styles.controlSectionFirst}`}>
+                <div className={styles.sectionHeaderWrap}>
+                  <span className={styles.sectionOverline}>{t('hsConfigurator.sectionsLabel.material', 'Materiał')}</span>
+                </div>
+
+                <div className={styles.controlGroup}>
+                  <div
+                    className={styles.materialTabs}
+                    role="radiogroup"
+                    aria-label={t('hsConfigurator.sectionsLabel.material', 'Materiał')}
+                    style={{
+                      '--active-index': selectedMaterialType === 'woodAlu' ? 1 : 0,
+                      '--tabs-count': MATERIAL_TYPES.length,
+                    }}
+                  >
+                    <span className={styles.materialTabsThumb} aria-hidden="true" />
+                    {MATERIAL_TYPES.map((material) => {
+                      const isSelected = selectedMaterialType === material.value;
+                      return (
+                        <button
+                          key={material.value}
+                          type="button"
+                          role="radio"
+                          aria-checked={isSelected}
+                          className={`${styles.materialTabButton} ${isSelected ? styles.materialTabButtonActive : ''}`}
+                          onClick={() => handleMaterialTypeChange(material.value)}
+                        >
+                          {t(material.labelKey, material.fallback)}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {selectedMaterialType === 'woodAlu' ? (
+                  <div className={styles.controlGroup}>
+                    <label className={styles.label}>
+                      {t('hsConfigurator.labels.aluColor', 'Kolor nakładek aluminiowych')}
+                    </label>
+                    <select className={styles.select} value={selectedAluColor} onChange={handleTextureChange(setSelectedAluColor)}>
+                      {ALU_COLORS.map((color) => (
+                        <option key={color.value} value={color.value}>
+                          {`${t(color.labelKey, color.fallback)} (${color.ral})`}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                ) : null}
+              </div>
+
+              <div className={`${styles.controlSection} ${styles.controlSectionDivided}`}>
                 <div className={styles.sectionHeaderWrap}>
                   <span className={styles.sectionOverline}>{t('hsConfigurator.sectionsLabel.scheme', 'Schemat')}</span>
                 </div>
@@ -427,6 +520,8 @@ const HsConfiguratorPage = ({ pricing = null }) => {
                   selectedHandleFinish={selectedHandleFinish}
                   selectedType={selectedType}
                   selectedThreshold={selectedThreshold}
+                  selectedMaterialType={selectedMaterialType}
+                  selectedAluColor={selectedAluColor}
                   width={width}
                   height={height}
                   onReady={handleCanvasReady}

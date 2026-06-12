@@ -16,7 +16,16 @@ import styles from './ArLauncher.module.css';
 // Sygnatura części konfiguracji wpływającej na geometrię/materiały modelu —
 // gatunek drewna i dodatki nie zmieniają eksportu, więc nie unieważniają cache'u
 const exportSignature = (config) =>
-  [config.scheme, config.width, config.height, config.texture, config.handleFinish, config.threshold].join('|');
+  [
+    config.scheme,
+    config.width,
+    config.height,
+    config.texture,
+    config.handleFinish,
+    config.threshold,
+    config.materialType,
+    config.aluColor,
+  ].join('|');
 
 const MODEL_LOAD_TIMEOUT_MS = 10000;
 

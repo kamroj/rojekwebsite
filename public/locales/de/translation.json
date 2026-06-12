@@ -46,6 +46,7 @@
     "subtitle": "Erstellen Sie Ihr Traum-Schiebefenster",
     "sectionsLabel": {
       "scheme": "Schema",
+      "material": "Material",
       "materials": "Ausführung",
       "dimensions": "Proportionen",
       "addons": "Zubehör"
@@ -89,6 +90,7 @@
       "handleColor": "Grifffarbe:",
       "type": "Typ:",
       "thresholdColor": "Schwellenfarbe:",
+      "aluColor": "Farbe der Aluminium-Deckschalen:",
       "width": "Fensterbreite:",
       "height": "Fensterhöhe:",
       "woodSpecies": "Holzart:"
@@ -114,6 +116,16 @@
         "silver": "Silber",
         "black": "Schwarz",
         "gold": "Gold"
+      },
+      "materialTypes": {
+        "wood": "Holz",
+        "woodAlu": "Holz-Aluminium"
+      },
+      "aluColors": {
+        "anthracite": "Anthrazit",
+        "black": "Schwarz",
+        "gray": "Grau",
+        "white": "Weiß"
       },
       "schemes": {
         "a": {

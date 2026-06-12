@@ -45,6 +45,7 @@
     "subtitle": "Stwórz swoje wymarzone okno przesuwne",
     "sectionsLabel": {
       "scheme": "Schemat",
+      "material": "Materiał",
       "materials": "Wykończenie",
       "dimensions": "Proporcje",
       "addons": "Dodatki"
@@ -88,6 +89,7 @@
       "handleColor": "Kolor klamki:",
       "type": "Typ:",
       "thresholdColor": "Kolor progu:",
+      "aluColor": "Kolor nakładek aluminiowych:",
       "width": "Szerokość okna:",
       "height": "Wysokość okna:",
       "woodSpecies": "Gatunek drewna:"
@@ -113,6 +115,16 @@
         "silver": "Srebrny",
         "black": "Czarny",
         "gold": "Złoty"
+      },
+      "materialTypes": {
+        "wood": "Drewno",
+        "woodAlu": "Drewno-Aluminium"
+      },
+      "aluColors": {
+        "anthracite": "Antracyt",
+        "black": "Czarny",
+        "gray": "Szary",
+        "white": "Biały"
       },
       "schemes": {
         "a": {

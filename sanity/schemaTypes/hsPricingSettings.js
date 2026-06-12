@@ -43,6 +43,15 @@ export default defineType({
       validation: (rule) => rule.required().min(0),
     }),
     defineField({
+      name: 'aluminiumSurchargePercent',
+      title: 'Drewno-aluminium — dopłata (%)',
+      type: 'number',
+      description:
+        'Dopłata procentowa od ceny bazowej dla wersji z aluminiowymi nakładkami zewnętrznymi (drewno-alu). 0 = bez dopłaty.',
+      initialValue: 0,
+      validation: (rule) => rule.required().min(0),
+    }),
+    defineField({
       name: 'woodSpecies',
       title: 'Gatunki drewna (dopłata %)',
       type: 'array',
