@@ -120,6 +120,11 @@ const WindowProductDetail = ({ product, breadcrumbPathname }) => {
         colorsLazur={WINDOW_LAZUR_PALETTE}
         ralTabLabel={colorsRalTabLabel}
         lazurTabLabel={colorsLazurTabLabel}
+        speciesTabLabels={{
+          pine: t('hsConfigurator.addons.wood.pine', 'Sosna'),
+          meranti: t('hsConfigurator.addons.wood.meranti', 'Meranti'),
+          oak: t('hsConfigurator.addons.wood.oak', 'Dąb'),
+        }}
         mostPopularLabel={colorsMostPopular}
         fullPaletteLabel={colorsFullPalette}
         t={t}

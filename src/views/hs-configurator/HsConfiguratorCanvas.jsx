@@ -25,9 +25,8 @@ import {
 
 import { ALU_COLORS, DEFAULT_ALU_COLOR } from './hsOptions.js';
 
-// Neutralna tekstura słojów — przy kolorach RAL (farba kryjąca) służy jako
-// mapa reliefu (bump), żeby malowane drewno nie wyglądało jak plastik
-const GRAIN_TEXTURE = '/models/remmers-natur.jpg';
+// Awaryjna mapa słojów (gdy resolver nie dostarczy ścieżek) — sosna
+const FALLBACK_GRAIN = '/models/lazur/grain-pine.jpg';
 
 // Wymiary profili systemu HS wg przekroju producenta (w metrach)
 const PROFILE = {
@@ -806,8 +805,8 @@ function ProceduralHsModel({
 }) {
   const isWoodAlu = materialType === 'woodAlu';
   const isRalWood = woodFinish?.type === 'ral';
-  const texturePath = (!isRalWood && woodFinish?.texturePath) || GRAIN_TEXTURE;
-  const texture = useTexture(texturePath);
+  const grainPath = woodFinish?.grainPath ?? FALLBACK_GRAIN;
+  const grainTexture = useTexture(grainPath);
   const schemeDef = SCHEME_DEFINITIONS[scheme] ?? SCHEME_DEFINITIONS.a;
   const panels = schemeDef.panels;
   const mullions = schemeDef.mullions ?? [];
@@ -848,13 +847,14 @@ function ProceduralHsModel({
   const openingTop = modelHeight - PROFILE.frame;
 
   // Konfiguracja tekstur — słoje drewna wzdłuż elementu (pion/poziom).
-  // Mapa koloru (lazur) pracuje w sRGB; mapa reliefu (RAL) musi być liniowa
+  // Ta sama mapa słojów gatunku służy jako mapa koloru (sRGB, tintowana
+  // material.color) i jako mapa reliefu (liniowa)
   const textures = useMemo(() => {
-    const setupWood = (rotate) => {
-      const tex = texture.clone();
+    const setup = (rotate, colorSpace) => {
+      const tex = grainTexture.clone();
       tex.wrapS = RepeatWrapping;
       tex.wrapT = RepeatWrapping;
-      tex.colorSpace = isRalWood ? NoColorSpace : SRGBColorSpace;
+      tex.colorSpace = colorSpace;
       tex.anisotropy = 16;
       tex.minFilter = LinearMipMapLinearFilter;
       tex.magFilter = LinearFilter;
@@ -867,41 +867,46 @@ function ProceduralHsModel({
     };
 
     return {
-      woodV: setupWood(true),
-      woodH: setupWood(false),
+      woodV: setup(true, SRGBColorSpace),
+      woodH: setup(false, SRGBColorSpace),
+      grainV: setup(true, NoColorSpace),
+      grainH: setup(false, NoColorSpace),
     };
-  }, [texture, isRalWood]);
+  }, [grainTexture]);
 
   const materials = useMemo(() => {
     const thresholdMat = getThresholdMaterial(thresholdType);
     const handleMat = HANDLE_FINISHES[handleFinish] ?? HANDLE_FINISHES.silver;
 
-    // RAL = lakier kryjący: płaski kolor z delikatnym reliefem słojów (bump);
-    // lazur = zdjęcie próbki jako mapa koloru + ta sama mapa jako relief,
-    // żeby usłojenie nie spłaszczało się w jednolitą plamę pod światłem
-    const makeWood = (tex) =>
+    // RAL = lakier kryjący: płaski kolor; lazur = mapa słojów gatunku tintowana
+    // kolorem zmierzonym z wzornika (GPU liczy "słoje × kolor" na żywo — ta
+    // sama kompozycja co background-blend-mode: multiply w UI). W obu
+    // wariantach relief (bump) bierze czystą mapę słojów — niezależną od
+    // jasności koloru, więc ciemne wybarwienia nie tracą struktury
+    const makeWood = (tex, grain) =>
       isRalWood ? (
         <meshStandardMaterial
           color={woodFinish.hex}
-          bumpMap={tex}
-          bumpScale={0.3}
+          bumpMap={grain}
+          bumpScale={0.5}
           roughness={0.5}
           metalness={0.02}
         />
       ) : (
         <meshStandardMaterial
           map={tex}
-          bumpMap={tex}
-          bumpScale={0.85}
-          color="#ffffff"
-          roughness={0.45}
+          bumpMap={grain}
+          // Ciemne lazury: rysunek wychodzi z gry odbić, nie z albedo
+          bumpScale={woodFinish?.dark ? 1.2 : 0.6}
+          color={woodFinish?.hex ?? '#ffffff'}
+          roughness={woodFinish?.dark ? 0.4 : 0.45}
           metalness={0.02}
         />
       );
 
     return {
-      woodV: makeWood(textures.woodV),
-      woodH: makeWood(textures.woodH),
+      woodV: makeWood(textures.woodV, textures.grainV),
+      woodH: makeWood(textures.woodH, textures.grainH),
       glass: (
         <meshPhysicalMaterial
           color="#eef6f4"

@@ -4,6 +4,20 @@ import Section from '../../../ui/Section';
 
 import styles from './ProductDetailColors.module.css';
 
+// Gatunki drewna w zakładce Lazur — kolejność stała, klucze zgodne z
+// LAZUR_GRAIN_IMAGES / LAZUR_COLORS (data/products)
+const SPECIES_KEYS = ['pine', 'meranti', 'oak'];
+
+// Wpisy lazurów w architekturze "słoje × kolor" mają mapę słojów per gatunek
+// (grainImages) i kolor zmierzony per gatunek (colors); składanie odbywa się
+// w CSS przez background-blend-mode: multiply
+const resolveSwatch = (color, species) => {
+  if (color?.colors && color?.grainImages) {
+    return { hex: color.colors[species], image: color.grainImages[species] };
+  }
+  return { hex: color?.color, image: color?.image };
+};
+
 export default function ProductDetailColors({
   title = 'Kolorystyka',
   colors,
@@ -11,6 +25,7 @@ export default function ProductDetailColors({
   colorsLazur = [],
   ralTabLabel = 'Kolorystyka RAL',
   lazurTabLabel = 'Lazur',
+  speciesTabLabels = { pine: 'Sosna', meranti: 'Meranti', oak: 'Dąb' },
   mostPopularLabel,
   fullPaletteLabel,
   fullPaletteHref = 'https://www.ralcolorchart.com/',
@@ -25,17 +40,21 @@ export default function ProductDetailColors({
   const hasLazur = Array.isArray(colorsLazur) && colorsLazur.length > 0;
   const [activePalette, setActivePalette] = useState('ral');
   const [selectedColor, setSelectedColor] = useState(0);
+  const [species, setSpecies] = useState(SPECIES_KEYS[0]);
   const activePaletteIndex = activePalette === 'lazur' ? 1 : 0;
   const paletteTabsCount = hasLazur ? 2 : 1;
 
   const activeColors = activePalette === 'lazur' ? colorsLazur : ralColors;
-  if (!Array.isArray(activeColors) || activeColors.length === 0) return null;
 
   useEffect(() => {
     setSelectedColor(0);
   }, [activePalette]);
 
+  if (!Array.isArray(activeColors) || activeColors.length === 0) return null;
+
   const currentColor = activeColors?.[selectedColor];
+  const currentSwatch = resolveSwatch(currentColor, species);
+  const hasSpecies = activePalette === 'lazur' && activeColors.some((color) => color?.colors && color?.grainImages);
 
   return (
     <div className={styles.colorsSection}>
@@ -75,12 +94,42 @@ export default function ProductDetailColors({
           ) : null}
         </div>
 
+        {hasSpecies ? (
+          <div
+            className={`${styles.paletteTabs} ${styles.speciesTabs}`}
+            role="tablist"
+            aria-label="Gatunek drewna"
+            style={{
+              '--active-index': Math.max(SPECIES_KEYS.indexOf(species), 0),
+              '--tabs-count': SPECIES_KEYS.length,
+            }}
+          >
+            <span className={styles.paletteTabsThumb} aria-hidden="true" />
+            {SPECIES_KEYS.map((key) => (
+              <button
+                key={key}
+                type="button"
+                role="tab"
+                aria-selected={species === key}
+                className={[styles.paletteTabButton, styles.speciesTabButton, species === key ? styles.isActive : null]
+                  .filter(Boolean)
+                  .join(' ')}
+                onClick={() => setSpecies(key)}
+              >
+                {speciesTabLabels[key] ?? key}
+              </button>
+            ))}
+          </div>
+        ) : null}
+
         <div className={styles.colorsLayout}>
           <div className={styles.colorSwatchesContainer}>
             <span className={styles.colorSwatchesLabel}>{mostPopularLabel}</span>
 
             <div className={styles.colorSwatchesGrid}>
-              {activeColors.map((color, index) => (
+              {activeColors.map((color, index) => {
+                const swatch = resolveSwatch(color, species);
+                return (
                 <button
                   type="button"
                   className={styles.colorSwatchButton}
@@ -90,8 +139,8 @@ export default function ProductDetailColors({
                   <div
                     className={[styles.colorSquare, selectedColor === index ? styles.isActive : null].filter(Boolean).join(' ')}
                     style={{
-                      '--swatch-color': color.color || 'transparent',
-                      '--swatch-image': color.image ? `url(${color.image})` : 'none',
+                      '--swatch-color': swatch.hex || 'transparent',
+                      '--swatch-image': swatch.image ? `url(${swatch.image})` : 'none',
                     }}
                     aria-hidden="true"
                   />
@@ -101,7 +150,8 @@ export default function ProductDetailColors({
                     {color.ral}
                   </span>
                 </button>
-              ))}
+                );
+              })}
             </div>
 
             {activePalette === 'ral' ? (
@@ -114,15 +164,10 @@ export default function ProductDetailColors({
 
           <div className={styles.colorPreviewContainer}>
             <div
-              className={[
-                styles.colorPreviewMain,
-                activePalette === 'lazur' ? styles.colorPreviewMainLazur : null,
-              ]
-                .filter(Boolean)
-                .join(' ')}
+              className={styles.colorPreviewMain}
               style={{
-                '--preview-color': currentColor?.color || 'transparent',
-                '--preview-image': currentColor?.image ? `url(${currentColor.image})` : 'none',
+                '--preview-color': currentSwatch.hex || 'transparent',
+                '--preview-image': currentSwatch.image ? `url(${currentSwatch.image})` : 'none',
               }}
             />
             <div className={styles.colorPreviewInfo}>

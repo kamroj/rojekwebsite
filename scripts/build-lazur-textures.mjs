@@ -1,17 +1,26 @@
-// Generuje tekstury lazurów dla konfiguratora HS z wzornika PPG Wood Finishes.
+// Generuje zasoby kolorystyki lazurów z wzornika PPG Wood Finishes.
+//
+// Architektura "słoje × kolor": z wzornika powstaje
+// 1) jedna CZYSTA mapa słojów per gatunek drewna (grain-{pine|meranti|oak}.jpg)
+//    — z próbki o najlepiej czytelnym rysunku, znormalizowana do jasnej
+//    szarości (średnia ~235); służy jako mapa koloru (tintowana) i reliefu;
+// 2) tabela KOLORÓW zmierzonych z próbek (średnia RGB wycinka per wybarwienie
+//    × gatunek, z kompensacją jasności mapy słojów) emitowana do modułu
+//    src/data/products/lazurColors.generated.js. Składanie "słoje × kolor"
+//    odbywa się na żywo: w 3D przez material.color × map, w UI przez
+//    background-blend-mode: multiply — żadnych wypiekanych tekstur per kolor.
+//
+// Kompensacja 255/235 działa spójnie w obu przestrzeniach mnożenia (sRGB w
+// CSS, liniowa w three.js), bo czyste skalowanie przechodzi przez gammę:
+// (k·s)^γ = k^γ · s^γ.
 //
 // Wejście: wzornik-lazury/*.jpg (3 strony karty kolorów, 1024×1008; strony
 // posortowane nazwą pliku odpowiadają kolejności wybarwień). Każda strona to
 // 6 wierszy × 3 kolumny gatunków (SOSNA | MERANTI | DĄB); podpis pod środkową
 // próbką należy do wiersza powyżej.
 //
-// Z każdej próbki wycinany jest wewnętrzny pas deski (z pominięciem pasa
-// odblasku flesza przy górnej krawędzi i marginesów), skalowany ×3 (lanczos)
-// i lekko wyostrzany → public/models/lazur/{kolor}-{pine|meranti|oak}.jpg.
-//
 // Tryb kontrolny: `node scripts/build-lazur-textures.mjs --sheet` dodatkowo
-// składa wszystkie wycinki w arkusz kontrolny tmp-lazur-sheet.jpg (kolumny =
-// gatunki, wiersze = wybarwienia) do wzrokowej weryfikacji kadrów.
+// składa wycinki źródłowe w arkusz tmp-lazur-sheet.jpg do weryfikacji kadrów.
 
 import { mkdir, readdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -48,50 +57,39 @@ const ROWS = [
 // marginesy; wartości to ułamki wymiarów próbki
 const BAND = { top: 0.22, bottom: 0.1, left: 0.04, right: 0.04 };
 
-// Parametry podbicia jakości (źródła to mocno skompresowane JPG ~250×60 px):
-// odszumianie usuwa artefakty kompresji zanim powiększenie je wzmocni;
-// lustrzane sklejenie ×3 wydłuża słoje, żeby tekstura nie rozciągała się tak
-// mocno na długich profilach; po powiększeniu drobne wyostrzenie odzyskuje
-// krawędzie słojów, a drugi przebieg z dużą sigmą działa jak lokalny kontrast
-// (przywraca rysunek drewna zjedzony przez kompresję i upscale, m.in.
-// chropowatość meranti). Saturacja lekko w dół — kumuluje się przy skalowaniu
+// Źródło rysunku słojów per gatunek: jasna próbka z czytelnym usłojeniem
+// (wiersz "Sosna G:1801" ma najlepszy kontrast rysunku przy małej kompresji)
+const GRAIN_SOURCE_COLOR = 'sosna';
+
 const QUALITY = {
-  medianSize: 3,
-  tiles: 3,
+  medianSize: 3, // odszumianie artefaktów JPG przed powiększeniem
+  tiles: 3, // lustrzane sklejenie wzdłuż słojów — mniejsze rozciągnięcie na profilach
   outWidth: 2048,
+  grainMean: 235, // docelowa średnia jasność mapy słojów (rysunek = ciemniejsze smugi)
   sharpenFine: { sigma: 1.2, m1: 0.8, m2: 2.5 },
-  sharpenLocalContrast: { sigma: 8, m1: 0.5, m2: 0.5 },
-  saturation: 0.9,
+  sharpenLocalContrast: { sigma: 8, m1: 0.6, m2: 0.6 },
+  colorSaturation: 0.9, // delikatna desaturacja zmierzonych kolorów (feedback: "marchewkowa" sosna)
   jpegQuality: 88,
 };
 
-// Adaptacyjna korekcja tonalna wg średniej jasności próbki. Bardzo ciemne
-// lazury (antracyt, palisander…) dostają lift cieni wycelowany w średnią
-// ~60 (inaczej w renderze, po przemnożeniu przez oświetlenie, słoje spadają
-// poniżej progu percepcji) oraz mocniejszy lokalny kontrast (boost); lift
-// MUSI iść przed wyostrzaniem, żeby kontrast nie wzmacniał czerni
-const toneFor = (meanLuma) => {
-  if (meanLuma < 50) {
-    return { a: 1.1, b: Math.min(Math.max(60 - 1.1 * meanLuma, 0), 35), contrastBoost: 1.5 };
-  }
-  if (meanLuma < 70) return { a: 1, b: 10, contrastBoost: 1.25 };
-  if (meanLuma < 170) return { a: 1.04, b: -5, contrastBoost: 1 };
-  return { a: 1, b: 0, contrastBoost: 1 };
-};
-
-// Rozjazd gatunków: meranti dostaje dodatkowe odszumienie (zostaje sama
-// plamista mozaika, bez szumu JPG) i lekki skręt w czerwień; dąb — dodatkowe
-// kierunkowe wyostrzenie wydobywające dłuższe pasma słojów
+// Rozjazd struktury gatunków w mapie słojów: meranti — drobna plamka
+// (mocniejsze odszumianie + mocniejszy lokalny kontrast, żeby cętka odróżniała
+// się od pasm dębu), dąb — odszumienie przed upscalingiem i agresywniejsze
+// drobne wyostrzenie (przeciw "mydlanym" smugom) + kierunkowe pasma
 const SPECIES_TWEAKS = {
   pine: {},
-  meranti: { extraMedian: 3, hue: 4 },
-  oak: { extraSharpen: { sigma: 3.5, m1: 0.7, m2: 1.5 } },
+  meranti: { extraMedian: 3, localContrastBoost: 1.3 },
+  oak: {
+    extraMedian: 3,
+    fineSharpen: { sigma: 0.8, m1: 1.4, m2: 2.5 },
+    extraSharpen: { sigma: 3.5, m1: 0.7, m2: 1.5 },
+  },
 };
 
-// Korekty pojedynczych wybarwień: lazur Sosna ze wzornika jest „marchewkowy" —
-// zdejmujemy nasycenie do miodu
+// Korekty pojedynczych wybarwień: lazur Sosna ciągnie w agresywny oranż —
+// dodatkowa desaturacja do tonu miodowego
 const COLOR_TWEAKS = {
-  sosna: { saturation: 0.88, lightness: 1.03 },
+  sosna: { saturation: 0.93 },
 };
 
 const makeSheet = process.argv.includes('--sheet');
@@ -104,13 +102,13 @@ if (files.length !== 3) {
 
 await mkdir(OUT_DIR, { recursive: true });
 
+// ---------- Etap 1: wycinki źródłowe + zmierzone kolory ----------
+const crops = new Map(); // `${color}|${species}` → buffer (odszumiony wycinek)
 const sheetTiles = [];
 let colorIndex = 0;
 
 for (const file of files) {
-  const page = sharp(path.join(SRC_DIR, file));
-  const pageBuffer = await page.toBuffer();
-
+  const pageBuffer = await sharp(path.join(SRC_DIR, file)).toBuffer();
   for (const row of ROWS) {
     const color = COLORS[colorIndex];
     colorIndex += 1;
@@ -120,75 +118,121 @@ for (const file of files) {
       const top = Math.round(row.y + row.h * BAND.top);
       const height = Math.round(row.h * (1 - BAND.top - BAND.bottom));
 
-      // 1. Wycinek + odszumienie artefaktów JPG (meranti: drugi przebieg,
-      // żeby z plamistej struktury zdjąć resztki blockingu)
-      const speciesTweak = SPECIES_TWEAKS[species] ?? {};
-      let cleanPipeline = sharp(pageBuffer).extract({ left, top, width, height }).median(QUALITY.medianSize);
-      if (speciesTweak.extraMedian) cleanPipeline = cleanPipeline.median(speciesTweak.extraMedian);
-      const cleanCrop = await cleanPipeline.png().toBuffer();
-
-      // 2. Lustrzane sklejenie w poziomie (wzdłuż słojów) — szwy lustrzane są
-      // mniej widoczne niż twarde cięcia, a tekstura zyskuje długość
-      const flipped = await sharp(cleanCrop).flop().png().toBuffer();
-      const tiledWidth = width * QUALITY.tiles;
-      const tiled = await sharp({
-        create: { width: tiledWidth, height, channels: 3, background: { r: 0, g: 0, b: 0 } },
-      })
-        .composite(
-          Array.from({ length: QUALITY.tiles }, (_, i) => ({
-            input: i % 2 === 0 ? cleanCrop : flipped,
-            left: i * width,
-            top: 0,
-          }))
-        )
+      const cleanCrop = await sharp(pageBuffer)
+        .extract({ left, top, width, height })
+        .median(QUALITY.medianSize)
         .png()
         .toBuffer();
-
-      // 3. Powiększenie + przywrócenie rysunku słojów: najpierw adaptacyjny
-      // lift tonalny, potem wyostrzanie (drobne + lokalny kontrast z boostem
-      // dla ciemnych), korekty per gatunek/wybarwienie, desaturacja
-      const { channels } = await sharp(cleanCrop).stats();
-      const meanLuma = 0.299 * channels[0].mean + 0.587 * channels[1].mean + 0.114 * channels[2].mean;
-      const tone = toneFor(meanLuma);
-      const colorTweak = COLOR_TWEAKS[color] ?? {};
-
-      let pipeline = sharp(tiled)
-        .resize({ width: QUALITY.outWidth, kernel: 'lanczos3' })
-        .linear(tone.a, tone.b)
-        .sharpen(QUALITY.sharpenFine)
-        .sharpen({
-          sigma: QUALITY.sharpenLocalContrast.sigma,
-          m1: QUALITY.sharpenLocalContrast.m1 * tone.contrastBoost,
-          m2: QUALITY.sharpenLocalContrast.m2 * tone.contrastBoost,
-        });
-      if (speciesTweak.extraSharpen) pipeline = pipeline.sharpen(speciesTweak.extraSharpen);
-      const out = path.join(OUT_DIR, `${color}-${species}.jpg`);
-      await pipeline
-        .modulate({
-          saturation: QUALITY.saturation * (colorTweak.saturation ?? 1),
-          lightness: colorTweak.lightness ?? 1,
-          hue: speciesTweak.hue ?? 0,
-        })
-        .jpeg({ quality: QUALITY.jpegQuality })
-        .toFile(out);
+      crops.set(`${color}|${species}`, { buffer: cleanCrop, width, height });
 
       if (makeSheet) {
-        sheetTiles.push({
-          color,
-          species,
-          buffer: await sharp(cleanCrop).resize({ width: 220 }).png().toBuffer(),
-        });
+        sheetTiles.push({ color, species, buffer: await sharp(cleanCrop).resize({ width: 220 }).png().toBuffer() });
       }
     }
   }
 }
 
-console.log(`Zapisano ${colorIndex * 3} tekstur do ${OUT_DIR}/`);
+// ---------- Etap 2: mapy słojów per gatunek ----------
+const mirrorTile = async (buffer, width, height) => {
+  const flipped = await sharp(buffer).flop().png().toBuffer();
+  return sharp({ create: { width: width * QUALITY.tiles, height, channels: 3, background: { r: 0, g: 0, b: 0 } } })
+    .composite(
+      Array.from({ length: QUALITY.tiles }, (_, i) => ({
+        input: i % 2 === 0 ? buffer : flipped,
+        left: i * width,
+        top: 0,
+      }))
+    )
+    .png()
+    .toBuffer();
+};
+
+const grains = {}; // species → { buffer, width, height } (finalna mapa słojów)
+for (const species of Object.keys(COLUMNS)) {
+  const tweak = SPECIES_TWEAKS[species] ?? {};
+  const source = crops.get(`${GRAIN_SOURCE_COLOR}|${species}`);
+
+  let grainBase = sharp(source.buffer).grayscale();
+  if (tweak.extraMedian) grainBase = grainBase.median(tweak.extraMedian);
+  const grainCrop = await grainBase.png().toBuffer();
+
+  const tiled = await mirrorTile(grainCrop, source.width, source.height);
+  const boost = tweak.localContrastBoost ?? 1;
+  let pipeline = sharp(tiled)
+    .resize({ width: QUALITY.outWidth, kernel: 'lanczos3' })
+    .sharpen(tweak.fineSharpen ?? QUALITY.sharpenFine)
+    .sharpen({
+      sigma: QUALITY.sharpenLocalContrast.sigma,
+      m1: QUALITY.sharpenLocalContrast.m1 * boost,
+      m2: QUALITY.sharpenLocalContrast.m2 * boost,
+    });
+  if (tweak.extraSharpen) pipeline = pipeline.sharpen(tweak.extraSharpen);
+  const contrasted = await pipeline.png().toBuffer();
+
+  // Normalizacja: średnia jasność → grainMean (rysunek słojów jako ciemniejsze
+  // smugi na jasnym tle; mnożenie kolorem prawie nie zmienia średniej barwy)
+  const { channels } = await sharp(contrasted).stats();
+  const mean = channels[0].mean;
+  const normalized = await sharp(contrasted)
+    .linear(QUALITY.grainMean / mean, 0)
+    .png()
+    .toBuffer();
+
+  const meta = await sharp(normalized).metadata();
+  grains[species] = { buffer: normalized, width: meta.width, height: meta.height };
+  await sharp(normalized)
+    .jpeg({ quality: QUALITY.jpegQuality })
+    .toFile(path.join(OUT_DIR, `grain-${species}.jpg`));
+}
+
+// ---------- Etap 3: tabela kolorów zmierzonych z próbek ----------
+const clamp255 = (value) => Math.min(Math.round(value), 255);
+
+// Delikatna desaturacja względem luminancji (kolory z aparatu są przesycone)
+const desaturate = ({ r, g, b }, factor) => {
+  const luma = 0.299 * r + 0.587 * g + 0.114 * b;
+  return {
+    r: clamp255(luma + (r - luma) * factor),
+    g: clamp255(luma + (g - luma) * factor),
+    b: clamp255(luma + (b - luma) * factor),
+  };
+};
+
+const toHex = ({ r, g, b }) =>
+  `#${[r, g, b].map((value) => value.toString(16).padStart(2, '0')).join('')}`;
+
+const lazurColors = {};
+for (const color of COLORS) {
+  lazurColors[`lazur-${color}`] = {};
+  for (const species of Object.keys(COLUMNS)) {
+    const crop = crops.get(`${color}|${species}`);
+    const { channels } = await sharp(crop.buffer).stats();
+    // Kompensacja jasności mapy słojów (średnia grainMean zamiast bieli), żeby
+    // kolor po przemnożeniu przez mapę odpowiadał średniej z próbki wzornika
+    const lift = 255 / QUALITY.grainMean;
+    const saturation = QUALITY.colorSaturation * (COLOR_TWEAKS[color]?.saturation ?? 1);
+    const sampled = desaturate(
+      { r: channels[0].mean * lift, g: channels[1].mean * lift, b: channels[2].mean * lift },
+      saturation
+    );
+    lazurColors[`lazur-${color}`][species] = toHex(sampled);
+  }
+}
+
+const generated = `// Plik generowany przez scripts/build-lazur-textures.mjs — NIE edytować ręcznie.
+// Kolory lazurów zmierzone z wzornika PPG, per wybarwienie × gatunek drewna,
+// skompensowane pod mnożenie przez mapy słojów /models/lazur/grain-*.jpg.
+export const LAZUR_COLORS = ${JSON.stringify(lazurColors, null, 2)};
+`;
+await writeFile('src/data/products/lazurColors.generated.js', generated);
+
+console.log(`Zapisano 3 mapy słojów do ${OUT_DIR}/ i ${COLORS.length * 3} kolorów do src/data/products/lazurColors.generated.js`);
 
 if (makeSheet) {
-  // Arkusz: 3 kolumny (pine/meranti/oak) × 18 wierszy
   const tileW = 220;
-  const tileH = Math.round((ROWS[0].h * (1 - BAND.top - BAND.bottom) * tileW) / (COLUMNS.pine.w * (1 - BAND.left - BAND.right)));
+  const tileH = Math.round(
+    (ROWS[0].h * (1 - BAND.top - BAND.bottom) * tileW) / (COLUMNS.pine.w * (1 - BAND.left - BAND.right))
+  );
   const gap = 6;
   const cols = ['pine', 'meranti', 'oak'];
   const sheetW = cols.length * (tileW + gap) + gap;

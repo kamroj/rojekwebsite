@@ -264,13 +264,15 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     }));
   }, [languageKey]);
 
-  // Miniatury lazurów podążają za wybranym gatunkiem drewna — wzornik PPG
-  // pokazuje każde wybarwienie osobno na sośnie, meranti i dębie
+  // Miniatury lazurów podążają za wybranym gatunkiem drewna: mapa słojów
+  // gatunku × kolor zmierzony z wzornika (multiply w CSS — ta sama kompozycja
+  // co w materiale 3D)
   const lazurSwatchOptions = useMemo(
     () =>
       WOOD_LAZUR_COLORS.map((color) => ({
         value: color.value,
-        image: color.textures[selectedWood] ?? color.textures.default,
+        image: color.grainImages[selectedWood] ?? color.grainImages.pine,
+        hex: color.colors?.[selectedWood] ?? color.colors?.pine,
         label: t(color.labelKey, color.name),
         sublabel: color.code,
       })),

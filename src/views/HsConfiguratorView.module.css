@@ -178,8 +178,10 @@
   border-radius: 8px;
   padding: 0;
   cursor: pointer;
-  background: var(--swatch-color, transparent);
+  background-color: var(--swatch-color, transparent);
   background-image: var(--swatch-image, none);
+  /* Lazury: mapa słojów gatunku × kolor zmierzony z wzornika */
+  background-blend-mode: multiply;
   background-size: cover;
   background-position: center;
   transition: transform 0.15s ease, box-shadow 0.15s ease;

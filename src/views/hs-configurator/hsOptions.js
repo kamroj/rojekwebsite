@@ -41,6 +41,10 @@ const LAZUR_URL_CODES = {
   'lazur-zielen-maltanska': 'zm',
 };
 
+// Ciemne wybarwienia: w 3D rysunek słojów musi przyjść z odbić światła
+// (mocniejszy relief, niższy roughness), bo ciemny kolor go nie niesie
+const DARK_LAZURY = new Set(['lazur-palisander', 'lazur-brazowy-ciemny', 'lazur-grafit', 'lazur-antracyt']);
+
 export const WOOD_LAZUR_COLORS = WINDOW_LAZUR_PALETTE.map((color) => {
   const key = color.id.replace('lazur-', '');
   return {
@@ -49,27 +53,37 @@ export const WOOD_LAZUR_COLORS = WINDOW_LAZUR_PALETTE.map((color) => {
     name: color.name,
     labelKey: `hsConfigurator.options.lazury.${key}`,
     code: color.ral,
-    textures: {
-      default: `/models/lazur/${key}-pine.jpg`,
-      pine: `/models/lazur/${key}-pine.jpg`,
-      meranti: `/models/lazur/${key}-meranti.jpg`,
-      oak: `/models/lazur/${key}-oak.jpg`,
-    },
+    dark: DARK_LAZURY.has(color.id),
+    // Architektura "słoje × kolor": hexy zmierzone z wzornika per gatunek +
+    // mapy słojów gatunków (składanie na żywo w CSS i w materiale 3D)
+    colors: color.colors,
+    grainImages: color.grainImages,
   };
 });
 
 export const DEFAULT_WOOD_COLOR = { palette: 'lazur', id: 'lazur-sosna' };
 
+// Czysta mapa słojów gatunku (grayscale) — wspólna dla wszystkich wybarwień,
+// służy jako mapa reliefu (bump) niezależna od jasności koloru
+const grainForSpecies = (speciesKey) =>
+  `/models/lazur/grain-${['pine', 'meranti', 'oak'].includes(speciesKey) ? speciesKey : 'pine'}.jpg`;
+
 // Wybrany kolor drewna → parametry materiału modelu 3D. RAL to farba kryjąca
-// (płaski kolor + relief słojów), lazur to mapa ze zdjęcia próbki; gatunek
-// drewna może mieć własną teksturę lazuru (fallback: próbka wspólna)
+// (płaski kolor + relief słojów gatunku), lazur to tint mapy słojów gatunku
+// kolorem zmierzonym z wzornika (material.color × map) + ta sama mapa jako relief
 export const resolveWoodFinish = ({ palette, id }, speciesKey) => {
+  const grainPath = grainForSpecies(speciesKey);
   if (palette === 'ral') {
     const ral = WOOD_RAL_COLORS.find((color) => color.value === id) ?? WOOD_RAL_COLORS[0];
-    return { type: 'ral', hex: ral.hex };
+    return { type: 'ral', hex: ral.hex, grainPath };
   }
   const lazur = WOOD_LAZUR_COLORS.find((color) => color.value === id) ?? WOOD_LAZUR_COLORS[0];
-  return { type: 'lazur', texturePath: lazur.textures[speciesKey] ?? lazur.textures.default };
+  return {
+    type: 'lazur',
+    hex: lazur.colors?.[speciesKey] ?? lazur.colors?.pine ?? '#ffffff',
+    grainPath,
+    dark: lazur.dark,
+  };
 };
 
 export const HANDLE_FINISHES = [
