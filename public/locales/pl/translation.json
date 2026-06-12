@@ -46,7 +46,7 @@
     "sectionsLabel": {
       "scheme": "Schemat",
       "material": "Materiał",
-      "materials": "Wykończenie",
+      "materials": "Materiały",
       "dimensions": "Proporcje",
       "addons": "Dodatki"
     },
@@ -85,10 +85,10 @@
       "note": "Prezentacja ma charakter poglądowy i pokazuje proporcje, kolorystykę oraz ogólny charakter systemu."
     },
     "labels": {
-      "frameMaterial": "Materiał ramy:",
       "handleColor": "Kolor klamki:",
       "type": "Typ:",
       "thresholdColor": "Kolor progu:",
+      "woodColor": "Kolor drewna:",
       "aluColor": "Kolor nakładek aluminiowych:",
       "width": "Szerokość okna:",
       "height": "Wysokość okna:",
@@ -103,9 +103,29 @@
       "close": "ZAMKNIJ"
     },
     "options": {
-      "textures": {
-        "natur": "Natur",
-        "honeyPine": "Miodowa sosna"
+      "palettes": {
+        "ral": "RAL",
+        "lazur": "Lazur"
+      },
+      "lazury": {
+        "sosna": "Sosna",
+        "cyprys": "Cyprys",
+        "stara-sosna": "Stara Sosna",
+        "dab": "Dąb",
+        "teak": "Teak",
+        "kasztan": "Kasztan",
+        "ciemny-dab": "Ciemny Dąb",
+        "wisnia": "Wiśnia",
+        "orzech": "Orzech",
+        "palisander": "Palisander",
+        "siena-noce": "Siena Noce",
+        "brazowy-ciemny": "Brązowy Ciemny",
+        "biel-skandynawska": "Biel Skandynawska",
+        "szary-jasny": "Szary Jasny",
+        "grafit": "Grafit",
+        "antracyt": "Antracyt",
+        "mahon": "Mahoń",
+        "zielen-maltanska": "Zieleń Maltańska"
       },
       "handleTextures": {
         "silver": "Srebrna",
@@ -119,12 +139,6 @@
       "materialTypes": {
         "wood": "Drewno",
         "woodAlu": "Drewno-Aluminium"
-      },
-      "aluColors": {
-        "anthracite": "Antracyt",
-        "black": "Czarny",
-        "gray": "Szary",
-        "white": "Biały"
       },
       "schemes": {
         "a": {

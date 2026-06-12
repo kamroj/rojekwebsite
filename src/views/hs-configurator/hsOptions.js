@@ -3,20 +3,74 @@
 // wartości bez importowania całego widoku. `urlCode` to krótki identyfikator
 // opcji używany w parametrach URL (ścieżki plików nigdy nie trafiają do URL).
 
-export const TEXTURES = [
-  {
-    value: '/models/remmers-natur.jpg',
-    urlCode: 'n',
-    labelKey: 'hsConfigurator.options.textures.natur',
-    fallback: 'Natur',
-  },
-  {
-    value: '/models/remmers-miodowa-sosna.jpg',
-    urlCode: 'm',
-    labelKey: 'hsConfigurator.options.textures.honeyPine',
-    fallback: 'Miodowa Sosna',
-  },
-];
+import { WINDOW_COLORS_PALETTE, WINDOW_LAZUR_PALETTE } from '../../data/products/windows.js';
+
+// Paleta RAL współdzielona ze stroną produktową (jedno źródło prawdy:
+// data/products/windows.js); nazwy lokalizowane w widoku przez
+// getLocalizedWindowColorsPalette. Kod URL = sam numer RAL.
+export const WOOD_RAL_COLORS = WINDOW_COLORS_PALETTE.map((color) => ({
+  value: color.id,
+  urlCode: color.id.replace('ral', ''),
+  ral: color.ral,
+  hex: color.color,
+}));
+
+// Lazury z wzornika PPG (źródło prawdy: WINDOW_LAZUR_PALETTE). Każde
+// wybarwienie ma tekstury per gatunek drewna (kolumny wzornika SOSNA/MERANTI/
+// DĄB ↔ klucze cenowe pine/meranti/oak), generowane przez
+// scripts/build-lazur-textures.mjs. Kody URL literowe — nie kolidują z
+// cyfrowymi kodami palety RAL
+const LAZUR_URL_CODES = {
+  'lazur-sosna': 'sn',
+  'lazur-cyprys': 'cy',
+  'lazur-stara-sosna': 'ss',
+  'lazur-dab': 'db',
+  'lazur-teak': 'tk',
+  'lazur-kasztan': 'ka',
+  'lazur-ciemny-dab': 'cd',
+  'lazur-wisnia': 'wi',
+  'lazur-orzech': 'or',
+  'lazur-palisander': 'pa',
+  'lazur-siena-noce': 'si',
+  'lazur-brazowy-ciemny': 'bc',
+  'lazur-biel-skandynawska': 'bs',
+  'lazur-szary-jasny': 'sj',
+  'lazur-grafit': 'gr',
+  'lazur-antracyt': 'an',
+  'lazur-mahon': 'ma',
+  'lazur-zielen-maltanska': 'zm',
+};
+
+export const WOOD_LAZUR_COLORS = WINDOW_LAZUR_PALETTE.map((color) => {
+  const key = color.id.replace('lazur-', '');
+  return {
+    value: color.id,
+    urlCode: LAZUR_URL_CODES[color.id],
+    name: color.name,
+    labelKey: `hsConfigurator.options.lazury.${key}`,
+    code: color.ral,
+    textures: {
+      default: `/models/lazur/${key}-pine.jpg`,
+      pine: `/models/lazur/${key}-pine.jpg`,
+      meranti: `/models/lazur/${key}-meranti.jpg`,
+      oak: `/models/lazur/${key}-oak.jpg`,
+    },
+  };
+});
+
+export const DEFAULT_WOOD_COLOR = { palette: 'lazur', id: 'lazur-sosna' };
+
+// Wybrany kolor drewna → parametry materiału modelu 3D. RAL to farba kryjąca
+// (płaski kolor + relief słojów), lazur to mapa ze zdjęcia próbki; gatunek
+// drewna może mieć własną teksturę lazuru (fallback: próbka wspólna)
+export const resolveWoodFinish = ({ palette, id }, speciesKey) => {
+  if (palette === 'ral') {
+    const ral = WOOD_RAL_COLORS.find((color) => color.value === id) ?? WOOD_RAL_COLORS[0];
+    return { type: 'ral', hex: ral.hex };
+  }
+  const lazur = WOOD_LAZUR_COLORS.find((color) => color.value === id) ?? WOOD_LAZUR_COLORS[0];
+  return { type: 'lazur', texturePath: lazur.textures[speciesKey] ?? lazur.textures.default };
+};
 
 export const HANDLE_FINISHES = [
   { value: 'silver', urlCode: 's', labelKey: 'hsConfigurator.options.handleTextures.silver', fallback: 'Srebrna' },
@@ -30,14 +84,10 @@ export const MATERIAL_TYPES = [
   { value: 'woodAlu', urlCode: 'a', labelKey: 'hsConfigurator.options.materialTypes.woodAlu', fallback: 'Drewno-Aluminium' },
 ];
 
-// Kolory nakładek aluminiowych (lakier proszkowy RAL); `hex` zasila materiał
-// w modelu 3D, `ral` jest doklejany do etykiety w UI
-export const ALU_COLORS = [
-  { value: 'anthracite', urlCode: 'a', hex: '#383e42', ral: 'RAL 7016', labelKey: 'hsConfigurator.options.aluColors.anthracite', fallback: 'Antracyt' },
-  { value: 'black', urlCode: 'b', hex: '#0e0e10', ral: 'RAL 9005', labelKey: 'hsConfigurator.options.aluColors.black', fallback: 'Czarny' },
-  { value: 'gray', urlCode: 'g', hex: '#9da3a6', ral: 'RAL 7040', labelKey: 'hsConfigurator.options.aluColors.gray', fallback: 'Szary' },
-  { value: 'white', urlCode: 'w', hex: '#f1f0ea', ral: 'RAL 9016', labelKey: 'hsConfigurator.options.aluColors.white', fallback: 'Biały' },
-];
+// Kolory nakładek aluminiowych (lakier proszkowy): pełna paleta RAL ze strony
+// produktowej, bez lazurów; `hex` zasila materiał w modelu 3D
+export const ALU_COLORS = WOOD_RAL_COLORS;
+export const DEFAULT_ALU_COLOR = 'ral7016';
 
 // Zakresy szerokości zależne od liczby pól schematu
 const WIDTH_2_FIELDS = { min: 2000, max: 4000, default: 2320 };

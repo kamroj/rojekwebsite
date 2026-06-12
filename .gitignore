@@ -176,6 +176,10 @@ public/sitemap.xml
 # HS price lists (managed in Sanity, never versioned)
 cennik_hs/
 
+# Source scans of the PPG lazur sample chart (textures generated into
+# public/models/lazur by scripts/build-lazur-textures.mjs)
+wzornik-lazury/
+
 # FuseBox cache
 .fusebox/
 

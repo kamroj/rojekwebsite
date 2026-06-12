@@ -15,6 +15,7 @@ import {
   LinearMipMapLinearFilter,
   Matrix4,
   NeutralToneMapping,
+  NoColorSpace,
   RepeatWrapping,
   Shape,
   Sphere,
@@ -22,7 +23,11 @@ import {
   Vector3,
 } from 'three';
 
-import { ALU_COLORS } from './hsOptions.js';
+import { ALU_COLORS, DEFAULT_ALU_COLOR } from './hsOptions.js';
+
+// Neutralna tekstura słojów — przy kolorach RAL (farba kryjąca) służy jako
+// mapa reliefu (bump), żeby malowane drewno nie wyglądało jak plastik
+const GRAIN_TEXTURE = '/models/remmers-natur.jpg';
 
 // Wymiary profili systemu HS wg przekroju producenta (w metrach)
 const PROFILE = {
@@ -355,32 +360,42 @@ function LowThreshold({ bodyWidth, openingWidth, material, outerRail }) {
   );
 }
 
-// Owinięcie boków profilu plakietami alu: cztery cienkie płytki na obwodzie
-// ramy, od lica zewnętrznego nakładki przez całą głębokość profilu (1 mm przed
-// licem wewnętrznym, żeby uniknąć z-fightingu z drewnem) — boki skrzydeł i
-// słupków czytają się jako aluminium z każdego kąta od zewnątrz, także przez
-// szczelinę zakładu; drewno zostaje wyłącznie na licach wewnętrznych
-function AluSideWrap({ xLeft, xRight, bottom, top, z, depth, material }) {
-  const wrapDepth = depth + ALU.depth - 0.001;
-  const wrapZ = z - depth / 2 - ALU.depth + wrapDepth / 2;
+// Owinięcie boków profilu plakietami na obwodzie ramy, przez całą głębokość
+// (1 mm przed licem wewnętrznym, żeby uniknąć z-fightingu z drewnem). Boki
+// skrzydeł widać z OBU stron przez szczelinę zakładu, więc owinięcie jest
+// dwusegmentowe: od lica zewnętrznego do połowy profilu w kolorze nakładki
+// alu, dalej w ciemnym kolorze uszczelki (w realnym okuciu w tej strefie
+// siedzą uszczelki szczotkowe) — od zewnątrz nie świeci drewno, a od wewnątrz
+// nie razi kolor aluminium
+function AluSideWrap({ xLeft, xRight, bottom, top, z, depth, material, innerMaterial }) {
+  const outerDepth = depth / 2 + ALU.depth;
+  const innerDepth = depth / 2 - 0.001;
   const cx = (xLeft + xRight) / 2;
   const cy = (bottom + top) / 2;
   const width = xRight - xLeft;
   const height = top - bottom;
+  const segments = [
+    { key: 'outer', zPos: z - depth / 2 - ALU.depth + outerDepth / 2, zDepth: outerDepth, mat: material },
+    { key: 'inner', zPos: z + innerDepth / 2, zDepth: innerDepth, mat: innerMaterial ?? material },
+  ];
   return (
     <group>
-      <BoxPart position={[xLeft - ALU.side / 2, cy, wrapZ]} size={[ALU.side, height, wrapDepth]} material={material} />
-      <BoxPart position={[xRight + ALU.side / 2, cy, wrapZ]} size={[ALU.side, height, wrapDepth]} material={material} />
-      <BoxPart
-        position={[cx, top + ALU.side / 2, wrapZ]}
-        size={[width + ALU.side * 2, ALU.side, wrapDepth]}
-        material={material}
-      />
-      <BoxPart
-        position={[cx, bottom - ALU.side / 2, wrapZ]}
-        size={[width + ALU.side * 2, ALU.side, wrapDepth]}
-        material={material}
-      />
+      {segments.map(({ key, zPos, zDepth, mat }) => (
+        <group key={key}>
+          <BoxPart position={[xLeft - ALU.side / 2, cy, zPos]} size={[ALU.side, height, zDepth]} material={mat} />
+          <BoxPart position={[xRight + ALU.side / 2, cy, zPos]} size={[ALU.side, height, zDepth]} material={mat} />
+          <BoxPart
+            position={[cx, top + ALU.side / 2, zPos]}
+            size={[width + ALU.side * 2, ALU.side, zDepth]}
+            material={mat}
+          />
+          <BoxPart
+            position={[cx, bottom - ALU.side / 2, zPos]}
+            size={[width + ALU.side * 2, ALU.side, zDepth]}
+            material={mat}
+          />
+        </group>
+      ))}
     </group>
   );
 }
@@ -671,6 +686,7 @@ function GlazedPanel({
             z={z}
             depth={depth}
             material={aluMaterial}
+            innerMaterial={materials.gasket}
           />
         </>
       )}
@@ -735,19 +751,30 @@ function GlazedPanel({
                 size={[panelWidth, PROFILE.filler.height, ALU.depth]}
                 material={aluMaterial}
               />
-              {/* Zaślepki czołowe listwy maskującej — jej końce w strefie
-                  zakładu są widoczne od zewnątrz i też muszą być aluminiowe */}
+              {/* Zaślepki czołowe listwy maskującej — końce w strefie zakładu
+                  widać od zewnątrz (segment alu) i przez szczelinę od wewnątrz
+                  (segment w kolorze uszczelki, jak owinięcia boków skrzydeł) */}
               {[-1, 1].map((side) => (
-                <BoxPart
-                  key={`filler-end-${side}`}
-                  position={[
-                    cx + side * (panelWidth / 2 + ALU.side / 2),
-                    top + PROFILE.filler.height / 2,
-                    z - depth / 2 - ALU.depth + (depth + ALU.depth - 0.001) / 2,
-                  ]}
-                  size={[ALU.side, PROFILE.filler.height, depth + ALU.depth - 0.001]}
-                  material={aluMaterial}
-                />
+                <group key={`filler-end-${side}`}>
+                  <BoxPart
+                    position={[
+                      cx + side * (panelWidth / 2 + ALU.side / 2),
+                      top + PROFILE.filler.height / 2,
+                      z - depth / 2 - ALU.depth + (depth / 2 + ALU.depth) / 2,
+                    ]}
+                    size={[ALU.side, PROFILE.filler.height, depth / 2 + ALU.depth]}
+                    material={aluMaterial}
+                  />
+                  <BoxPart
+                    position={[
+                      cx + side * (panelWidth / 2 + ALU.side / 2),
+                      top + PROFILE.filler.height / 2,
+                      z + (depth / 2 - 0.001) / 2,
+                    ]}
+                    size={[ALU.side, PROFILE.filler.height, depth / 2 - 0.001]}
+                    material={materials.gasket}
+                  />
+                </group>
               ))}
             </>
           )}
@@ -766,7 +793,7 @@ function GlazedPanel({
 
 function ProceduralHsModel({
   scheme,
-  texturePath,
+  woodFinish,
   handleFinish,
   thresholdType,
   materialType,
@@ -778,6 +805,8 @@ function ProceduralHsModel({
   ...props
 }) {
   const isWoodAlu = materialType === 'woodAlu';
+  const isRalWood = woodFinish?.type === 'ral';
+  const texturePath = (!isRalWood && woodFinish?.texturePath) || GRAIN_TEXTURE;
   const texture = useTexture(texturePath);
   const schemeDef = SCHEME_DEFINITIONS[scheme] ?? SCHEME_DEFINITIONS.a;
   const panels = schemeDef.panels;
@@ -818,13 +847,14 @@ function ProceduralHsModel({
   const openingBottom = PROFILE.threshold;
   const openingTop = modelHeight - PROFILE.frame;
 
-  // Konfiguracja tekstur — słoje drewna wzdłuż elementu (pion/poziom)
+  // Konfiguracja tekstur — słoje drewna wzdłuż elementu (pion/poziom).
+  // Mapa koloru (lazur) pracuje w sRGB; mapa reliefu (RAL) musi być liniowa
   const textures = useMemo(() => {
     const setupWood = (rotate) => {
       const tex = texture.clone();
       tex.wrapS = RepeatWrapping;
       tex.wrapT = RepeatWrapping;
-      tex.colorSpace = SRGBColorSpace;
+      tex.colorSpace = isRalWood ? NoColorSpace : SRGBColorSpace;
       tex.anisotropy = 16;
       tex.minFilter = LinearMipMapLinearFilter;
       tex.magFilter = LinearFilter;
@@ -840,19 +870,38 @@ function ProceduralHsModel({
       woodV: setupWood(true),
       woodH: setupWood(false),
     };
-  }, [texture]);
+  }, [texture, isRalWood]);
 
   const materials = useMemo(() => {
     const thresholdMat = getThresholdMaterial(thresholdType);
     const handleMat = HANDLE_FINISHES[handleFinish] ?? HANDLE_FINISHES.silver;
 
+    // RAL = lakier kryjący: płaski kolor z delikatnym reliefem słojów (bump);
+    // lazur = zdjęcie próbki jako mapa koloru + ta sama mapa jako relief,
+    // żeby usłojenie nie spłaszczało się w jednolitą plamę pod światłem
+    const makeWood = (tex) =>
+      isRalWood ? (
+        <meshStandardMaterial
+          color={woodFinish.hex}
+          bumpMap={tex}
+          bumpScale={0.3}
+          roughness={0.5}
+          metalness={0.02}
+        />
+      ) : (
+        <meshStandardMaterial
+          map={tex}
+          bumpMap={tex}
+          bumpScale={0.85}
+          color="#ffffff"
+          roughness={0.45}
+          metalness={0.02}
+        />
+      );
+
     return {
-      woodV: (
-        <meshStandardMaterial map={textures.woodV} color="#ffffff" roughness={0.48} metalness={0.02} />
-      ),
-      woodH: (
-        <meshStandardMaterial map={textures.woodH} color="#ffffff" roughness={0.48} metalness={0.02} />
-      ),
+      woodV: makeWood(textures.woodV),
+      woodH: makeWood(textures.woodH),
       glass: (
         <meshPhysicalMaterial
           color="#eef6f4"
@@ -887,20 +936,20 @@ function ProceduralHsModel({
       // żeby płaskie lica czytały się jako jednolite płaszczyzny (Gemini Quadrat)
       alu: (
         <meshStandardMaterial
-          color={ALU_HEX[aluColor] ?? ALU_HEX.anthracite}
+          color={ALU_HEX[aluColor] ?? ALU_HEX[DEFAULT_ALU_COLOR]}
           roughness={0.55}
           metalness={0.3}
           envMapIntensity={1.0}
         />
       ),
     };
-  }, [textures, thresholdType, handleFinish, aluColor]);
+  }, [textures, thresholdType, handleFinish, aluColor, isRalWood, woodFinish]);
 
   const aluMaterial = isWoodAlu ? materials.alu : null;
 
   useEffect(() => {
     onReady?.();
-  }, [aluColor, handleFinish, height, materialType, onReady, scheme, thresholdType, textures, width]);
+  }, [aluColor, handleFinish, height, materialType, onReady, scheme, thresholdType, textures, width, woodFinish]);
 
   return (
     // exportRef wskazuje samą grupę modelu (bez Center/świateł/ContactShadows) —
@@ -1022,6 +1071,7 @@ function ProceduralHsModel({
                 z={MULLION.z}
                 depth={MULLION.depth}
                 material={aluMaterial}
+                innerMaterial={materials.gasket}
               />
             </>
           )}
@@ -1108,11 +1158,11 @@ function FrontFit({ modelRef, width, height, scheme }) {
 
 export default function HsConfiguratorCanvas({
   selectedType = 'a',
-  selectedTexture,
+  selectedWoodFinish,
   selectedHandleFinish,
   selectedThreshold,
   selectedMaterialType = 'wood',
-  selectedAluColor = 'anthracite',
+  selectedAluColor = DEFAULT_ALU_COLOR,
   width,
   height,
   onReady,
@@ -1156,7 +1206,7 @@ export default function HsConfiguratorCanvas({
           <group ref={modelRef}>
             <ProceduralHsModel
               scheme={selectedType}
-              texturePath={selectedTexture}
+              woodFinish={selectedWoodFinish}
               handleFinish={selectedHandleFinish}
               thresholdType={selectedThreshold}
               materialType={selectedMaterialType}

@@ -47,7 +47,7 @@
     "sectionsLabel": {
       "scheme": "Schéma",
       "material": "Matériau",
-      "materials": "Finitions",
+      "materials": "Matériaux",
       "dimensions": "Proportions",
       "addons": "Options"
     },
@@ -86,10 +86,10 @@
       "previewTag": "APERÇU"
     },
     "labels": {
-      "frameMaterial": "Matériau du cadre :",
       "handleColor": "Couleur de la poignée :",
       "type": "Type :",
       "thresholdColor": "Couleur du seuil :",
+      "woodColor": "Couleur du bois :",
       "aluColor": "Couleur des capotages aluminium :",
       "width": "Largeur de la fenêtre :",
       "height": "Hauteur de la fenêtre :",
@@ -104,9 +104,29 @@
       "close": "FERMER"
     },
     "options": {
-      "textures": {
-        "natur": "Naturel",
-        "honeyPine": "Pin miel"
+      "palettes": {
+        "ral": "RAL",
+        "lazur": "Lasure"
+      },
+      "lazury": {
+        "sosna": "Pin",
+        "cyprys": "Cyprès",
+        "stara-sosna": "Vieux Pin",
+        "dab": "Chêne",
+        "teak": "Teck",
+        "kasztan": "Châtaignier",
+        "ciemny-dab": "Chêne foncé",
+        "wisnia": "Cerisier",
+        "orzech": "Noyer",
+        "palisander": "Palissandre",
+        "siena-noce": "Siena Noce",
+        "brazowy-ciemny": "Brun foncé",
+        "biel-skandynawska": "Blanc scandinave",
+        "szary-jasny": "Gris clair",
+        "grafit": "Graphite",
+        "antracyt": "Anthracite",
+        "mahon": "Acajou",
+        "zielen-maltanska": "Vert maltais"
       },
       "handleTextures": {
         "silver": "Argent",
@@ -120,12 +140,6 @@
       "materialTypes": {
         "wood": "Bois",
         "woodAlu": "Bois-Aluminium"
-      },
-      "aluColors": {
-        "anthracite": "Anthracite",
-        "black": "Noir",
-        "gray": "Gris",
-        "white": "Blanc"
       },
       "schemes": {
         "a": {

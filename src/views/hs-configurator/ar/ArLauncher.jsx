@@ -14,13 +14,16 @@ import styles from './ArLauncher.module.css';
 // - desktop bez AR → przycisk z kodem QR przenoszącym konfigurację na telefon.
 
 // Sygnatura części konfiguracji wpływającej na geometrię/materiały modelu —
-// gatunek drewna i dodatki nie zmieniają eksportu, więc nie unieważniają cache'u
+// dodatki nie zmieniają eksportu, więc nie unieważniają cache'u. Gatunek
+// (wood) jest w sygnaturze, bo lazur może mieć teksturę per gatunek
 const exportSignature = (config) =>
   [
     config.scheme,
     config.width,
     config.height,
-    config.texture,
+    config.woodColor?.palette,
+    config.woodColor?.id,
+    config.wood,
     config.handleFinish,
     config.threshold,
     config.materialType,

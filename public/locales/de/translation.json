@@ -47,7 +47,7 @@
     "sectionsLabel": {
       "scheme": "Schema",
       "material": "Material",
-      "materials": "Ausführung",
+      "materials": "Materialien",
       "dimensions": "Proportionen",
       "addons": "Zubehör"
     },
@@ -86,10 +86,10 @@
       "previewTag": "VORSCHAU"
     },
     "labels": {
-      "frameMaterial": "Rahmenmaterial:",
       "handleColor": "Grifffarbe:",
       "type": "Typ:",
       "thresholdColor": "Schwellenfarbe:",
+      "woodColor": "Holzfarbe:",
       "aluColor": "Farbe der Aluminium-Deckschalen:",
       "width": "Fensterbreite:",
       "height": "Fensterhöhe:",
@@ -104,9 +104,29 @@
       "close": "SCHLIESSEN"
     },
     "options": {
-      "textures": {
-        "natur": "Natur",
-        "honeyPine": "Honigkiefer"
+      "palettes": {
+        "ral": "RAL",
+        "lazur": "Lasur"
+      },
+      "lazury": {
+        "sosna": "Kiefer",
+        "cyprys": "Zypresse",
+        "stara-sosna": "Alte Kiefer",
+        "dab": "Eiche",
+        "teak": "Teak",
+        "kasztan": "Kastanie",
+        "ciemny-dab": "Dunkle Eiche",
+        "wisnia": "Kirsche",
+        "orzech": "Nussbaum",
+        "palisander": "Palisander",
+        "siena-noce": "Siena Noce",
+        "brazowy-ciemny": "Dunkelbraun",
+        "biel-skandynawska": "Skandinavisches Weiß",
+        "szary-jasny": "Hellgrau",
+        "grafit": "Graphit",
+        "antracyt": "Anthrazit",
+        "mahon": "Mahagoni",
+        "zielen-maltanska": "Malteser Grün"
       },
       "handleTextures": {
         "silver": "Silber",
@@ -120,12 +140,6 @@
       "materialTypes": {
         "wood": "Holz",
         "woodAlu": "Holz-Aluminium"
-      },
-      "aluColors": {
-        "anthracite": "Anthrazit",
-        "black": "Schwarz",
-        "gray": "Grau",
-        "white": "Weiß"
       },
       "schemes": {
         "a": {

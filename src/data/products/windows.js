@@ -384,37 +384,136 @@ export function getLocalizedWindowColorsPalette(locale = 'pl') {
   });
 }
 
+// Wzornik lazurów PPG Wood Finishes (18 wybarwień). Zdjęcia próbek to wycinki
+// z karty kolorów generowane przez scripts/build-lazur-textures.mjs — dla
+// każdego wybarwienia istnieją warianty na sośnie/meranti/dębie
+// (/models/lazur/{id}-{pine|meranti|oak}.jpg); tu jako reprezentatywna
+// miniatura używana jest próbka na sośnie.
 export const WINDOW_LAZUR_PALETTE = [
   {
-    id: 'lazur-e4-16-46t',
-    name: 'Acacia',
-    ral: 'E4.16.46T',
-    image: '/images/colors/E4.16.46T-acacia.png',
-    description:
-      'Dekor lazur Acacia (kod E4.16.46T) o ciepłym, naturalnym charakterze drewna. Dobrze komponuje się z klasycznymi i nowoczesnymi elewacjami.',
+    id: 'lazur-sosna',
+    name: 'Sosna',
+    ral: 'G:1801 / E:1821',
+    image: '/models/lazur/sosna-pine.jpg',
+    description: 'Jasne, słoneczne wybarwienie podkreślające naturalny rysunek drewna. Klasyka skandynawskich elewacji.',
   },
   {
-    id: 'lazur-e2-26-56t',
-    name: 'Douglas',
-    ral: 'E2.26.56T',
-    image: '/images/colors/E2.26.56T-douglas.png',
-    description:
-      'Lazur Douglas (kod E2.26.56T) o ciepłym, miodowo-brązowym charakterze. Dobrze podkreśla usłojenie i nadaje profilom naturalny, stolarski wygląd.',
+    id: 'lazur-cyprys',
+    name: 'Cyprys',
+    ral: 'G:1802 / E:1822',
+    image: '/models/lazur/cyprys-pine.jpg',
+    description: 'Ciepły, złocisty odcień o śródziemnomorskim charakterze. Dobrze komponuje się z jasnymi tynkami.',
   },
   {
-    id: 'lazur-e8-35-66t',
-    name: 'Érable Naturel',
-    ral: 'E8.35.66T',
-    image: '/images/colors/E8.35.66T-Erable Naturel.png',
-    description:
-      'Lazur Érable Naturel (kod E8.35.66T) w jasnym, naturalnym tonie klonu. Rozjaśnia wizualnie stolarkę i dobrze komponuje się z nowoczesnymi, lekkimi elewacjami.',
+    id: 'lazur-stara-sosna',
+    name: 'Stara Sosna',
+    ral: 'G:1803 / E:1823',
+    image: '/models/lazur/stara-sosna-pine.jpg',
+    description: 'Pogłębiony, bursztynowy ton patynowanego drewna. Nadaje stolarce dojrzały, tradycyjny wygląd.',
   },
   {
-    id: 'lazur-g1-18-82t',
-    name: 'Peuplier',
-    ral: 'G1.18.82T',
-    image: '/images/colors/G1.18.82T-peupiler.png',
-    description:
-      'Lazur Peuplier (kod G1.18.82T) o stonowanym, neutralno-ciepłym odcieniu drewna. Uniwersalny wybór do projektów klasycznych i nowoczesnych.',
+    id: 'lazur-dab',
+    name: 'Dąb',
+    ral: 'G:1804 / E:1824',
+    image: '/models/lazur/dab-pine.jpg',
+    description: 'Klasyczny, średni brąz o uniwersalnym charakterze. Najczęściej wybierane wybarwienie stolarki drewnianej.',
+  },
+  {
+    id: 'lazur-teak',
+    name: 'Teak',
+    ral: 'G:1805 / E:1825',
+    image: '/models/lazur/teak-pine.jpg',
+    description: 'Głęboki, czerwonawy brąz egzotycznego drewna. Elegancki wybór do reprezentacyjnych realizacji.',
+  },
+  {
+    id: 'lazur-kasztan',
+    name: 'Kasztan',
+    ral: 'G:1806 / E:1826',
+    image: '/models/lazur/kasztan-pine.jpg',
+    description: 'Nasycony, kasztanowy brąz z rubinową nutą. Mocny akcent na tle jasnych elewacji.',
+  },
+  {
+    id: 'lazur-ciemny-dab',
+    name: 'Ciemny Dąb',
+    ral: 'G:1807 / E:1827',
+    image: '/models/lazur/ciemny-dab-pine.jpg',
+    description: 'Ciemny, dostojny brąz klasycznego dębu. Ponadczasowy wybór do tradycyjnej architektury.',
+  },
+  {
+    id: 'lazur-wisnia',
+    name: 'Wiśnia',
+    ral: 'G:1808 / E:1828',
+    image: '/models/lazur/wisnia-pine.jpg',
+    description: 'Wyrazisty odcień dojrzałej wiśni z czerwonym podtonem. Dodaje stolarce szlachetnego charakteru.',
+  },
+  {
+    id: 'lazur-orzech',
+    name: 'Orzech',
+    ral: 'G:1809 / E:1829',
+    image: '/models/lazur/orzech-pine.jpg',
+    description: 'Stonowany, orzechowy brąz o eleganckim rysunku. Dobrze współgra z klinkierem i kamieniem.',
+  },
+  {
+    id: 'lazur-palisander',
+    name: 'Palisander',
+    ral: 'G:1810 / E:1830',
+    image: '/models/lazur/palisander-pine.jpg',
+    description: 'Bardzo ciemny, czekoladowy odcień egzotycznego palisandru. Nowoczesny i wyrazisty.',
+  },
+  {
+    id: 'lazur-siena-noce',
+    name: 'Siena Noce',
+    ral: 'G:1811 / E:1831',
+    image: '/models/lazur/siena-noce-pine.jpg',
+    description: 'Włoski, ciepły brąz o miękkim rysunku słojów. Harmonijny wybór do spokojnych elewacji.',
+  },
+  {
+    id: 'lazur-brazowy-ciemny',
+    name: 'Brązowy Ciemny',
+    ral: 'G:1812 / E:1832',
+    image: '/models/lazur/brazowy-ciemny-pine.jpg',
+    description: 'Głęboki, ciemny brąz o satynowym wykończeniu. Uniwersalny w nowoczesnych i klasycznych projektach.',
+  },
+  {
+    id: 'lazur-biel-skandynawska',
+    name: 'Biel Skandynawska',
+    ral: 'G:1813 / E:1833',
+    image: '/models/lazur/biel-skandynawska-pine.jpg',
+    description: 'Półtransparentna biel przepuszczająca rysunek słojów. Lekkość i jasność w duchu skandynawskim.',
+  },
+  {
+    id: 'lazur-szary-jasny',
+    name: 'Szary Jasny',
+    ral: 'G:1814 / E:1834',
+    image: '/models/lazur/szary-jasny-pine.jpg',
+    description: 'Chłodna, jasna szarość zachowująca naturalną fakturę drewna. Nowoczesna alternatywa dla brązów.',
+  },
+  {
+    id: 'lazur-grafit',
+    name: 'Grafit',
+    ral: 'G:1815 / E:1835',
+    image: '/models/lazur/grafit-pine.jpg',
+    description: 'Ciemna, grafitowa szarość z widocznym usłojeniem. Architektoniczny charakter bez utraty natury drewna.',
+  },
+  {
+    id: 'lazur-antracyt',
+    name: 'Antracyt',
+    ral: 'G:1816 / E:1836',
+    image: '/models/lazur/antracyt-pine.jpg',
+    description: 'Najgłębsza szarość wzornika, zbliżona do RAL 7016. Minimalistyczny wybór do nowoczesnych brył.',
+  },
+  {
+    id: 'lazur-mahon',
+    name: 'Mahoń',
+    ral: 'G:1817 / E:1837',
+    image: '/models/lazur/mahon-pine.jpg',
+    description: 'Intensywna, mahoniowa czerwień o luksusowym charakterze. Klasyka stolarki willowej.',
+  },
+  {
+    id: 'lazur-zielen-maltanska',
+    name: 'Zieleń Maltańska',
+    ral: 'G:1818 / E:1838',
+    image: '/models/lazur/zielen-maltanska-pine.jpg',
+    description: 'Soczysta, butelkowa zieleń o tradycyjnym rodowodzie. Wyrazisty akcent w otoczeniu zieleni.',
   },
 ]

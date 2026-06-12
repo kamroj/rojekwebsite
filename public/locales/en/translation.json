@@ -47,7 +47,7 @@
     "sectionsLabel": {
       "scheme": "Scheme",
       "material": "Material",
-      "materials": "Finishing",
+      "materials": "Materials",
       "dimensions": "Proportions",
       "addons": "Add-ons"
     },
@@ -86,10 +86,10 @@
       "previewTag": "PREVIEW"
     },
     "labels": {
-      "frameMaterial": "Frame material:",
       "handleColor": "Handle colour:",
       "type": "Type:",
       "thresholdColor": "Threshold colour:",
+      "woodColor": "Wood colour:",
       "aluColor": "Aluminium cladding colour:",
       "width": "Window width:",
       "height": "Window height:",
@@ -104,9 +104,29 @@
       "close": "CLOSE"
     },
     "options": {
-      "textures": {
-        "natur": "Natural",
-        "honeyPine": "Honey pine"
+      "palettes": {
+        "ral": "RAL",
+        "lazur": "Lazur"
+      },
+      "lazury": {
+        "sosna": "Pine",
+        "cyprys": "Cypress",
+        "stara-sosna": "Old Pine",
+        "dab": "Oak",
+        "teak": "Teak",
+        "kasztan": "Chestnut",
+        "ciemny-dab": "Dark Oak",
+        "wisnia": "Cherry",
+        "orzech": "Walnut",
+        "palisander": "Rosewood",
+        "siena-noce": "Siena Noce",
+        "brazowy-ciemny": "Dark Brown",
+        "biel-skandynawska": "Scandinavian White",
+        "szary-jasny": "Light Grey",
+        "grafit": "Graphite",
+        "antracyt": "Anthracite",
+        "mahon": "Mahogany",
+        "zielen-maltanska": "Maltese Green"
       },
       "handleTextures": {
         "silver": "Silver",
@@ -120,12 +140,6 @@
       "materialTypes": {
         "wood": "Wood",
         "woodAlu": "Wood-Aluminium"
-      },
-      "aluColors": {
-        "anthracite": "Anthracite",
-        "black": "Black",
-        "gray": "Grey",
-        "white": "White"
       },
       "schemes": {
         "a": {

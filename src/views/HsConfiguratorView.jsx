@@ -2,6 +2,7 @@ import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } fr
 import { useTranslation } from 'react-i18next';
 import { FiArrowRight } from 'react-icons/fi';
 import Page from '../components/ui/Page';
+import { getLocalizedWindowColorsPalette } from '../data/products/windows.js';
 import { parseHsConfig } from '../lib/hs/configUrl.js';
 import { PRICE_STATUS, calculateHsPrice, deriveRanges, formatPln } from '../lib/pricing/hsPrice.js';
 import { pickLocale } from '../lib/sanity/i18n.js';
@@ -9,14 +10,17 @@ import ArLauncher from './hs-configurator/ar/ArLauncher.jsx';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomeView';
 import {
   ADDON_OPTIONS,
-  ALU_COLORS,
+  DEFAULT_ALU_COLOR,
+  DEFAULT_WOOD_COLOR,
   HANDLE_FINISHES,
   HEIGHT_RANGE,
   MATERIAL_TYPES,
-  TEXTURES,
   THRESHOLDS,
   TYPES,
+  WOOD_LAZUR_COLORS,
+  WOOD_RAL_COLORS,
   getDefaultWoodKey,
+  resolveWoodFinish,
 } from './hs-configurator/hsOptions.js';
 import styles from './HsConfiguratorView.module.css';
 
@@ -26,15 +30,73 @@ const WOOD_LABEL_FALLBACKS = { pine: 'Sosna', meranti: 'Meranti', oak: 'Dąb' };
 
 const CONTACT_PATHS = { pl: '/kontakt', en: '/en/contact', de: '/de/kontakt', fr: '/fr/contact' };
 
+// Kompaktowy wybór koloru swatchami (wzorzec sekcji Kolorystyka na stronach
+// produktowych): opcjonalne zakładki palet, siatka kwadracików (kolor lub
+// miniatura zdjęcia próbki) i wiersz z nazwą + kodem wybranego koloru
+const ColorSwatchPicker = ({ tabs, activeTab, onTabChange, options, value, onChange, selectedInfo, ariaLabel }) => (
+  <div>
+    {tabs ? (
+      <div
+        className={`${styles.materialTabs} ${styles.paletteTabsCompact}`}
+        role="tablist"
+        aria-label={ariaLabel}
+        style={{
+          '--active-index': Math.max(tabs.findIndex((tab) => tab.key === activeTab), 0),
+          '--tabs-count': tabs.length,
+        }}
+      >
+        <span className={styles.materialTabsThumb} aria-hidden="true" />
+        {tabs.map((tab) => (
+          <button
+            key={tab.key}
+            type="button"
+            role="tab"
+            aria-selected={activeTab === tab.key}
+            className={`${styles.materialTabButton} ${styles.paletteTabButtonCompact} ${activeTab === tab.key ? styles.materialTabButtonActive : ''}`}
+            onClick={() => onTabChange(tab.key)}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+    ) : null}
+    <div className={styles.swatchGrid} role="radiogroup" aria-label={ariaLabel}>
+      {options.map((option) => (
+        <button
+          key={option.value}
+          type="button"
+          role="radio"
+          aria-checked={value === option.value}
+          aria-label={`${option.label} (${option.sublabel})`}
+          title={`${option.label} (${option.sublabel})`}
+          className={`${styles.swatchButton} ${value === option.value ? styles.swatchButtonActive : ''}`}
+          onClick={() => onChange(option.value)}
+          style={{
+            '--swatch-color': option.hex || 'transparent',
+            '--swatch-image': option.image ? `url(${option.image})` : 'none',
+          }}
+        />
+      ))}
+    </div>
+    {selectedInfo ? (
+      <div className={styles.swatchSelected}>
+        <span className={styles.swatchSelectedName}>{selectedInfo.label}</span>
+        <span className={styles.swatchSelectedCode}>{selectedInfo.sublabel}</span>
+      </div>
+    ) : null}
+  </div>
+);
+
 const HsConfiguratorPage = ({ pricing = null }) => {
   const { t, i18n } = useTranslation();
   const [isCanvasReady, setIsCanvasReady] = useState(false);
-  const [selectedTexture, setSelectedTexture] = useState(TEXTURES[0].value);
+  const [selectedWoodColor, setSelectedWoodColor] = useState({ ...DEFAULT_WOOD_COLOR });
+  const [woodPaletteTab, setWoodPaletteTab] = useState(DEFAULT_WOOD_COLOR.palette);
   const [selectedHandleFinish, setSelectedHandleFinish] = useState(HANDLE_FINISHES[0].value);
   const [selectedType, setSelectedType] = useState(TYPES[0].value);
   const [selectedThreshold, setSelectedThreshold] = useState(THRESHOLDS[0].value);
   const [selectedMaterialType, setSelectedMaterialType] = useState(MATERIAL_TYPES[0].value);
-  const [selectedAluColor, setSelectedAluColor] = useState(ALU_COLORS[0].value);
+  const [selectedAluColor, setSelectedAluColor] = useState(DEFAULT_ALU_COLOR);
   const [width, setWidth] = useState(
     () => deriveRanges(pricing?.schemes?.[TYPES[0].value]?.matrix, TYPES[0].widthRange, HEIGHT_RANGE).width.default
   );
@@ -65,7 +127,8 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     setSelectedType(parsed.scheme);
     setWidth(parsed.width);
     setHeight(parsed.height);
-    setSelectedTexture(parsed.texture);
+    setSelectedWoodColor(parsed.woodColor);
+    setWoodPaletteTab(parsed.woodColor.palette);
     setSelectedHandleFinish(parsed.handleFinish);
     setSelectedThreshold(parsed.threshold);
     setSelectedMaterialType(parsed.materialType);
@@ -107,7 +170,22 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     setSelectedMaterialType(value);
   }, []);
 
+  const handleWoodColorChange = useCallback(
+    (palette) => (id) => {
+      setIsCanvasReady(false);
+      setSelectedWoodColor({ palette, id });
+    },
+    []
+  );
+
+  const handleAluColorChange = useCallback((id) => {
+    setIsCanvasReady(false);
+    setSelectedAluColor(id);
+  }, []);
+
+  // Gatunek wpływa nie tylko na cenę, ale i na teksturę lazuru w modelu
   const handleWoodChange = useCallback((event) => {
+    setIsCanvasReady(false);
     setSelectedWood(event.target.value);
   }, []);
 
@@ -142,7 +220,7 @@ const HsConfiguratorPage = ({ pricing = null }) => {
       scheme: selectedType,
       width,
       height,
-      texture: selectedTexture,
+      woodColor: selectedWoodColor,
       handleFinish: selectedHandleFinish,
       threshold: selectedThreshold,
       materialType: selectedMaterialType,
@@ -154,7 +232,7 @@ const HsConfiguratorPage = ({ pricing = null }) => {
       selectedType,
       width,
       height,
-      selectedTexture,
+      selectedWoodColor,
       selectedHandleFinish,
       selectedThreshold,
       selectedMaterialType,
@@ -166,6 +244,48 @@ const HsConfiguratorPage = ({ pricing = null }) => {
 
   const languageKey = (i18n.language || 'pl').split('-')[0];
   const contactPath = CONTACT_PATHS[languageKey] ?? CONTACT_PATHS.pl;
+
+  // Parametry materiału drewna dla canvasa — kolor RAL (farba) albo tekstura
+  // lazuru; gatunek drewna może mieć dedykowaną próbkę lazuru
+  const woodFinish = useMemo(
+    () => resolveWoodFinish(selectedWoodColor, selectedWood),
+    [selectedWoodColor, selectedWood]
+  );
+
+  // Opcje swatchy: paleta RAL z lokalizowanymi nazwami ze strony produktowej,
+  // lazury ze zdjęciami próbek. Paleta alu = ta sama paleta RAL
+  const ralSwatchOptions = useMemo(() => {
+    const localized = getLocalizedWindowColorsPalette(languageKey);
+    return WOOD_RAL_COLORS.map((color) => ({
+      value: color.value,
+      hex: color.hex,
+      label: localized.find((item) => item.id === color.value)?.name ?? color.ral,
+      sublabel: color.ral,
+    }));
+  }, [languageKey]);
+
+  // Miniatury lazurów podążają za wybranym gatunkiem drewna — wzornik PPG
+  // pokazuje każde wybarwienie osobno na sośnie, meranti i dębie
+  const lazurSwatchOptions = useMemo(
+    () =>
+      WOOD_LAZUR_COLORS.map((color) => ({
+        value: color.value,
+        image: color.textures[selectedWood] ?? color.textures.default,
+        label: t(color.labelKey, color.name),
+        sublabel: color.code,
+      })),
+    [selectedWood, t]
+  );
+
+  const woodColorInfo = useMemo(() => {
+    const pool = selectedWoodColor.palette === 'ral' ? ralSwatchOptions : lazurSwatchOptions;
+    return pool.find((option) => option.value === selectedWoodColor.id) ?? null;
+  }, [selectedWoodColor, ralSwatchOptions, lazurSwatchOptions]);
+
+  const aluColorInfo = useMemo(
+    () => ralSwatchOptions.find((option) => option.value === selectedAluColor) ?? null,
+    [ralSwatchOptions, selectedAluColor]
+  );
 
   // Exact-language Sanity title wins; otherwise the site translation;
   // as a last resort any language from Sanity or the hardcoded fallback.
@@ -207,19 +327,17 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     if (materialType) {
       lines.push(`- ${stripColon(t('hsConfigurator.sectionsLabel.material', 'Materiał'))}: ${t(materialType.labelKey, materialType.fallback)}`);
     }
-    if (selectedMaterialType === 'woodAlu') {
-      const aluColor = ALU_COLORS.find((item) => item.value === selectedAluColor);
-      if (aluColor) {
-        lines.push(
-          `- ${stripColon(t('hsConfigurator.labels.aluColor', 'Kolor nakładek aluminiowych'))}: ${t(aluColor.labelKey, aluColor.fallback)} (${aluColor.ral})`
-        );
-      }
+    if (woodColorInfo) {
+      lines.push(
+        `- ${stripColon(t('hsConfigurator.labels.woodColor', 'Kolor drewna'))}: ${woodColorInfo.label} (${woodColorInfo.sublabel})`
+      );
+    }
+    if (selectedMaterialType === 'woodAlu' && aluColorInfo) {
+      lines.push(
+        `- ${stripColon(t('hsConfigurator.labels.aluColor', 'Kolor nakładek aluminiowych'))}: ${aluColorInfo.label} (${aluColorInfo.sublabel})`
+      );
     }
 
-    const texture = TEXTURES.find((item) => item.value === selectedTexture);
-    if (texture) {
-      lines.push(`- ${stripColon(t('hsConfigurator.labels.frameMaterial', 'Materiał ramy'))}: ${t(texture.labelKey, texture.fallback)}`);
-    }
     const handleFinish = HANDLE_FINISHES.find((item) => item.value === selectedHandleFinish);
     if (handleFinish) {
       lines.push(`- ${stripColon(t('hsConfigurator.labels.handleColor', 'Kolor klamki'))}: ${t(handleFinish.labelKey, handleFinish.fallback)}`);
@@ -249,11 +367,11 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     selectedTypeData,
     width,
     height,
-    selectedTexture,
+    woodColorInfo,
+    aluColorInfo,
     selectedHandleFinish,
     selectedThreshold,
     selectedMaterialType,
-    selectedAluColor,
     pricing,
     woodLabels,
     selectedWood,
@@ -276,56 +394,6 @@ const HsConfiguratorPage = ({ pricing = null }) => {
           <aside className={styles.controlColumn}>
             <div className={styles.controlPanel}>
               <div className={`${styles.controlSection} ${styles.controlSectionFirst}`}>
-                <div className={styles.sectionHeaderWrap}>
-                  <span className={styles.sectionOverline}>{t('hsConfigurator.sectionsLabel.material', 'Materiał')}</span>
-                </div>
-
-                <div className={styles.controlGroup}>
-                  <div
-                    className={styles.materialTabs}
-                    role="radiogroup"
-                    aria-label={t('hsConfigurator.sectionsLabel.material', 'Materiał')}
-                    style={{
-                      '--active-index': selectedMaterialType === 'woodAlu' ? 1 : 0,
-                      '--tabs-count': MATERIAL_TYPES.length,
-                    }}
-                  >
-                    <span className={styles.materialTabsThumb} aria-hidden="true" />
-                    {MATERIAL_TYPES.map((material) => {
-                      const isSelected = selectedMaterialType === material.value;
-                      return (
-                        <button
-                          key={material.value}
-                          type="button"
-                          role="radio"
-                          aria-checked={isSelected}
-                          className={`${styles.materialTabButton} ${isSelected ? styles.materialTabButtonActive : ''}`}
-                          onClick={() => handleMaterialTypeChange(material.value)}
-                        >
-                          {t(material.labelKey, material.fallback)}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {selectedMaterialType === 'woodAlu' ? (
-                  <div className={styles.controlGroup}>
-                    <label className={styles.label}>
-                      {t('hsConfigurator.labels.aluColor', 'Kolor nakładek aluminiowych')}
-                    </label>
-                    <select className={styles.select} value={selectedAluColor} onChange={handleTextureChange(setSelectedAluColor)}>
-                      {ALU_COLORS.map((color) => (
-                        <option key={color.value} value={color.value}>
-                          {`${t(color.labelKey, color.fallback)} (${color.ral})`}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                ) : null}
-              </div>
-
-              <div className={`${styles.controlSection} ${styles.controlSectionDivided}`}>
                 <div className={styles.sectionHeaderWrap}>
                   <span className={styles.sectionOverline}>{t('hsConfigurator.sectionsLabel.scheme', 'Schemat')}</span>
                 </div>
@@ -366,19 +434,69 @@ const HsConfiguratorPage = ({ pricing = null }) => {
 
               <div className={`${styles.controlSection} ${styles.controlSectionDivided}`}>
                 <div className={styles.sectionHeaderWrap}>
-                  <span className={styles.sectionOverline}>{t('hsConfigurator.sectionsLabel.materials', 'Wykończenie')}</span>
+                  <span className={styles.sectionOverline}>{t('hsConfigurator.sectionsLabel.materials', 'Materiały')}</span>
                 </div>
 
                 <div className={styles.controlGroup}>
-                  <label className={styles.label}>{t('hsConfigurator.labels.frameMaterial', 'Materiał ramy')}</label>
-                  <select className={styles.select} value={selectedTexture} onChange={handleTextureChange(setSelectedTexture)}>
-                    {TEXTURES.map((tex) => (
-                      <option key={tex.value} value={tex.value}>
-                        {t(tex.labelKey, tex.fallback)}
-                      </option>
-                    ))}
-                  </select>
+                  <div
+                    className={styles.materialTabs}
+                    role="radiogroup"
+                    aria-label={t('hsConfigurator.sectionsLabel.material', 'Materiał')}
+                    style={{
+                      '--active-index': selectedMaterialType === 'woodAlu' ? 1 : 0,
+                      '--tabs-count': MATERIAL_TYPES.length,
+                    }}
+                  >
+                    <span className={styles.materialTabsThumb} aria-hidden="true" />
+                    {MATERIAL_TYPES.map((material) => {
+                      const isSelected = selectedMaterialType === material.value;
+                      return (
+                        <button
+                          key={material.value}
+                          type="button"
+                          role="radio"
+                          aria-checked={isSelected}
+                          className={`${styles.materialTabButton} ${isSelected ? styles.materialTabButtonActive : ''}`}
+                          onClick={() => handleMaterialTypeChange(material.value)}
+                        >
+                          {t(material.labelKey, material.fallback)}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
+
+                <div className={styles.controlGroup}>
+                  <label className={styles.label}>{t('hsConfigurator.labels.woodColor', 'Kolor drewna')}</label>
+                  <ColorSwatchPicker
+                    tabs={[
+                      { key: 'ral', label: t('hsConfigurator.options.palettes.ral', 'RAL') },
+                      { key: 'lazur', label: t('hsConfigurator.options.palettes.lazur', 'Lazur') },
+                    ]}
+                    activeTab={woodPaletteTab}
+                    onTabChange={setWoodPaletteTab}
+                    options={woodPaletteTab === 'ral' ? ralSwatchOptions : lazurSwatchOptions}
+                    value={selectedWoodColor.palette === woodPaletteTab ? selectedWoodColor.id : null}
+                    onChange={handleWoodColorChange(woodPaletteTab)}
+                    selectedInfo={woodColorInfo}
+                    ariaLabel={t('hsConfigurator.labels.woodColor', 'Kolor drewna')}
+                  />
+                </div>
+
+                {selectedMaterialType === 'woodAlu' ? (
+                  <div className={styles.controlGroup}>
+                    <label className={styles.label}>
+                      {t('hsConfigurator.labels.aluColor', 'Kolor nakładek aluminiowych')}
+                    </label>
+                    <ColorSwatchPicker
+                      options={ralSwatchOptions}
+                      value={selectedAluColor}
+                      onChange={handleAluColorChange}
+                      selectedInfo={aluColorInfo}
+                      ariaLabel={t('hsConfigurator.labels.aluColor', 'Kolor nakładek aluminiowych')}
+                    />
+                  </div>
+                ) : null}
 
                 <div className={styles.controlGroup}>
                   <label className={styles.label}>{t('hsConfigurator.labels.handleColor', 'Kolor klamki')}</label>
@@ -516,7 +634,7 @@ const HsConfiguratorPage = ({ pricing = null }) => {
               )}
               <Suspense fallback={<div className={styles.canvasFallback} />}>
                 <HsConfiguratorCanvas
-                  selectedTexture={selectedTexture}
+                  selectedWoodFinish={woodFinish}
                   selectedHandleFinish={selectedHandleFinish}
                   selectedType={selectedType}
                   selectedThreshold={selectedThreshold}
