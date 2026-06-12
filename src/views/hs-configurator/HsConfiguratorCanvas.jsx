@@ -39,6 +39,18 @@ const PROFILE = {
   overlap: 0.045, // zakład skrzydła przesuwnego na pole stałe
 };
 
+// Niski próg wg przekroju producenta: wyższy blok komorowy od strony
+// wewnętrznej z szyną jezdną (płaskownik + wałek), stopień w dół pod polem
+// stałym i niski nos okapowy wystający przed lico ościeżnicy od zewnątrz.
+// Zakresy z opisują strefy wzdłuż głębokości profilu (wnętrze = +z)
+const THRESHOLD = {
+  inner: { height: PROFILE.threshold, zFrom: 0.008, zTo: 0.104 },
+  platform: { height: 0.034, zFrom: -0.104, zTo: 0.008 },
+  nose: { height: 0.02, zFrom: -0.132, zTo: -0.104 },
+  rail: { radius: 0.004, width: 0.012 },
+  plate: 0.003, // nakładki maskujące na górze bloku wewnętrznego
+};
+
 const OV = PROFILE.overlap;
 // Słupek statyczny i szklenie stałe (G2/G3) wypełniają głębokość ościeżnicy
 // aż pod płaszczyznę skrzydła przesuwnego (tył skrzydła = +0.009), żeby z boku
@@ -254,6 +266,83 @@ function BoxPart({ position, size, material, castShadow = true, receiveShadow = 
   );
 }
 
+// Szyna jezdna: płaskownik zakończony wałkiem, po którym toczą się wózki.
+// Korona wałka wypada dokładnie pod spodem skrzydła przesuwnego (próg + 12 mm),
+// niezależnie od wysokości strefy progu, z której szyna wyrasta
+function ThresholdRail({ z, width, sectionTop, material }) {
+  const crownY = PROFILE.threshold + 0.012 - THRESHOLD.rail.radius;
+  return (
+    <group>
+      <BoxPart
+        position={[0, (sectionTop + crownY) / 2, z]}
+        size={[width, crownY - sectionTop, THRESHOLD.rail.width]}
+        material={material}
+      />
+      <mesh position={[0, crownY, z]} rotation={[0, 0, Math.PI / 2]} castShadow receiveShadow>
+        <cylinderGeometry args={[THRESHOLD.rail.radius, THRESHOLD.rail.radius, width, 16]} />
+        {material}
+      </mesh>
+    </group>
+  );
+}
+
+// Niski próg: schodkowy przekrój wg rysunku producenta. Korpus (blok, stopień,
+// nos) biegnie przez całą szerokość ościeżnicy — stojaki stoją na nim jak w
+// realnym montażu. Elementy funkcyjne (szyny, nakładki) tylko w świetle
+// otworu, między stojakami. Szyna toru zewnętrznego pojawia się wyłącznie w
+// schematach, w których jeździ po nim skrzydło — przy polach stałych
+// zewnętrzna strefa to płaski stopień
+function LowThreshold({ bodyWidth, openingWidth, material, outerRail }) {
+  const { inner, platform, nose, plate, rail } = THRESHOLD;
+  const plateGap = rail.width / 2 + 0.005; // odstęp nakładek od osi szyny
+  return (
+    <group>
+      <BoxPart
+        position={[0, inner.height / 2, (inner.zFrom + inner.zTo) / 2]}
+        size={[bodyWidth, inner.height, inner.zTo - inner.zFrom]}
+        material={material}
+      />
+      {/* Nakładki maskujące po obu stronach szyny — segmentowana góra profilu */}
+      <BoxPart
+        position={[0, inner.height + plate / 2, (PROFILE.trackInnerZ + plateGap + inner.zTo) / 2]}
+        size={[openingWidth, plate, inner.zTo - PROFILE.trackInnerZ - plateGap]}
+        material={material}
+      />
+      <BoxPart
+        position={[0, inner.height + plate / 2, (inner.zFrom + PROFILE.trackInnerZ - plateGap) / 2]}
+        size={[openingWidth, plate, PROFILE.trackInnerZ - plateGap - inner.zFrom]}
+        material={material}
+      />
+      <ThresholdRail
+        z={PROFILE.trackInnerZ}
+        width={openingWidth}
+        sectionTop={inner.height}
+        material={material}
+      />
+      {/* Stopień pod pole stałe / tor zewnętrzny */}
+      <BoxPart
+        position={[0, platform.height / 2, (platform.zFrom + platform.zTo) / 2]}
+        size={[bodyWidth, platform.height, platform.zTo - platform.zFrom]}
+        material={material}
+      />
+      {outerRail && (
+        <ThresholdRail
+          z={PROFILE.trackOuterZ}
+          width={openingWidth}
+          sectionTop={platform.height}
+          material={material}
+        />
+      )}
+      {/* Nos okapowy przed licem ościeżnicy */}
+      <BoxPart
+        position={[0, nose.height / 2, (nose.zFrom + nose.zTo) / 2]}
+        size={[bodyWidth, nose.height, nose.zTo - nose.zFrom]}
+        material={material}
+      />
+    </group>
+  );
+}
+
 // Listwa przyszybowa wg przekroju producenta: zaokrąglony profil (ćwierćwałek
 // z krótkimi przylgami) docięty na końcach pod 45°, by w narożach schodził się
 // na ucios jak w stolarce
@@ -391,11 +480,13 @@ function PullHandle({ position, material, leverRef }) {
   );
 }
 
-// Animacja unoszono-przesuwna (Hebe-Schiebe): obrót klamki 180° zwalnia rygle
-// i unosi skrzydło na wózki, dopiero wtedy skrzydło jedzie w bok. Zamykanie to
-// ta sama oś czasu odtwarzana wstecz — skrzydło dosuwa się, opada na uszczelki
-// i klamka wraca
-const SASH_ANIMATION = { duration: 2.6, lift: 0.006, phases: { handle: [0, 0.3], lift: [0.3, 0.45], slide: [0.45, 1] } };
+// Animacja unoszono-przesuwna (Hebe-Schiebe): obrót klamki 180° napędza
+// mechanizm unoszący, więc skrzydło podnosi się W TRAKCIE obrotu klamki
+// (unoszenie startuje ułamek później — początek ruchu klamki kasuje luz
+// okucia), a dopiero po pełnym obrocie jedzie w bok. Zamykanie to ta sama oś
+// czasu odtwarzana wstecz — skrzydło dosuwa się, po czym opada na uszczelki
+// równolegle z powrotem klamki
+const SASH_ANIMATION = { duration: 2.6, lift: 0.006, phases: { handle: [0, 0.3], lift: [0.06, 0.3], slide: [0.35, 1] } };
 
 const easeInOut = (t) => (t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2);
 
@@ -425,9 +516,9 @@ function GlazedPanel({
   const cx = (xLeft + xRight) / 2;
   const panelWidth = xRight - xLeft;
 
-  // Skrzydło przesuwne jedzie po prowadnicy progu, skrzydło stałe siedzi na progu,
-  // a od góry skrzydło stałe domyka listwa maskująca 19 x 115
-  const bottom = openingBottom + (isSliding ? 0.012 : 0);
+  // Skrzydło przesuwne jedzie po szynie progu, pole stałe schodzi niżej — na
+  // zewnętrzny stopień progu; od góry pole stałe domyka listwa maskująca 19 x 115
+  const bottom = isSliding ? openingBottom + 0.012 : THRESHOLD.platform.height;
   const top = openingTop - (isSliding ? 0.004 : isGlazing ? 0 : PROFILE.filler.height);
   const cy = (bottom + top) / 2;
   const panelHeight = top - bottom;
@@ -592,6 +683,9 @@ function ProceduralHsModel({
   const panels = schemeDef.panels;
   const mullions = schemeDef.mullions ?? [];
   const animationSpec = SCHEME_ANIMATIONS[scheme] ?? SCHEME_ANIMATIONS.a;
+  // Tylne skrzydła przesuwne (schematy D/E/F/H) potrzebują szyny na torze
+  // zewnętrznym; przy polach stałych zewnętrzna strefa progu zostaje płaska
+  const hasOuterSliding = panels.some((panel) => panel.type === 'sliding' && panel.track === 'outer');
 
   // Stan otwarcia skrzydeł trzymany na poziomie modelu, bo skrzydła z par
   // kolizyjnych muszą znać stan sąsiada
@@ -700,58 +794,59 @@ function ProceduralHsModel({
     // exportRef wskazuje samą grupę modelu (bez Center/świateł/ContactShadows) —
     // eksport AR klonuje ją bez elementów pomocniczych sceny
     <group ref={exportRef} {...props} position={[0, -modelHeight / 2, 0]}>
-      {/* Ościeżnica: stojaki i nadproże */}
-      <BoxPart
-        position={[
-          -modelWidth / 2 + PROFILE.frame / 2,
-          PROFILE.threshold + (modelHeight - PROFILE.threshold) / 2,
-          0,
-        ]}
-        size={[PROFILE.frame, modelHeight - PROFILE.threshold, PROFILE.frameDepth]}
-        material={materials.woodV}
-      />
-      <BoxPart
-        position={[
-          modelWidth / 2 - PROFILE.frame / 2,
-          PROFILE.threshold + (modelHeight - PROFILE.threshold) / 2,
-          0,
-        ]}
-        size={[PROFILE.frame, modelHeight - PROFILE.threshold, PROFILE.frameDepth]}
-        material={materials.woodV}
-      />
+      {/* Ościeżnica: stojaki stoją na progu (próg biegnie pod nimi przez całą
+          szerokość); od strony zewnętrznej stopka stojaka jest docięta do
+          niższego stopnia progu, żeby nie wisiał nad nim w powietrzu */}
+      {[-1, 1].map((side) => (
+        <group key={`jamb-${side}`}>
+          <BoxPart
+            position={[
+              side * (modelWidth / 2 - PROFILE.frame / 2),
+              PROFILE.threshold + (modelHeight - PROFILE.threshold) / 2,
+              0,
+            ]}
+            size={[PROFILE.frame, modelHeight - PROFILE.threshold, PROFILE.frameDepth]}
+            material={materials.woodV}
+          />
+          <BoxPart
+            position={[
+              side * (modelWidth / 2 - PROFILE.frame / 2),
+              (THRESHOLD.platform.height + PROFILE.threshold) / 2,
+              (THRESHOLD.platform.zFrom + THRESHOLD.platform.zTo) / 2,
+            ]}
+            size={[
+              PROFILE.frame,
+              PROFILE.threshold - THRESHOLD.platform.height,
+              THRESHOLD.platform.zTo - THRESHOLD.platform.zFrom,
+            ]}
+            material={materials.woodV}
+          />
+        </group>
+      ))}
       <BoxPart
         position={[0, modelHeight - PROFILE.frame / 2, 0]}
         size={[openingWidth, PROFILE.frame, PROFILE.frameDepth]}
         material={materials.woodH}
       />
 
-      {/* Niski próg aluminiowy z dwiema prowadnicami */}
-      <BoxPart
-        position={[0, PROFILE.threshold / 2, 0]}
-        size={[modelWidth, PROFILE.threshold, PROFILE.frameDepth + 0.03]}
+      {/* Niski próg aluminiowy o schodkowym przekroju, pod całą ościeżnicą */}
+      <LowThreshold
+        bodyWidth={modelWidth}
+        openingWidth={openingWidth}
         material={materials.threshold}
-      />
-      <BoxPart
-        position={[0, PROFILE.threshold + 0.006, PROFILE.trackInnerZ]}
-        size={[openingWidth, 0.012, 0.014]}
-        material={materials.threshold}
-      />
-      <BoxPart
-        position={[0, PROFILE.threshold + 0.006, PROFILE.trackOuterZ]}
-        size={[openingWidth, 0.012, 0.014]}
-        material={materials.threshold}
+        outerRail={hasOuterSliding}
       />
 
-      {/* Słupki statyczne (np. schemat G2) */}
+      {/* Słupki statyczne (np. schemat G2) — siedzą na zewnętrznym stopniu progu */}
       {mullions.map((fraction, index) => (
         <BoxPart
           key={`mullion-${scheme}-${index}`}
           position={[
             -openingWidth / 2 + fraction * openingWidth,
-            openingBottom + (openingTop - openingBottom) / 2,
+            THRESHOLD.platform.height + (openingTop - THRESHOLD.platform.height) / 2,
             MULLION.z,
           ]}
-          size={[MULLION.width, openingTop - openingBottom, MULLION.depth]}
+          size={[MULLION.width, openingTop - THRESHOLD.platform.height, MULLION.depth]}
           material={materials.woodV}
         />
       ))}
