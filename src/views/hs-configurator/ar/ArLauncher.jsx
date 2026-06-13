@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { FiX } from 'react-icons/fi';
 import { TbAugmentedReality, TbQrcode } from 'react-icons/tb';
@@ -31,6 +32,7 @@ const exportSignature = (config) =>
   ].join('|');
 
 const MODEL_LOAD_TIMEOUT_MS = 10000;
+const QR_TITLE_ID = 'hs-configurator-ar-qr-title';
 
 // activateAR działa dopiero, gdy model-viewer wczyta GLB — czekamy na `load`
 const waitForModelLoad = (element) =>
@@ -71,6 +73,7 @@ const ArLauncher = ({ modelRootRef, isModelReady = false, config, autoPrepare = 
   const [phase, setPhase] = useState('idle');
   const [qrOpen, setQrOpen] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState(null);
+  const [isMounted, setIsMounted] = useState(false);
 
   const hostRef = useRef(null);
   const viewerRef = useRef(null);
@@ -80,6 +83,10 @@ const ArLauncher = ({ modelRootRef, isModelReady = false, config, autoPrepare = 
   const autoPreparedRef = useRef(false);
 
   const signature = exportSignature(config);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -206,12 +213,13 @@ const ArLauncher = ({ modelRootRef, isModelReady = false, config, autoPrepare = 
   useEffect(() => {
     if (!qrOpen) return undefined;
     let cancelled = false;
+    setQrDataUrl(null);
     (async () => {
       try {
         const qrModule = await import('qrcode');
         const qrcode = qrModule.default ?? qrModule;
         const url = `${buildShareUrl(config)}&ar=1`;
-        const dataUrl = await qrcode.toDataURL(url, { width: 320, margin: 1 });
+        const dataUrl = await qrcode.toDataURL(url, { width: 640, margin: 1 });
         if (!cancelled) setQrDataUrl(dataUrl);
       } catch (error) {
         console.error('[hs-ar] Nie udało się wygenerować kodu QR:', error);
@@ -234,6 +242,48 @@ const ArLauncher = ({ modelRootRef, isModelReady = false, config, autoPrepare = 
   const arCapable = support === 'quick-look' || support === 'webxr';
   if (support === 'unknown') return null;
   if (!arCapable && !isDesktop) return null;
+
+  const qrDialog = qrOpen ? (
+    <div className={styles.qrBackdrop} role="presentation" onClick={() => setQrOpen(false)}>
+      <div
+        className={styles.qrModal}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={QR_TITLE_ID}
+        onClick={(event) => event.stopPropagation()}
+      >
+        <div className={styles.qrHeader}>
+          <div className={styles.qrHeading}>
+            <h3 id={QR_TITLE_ID} className={styles.qrTitle}>
+              {t('hsConfigurator.ar.qrTitle', 'Zeskanuj kod telefonem')}
+            </h3>
+            <p className={styles.qrDescription}>
+              {t(
+                'hsConfigurator.ar.qrDescription',
+                'Otworzy się konfigurator z Twoją konfiguracją, gotowy do uruchomienia AR.'
+              )}
+            </p>
+          </div>
+          <button
+            type="button"
+            className={styles.qrClose}
+            onClick={() => setQrOpen(false)}
+            aria-label={t('hsConfigurator.ar.close', 'Zamknij')}
+          >
+            <FiX aria-hidden="true" />
+          </button>
+        </div>
+
+        <div className={styles.qrCodeFrame} aria-busy={!qrDataUrl}>
+          {qrDataUrl ? (
+            <img className={styles.qrImage} src={qrDataUrl} alt="" width="640" height="640" />
+          ) : (
+            <div className={styles.qrPlaceholder} aria-hidden="true" />
+          )}
+        </div>
+      </div>
+    </div>
+  ) : null;
 
   return (
     <>
@@ -290,38 +340,7 @@ const ArLauncher = ({ modelRootRef, isModelReady = false, config, autoPrepare = 
           inaczej element nie zainicjalizuje się i nie wczyta modelu */}
       <div ref={hostRef} className={styles.viewerHost} aria-hidden="true" />
 
-      {qrOpen && (
-        <div className={styles.qrBackdrop} role="presentation" onClick={() => setQrOpen(false)}>
-          <div
-            className={styles.qrModal}
-            role="dialog"
-            aria-modal="true"
-            aria-label={t('hsConfigurator.ar.qrTitle', 'Zeskanuj kod telefonem')}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <button
-              type="button"
-              className={styles.qrClose}
-              onClick={() => setQrOpen(false)}
-              aria-label={t('hsConfigurator.ar.close', 'Zamknij')}
-            >
-              <FiX aria-hidden="true" />
-            </button>
-            <h3 className={styles.qrTitle}>{t('hsConfigurator.ar.qrTitle', 'Zeskanuj kod telefonem')}</h3>
-            <p className={styles.qrDescription}>
-              {t(
-                'hsConfigurator.ar.qrDescription',
-                'Otworzy się konfigurator z Twoją konfiguracją, gotowy do uruchomienia AR.'
-              )}
-            </p>
-            {qrDataUrl ? (
-              <img className={styles.qrImage} src={qrDataUrl} alt="" width="320" height="320" />
-            ) : (
-              <div className={styles.qrPlaceholder} aria-hidden="true" />
-            )}
-          </div>
-        </div>
-      )}
+      {isMounted && qrDialog ? createPortal(qrDialog, document.body) : null}
     </>
   );
 };

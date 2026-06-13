@@ -141,17 +141,20 @@
   height: 100%;
 }
 
-/* Modal z kodem QR (desktop) */
+/* Modal z kodem QR (AR na telefonie). Renderowany portalem do body, żeby
+   pełnoekranowy blur obejmował też elementy spoza podglądu 3D. */
 .qrBackdrop {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 10000;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
-  background: rgba(18, 34, 21, 0.45);
-  backdrop-filter: blur(4px);
+  padding: clamp(1rem, 3vw, 2.5rem);
+  background: rgba(30, 45, 33, 0.46);
+  backdrop-filter: blur(12px) saturate(82%);
+  -webkit-backdrop-filter: blur(12px) saturate(82%);
+  isolation: isolate;
 }
 
 .qrModal {
@@ -159,61 +162,95 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.4rem;
-  max-width: 420px;
-  padding: 2rem 2.2rem 2.2rem;
-  border-radius: 18px;
-  border: 1px solid rgba(2, 99, 3, 0.1);
+  width: min(92vw, 760px);
+  max-height: calc(100dvh - 2rem);
+  overflow: auto;
+  padding: clamp(1.65rem, 4vw, 3.6rem);
+  border-radius: clamp(24px, 3vw, 42px);
+  border: 1px solid rgba(2, 99, 3, 0.12);
   background: #ffffff;
-  box-shadow: 0 24px 64px rgba(16, 72, 24, 0.22);
+  box-shadow: 0 34px 90px rgba(16, 72, 24, 0.28);
   text-align: center;
+}
+
+.qrHeader {
+  width: 100%;
+}
+
+.qrHeading {
+  max-width: 620px;
+  margin: 0 auto;
+  padding: 0 clamp(3.2rem, 7vw, 5rem);
 }
 
 .qrClose {
   position: absolute;
-  top: 14px;
-  right: 14px;
+  top: clamp(1.25rem, 2.4vw, 2rem);
+  right: clamp(1.25rem, 2.4vw, 2rem);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 34px;
-  height: 34px;
+  width: clamp(3rem, 5vw, 4rem);
+  height: clamp(3rem, 5vw, 4rem);
   border: none;
   border-radius: 50%;
-  background: rgba(2, 99, 3, 0.07);
+  background: #edf5ef;
   color: #27432a;
-  font-size: 1.1rem;
+  font-size: clamp(1.25rem, 2vw, 1.55rem);
   cursor: pointer;
-  transition: background-color 0.18s ease;
+  transition: background-color 0.18s ease, color 0.18s ease, transform 0.18s ease;
 }
 
 .qrClose:hover {
-  background: rgba(2, 99, 3, 0.14);
+  background: #dfeee2;
+  color: #104818;
+  transform: scale(1.03);
+}
+
+.qrClose:focus-visible {
+  outline: 2px solid rgba(2, 99, 3, 0.42);
+  outline-offset: 4px;
 }
 
 .qrTitle {
   margin: 0;
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: clamp(1.45rem, 2.4vw, 2rem);
+  line-height: 1.15;
+  font-weight: 800;
   color: #27432a;
 }
 
 .qrDescription {
-  margin: 0 0 0.9rem;
-  font-size: 0.92rem;
-  line-height: 1.55;
+  margin: 1rem auto 0;
+  font-size: clamp(0.98rem, 1.45vw, 1.15rem);
+  line-height: 1.6;
   color: #5f7261;
+}
+
+.qrCodeFrame {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: min(100%, 540px);
+  margin-top: clamp(1.4rem, 3vw, 2.1rem);
+  padding: clamp(0.55rem, 1.2vw, 0.9rem);
+  border-radius: clamp(16px, 2vw, 24px);
+  border: 1px solid rgba(2, 99, 3, 0.12);
+  background: #ffffff;
 }
 
 .qrImage,
 .qrPlaceholder {
-  width: 240px;
-  height: 240px;
-  border-radius: 12px;
-  border: 1px solid rgba(2, 99, 3, 0.1);
+  display: block;
+  width: 100%;
+  max-width: 500px;
+  aspect-ratio: 1;
+  height: auto;
+  border-radius: 14px;
 }
 
 .qrPlaceholder {
+  min-height: min(500px, calc(100vw - 5rem));
   background: linear-gradient(120deg, #f1f6f2 30%, #e7f0e9 50%, #f1f6f2 70%);
   background-size: 200% 100%;
   animation: hsArShimmer 1.2s ease-in-out infinite;
@@ -224,6 +261,50 @@
   .arCorner {
     right: 15px;
     bottom: 64px;
+  }
+
+  .qrBackdrop {
+    padding: max(0.9rem, env(safe-area-inset-top)) 0.9rem max(0.9rem, env(safe-area-inset-bottom));
+  }
+
+  .qrModal {
+    width: 100%;
+    padding: 1.35rem;
+    border-radius: 26px;
+  }
+
+  .qrHeading {
+    padding: 0 3.5rem 0 0;
+    text-align: left;
+  }
+
+  .qrClose {
+    top: 1rem;
+    right: 1rem;
+    width: 2.85rem;
+    height: 2.85rem;
+  }
+
+  .qrTitle {
+    font-size: 1.35rem;
+  }
+
+  .qrDescription {
+    margin-top: 0.7rem;
+    font-size: 0.95rem;
+  }
+
+  .qrCodeFrame {
+    width: 100%;
+    margin-top: 1.2rem;
+    padding: 0.45rem;
+    border-radius: 18px;
+  }
+
+  .qrImage,
+  .qrPlaceholder {
+    max-width: none;
+    border-radius: 12px;
   }
 }
 
