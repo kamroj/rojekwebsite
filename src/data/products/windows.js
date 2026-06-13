@@ -386,130 +386,83 @@ export function getLocalizedWindowColorsPalette(locale = 'pl') {
   });
 }
 
-// Wzornik lazurów PPG Wood Finishes (18 wybarwień × 3 gatunki drewna).
-// Architektura "słoje × kolor": wygląd próbki powstaje na żywo z mapy słojów
-// gatunku (LAZUR_GRAIN_IMAGES) zabarwionej zmierzonym kolorem (LAZUR_COLORS,
-// generowane przez scripts/build-lazur-textures.mjs) — w UI przez
-// background-blend-mode: multiply, w konfiguratorze 3D przez tint materiału.
+// Dwa wzorniki lazurów (po 20 wybarwień). Architektura "słoje × kolor": wygląd
+// próbki powstaje na żywo z mapy słojów gatunku (LAZUR_GRAIN_IMAGES) zabarwionej
+// zmierzonym kolorem (LAZUR_COLORS, generowane przez build-lazur-textures.mjs) —
+// w UI przez background-blend-mode: multiply, w konfiguratorze 3D przez tint
+// materiału. Paleta "drewno" dla stolarki drewnianej, "drewnoAlu" dla wersji
+// drewno-aluminium (lekko inne wybarwienia drewna).
 export const LAZUR_GRAIN_IMAGES = {
   pine: '/models/lazur/grain-pine.jpg',
   meranti: '/models/lazur/grain-meranti.jpg',
   oak: '/models/lazur/grain-oak.jpg',
 }
 
-const LAZUR_PALETTE_BASE = [
-  {
-    id: 'lazur-sosna',
-    name: 'Sosna',
-    ral: 'G:1801 / E:1821',
-    description: 'Jasne, słoneczne wybarwienie podkreślające naturalny rysunek drewna. Klasyka skandynawskich elewacji.',
-  },
-  {
-    id: 'lazur-cyprys',
-    name: 'Cyprys',
-    ral: 'G:1802 / E:1822',
-    description: 'Ciepły, złocisty odcień o śródziemnomorskim charakterze. Dobrze komponuje się z jasnymi tynkami.',
-  },
-  {
-    id: 'lazur-stara-sosna',
-    name: 'Stara Sosna',
-    ral: 'G:1803 / E:1823',
-    description: 'Pogłębiony, bursztynowy ton patynowanego drewna. Nadaje stolarce dojrzały, tradycyjny wygląd.',
-  },
-  {
-    id: 'lazur-dab',
-    name: 'Dąb',
-    ral: 'G:1804 / E:1824',
-    description: 'Klasyczny, średni brąz o uniwersalnym charakterze. Najczęściej wybierane wybarwienie stolarki drewnianej.',
-  },
-  {
-    id: 'lazur-teak',
-    name: 'Teak',
-    ral: 'G:1805 / E:1825',
-    description: 'Głęboki, czerwonawy brąz egzotycznego drewna. Elegancki wybór do reprezentacyjnych realizacji.',
-  },
-  {
-    id: 'lazur-kasztan',
-    name: 'Kasztan',
-    ral: 'G:1806 / E:1826',
-    description: 'Nasycony, kasztanowy brąz z rubinową nutą. Mocny akcent na tle jasnych elewacji.',
-  },
-  {
-    id: 'lazur-ciemny-dab',
-    name: 'Ciemny Dąb',
-    ral: 'G:1807 / E:1827',
-    description: 'Ciemny, dostojny brąz klasycznego dębu. Ponadczasowy wybór do tradycyjnej architektury.',
-  },
-  {
-    id: 'lazur-wisnia',
-    name: 'Wiśnia',
-    ral: 'G:1808 / E:1828',
-    description: 'Wyrazisty odcień dojrzałej wiśni z czerwonym podtonem. Dodaje stolarce szlachetnego charakteru.',
-  },
-  {
-    id: 'lazur-orzech',
-    name: 'Orzech',
-    ral: 'G:1809 / E:1829',
-    description: 'Stonowany, orzechowy brąz o eleganckim rysunku. Dobrze współgra z klinkierem i kamieniem.',
-  },
-  {
-    id: 'lazur-palisander',
-    name: 'Palisander',
-    ral: 'G:1810 / E:1830',
-    description: 'Bardzo ciemny, czekoladowy odcień egzotycznego palisandru. Nowoczesny i wyrazisty.',
-  },
-  {
-    id: 'lazur-siena-noce',
-    name: 'Siena Noce',
-    ral: 'G:1811 / E:1831',
-    description: 'Włoski, ciepły brąz o miękkim rysunku słojów. Harmonijny wybór do spokojnych elewacji.',
-  },
-  {
-    id: 'lazur-brazowy-ciemny',
-    name: 'Brązowy Ciemny',
-    ral: 'G:1812 / E:1832',
-    description: 'Głęboki, ciemny brąz o satynowym wykończeniu. Uniwersalny w nowoczesnych i klasycznych projektach.',
-  },
-  {
-    id: 'lazur-biel-skandynawska',
-    name: 'Biel Skandynawska',
-    ral: 'G:1813 / E:1833',
-    description: 'Półtransparentna biel przepuszczająca rysunek słojów. Lekkość i jasność w duchu skandynawskim.',
-  },
-  {
-    id: 'lazur-szary-jasny',
-    name: 'Szary Jasny',
-    ral: 'G:1814 / E:1834',
-    description: 'Chłodna, jasna szarość zachowująca naturalną fakturę drewna. Nowoczesna alternatywa dla brązów.',
-  },
-  {
-    id: 'lazur-grafit',
-    name: 'Grafit',
-    ral: 'G:1815 / E:1835',
-    description: 'Ciemna, grafitowa szarość z widocznym usłojeniem. Architektoniczny charakter bez utraty natury drewna.',
-  },
-  {
-    id: 'lazur-antracyt',
-    name: 'Antracyt',
-    ral: 'G:1816 / E:1836',
-    description: 'Najgłębsza szarość wzornika, zbliżona do RAL 7016. Minimalistyczny wybór do nowoczesnych brył.',
-  },
-  {
-    id: 'lazur-mahon',
-    name: 'Mahoń',
-    ral: 'G:1817 / E:1837',
-    description: 'Intensywna, mahoniowa czerwień o luksusowym charakterze. Klasyka stolarki willowej.',
-  },
-  {
-    id: 'lazur-zielen-maltanska',
-    name: 'Zieleń Maltańska',
-    ral: 'G:1818 / E:1838',
-    description: 'Soczysta, butelkowa zieleń o tradycyjnym rodowodzie. Wyrazisty akcent w otoczeniu zieleni.',
-  },
+// [slug, nazwa oryginalna z wzornika, nazwa PL] w kolejności wzornika (1..20)
+const DREWNO_DEFS = [
+  ['pine', 'Pine', 'Sosna'],
+  ['old-pine', 'Old Pine', 'Stara sosna'],
+  ['teak', 'Teak', 'Teak'],
+  ['bilinga', 'Bilinga', 'Bilinga'],
+  ['light-oak', 'Light Oak', 'Jasny dąb'],
+  ['walnut', 'Walnut', 'Orzech'],
+  ['dark-oak', 'Dark Oak', 'Ciemny dąb'],
+  ['douka', 'Douka', 'Douka'],
+  ['mahagoni', 'Mahagoni', 'Mahoń'],
+  ['braun', 'Braun', 'Brąz'],
+  ['sandbraun', 'Sandbraun', 'Brąz piaskowy'],
+  ['palisander', 'Palisander', 'Palisander'],
+  ['rich-mahagoni', 'Rich Mahagoni', 'Mahoń głęboki'],
+  ['ipe', 'Ipe', 'Ipe'],
+  ['erdbraun', 'Erdbraun', 'Brąz ziemisty'],
+  ['nuttree', 'Nuttree', 'Orzechowiec'],
+  ['olive-green', 'Olive Green', 'Zieleń oliwkowa'],
+  ['rojwin', 'Rojwin', 'Rojwin'],
+  ['ral-7016', 'RAL 7016', 'Antracyt (RAL 7016)'],
+  ['ral-9016', 'RAL 9016', 'Biały (RAL 9016)'],
 ]
 
-export const WINDOW_LAZUR_PALETTE = LAZUR_PALETTE_BASE.map((color) => ({
-  ...color,
-  grainImages: LAZUR_GRAIN_IMAGES,
-  colors: LAZUR_COLORS[color.id],
-}))
+const DREWNO_ALU_DEFS = [
+  ['cream', 'Cream', 'Kremowy'],
+  ['ivory', 'Ivory', 'Kość słoniowa'],
+  ['oyster', 'Oyster', 'Perłowy'],
+  ['mineral-grey', 'Mineral Grey', 'Szary mineralny'],
+  ['concrete-grey', 'Concrete Grey', 'Szary betonowy'],
+  ['pure-taupe', 'Pure Taupe', 'Taupe'],
+  ['straw', 'Straw', 'Słomkowy'],
+  ['vanilla', 'Vanilla', 'Waniliowy'],
+  ['savanna', 'Savanna', 'Sawanna'],
+  ['ginger', 'Ginger', 'Imbirowy'],
+  ['gold-satin', 'Gold Satin', 'Złoto satynowe'],
+  ['ochre', 'Ochre', 'Ochra'],
+  ['khaki', 'Khaki', 'Khaki'],
+  ['natural-wool', 'Natural Wool', 'Naturalna wełna'],
+  ['sandstone', 'Sandstone', 'Piaskowiec'],
+  ['graphite', 'Graphite', 'Grafitowy'],
+  ['chestnut', 'Chestnut', 'Kasztanowy'],
+  ['sepia', 'Sepia', 'Sepia'],
+  ['charcoal', 'Charcoal', 'Węglowy'],
+  ['indigo', 'Indigo', 'Indygo'],
+]
+
+const buildLazurPalette = (idPrefix, generatedKey, defs) =>
+  defs.map(([slug, nameOrig, namePl], i) => {
+    const id = `${idPrefix}-${slug}`
+    return {
+      id,
+      number: i + 1,
+      name: namePl,
+      nameOrig,
+      // ProductDetailColors pokazuje `.ral` jako podpis — używamy nazwy oryginalnej
+      ral: nameOrig,
+      hex: LAZUR_COLORS[generatedKey][id],
+      grainImages: LAZUR_GRAIN_IMAGES,
+      description: `Wybarwienie ${namePl} (${nameOrig}) z wzornika lazurów ROJEK.`,
+    }
+  })
+
+export const WINDOW_LAZUR_PALETTE_DREWNO = buildLazurPalette('drewno', 'drewno', DREWNO_DEFS)
+export const WINDOW_LAZUR_PALETTE_DREWNO_ALU = buildLazurPalette('alu', 'drewnoAlu', DREWNO_ALU_DEFS)
+
+// Domyślny wzornik (okna drewniane, regularne strony produktowe)
+export const WINDOW_LAZUR_PALETTE = WINDOW_LAZUR_PALETTE_DREWNO

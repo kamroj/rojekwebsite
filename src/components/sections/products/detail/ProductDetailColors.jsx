@@ -8,12 +8,12 @@ import styles from './ProductDetailColors.module.css';
 // LAZUR_GRAIN_IMAGES / LAZUR_COLORS (data/products)
 const SPECIES_KEYS = ['pine', 'meranti', 'oak'];
 
-// Wpisy lazurów w architekturze "słoje × kolor" mają mapę słojów per gatunek
-// (grainImages) i kolor zmierzony per gatunek (colors); składanie odbywa się
-// w CSS przez background-blend-mode: multiply
+// Wpisy lazurów w architekturze "słoje × kolor": mapa słojów per gatunek
+// (grainImages) + jeden zmierzony kolor (hex); składanie w CSS przez
+// background-blend-mode: multiply. Pozostałe palety (RAL) mają płaski color/image.
 const resolveSwatch = (color, species) => {
-  if (color?.colors && color?.grainImages) {
-    return { hex: color.colors[species], image: color.grainImages[species] };
+  if (color?.hex && color?.grainImages) {
+    return { hex: color.hex, image: color.grainImages[species] };
   }
   return { hex: color?.color, image: color?.image };
 };
@@ -54,7 +54,7 @@ export default function ProductDetailColors({
 
   const currentColor = activeColors?.[selectedColor];
   const currentSwatch = resolveSwatch(currentColor, species);
-  const hasSpecies = activePalette === 'lazur' && activeColors.some((color) => color?.colors && color?.grainImages);
+  const hasSpecies = activePalette === 'lazur' && activeColors.some((color) => color?.hex && color?.grainImages);
 
   return (
     <div className={styles.colorsSection}>

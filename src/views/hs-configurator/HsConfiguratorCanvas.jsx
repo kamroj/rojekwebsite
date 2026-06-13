@@ -878,28 +878,37 @@ function ProceduralHsModel({
     const thresholdMat = getThresholdMaterial(thresholdType);
     const handleMat = HANDLE_FINISHES[handleFinish] ?? HANDLE_FINISHES.silver;
 
-    // RAL = lakier kryjący: płaski kolor; lazur = mapa słojów gatunku tintowana
-    // kolorem zmierzonym z wzornika (GPU liczy "słoje × kolor" na żywo — ta
-    // sama kompozycja co background-blend-mode: multiply w UI). W obu
-    // wariantach relief (bump) bierze czystą mapę słojów — niezależną od
-    // jasności koloru, więc ciemne wybarwienia nie tracą struktury
+    // RAL = lakier KRYJĄCY: jednolity kolor zakrywający słoje. Na sośnie i dębie
+    // gładko (bez rysunku); meranti ma otwarte pory, więc przez lakier prześwituje
+    // delikatny relief — tylko subtelny bump, bez mapy koloru.
+    // Lazur = przezroczysta bejca: słoje widać kolorem (map × color, jak idealne
+    // swatche w UI). Relief celowo MINIMALNY — mocny bump robił sztuczne,
+    // „wytłaczane" wrażenie; naturalne drewno stolarki jest niemal gładkie.
+    // Mapa słojów ma niski kontrast (delikatne, kolorowe linie w albedo).
+    // Głębię daje bump — z low-kontrast mapy gradienty są łagodne, więc nawet
+    // wyższy bumpScale czyta się jako miękki relief, nie „wytłaczanie".
+    // Meranti i dąb dostają głębszy relief (otwartoporowe — pod światłem słoje
+    // bardziej grają); sosna pozostaje gładsza.
+    const isMeranti = woodFinish?.species === 'meranti';
+    const lazurBump = isMeranti ? 1.1 : woodFinish?.species === 'oak' ? 0.95 : 0.6;
     const makeWood = (tex, grain) =>
       isRalWood ? (
+        // RAL = lakier kryjący: jednolity kolor; sosna/dąb gładko, meranti ma
+        // otwarte pory → delikatny relief przez lakier
         <meshStandardMaterial
           color={woodFinish.hex}
-          bumpMap={grain}
-          bumpScale={0.5}
-          roughness={0.5}
+          bumpMap={isMeranti ? grain : null}
+          bumpScale={isMeranti ? 0.5 : 0}
+          roughness={0.55}
           metalness={0.02}
         />
       ) : (
         <meshStandardMaterial
           map={tex}
           bumpMap={grain}
-          // Ciemne lazury: rysunek wychodzi z gry odbić, nie z albedo
-          bumpScale={woodFinish?.dark ? 1.2 : 0.6}
+          bumpScale={lazurBump}
           color={woodFinish?.hex ?? '#ffffff'}
-          roughness={woodFinish?.dark ? 0.4 : 0.45}
+          roughness={0.5}
           metalness={0.02}
         />
       );

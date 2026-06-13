@@ -17,7 +17,8 @@ import HsDetailsSection from '../../components/sections/products/detail/HsDetail
 import ImageWithSpinner from '../../components/ui/ImageWithSpinner.jsx';
 import { HS_SPECS_DEFS, HS_SPECS_ORDER_LIST } from '../../data/products/hs.js';
 import {
-  WINDOW_LAZUR_PALETTE,
+  WINDOW_LAZUR_PALETTE_DREWNO,
+  WINDOW_LAZUR_PALETTE_DREWNO_ALU,
   getLocalizedWindowColorsPalette,
 } from '../../data/products/windows.js';
 import { WINDOW_FAQ_FALLBACK } from '../../data/products/faqFallback.js';
@@ -287,7 +288,11 @@ export default function HsProductDetail({ product, breadcrumbPathname }) {
       <ProductDetailColors
         title={colorsTitle}
         colorsRal={getLocalizedWindowColorsPalette(locale)}
-        colorsLazur={WINDOW_LAZUR_PALETTE}
+        colorsLazur={
+          /alu/i.test(product?.slug || product?.id || product?.name || '')
+            ? WINDOW_LAZUR_PALETTE_DREWNO_ALU
+            : WINDOW_LAZUR_PALETTE_DREWNO
+        }
         ralTabLabel={colorsRalTabLabel}
         lazurTabLabel={colorsLazurTabLabel}
         speciesTabLabels={{

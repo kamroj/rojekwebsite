@@ -3,7 +3,11 @@
 // wartości bez importowania całego widoku. `urlCode` to krótki identyfikator
 // opcji używany w parametrach URL (ścieżki plików nigdy nie trafiają do URL).
 
-import { WINDOW_COLORS_PALETTE, WINDOW_LAZUR_PALETTE } from '../../data/products/windows.js';
+import {
+  WINDOW_COLORS_PALETTE,
+  WINDOW_LAZUR_PALETTE_DREWNO,
+  WINDOW_LAZUR_PALETTE_DREWNO_ALU,
+} from '../../data/products/windows.js';
 
 // Paleta RAL współdzielona ze stroną produktową (jedno źródło prawdy:
 // data/products/windows.js); nazwy lokalizowane w widoku przez
@@ -15,75 +19,55 @@ export const WOOD_RAL_COLORS = WINDOW_COLORS_PALETTE.map((color) => ({
   hex: color.color,
 }));
 
-// Lazury z wzornika PPG (źródło prawdy: WINDOW_LAZUR_PALETTE). Każde
-// wybarwienie ma tekstury per gatunek drewna (kolumny wzornika SOSNA/MERANTI/
-// DĄB ↔ klucze cenowe pine/meranti/oak), generowane przez
-// scripts/build-lazur-textures.mjs. Kody URL literowe — nie kolidują z
-// cyfrowymi kodami palety RAL
-const LAZUR_URL_CODES = {
-  'lazur-sosna': 'sn',
-  'lazur-cyprys': 'cy',
-  'lazur-stara-sosna': 'ss',
-  'lazur-dab': 'db',
-  'lazur-teak': 'tk',
-  'lazur-kasztan': 'ka',
-  'lazur-ciemny-dab': 'cd',
-  'lazur-wisnia': 'wi',
-  'lazur-orzech': 'or',
-  'lazur-palisander': 'pa',
-  'lazur-siena-noce': 'si',
-  'lazur-brazowy-ciemny': 'bc',
-  'lazur-biel-skandynawska': 'bs',
-  'lazur-szary-jasny': 'sj',
-  'lazur-grafit': 'gr',
-  'lazur-antracyt': 'an',
-  'lazur-mahon': 'ma',
-  'lazur-zielen-maltanska': 'zm',
-};
-
-// Ciemne wybarwienia: w 3D rysunek słojów musi przyjść z odbić światła
-// (mocniejszy relief, niższy roughness), bo ciemny kolor go nie niesie
-const DARK_LAZURY = new Set(['lazur-palisander', 'lazur-brazowy-ciemny', 'lazur-grafit', 'lazur-antracyt']);
-
-export const WOOD_LAZUR_COLORS = WINDOW_LAZUR_PALETTE.map((color) => {
-  const key = color.id.replace('lazur-', '');
-  return {
-    value: color.id,
-    urlCode: LAZUR_URL_CODES[color.id],
-    name: color.name,
-    labelKey: `hsConfigurator.options.lazury.${key}`,
-    code: color.ral,
-    dark: DARK_LAZURY.has(color.id),
-    // Architektura "słoje × kolor": hexy zmierzone z wzornika per gatunek +
-    // mapy słojów gatunków (składanie na żywo w CSS i w materiale 3D)
-    colors: color.colors,
-    grainImages: color.grainImages,
-  };
+// Lazury z dwóch wzorników (drewno / drewno-aluminium). Wybór koloru drewna
+// pokazuje paletę zależną od wariantu materiału. Składanie "słoje × kolor"
+// (mapa słojów gatunku × zmierzony hex) odbywa się na żywo w UI i w 3D.
+const toLazurOption = (color) => ({
+  value: color.id,
+  number: color.number,
+  name: color.name,
+  nameOrig: color.nameOrig,
+  hex: color.hex,
+  grainImages: color.grainImages,
 });
 
-export const DEFAULT_WOOD_COLOR = { palette: 'lazur', id: 'lazur-sosna' };
+export const WOOD_LAZUR_PALETTES = {
+  wood: WINDOW_LAZUR_PALETTE_DREWNO.map(toLazurOption),
+  woodAlu: WINDOW_LAZUR_PALETTE_DREWNO_ALU.map(toLazurOption),
+};
+
+// Paleta lazurów aktywna dla danego wariantu materiału
+export const getLazurPalette = (materialType) =>
+  materialType === 'woodAlu' ? WOOD_LAZUR_PALETTES.woodAlu : WOOD_LAZUR_PALETTES.wood;
+
+export const DEFAULT_WOOD_COLOR = { palette: 'lazur', id: WOOD_LAZUR_PALETTES.wood[0].value };
 
 // Czysta mapa słojów gatunku (grayscale) — wspólna dla wszystkich wybarwień,
 // służy jako mapa reliefu (bump) niezależna od jasności koloru
 const grainForSpecies = (speciesKey) =>
   `/models/lazur/grain-${['pine', 'meranti', 'oak'].includes(speciesKey) ? speciesKey : 'pine'}.jpg`;
 
+// Luminancja (sRGB approx) — ciemne wybarwienia dostają mocniejszy relief w 3D,
+// bo ciemny kolor sam nie niesie rysunku słojów
+const hexLuminance = (hex) => {
+  const n = parseInt(hex.replace('#', ''), 16);
+  return 0.299 * ((n >> 16) & 255) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255);
+};
+
 // Wybrany kolor drewna → parametry materiału modelu 3D. RAL to farba kryjąca
 // (płaski kolor + relief słojów gatunku), lazur to tint mapy słojów gatunku
-// kolorem zmierzonym z wzornika (material.color × map) + ta sama mapa jako relief
-export const resolveWoodFinish = ({ palette, id }, speciesKey) => {
-  const grainPath = grainForSpecies(speciesKey);
+// zmierzonym kolorem (material.color × map) + ta sama mapa jako relief. Paleta
+// lazurów zależy od wariantu materiału (drewno / drewno-aluminium).
+export const resolveWoodFinish = ({ palette, id }, speciesKey, materialType = 'wood') => {
+  const species = ['pine', 'meranti', 'oak'].includes(speciesKey) ? speciesKey : 'pine';
+  const grainPath = grainForSpecies(species);
   if (palette === 'ral') {
     const ral = WOOD_RAL_COLORS.find((color) => color.value === id) ?? WOOD_RAL_COLORS[0];
-    return { type: 'ral', hex: ral.hex, grainPath };
+    return { type: 'ral', hex: ral.hex, grainPath, species };
   }
-  const lazur = WOOD_LAZUR_COLORS.find((color) => color.value === id) ?? WOOD_LAZUR_COLORS[0];
-  return {
-    type: 'lazur',
-    hex: lazur.colors?.[speciesKey] ?? lazur.colors?.pine ?? '#ffffff',
-    grainPath,
-    dark: lazur.dark,
-  };
+  const lazurPalette = getLazurPalette(materialType);
+  const lazur = lazurPalette.find((color) => color.value === id) ?? lazurPalette[0];
+  return { type: 'lazur', hex: lazur.hex, grainPath, species, dark: hexLuminance(lazur.hex) < 80 };
 };
 
 export const HANDLE_FINISHES = [

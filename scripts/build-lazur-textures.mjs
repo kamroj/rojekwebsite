@@ -1,253 +1,147 @@
-// Generuje zasoby kolorystyki lazurów z wzornika PPG Wood Finishes.
+// Mierzy kolory dwóch palet lazurów z fizycznych wzorników (zdjęcia w
+// wzornik-lazury/) i emituje tabelę hexów do src/data/products/lazurColors.generated.js.
 //
-// Architektura "słoje × kolor": z wzornika powstaje
-// 1) jedna CZYSTA mapa słojów per gatunek drewna (grain-{pine|meranti|oak}.jpg)
-//    — z próbki o najlepiej czytelnym rysunku, znormalizowana do jasnej
-//    szarości (średnia ~235); służy jako mapa koloru (tintowana) i reliefu;
-// 2) tabela KOLORÓW zmierzonych z próbek (średnia RGB wycinka per wybarwienie
-//    × gatunek, z kompensacją jasności mapy słojów) emitowana do modułu
-//    src/data/products/lazurColors.generated.js. Składanie "słoje × kolor"
-//    odbywa się na żywo: w 3D przez material.color × map, w UI przez
-//    background-blend-mode: multiply — żadnych wypiekanych tekstur per kolor.
+// Architektura "słoje × kolor": wygląd próbki powstaje na żywo z mapy słojów
+// gatunku (public/models/lazur/grain-{pine|meranti|oak}.jpg — zasoby STATYCZNE,
+// NIE generowane tutaj, decyzja: usłojenie zostaje) tintowanej kolorem
+// zmierzonym z wzornika: w 3D przez material.color × map, w UI przez
+// background-blend-mode: multiply.
 //
-// Kompensacja 255/235 działa spójnie w obu przestrzeniach mnożenia (sRGB w
-// CSS, liniowa w three.js), bo czyste skalowanie przechodzi przez gammę:
-// (k·s)^γ = k^γ · s^γ.
+// Dwie palety (każda 20 kolorów) — wood-only HS używa palety "drewno",
+// wood-aluminium HS palety "drewnoAlu" (lekko inne wybarwienia drewna):
+//   - drewno-kolor.jpg / drewno-nazewnictwo.jpg
+//   - drewno-alu-kolor.jpg / drewno-alu-nazewnictwo.jpg
+// "kolor" = lica próbek (źródło barwy), "nazewnictwo" = tylne lica z numerem i
+// nazwą (źródło mapowania numer→nazwa; tylne lica są mniej wybarwione, więc
+// koloru z nich NIE bierzemy). Mapowanie numer→pozycja-na-zdjęciu (idx w
+// kolejności czytania) ustalone i zweryfikowane wzrokowo na kotwicach
+// (RAL 9016=biały, RAL 7016=antracyt, Olive Green=zielony, Indigo=granat…).
 //
-// Wejście: wzornik-lazury/*.jpg (3 strony karty kolorów, 1024×1008; strony
-// posortowane nazwą pliku odpowiadają kolejności wybarwień). Każda strona to
-// 6 wierszy × 3 kolumny gatunków (SOSNA | MERANTI | DĄB); podpis pod środkową
-// próbką należy do wiersza powyżej.
-//
-// Tryb kontrolny: `node scripts/build-lazur-textures.mjs --sheet` dodatkowo
-// składa wycinki źródłowe w arkusz tmp-lazur-sheet.jpg do weryfikacji kadrów.
+// Kompensacja jasności mapy słojów (255/GRAIN_MEAN) działa spójnie w sRGB (CSS)
+// i przestrzeni liniowej (three.js), bo skalowanie przechodzi przez gammę:
+// (k·s)^γ = k^γ · s^γ. Tryb `--sheet` zapisuje arkusze kontrolne wycinków.
 
-import { mkdir, readdir, writeFile } from 'node:fs/promises';
-import path from 'node:path';
+import { writeFile } from 'node:fs/promises';
 import sharp from 'sharp';
 
 const SRC_DIR = 'wzornik-lazury';
-const OUT_DIR = 'public/models/lazur';
+const GRAIN_MEAN = 235; // średnia jasność statycznych map słojów grain-*.jpg
 
-// Kolejność wybarwień wg wzornika (strony 1-3, po 6 wierszy)
-const COLORS = [
-  'sosna', 'cyprys', 'stara-sosna', 'dab', 'teak', 'kasztan',
-  'ciemny-dab', 'wisnia', 'orzech', 'palisander', 'siena-noce', 'brazowy-ciemny',
-  'biel-skandynawska', 'szary-jasny', 'grafit', 'antracyt', 'mahon', 'zielen-maltanska',
-];
+// Siatki lic próbek (środki + box cropu) — skalibrowane wzrokowo (overlay).
+function centers(colsX, rowsY) {
+  const out = [];
+  for (const y of rowsY) for (const x of colsX) out.push({ x, y });
+  return out;
+}
 
-// Kolumny gatunków (x lewej krawędzi deski, szerokość) — wspólne dla stron
-const COLUMNS = {
-  pine: { x: 58, w: 275 },
-  meranti: { x: 373, w: 274 },
-  oak: { x: 688, w: 275 },
-};
-
-// Wiersze (y górnej krawędzi deski, wysokość) — wspólne dla stron i kolumn
-const ROWS = [
-  { y: 267, h: 85 },
-  { y: 388, h: 84 },
-  { y: 507, h: 85 },
-  { y: 627, h: 85 },
-  { y: 747, h: 85 },
-  { y: 866, h: 85 },
-];
-
-// Wewnętrzny pas deski: odcina pas połysku flesza przy górnej krawędzi oraz
-// marginesy; wartości to ułamki wymiarów próbki
-const BAND = { top: 0.22, bottom: 0.1, left: 0.04, right: 0.04 };
-
-// Źródło rysunku słojów per gatunek: jasna próbka z czytelnym usłojeniem
-// (wiersz "Sosna G:1801" ma najlepszy kontrast rysunku przy małej kompresji)
-const GRAIN_SOURCE_COLOR = 'sosna';
-
-const QUALITY = {
-  medianSize: 3, // odszumianie artefaktów JPG przed powiększeniem
-  tiles: 3, // lustrzane sklejenie wzdłuż słojów — mniejsze rozciągnięcie na profilach
-  outWidth: 2048,
-  grainMean: 235, // docelowa średnia jasność mapy słojów (rysunek = ciemniejsze smugi)
-  sharpenFine: { sigma: 1.2, m1: 0.8, m2: 2.5 },
-  sharpenLocalContrast: { sigma: 8, m1: 0.6, m2: 0.6 },
-  colorSaturation: 0.9, // delikatna desaturacja zmierzonych kolorów (feedback: "marchewkowa" sosna)
-  jpegQuality: 88,
-};
-
-// Rozjazd struktury gatunków w mapie słojów: meranti — drobna plamka
-// (mocniejsze odszumianie + mocniejszy lokalny kontrast, żeby cętka odróżniała
-// się od pasm dębu), dąb — odszumienie przed upscalingiem i agresywniejsze
-// drobne wyostrzenie (przeciw "mydlanym" smugom) + kierunkowe pasma
-const SPECIES_TWEAKS = {
-  pine: {},
-  meranti: { extraMedian: 3, localContrastBoost: 1.3 },
-  oak: {
-    extraMedian: 3,
-    fineSharpen: { sigma: 0.8, m1: 1.4, m2: 2.5 },
-    extraSharpen: { sigma: 3.5, m1: 0.7, m2: 1.5 },
+// Definicje palet. `byNumber` to nazwy 1..20 (kolejność z wzornika). `idxOf`
+// mapuje numer wybarwienia → indeks próbki w kolejności czytania zdjęcia kolor.
+const PALETTES = [
+  {
+    key: 'drewno',
+    file: 'drewno-kolor.jpg',
+    cells: centers([312, 720, 1320, 1716], [294, 524, 756, 986, 1226]),
+    cw: 200,
+    ch: 110,
+    // numer → nazwa (oryginalna z wzornika)
+    names: [
+      'Pine', 'Old Pine', 'Teak', 'Bilinga', 'Light Oak', 'Walnut', 'Dark Oak', 'Douka',
+      'Mahagoni', 'Braun', 'Sandbraun', 'Palisander', 'Rich Mahagoni', 'Ipe', 'Erdbraun',
+      'Nuttree', 'Olive Green', 'Rojwin', 'RAL 7016', 'RAL 9016',
+    ],
+    slugs: [
+      'pine', 'old-pine', 'teak', 'bilinga', 'light-oak', 'walnut', 'dark-oak', 'douka',
+      'mahagoni', 'braun', 'sandbraun', 'palisander', 'rich-mahagoni', 'ipe', 'erdbraun',
+      'nuttree', 'olive-green', 'rojwin', 'ral-7016', 'ral-9016',
+    ],
+    // numer(1-based) → idx w kolejności czytania (4 kol × 5 rz: lewa strona kol0/1, prawa kol2/3)
+    idxOf: [19, 15, 11, 7, 3, 18, 14, 10, 6, 2, 17, 13, 9, 5, 1, 16, 12, 8, 4, 0],
   },
-};
-
-// Korekty pojedynczych wybarwień: lazur Sosna ciągnie w agresywny oranż —
-// dodatkowa desaturacja do tonu miodowego
-const COLOR_TWEAKS = {
-  sosna: { saturation: 0.93 },
-};
+  {
+    key: 'drewnoAlu',
+    file: 'drewno-alu-kolor.jpg',
+    cells: centers([225, 475, 725, 978, 1225], [290, 655, 1395, 1755]),
+    cw: 120,
+    ch: 95,
+    names: [
+      'Cream', 'Ivory', 'Oyster', 'Mineral Grey', 'Concrete Grey', 'Pure Taupe', 'Straw',
+      'Vanilla', 'Savanna', 'Ginger', 'Gold Satin', 'Ochre', 'Khaki', 'Natural Wool',
+      'Sandstone', 'Graphite', 'Chestnut', 'Sepia', 'Charcoal', 'Indigo',
+    ],
+    slugs: [
+      'cream', 'ivory', 'oyster', 'mineral-grey', 'concrete-grey', 'pure-taupe', 'straw',
+      'vanilla', 'savanna', 'ginger', 'gold-satin', 'ochre', 'khaki', 'natural-wool',
+      'sandstone', 'graphite', 'chestnut', 'sepia', 'charcoal', 'indigo',
+    ],
+    // 2 rz × 5 kol na stronę, dwie strony (góra/dół) w kolejności czytania
+    idxOf: [4, 3, 2, 1, 0, 9, 8, 7, 6, 5, 14, 13, 12, 11, 10, 19, 18, 17, 16, 15],
+  },
+];
 
 const makeSheet = process.argv.includes('--sheet');
+const clamp = (v) => Math.min(255, Math.max(0, Math.round(v)));
+const lift = (mean) => clamp(mean * (255 / GRAIN_MEAN)); // kompensacja mnożenia przez mapę słojów
+const toHex = (rgb) => '#' + rgb.map((v) => v.toString(16).padStart(2, '0')).join('');
 
-const files = (await readdir(SRC_DIR)).filter((file) => /\.jpe?g$/i.test(file)).sort();
-if (files.length !== 3) {
-  console.error(`Oczekiwano 3 stron wzornika w ${SRC_DIR}/, znaleziono: ${files.length}`);
-  process.exit(1);
-}
+const generated = {};
 
-await mkdir(OUT_DIR, { recursive: true });
+for (const pal of PALETTES) {
+  const src = await sharp(`${SRC_DIR}/${pal.file}`).toBuffer();
+  // Zmierz średni kolor każdej próbki w kolejności czytania
+  const measured = [];
+  for (const { x, y } of pal.cells) {
+    const crop = await sharp(src)
+      .extract({ left: Math.round(x - pal.cw / 2), top: Math.round(y - pal.ch / 2), width: pal.cw, height: pal.ch })
+      .toBuffer();
+    const { channels } = await sharp(crop).stats();
+    measured.push([channels[0].mean, channels[1].mean, channels[2].mean]);
+  }
 
-// ---------- Etap 1: wycinki źródłowe + zmierzone kolory ----------
-const crops = new Map(); // `${color}|${species}` → buffer (odszumiony wycinek)
-const sheetTiles = [];
-let colorIndex = 0;
+  const colors = {};
+  const sheetTiles = [];
+  for (let n = 0; n < 20; n++) {
+    const idx = pal.idxOf[n];
+    const id = `${pal.key === 'drewno' ? 'drewno' : 'alu'}-${pal.slugs[n]}`;
+    const hex = toHex(measured[idx].map(lift));
+    colors[id] = hex;
 
-for (const file of files) {
-  const pageBuffer = await sharp(path.join(SRC_DIR, file)).toBuffer();
-  for (const row of ROWS) {
-    const color = COLORS[colorIndex];
-    colorIndex += 1;
-    for (const [species, column] of Object.entries(COLUMNS)) {
-      const left = Math.round(column.x + column.w * BAND.left);
-      const width = Math.round(column.w * (1 - BAND.left - BAND.right));
-      const top = Math.round(row.y + row.h * BAND.top);
-      const height = Math.round(row.h * (1 - BAND.top - BAND.bottom));
-
-      const cleanCrop = await sharp(pageBuffer)
-        .extract({ left, top, width, height })
-        .median(QUALITY.medianSize)
+    if (makeSheet) {
+      const tile = await sharp({ create: { width: 220, height: 96, channels: 3, background: hex } })
+        .composite([
+          {
+            input: Buffer.from(
+              `<svg width="220" height="96"><rect x="0" y="64" width="220" height="32" fill="white"/><text x="5" y="86" font-size="15" font-family="monospace">${n + 1} ${pal.names[n]} ${hex}</text></svg>`
+            ),
+            top: 0,
+            left: 0,
+          },
+        ])
         .png()
         .toBuffer();
-      crops.set(`${color}|${species}`, { buffer: cleanCrop, width, height });
-
-      if (makeSheet) {
-        sheetTiles.push({ color, species, buffer: await sharp(cleanCrop).resize({ width: 220 }).png().toBuffer() });
-      }
+      sheetTiles.push(tile);
     }
   }
-}
+  generated[pal.key] = colors;
 
-// ---------- Etap 2: mapy słojów per gatunek ----------
-const mirrorTile = async (buffer, width, height) => {
-  const flipped = await sharp(buffer).flop().png().toBuffer();
-  return sharp({ create: { width: width * QUALITY.tiles, height, channels: 3, background: { r: 0, g: 0, b: 0 } } })
-    .composite(
-      Array.from({ length: QUALITY.tiles }, (_, i) => ({
-        input: i % 2 === 0 ? buffer : flipped,
-        left: i * width,
-        top: 0,
-      }))
-    )
-    .png()
-    .toBuffer();
-};
-
-const grains = {}; // species → { buffer, width, height } (finalna mapa słojów)
-for (const species of Object.keys(COLUMNS)) {
-  const tweak = SPECIES_TWEAKS[species] ?? {};
-  const source = crops.get(`${GRAIN_SOURCE_COLOR}|${species}`);
-
-  let grainBase = sharp(source.buffer).grayscale();
-  if (tweak.extraMedian) grainBase = grainBase.median(tweak.extraMedian);
-  const grainCrop = await grainBase.png().toBuffer();
-
-  const tiled = await mirrorTile(grainCrop, source.width, source.height);
-  const boost = tweak.localContrastBoost ?? 1;
-  let pipeline = sharp(tiled)
-    .resize({ width: QUALITY.outWidth, kernel: 'lanczos3' })
-    .sharpen(tweak.fineSharpen ?? QUALITY.sharpenFine)
-    .sharpen({
-      sigma: QUALITY.sharpenLocalContrast.sigma,
-      m1: QUALITY.sharpenLocalContrast.m1 * boost,
-      m2: QUALITY.sharpenLocalContrast.m2 * boost,
-    });
-  if (tweak.extraSharpen) pipeline = pipeline.sharpen(tweak.extraSharpen);
-  const contrasted = await pipeline.png().toBuffer();
-
-  // Normalizacja: średnia jasność → grainMean (rysunek słojów jako ciemniejsze
-  // smugi na jasnym tle; mnożenie kolorem prawie nie zmienia średniej barwy)
-  const { channels } = await sharp(contrasted).stats();
-  const mean = channels[0].mean;
-  const normalized = await sharp(contrasted)
-    .linear(QUALITY.grainMean / mean, 0)
-    .png()
-    .toBuffer();
-
-  const meta = await sharp(normalized).metadata();
-  grains[species] = { buffer: normalized, width: meta.width, height: meta.height };
-  await sharp(normalized)
-    .jpeg({ quality: QUALITY.jpegQuality })
-    .toFile(path.join(OUT_DIR, `grain-${species}.jpg`));
-}
-
-// ---------- Etap 3: tabela kolorów zmierzonych z próbek ----------
-const clamp255 = (value) => Math.min(Math.round(value), 255);
-
-// Delikatna desaturacja względem luminancji (kolory z aparatu są przesycone)
-const desaturate = ({ r, g, b }, factor) => {
-  const luma = 0.299 * r + 0.587 * g + 0.114 * b;
-  return {
-    r: clamp255(luma + (r - luma) * factor),
-    g: clamp255(luma + (g - luma) * factor),
-    b: clamp255(luma + (b - luma) * factor),
-  };
-};
-
-const toHex = ({ r, g, b }) =>
-  `#${[r, g, b].map((value) => value.toString(16).padStart(2, '0')).join('')}`;
-
-const lazurColors = {};
-for (const color of COLORS) {
-  lazurColors[`lazur-${color}`] = {};
-  for (const species of Object.keys(COLUMNS)) {
-    const crop = crops.get(`${color}|${species}`);
-    const { channels } = await sharp(crop.buffer).stats();
-    // Kompensacja jasności mapy słojów (średnia grainMean zamiast bieli), żeby
-    // kolor po przemnożeniu przez mapę odpowiadał średniej z próbki wzornika
-    const lift = 255 / QUALITY.grainMean;
-    const saturation = QUALITY.colorSaturation * (COLOR_TWEAKS[color]?.saturation ?? 1);
-    const sampled = desaturate(
-      { r: channels[0].mean * lift, g: channels[1].mean * lift, b: channels[2].mean * lift },
-      saturation
-    );
-    lazurColors[`lazur-${color}`][species] = toHex(sampled);
+  if (makeSheet) {
+    const perRow = 4;
+    const rows = Math.ceil(sheetTiles.length / perRow);
+    const sheet = await sharp({ create: { width: perRow * 226 + 6, height: rows * 102 + 6, channels: 3, background: '#ccc' } })
+      .composite(sheetTiles.map((t, i) => ({ input: t, left: 6 + (i % perRow) * 226, top: 6 + Math.floor(i / perRow) * 102 })))
+      .jpeg({ quality: 92 })
+      .toBuffer();
+    await writeFile(`tmp-proof-${pal.key}.jpg`, sheet);
   }
 }
 
-const generated = `// Plik generowany przez scripts/build-lazur-textures.mjs — NIE edytować ręcznie.
-// Kolory lazurów zmierzone z wzornika PPG, per wybarwienie × gatunek drewna,
-// skompensowane pod mnożenie przez mapy słojów /models/lazur/grain-*.jpg.
-export const LAZUR_COLORS = ${JSON.stringify(lazurColors, null, 2)};
-`;
-await writeFile('src/data/products/lazurColors.generated.js', generated);
+const banner = `// Plik generowany przez scripts/build-lazur-textures.mjs — NIE edytować ręcznie.
+// Kolory dwóch palet lazurów zmierzone z fizycznych wzorników (wzornik-lazury/),
+// skompensowane pod mnożenie przez mapy słojów public/models/lazur/grain-*.jpg.
+// Klucz = id koloru, wartość = hex (sRGB).\n`;
+await writeFile(
+  'src/data/products/lazurColors.generated.js',
+  `${banner}export const LAZUR_COLORS = ${JSON.stringify(generated, null, 2)};\n`
+);
 
-console.log(`Zapisano 3 mapy słojów do ${OUT_DIR}/ i ${COLORS.length * 3} kolorów do src/data/products/lazurColors.generated.js`);
-
-if (makeSheet) {
-  const tileW = 220;
-  const tileH = Math.round(
-    (ROWS[0].h * (1 - BAND.top - BAND.bottom) * tileW) / (COLUMNS.pine.w * (1 - BAND.left - BAND.right))
-  );
-  const gap = 6;
-  const cols = ['pine', 'meranti', 'oak'];
-  const sheetW = cols.length * (tileW + gap) + gap;
-  const sheetH = COLORS.length * (tileH + gap) + gap;
-  const composites = sheetTiles.map((tile) => ({
-    input: tile.buffer,
-    left: gap + cols.indexOf(tile.species) * (tileW + gap),
-    top: gap + COLORS.indexOf(tile.color) * (tileH + gap),
-  }));
-  const sheet = await sharp({
-    create: { width: sheetW, height: sheetH, channels: 3, background: { r: 255, g: 255, b: 255 } },
-  })
-    .composite(composites)
-    .jpeg({ quality: 90 })
-    .toBuffer();
-  await writeFile('tmp-lazur-sheet.jpg', sheet);
-  console.log('Arkusz kontrolny: tmp-lazur-sheet.jpg');
-}
+console.log('Zapisano kolory dwóch palet do src/data/products/lazurColors.generated.js');
+if (makeSheet) console.log('Arkusze kontrolne: tmp-proof-drewno.jpg, tmp-proof-drewnoAlu.jpg');

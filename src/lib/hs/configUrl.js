@@ -1,9 +1,10 @@
 // Serializacja konfiguracji HS do parametrów URL (kod QR / udostępnianie).
-// Format: ?s=d&w=3200&h=2200&mt=a&ac=7016&wc=er&hd=g&th=b&wd=oak&a=5&ar=1
+// Format: ?s=d&w=3200&h=2200&mt=a&ac=7016&wc=l5&hd=g&th=b&wd=oak&a=5&ar=1
 // Krótkie kody opcji (`urlCode`) pochodzą z hsOptions.js — ścieżki plików
-// nigdy nie trafiają do URL. Kolor drewna `wc` rozróżnia palety po formacie
-// kodu (cyfry = RAL, litery = lazur). Parser waliduje każde pole osobno;
-// błędna wartość nie psuje reszty, tylko wraca do wartości domyślnej.
+// nigdy nie trafiają do URL. Kolor drewna `wc`: RAL = kod cyfrowy (numer RAL),
+// lazur = `l` + numer wybarwienia w palecie (paletę rozstrzyga wariant `mt`,
+// bo wood i woodAlu mają różne wzorniki lazurów). Parser waliduje każde pole
+// osobno; błędna wartość nie psuje reszty, tylko wraca do wartości domyślnej.
 
 import { deriveRanges } from '../pricing/hsPrice.js';
 import {
@@ -16,9 +17,9 @@ import {
   MATERIAL_TYPES,
   THRESHOLDS,
   TYPES,
-  WOOD_LAZUR_COLORS,
   WOOD_RAL_COLORS,
   getDefaultWoodKey,
+  getLazurPalette,
 } from '../../views/hs-configurator/hsOptions.js';
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
@@ -47,9 +48,14 @@ export const serializeHsConfig = (config) => {
     if (aluColor) params.set('ac', aluColor.urlCode);
   }
 
-  const woodPalette = config.woodColor?.palette === 'ral' ? WOOD_RAL_COLORS : WOOD_LAZUR_COLORS;
-  const woodColor = woodPalette.find((item) => item.value === config.woodColor?.id);
-  if (woodColor) params.set('wc', woodColor.urlCode);
+  // Kolor drewna: RAL → kod cyfrowy; lazur → `l` + numer w palecie wariantu
+  if (config.woodColor?.palette === 'ral') {
+    const ral = WOOD_RAL_COLORS.find((item) => item.value === config.woodColor.id);
+    if (ral) params.set('wc', ral.urlCode);
+  } else {
+    const lazur = getLazurPalette(config.materialType).find((item) => item.value === config.woodColor?.id);
+    if (lazur) params.set('wc', `l${lazur.number}`);
+  }
 
   const handleFinish = HANDLE_FINISHES.find((item) => item.value === config.handleFinish);
   if (handleFinish) params.set('hd', handleFinish.urlCode);
@@ -86,20 +92,25 @@ export const parseHsConfig = (search, { pricing = null } = {}) => {
     return acc;
   }, {});
 
-  // Kolor drewna: kod szukany w obu paletach (formaty kodów się nie nakładają)
-  const woodRal = findByUrlCode(WOOD_RAL_COLORS, params.get('wc'));
-  const woodLazur = findByUrlCode(WOOD_LAZUR_COLORS, params.get('wc'));
-  const woodColor = woodRal
-    ? { palette: 'ral', id: woodRal.value }
-    : woodLazur
-      ? { palette: 'lazur', id: woodLazur.value }
-      : { ...DEFAULT_WOOD_COLOR };
+  const materialType = (findByUrlCode(MATERIAL_TYPES, params.get('mt')) ?? MATERIAL_TYPES[0]).value;
+
+  // Kolor drewna: `l<numer>` → lazur z palety wariantu; inaczej kod RAL; fallback default
+  const wcRaw = params.get('wc');
+  const lazurMatch = /^l(\d+)$/.exec(wcRaw ?? '');
+  let woodColor;
+  if (lazurMatch) {
+    const lazur = getLazurPalette(materialType).find((item) => item.number === Number(lazurMatch[1]));
+    woodColor = lazur ? { palette: 'lazur', id: lazur.value } : { ...DEFAULT_WOOD_COLOR };
+  } else {
+    const woodRal = findByUrlCode(WOOD_RAL_COLORS, wcRaw);
+    woodColor = woodRal ? { palette: 'ral', id: woodRal.value } : { ...DEFAULT_WOOD_COLOR };
+  }
 
   return {
     scheme: typeData.value,
     width: parseDimension(params.get('w'), ranges.width),
     height: parseDimension(params.get('h'), ranges.height),
-    materialType: (findByUrlCode(MATERIAL_TYPES, params.get('mt')) ?? MATERIAL_TYPES[0]).value,
+    materialType,
     aluColor: (findByUrlCode(ALU_COLORS, params.get('ac')) ?? ALU_COLORS.find((color) => color.value === DEFAULT_ALU_COLOR)).value,
     woodColor,
     handleFinish: (findByUrlCode(HANDLE_FINISHES, params.get('hd')) ?? HANDLE_FINISHES[0]).value,

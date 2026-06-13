@@ -17,9 +17,9 @@ import {
   MATERIAL_TYPES,
   THRESHOLDS,
   TYPES,
-  WOOD_LAZUR_COLORS,
   WOOD_RAL_COLORS,
   getDefaultWoodKey,
+  getLazurPalette,
   resolveWoodFinish,
 } from './hs-configurator/hsOptions.js';
 import styles from './HsConfiguratorView.module.css';
@@ -168,6 +168,18 @@ const HsConfiguratorPage = ({ pricing = null }) => {
   const handleMaterialTypeChange = useCallback((value) => {
     setIsCanvasReady(false);
     setSelectedMaterialType(value);
+    // Wzornik lazurów różni się między wariantami — przy zmianie materiału
+    // przenosimy wybór lazuru na ten sam numer w nowej palecie (RAL bez zmian)
+    setSelectedWoodColor((prev) => {
+      if (prev.palette !== 'lazur') return prev;
+      const fromPalette = getLazurPalette(prev.palette === 'lazur' ? (value === 'woodAlu' ? 'wood' : 'woodAlu') : 'wood');
+      const toPalette = getLazurPalette(value);
+      const index = Math.max(
+        fromPalette.findIndex((c) => c.value === prev.id),
+        0
+      );
+      return { palette: 'lazur', id: (toPalette[index] ?? toPalette[0]).value };
+    });
   }, []);
 
   const handleWoodColorChange = useCallback(
@@ -248,8 +260,8 @@ const HsConfiguratorPage = ({ pricing = null }) => {
   // Parametry materiału drewna dla canvasa — kolor RAL (farba) albo tekstura
   // lazuru; gatunek drewna może mieć dedykowaną próbkę lazuru
   const woodFinish = useMemo(
-    () => resolveWoodFinish(selectedWoodColor, selectedWood),
-    [selectedWoodColor, selectedWood]
+    () => resolveWoodFinish(selectedWoodColor, selectedWood, selectedMaterialType),
+    [selectedWoodColor, selectedWood, selectedMaterialType]
   );
 
   // Opcje swatchy: paleta RAL z lokalizowanymi nazwami ze strony produktowej,
@@ -264,19 +276,20 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     }));
   }, [languageKey]);
 
-  // Miniatury lazurów podążają za wybranym gatunkiem drewna: mapa słojów
-  // gatunku × kolor zmierzony z wzornika (multiply w CSS — ta sama kompozycja
-  // co w materiale 3D)
+  // Lazury: paleta zależna od wariantu materiału (drewno / drewno-aluminium),
+  // miniatura = mapa słojów wybranego gatunku × zmierzony kolor (multiply w CSS,
+  // ta sama kompozycja co w materiale 3D). Nazwa PL na stronie polskiej,
+  // oryginalna w pozostałych językach
   const lazurSwatchOptions = useMemo(
     () =>
-      WOOD_LAZUR_COLORS.map((color) => ({
+      getLazurPalette(selectedMaterialType).map((color) => ({
         value: color.value,
         image: color.grainImages[selectedWood] ?? color.grainImages.pine,
-        hex: color.colors?.[selectedWood] ?? color.colors?.pine,
-        label: t(color.labelKey, color.name),
-        sublabel: color.code,
+        hex: color.hex,
+        label: languageKey === 'pl' ? color.name : color.nameOrig,
+        sublabel: color.nameOrig,
       })),
-    [selectedWood, t]
+    [selectedMaterialType, selectedWood, languageKey]
   );
 
   const woodColorInfo = useMemo(() => {
