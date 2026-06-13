@@ -6,8 +6,8 @@
 */
 
 .prose {
-  font-size: 1.4rem;
-  line-height: 1.7;
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
   color: #000000ff;
 }
 
@@ -19,18 +19,18 @@
 .prose h2,
 .prose h3 {
   margin: 1.2em 0 0.5em 0;
-  line-height: 1.25;
-  font-weight: 600;
+  line-height: var(--lh-heading);
+  font-weight: var(--fw-semibold);
   text-transform: none;
-  letter-spacing: 0;
+  letter-spacing: var(--ls-normal);
 }
 
 .prose h2 {
-  font-size: 2.2rem;
+  font-size: var(--fs-xl);
 }
 
 .prose h3 {
-  font-size: 1.8rem;
+  font-size: var(--fs-md);
 }
 
 .prose ul,

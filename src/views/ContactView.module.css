@@ -31,14 +31,14 @@
 }
 
 .label {
-  font-weight: 400;
+  font-weight: var(--fw-regular);
 }
 
 .input {
   padding: 12px 14px;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: var(--fs-base);
   outline: none;
   transition: border-color 0.2s ease;
 }
@@ -49,14 +49,14 @@
 
 .input::placeholder {
   color: #9ca3afb7;
-  font-weight: 100;
+  font-weight: var(--fw-regular);
 }
 
 .textarea {
   padding: 12px 14px;
   border: 1px solid #e5e7eb;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: var(--fs-base);
   font-family: inherit;
   min-height: 140px;
   resize: vertical;
@@ -70,19 +70,19 @@
 
 .textarea::placeholder {
   color: #9ca3afb7;
-  font-weight: 400;
+  font-weight: var(--fw-regular);
 }
 
 .errorText {
   color: #a82218;
-  font-size: 0.9rem;
+  font-size: var(--fs-xs);
 }
 
 .recaptchaPlaceholder {
   padding: 12px 14px;
   border: 1px dashed #e5e7eb;
   border-radius: 8px;
-  font-size: 0.9rem;
+  font-size: var(--fs-xs);
   color: #6b7280;
   background: #f9fafb;
 }
@@ -104,8 +104,8 @@
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 1.15rem;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
   transition: var(--cta-primary-transition), opacity 0.2s ease;
 }
 
@@ -120,7 +120,7 @@
 }
 
 .button svg {
-  font-size: 1.2rem;
+  font-size: var(--fs-xs);
 }
 
 .successBox {
@@ -134,8 +134,8 @@
   padding: 1rem 1.1rem;
   border-radius: 12px;
   box-shadow: var(--shadow-home-product-card);
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
 }
 
 .successBox::before {
@@ -150,7 +150,7 @@
   background: #f0f4f0;
   border: 1px solid #e0e5e0;
   color: #1a5618;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
 }
 
 .errorBox {
@@ -164,8 +164,8 @@
   padding: 1rem 1.1rem;
   border-radius: 12px;
   box-shadow: var(--shadow-home-product-card);
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
 }
 
 .errorBox::before {
@@ -180,12 +180,12 @@
   background: #fbf1f3;
   border: 1px solid #e9c9d0;
   color: #7a2e3a;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
 }
 
 .formInfo {
   margin-top: 16px;
-  font-size: 0.9rem;
+  font-size: var(--fs-xs);
   color: #6b7280;
 }
 
@@ -270,14 +270,14 @@
 }
 
 .contactLabel {
-  font-size: 12px;
+  font-size: var(--fs-xs);
   color: #595f6b;
 }
 
 .contactLink {
   color: #111827;
   text-decoration: none;
-  font-weight: 400;
+  font-weight: var(--fw-regular);
 }
 
 .contactLink:hover {

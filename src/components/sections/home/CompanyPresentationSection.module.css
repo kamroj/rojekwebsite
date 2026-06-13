@@ -2,7 +2,13 @@
   width: 100%;
   background-color: #000;
   position: relative;
-  padding: 0 0 3rem;
+  padding: 0 0 var(--section-gap);
+}
+
+@media (--bp-sm) {
+  .presentationWrapper {
+    padding-bottom: var(--section-gap-sm);
+  }
 }
 
 .videoContainer {

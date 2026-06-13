@@ -228,8 +228,8 @@
 .dynamicText {
   color: #2e8b57;
   font-size: clamp(2rem, 5vw, 3.2rem);
-  font-weight: 100;
-  line-height: 1.2;
+  font-weight: var(--fw-light);
+  line-height: var(--lh-tight);
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
   margin: 0;
   opacity: 0;
@@ -257,9 +257,9 @@
   color: var(--color-text-light);
   padding: 1rem 2.5rem;
   font-size: clamp(1.2rem, 2vw, 1.4rem);
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   text-transform: uppercase;
-  letter-spacing: 1.5px;
+  letter-spacing: var(--ls-wide);
   text-decoration: none;
   backdrop-filter: blur(8px);
   border-radius: 6px;

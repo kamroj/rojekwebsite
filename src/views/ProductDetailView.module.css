@@ -7,8 +7,8 @@
   padding: 1.1rem 2.2rem;
   border-radius: 8px;
   text-decoration: none;
-  font-size: 1.15rem;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
   transition: var(--cta-primary-transition);
 }
 

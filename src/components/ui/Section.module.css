@@ -1,6 +1,12 @@
 .section {
   position: relative;
-  margin-bottom: 4rem;
+  margin-bottom: var(--section-gap);
+}
+
+@media (--bp-sm) {
+  .section {
+    margin-bottom: var(--section-gap-sm);
+  }
 }
 
 .noMarginBottom {

@@ -1,6 +1,12 @@
 .section {
-  padding: 0 0 3rem;
+  padding: 0 0 var(--section-gap);
   background: #fbfbfb;
+}
+
+@media (--bp-sm) {
+  .section {
+    padding-bottom: var(--section-gap-sm);
+  }
 }
 
 .content {
@@ -115,22 +121,22 @@
 }
 
 .cardTitle {
-  font-size: 2rem;
-  font-weight: 400;
+  font-size: var(--fs-lg);
+  font-weight: var(--fw-regular);
   color: #2c4d3a;
   margin: 0 0 0.5rem 0;
-  line-height: 1.25;
+  line-height: var(--lh-heading);
 }
 
 @media (--bp-md) {
   .cardTitle {
-    font-size: 1.4rem;
+    font-size: var(--fs-sm);
   }
 }
 
 @media (--bp-sm) {
   .cardTitle {
-    font-size: 1.4rem;
+    font-size: var(--fs-sm);
     margin: 0 0 0.3rem 0;
   }
 }
@@ -177,18 +183,18 @@
 }
 
 .description {
-  font-size: 1.4rem;
+  font-size: var(--fs-sm);
   color: var(--color-text-muted);
   margin: 0;
   line-height: 1.5;
-  font-weight: 400;
+  font-weight: var(--fw-regular);
   flex: 1;
 }
 
 @media (--bp-sm) {
   .description {
-    font-size: 1.2rem;
-    line-height: 1.4;
+    font-size: var(--fs-xs);
+    line-height: var(--lh-snug);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -213,8 +219,8 @@
 }
 
 .linkText {
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
   color: var(--color-bottle-green);
   transition: color 0.3s ease;
 }
@@ -225,7 +231,7 @@
 
 @media (--bp-sm) {
   .linkText {
-    font-size: 1rem;
+    font-size: var(--fs-xs);
   }
 }
 
@@ -251,7 +257,7 @@
 
 .arrowIcon {
   color: currentColor;
-  font-size: 2rem;
+  font-size: var(--fs-lg);
   transition: transform 0.3s ease;
 }
 
@@ -261,6 +267,6 @@
 
 @media (--bp-sm) {
   .arrowIcon {
-    font-size: 1.6rem;
+    font-size: var(--fs-base);
   }
 }

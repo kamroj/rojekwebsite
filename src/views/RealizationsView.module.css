@@ -29,10 +29,10 @@
 
 .filtersSidebarTitle {
   margin: 0;
-  font-size: 1.35rem;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: var(--ls-wide);
   color: #2e5a3c;
 }
 
@@ -41,7 +41,7 @@
   border: none;
   background: none;
   color: #2e8b57;
-  font-size: 2.4rem;
+  font-size: var(--fs-xl);
   line-height: 1;
   padding: 8px;
   margin: -8px;
@@ -63,8 +63,8 @@
 }
 
 .selectedFiltersLabel {
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
   color: #2e5a3c;
 }
 
@@ -83,7 +83,7 @@
   color: #1f4b2f;
   border-radius: 999px;
   padding: 4px 10px;
-  font-size: 1.1rem;
+  font-size: var(--fs-xs);
   cursor: pointer;
 }
 
@@ -120,10 +120,10 @@
   display: none;
   border-radius: 6px;
   padding: 8px 14px;
-  font-size: 1rem;
-  font-weight: 500;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-medium);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: var(--ls-wide);
 }
 
 .mobileDrawerActions {
@@ -149,13 +149,13 @@
 }
 
 .filterCounter {
-  font-weight: 400;
-  font-size: 1.5rem;
+  font-weight: var(--fw-regular);
+  font-size: var(--fs-base);
   color: #326647;
 }
 
 .filterCounterNumber {
-  font-weight: 700;
+  font-weight: var(--fw-bold);
 }
 
 .filterToolbar {
@@ -181,7 +181,7 @@
   color: #2e5a3c;
   border-radius: 0;
   padding: 10px 12px;
-  font-weight: 700;
+  font-weight: var(--fw-bold);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -192,8 +192,8 @@
 }
 
 .filterToggleLabel {
-  font-size: 1.3rem;
-  letter-spacing: 0.03em;
+  font-size: var(--fs-sm);
+  letter-spacing: var(--ls-wide);
   text-transform: uppercase;
 }
 
@@ -205,7 +205,7 @@
 }
 
 .filterToggleIcon {
-  font-size: 1.2rem;
+  font-size: var(--fs-xs);
   line-height: 1;
   transition: transform 0.2s ease;
 }
@@ -250,7 +250,7 @@
   border: 1px solid #c9dbce;
   border-radius: 8px;
   padding: 8px 10px;
-  font-size: 1.3rem;
+  font-size: var(--fs-sm);
   background: #fff;
 }
 
@@ -367,8 +367,8 @@
 
 .filterGroupTitle {
   margin: 0;
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
   color: #21462f;
 }
 
@@ -422,7 +422,7 @@
 }
 
 .filterOptionText {
-  font-size: 1.2rem;
+  font-size: var(--fs-xs);
   color: #23462f;
 }
 
@@ -430,18 +430,18 @@
   align-self: center;
   border-radius: 5px;
   padding: 7px 14px;
-  font-size: 1rem;
-  font-weight: 400;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-regular);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: var(--ls-wide);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 @media (--bp-sm) {
   .filterCounter {
-    font-size: 1.2rem;
-    font-weight: 600;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
   }
 
   .filterPanelTop {
@@ -506,7 +506,7 @@
 
 @media (max-width: 767px) {
   .filtersSidebarTitle {
-    font-size: 1.45rem;
+    font-size: var(--fs-sm);
   }
 
   .realizationsLayout {
@@ -569,10 +569,10 @@
     border-radius: 6px;
     padding: 9px 10px;
     height: 44px;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: var(--fs-xs);
+    font-weight: var(--fw-semibold);
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    letter-spacing: var(--ls-wide);
     cursor: pointer;
   }
 
@@ -717,12 +717,12 @@
 
 .tag {
   color: #fff;
-  font-size: 1rem;
+  font-size: var(--fs-xs);
   background-color: rgba(255, 255, 255, 0.342);
   padding: 3px 8px;
   border-radius: 12px;
   white-space: nowrap;
-  font-weight: 500;
+  font-weight: var(--fw-medium);
   text-transform: capitalize;
 }
 
@@ -966,8 +966,8 @@
   border-color: #003f1b;
   color: #003f1b;
   background: #eaefe8;
-  font-weight: 600;
-  font-size: 1.8rem;
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-md);
   border: 1px solid #003f1b;
 }
 
@@ -997,7 +997,7 @@
 
 .paginateArrowIcon {
   color: currentColor;
-  font-size: 2rem;
+  font-size: var(--fs-lg);
   transition: color 0.3s ease;
 }
 

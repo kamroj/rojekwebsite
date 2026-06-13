@@ -3,8 +3,8 @@
 }
 
 .introText p {
-  font-size: 1.52rem;
-  line-height: 1.78;
+  font-size: var(--fs-base);
+  line-height: var(--lh-relaxed);
   color: var(--color-text);
   margin: 0 0 1.2rem;
 }
@@ -21,8 +21,8 @@
 }
 
 .whyUsContentContainer > p {
-  font-size: 1.44rem;
-  line-height: 1.72;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-relaxed);
   margin: 0 0 1rem;
 }
 
@@ -45,14 +45,14 @@
 .valueItem h3 {
   margin: 0 0 6px;
   color: #326647;
-  font-size: 1.32rem;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
 }
 
 .valueItem p {
   margin: 0;
-  font-size: 1.18rem;
-  line-height: 1.58;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-normal);
 }
 
 .headquartersImage,
@@ -176,7 +176,7 @@
 
 .historyTabSeparator {
   color: #2e8b5761;
-  font-size: 2rem;
+  font-size: var(--fs-lg);
   line-height: 1;
   display: inline-flex;
   align-items: center;
@@ -192,8 +192,8 @@
   color: #326647;
   border-radius: 10px;
   padding: 10px 16px;
-  font-size: 1.32rem;
-  font-weight: 600;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
   line-height: 1;
   letter-spacing: 0.2px;
   cursor: pointer;
@@ -248,15 +248,15 @@
 .historyPanelMeta {
   margin: 0 0 12px;
   font-size: clamp(2.1rem, 2.8vw, 2.55rem);
-  line-height: 1.25;
-  font-weight: 600;
+  line-height: var(--lh-heading);
+  font-weight: var(--fw-semibold);
   color: #326647;
 }
 
 .historyPanelContent p {
   margin: 0 0 1rem;
-  font-size: 1.34rem;
-  line-height: 1.82;
+  font-size: var(--fs-sm);
+  line-height: var(--lh-relaxed);
 }
 
 .historyPanelContent p:last-child {
@@ -313,14 +313,14 @@
 
 .managerName {
   margin: 0;
-  font-size: 1.8rem;
+  font-size: var(--fs-md);
   color: #2c4d3a;
 }
 
 .managerRole {
   padding-bottom: 4px;
   margin: 8px 0 8px;
-  font-size: 1.35rem;
+  font-size: var(--fs-sm);
   color: var(--color-text-muted, #4a4a4a);
   border-bottom: 1px solid #00000012;
 }
@@ -336,8 +336,8 @@
   gap: 8px;
   color: var(--color-text);
   text-decoration: none;
-  font-size: 1.12rem;
-  line-height: 1.4;
+  font-size: var(--fs-xs);
+  line-height: var(--lh-snug);
 }
 
 .managerContactIcon {
@@ -429,11 +429,11 @@
 @media (--bp-sm) {
   .introText p,
   .whyUsContentContainer > p {
-    font-size: 1.32rem;
+    font-size: var(--fs-sm);
   }
 
   .historyTab {
-    font-size: 1.2rem;
+    font-size: var(--fs-xs);
     padding: 9px 12px;
   }
 
@@ -484,8 +484,8 @@
   }
 
   .managerContacts a {
-    font-size: 1.4rem;
-    line-height: 1.35;
+    font-size: var(--fs-sm);
+    line-height: var(--lh-snug);
   }
 }
 

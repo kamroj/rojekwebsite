@@ -48,7 +48,7 @@
 .productName {
   font-size: clamp(2.5rem, 5vw, 3.5rem);
   text-transform: uppercase;
-  font-weight: 400;
+  font-weight: var(--fw-regular);
   color: #03531d;
   margin: 0 0 1rem 0;
   letter-spacing: 0.5px;
@@ -61,16 +61,16 @@
 }
 
 .productDescription {
-  font-size: 1.4rem;
+  font-size: var(--fs-sm);
   color: #6b7280;
   margin: 0 0 1.5rem 0;
-  line-height: 1.6;
+  line-height: var(--lh-normal);
   max-width: 600px;
 }
 
 @media (--bp-sm) {
   .productDescription {
-    font-size: 1.2rem;
+    font-size: var(--fs-xs);
     margin: 0 0 1.2rem 0;
   }
 }
@@ -90,27 +90,27 @@
 
 .productCountText {
   margin: 0 0 2rem 0;
-  font-size: 1.5rem;
+  font-size: var(--fs-base);
   color: #3d4a40;
-  line-height: 1.3;
+  line-height: var(--lh-heading);
 }
 
 .productCountValue {
   color: #03531d;
-  font-size: 2.4rem;
-  font-weight: 500;
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-medium);
   line-height: 1;
   margin-left: 3px;
 }
 
 @media (--bp-sm) {
   .productCountText {
-    font-size: 1.35rem;
+    font-size: var(--fs-sm);
     margin: 0 0 1.5rem 0;
   }
 
   .productCountValue {
-    font-size: 2rem;
+    font-size: var(--fs-lg);
   }
 }
 
@@ -123,8 +123,8 @@
   padding: 1rem 1.8rem;
   border-radius: 6px;
   text-decoration: none;
-  font-size: 1.25rem;
-  font-weight: 500;
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-medium);
   transition: var(--cta-primary-transition);
   width: fit-content;
 }
@@ -135,7 +135,7 @@
 }
 
 .viewMoreButton svg {
-  font-size: 1.4rem;
+  font-size: var(--fs-sm);
   transition: transform 0.3s ease;
 }
 
@@ -146,7 +146,7 @@
 @media (--bp-sm) {
   .viewMoreButton {
     padding: 0.9rem 1.5rem;
-    font-size: 1.15rem;
+    font-size: var(--fs-xs);
   }
 }
 
