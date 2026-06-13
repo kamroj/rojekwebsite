@@ -192,9 +192,8 @@
 }
 
 .swatchButtonActive {
-  box-shadow:
-    0 0 0 2px #fbfdfb,
-    0 0 0 4px #026303;
+  border-color: #026303;
+  box-shadow: 0 0 0 2px #026303;
 }
 
 .swatchSelected {

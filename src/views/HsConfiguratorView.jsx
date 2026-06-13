@@ -452,6 +452,22 @@ const HsConfiguratorPage = ({ pricing = null }) => {
                   <span className={styles.sectionOverline}>{t('hsConfigurator.sectionsLabel.materials', 'Materiały')}</span>
                 </div>
 
+                {pricing ? (
+                  <div className={styles.controlGroup}>
+                    <label className={styles.label}>{t('hsConfigurator.labels.woodSpecies', 'Gatunek drewna')}</label>
+                    <select className={styles.select} value={selectedWood} onChange={handleWoodChange}>
+                      {pricing.settings.woodSpecies.map((species) => {
+                        const label = woodLabels[species.key] ?? species.key;
+                        return (
+                          <option key={species.key} value={species.key}>
+                            {species.surchargePercent > 0 ? `${label} (+${species.surchargePercent}%)` : label}
+                          </option>
+                        );
+                      })}
+                    </select>
+                  </div>
+                ) : null}
+
                 <div className={styles.controlGroup}>
                   <div
                     className={styles.materialTabs}
@@ -471,7 +487,7 @@ const HsConfiguratorPage = ({ pricing = null }) => {
                           type="button"
                           role="radio"
                           aria-checked={isSelected}
-                          className={`${styles.materialTabButton} ${isSelected ? styles.materialTabButtonActive : ''}`}
+                          className={`${styles.materialTabButton} ${styles.paletteTabButtonCompact} ${isSelected ? styles.materialTabButtonActive : ''}`}
                           onClick={() => handleMaterialTypeChange(material.value)}
                         >
                           {t(material.labelKey, material.fallback)}
@@ -592,20 +608,6 @@ const HsConfiguratorPage = ({ pricing = null }) => {
                 <div className={styles.controlSection}>
                   <div className={styles.sectionHeaderWrap}>
                     <span className={styles.sectionOverline}>{t('hsConfigurator.sectionsLabel.addons', 'Dodatki')}</span>
-                  </div>
-
-                  <div className={styles.controlGroup}>
-                    <label className={styles.label}>{t('hsConfigurator.labels.woodSpecies', 'Gatunek drewna')}</label>
-                    <select className={styles.select} value={selectedWood} onChange={handleWoodChange}>
-                      {pricing.settings.woodSpecies.map((species) => {
-                        const label = woodLabels[species.key] ?? species.key;
-                        return (
-                          <option key={species.key} value={species.key}>
-                            {species.surchargePercent > 0 ? `${label} (+${species.surchargePercent}%)` : label}
-                          </option>
-                        );
-                      })}
-                    </select>
                   </div>
 
                   <div className={styles.controlGroup}>

@@ -49,6 +49,32 @@
   opacity: 0.72;
 }
 
+@media (max-width: 768px) {
+  .arButton {
+    justify-content: center;
+    padding: 1.1rem 2.2rem;
+    border: none;
+    border-radius: 8px;
+    background: var(--cta-primary-bg);
+    color: var(--cta-primary-text);
+    font-size: 1.15rem;
+    font-weight: 500;
+    box-shadow: none;
+    backdrop-filter: none;
+    transition: var(--cta-primary-transition);
+  }
+
+  .arButton svg {
+    font-size: 1.2rem;
+  }
+
+  .arButton:hover:not(:disabled) {
+    background: var(--cta-primary-bg);
+    transform: translateY(var(--cta-primary-hover-translate-y));
+    box-shadow: var(--cta-primary-hover-shadow);
+  }
+}
+
 .buttonSpinner {
   width: 14px;
   height: 14px;
