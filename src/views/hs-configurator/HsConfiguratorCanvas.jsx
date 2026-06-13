@@ -365,14 +365,33 @@ function LowThreshold({ bodyWidth, openingWidth, material, outerRail }) {
 // dwusegmentowe: od lica zewnętrznego do połowy profilu w kolorze nakładki
 // alu, dalej w ciemnym kolorze uszczelki (w realnym okuciu w tej strefie
 // siedzą uszczelki szczotkowe) — od zewnątrz nie świeci drewno, a od wewnątrz
-// nie razi kolor aluminium
-function AluSideWrap({ xLeft, xRight, bottom, top, z, depth, material, innerMaterial }) {
+// nie razi kolor aluminium.
+// Plakieta pionowa pojawia się tylko na boku z zakładem (`wrapLeft`/`wrapRight`).
+// Bok domykający do futryny (albo czołowo do drugiego skrzydła) nie ma szczeliny,
+// przez którą widać profil, a po otwarciu skrzydła aluminium na tej krawędzi
+// świeciło w świetle otworu — dlatego ten bok zostaje bez plakiety (drewno).
+function AluSideWrap({
+  xLeft,
+  xRight,
+  bottom,
+  top,
+  z,
+  depth,
+  material,
+  innerMaterial,
+  wrapLeft = true,
+  wrapRight = true,
+}) {
   const outerDepth = depth / 2 + ALU.depth;
   const innerDepth = depth / 2 - 0.001;
-  const cx = (xLeft + xRight) / 2;
   const cy = (bottom + top) / 2;
-  const width = xRight - xLeft;
   const height = top - bottom;
+  // Poziome plakiety (góra/dół) domykają narożniki tylko od strony, gdzie stoi
+  // plakieta pionowa — przy boku bez owinięcia nie wystają w pustkę
+  const hLeft = xLeft - (wrapLeft ? ALU.side : 0);
+  const hRight = xRight + (wrapRight ? ALU.side : 0);
+  const hcx = (hLeft + hRight) / 2;
+  const hWidth = hRight - hLeft;
   const segments = [
     { key: 'outer', zPos: z - depth / 2 - ALU.depth + outerDepth / 2, zDepth: outerDepth, mat: material },
     { key: 'inner', zPos: z + innerDepth / 2, zDepth: innerDepth, mat: innerMaterial ?? material },
@@ -381,18 +400,14 @@ function AluSideWrap({ xLeft, xRight, bottom, top, z, depth, material, innerMate
     <group>
       {segments.map(({ key, zPos, zDepth, mat }) => (
         <group key={key}>
-          <BoxPart position={[xLeft - ALU.side / 2, cy, zPos]} size={[ALU.side, height, zDepth]} material={mat} />
-          <BoxPart position={[xRight + ALU.side / 2, cy, zPos]} size={[ALU.side, height, zDepth]} material={mat} />
-          <BoxPart
-            position={[cx, top + ALU.side / 2, zPos]}
-            size={[width + ALU.side * 2, ALU.side, zDepth]}
-            material={mat}
-          />
-          <BoxPart
-            position={[cx, bottom - ALU.side / 2, zPos]}
-            size={[width + ALU.side * 2, ALU.side, zDepth]}
-            material={mat}
-          />
+          {wrapLeft && (
+            <BoxPart position={[xLeft - ALU.side / 2, cy, zPos]} size={[ALU.side, height, zDepth]} material={mat} />
+          )}
+          {wrapRight && (
+            <BoxPart position={[xRight + ALU.side / 2, cy, zPos]} size={[ALU.side, height, zDepth]} material={mat} />
+          )}
+          <BoxPart position={[hcx, top + ALU.side / 2, zPos]} size={[hWidth, ALU.side, zDepth]} material={mat} />
+          <BoxPart position={[hcx, bottom - ALU.side / 2, zPos]} size={[hWidth, ALU.side, zDepth]} material={mat} />
         </group>
       ))}
     </group>
@@ -573,6 +588,17 @@ function GlazedPanel({
   const cx = (xLeft + xRight) / 2;
   const panelWidth = xRight - xLeft;
 
+  // Skrzydło przesuwne na torze WEWNĘTRZNYM jest najbliżej wnętrza — jego boki
+  // widać od środka (gdzie wariant drewno-alu ma zostać drewnem), a w strefie
+  // zakładu od zewnątrz zasłania je sąsiednie pole. Dlatego nie dostaje żadnej
+  // plakiety alu na obwodzie (lico zewnętrzne ramy zostaje aluminiowe).
+  // Pozostałe pola owijamy tylko od strony zakładu (extend ≠ 0); bok domykający
+  // do futryny lub czołowo do drugiego skrzydła (extend === 0) zostaje drewniany,
+  // bo po otwarciu wjeżdża w światło otworu i aluminium na nim świeciło
+  const isInnerSliding = isSliding && panel.track === 'inner';
+  const lapsLeft = panel.extend[0] !== 0;
+  const lapsRight = panel.extend[1] !== 0;
+
   // Skrzydło przesuwne jedzie po szynie progu, pole stałe schodzi niżej — na
   // zewnętrzny stopień progu; od góry pole stałe domyka listwa maskująca 19 x 115
   const bottom = isSliding ? openingBottom + 0.012 : THRESHOLD.platform.height;
@@ -661,9 +687,10 @@ function GlazedPanel({
         materialH={materials.woodH}
       />
       {/* Nakładka aluminiowa na licu zewnętrznym ramy (wariant drewno-alu) —
-          renderowana w grupie skrzydła, więc jeździ razem z nim; plakiety
-          owijają boki profilu, żeby środkowe słupki w strefie zakładu nie
-          świeciły drewnem od zewnątrz */}
+          renderowana w grupie skrzydła, więc jeździ razem z nim. Plakiety na
+          bokach (AluSideWrap) tylko tam, gdzie bok widać od zewnątrz przez
+          zakład; skrzydło przesuwne na torze wewnętrznym ich nie dostaje (boki
+          widoczne od środka zostają drewniane) */}
       {aluMaterial && (
         <>
           <FrameRing
@@ -677,16 +704,20 @@ function GlazedPanel({
             materialV={aluMaterial}
             materialH={aluMaterial}
           />
-          <AluSideWrap
-            xLeft={xLeft}
-            xRight={xRight}
-            bottom={bottom}
-            top={top}
-            z={z}
-            depth={depth}
-            material={aluMaterial}
-            innerMaterial={materials.gasket}
-          />
+          {!isInnerSliding && (
+            <AluSideWrap
+              xLeft={xLeft}
+              xRight={xRight}
+              bottom={bottom}
+              top={top}
+              z={z}
+              depth={depth}
+              material={aluMaterial}
+              innerMaterial={materials.gasket}
+              wrapLeft={lapsLeft}
+              wrapRight={lapsRight}
+            />
+          )}
         </>
       )}
       {/* Listwy przyszybowe po obu stronach pakietu (przy szkleniu w ościeżnicy
