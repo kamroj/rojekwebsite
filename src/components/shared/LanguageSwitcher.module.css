@@ -88,6 +88,18 @@
 
 .open {
   display: flex;
+  animation: langDropdownIn 0.18s ease;
+}
+
+@keyframes langDropdownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .dropdownMenuMobile {

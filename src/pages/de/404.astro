@@ -1,0 +1,15 @@
+---
+import SiteLayout from '../../layouts/SiteLayout.astro';
+import NotFoundContent from '../../components/_astro/NotFoundContent.astro';
+---
+
+<SiteLayout lang="de" title="404 — Seite nicht gefunden" description="Die gesuchte Seite existiert nicht oder wurde verschoben." noindex={true}>
+  <NotFoundContent
+    title="Seite nicht gefunden"
+    text="Die gesuchte Seite wurde möglicherweise verschoben oder existiert nicht mehr."
+    homeHref="/de/"
+    homeLabel="Startseite"
+    productsHref="/de/produkte"
+    productsLabel="Produkte ansehen"
+  />
+</SiteLayout>

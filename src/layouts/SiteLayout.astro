@@ -53,13 +53,14 @@ const {
   lang = 'pl',
   title = 'ROJEK',
   description = 'ROJEK',
+  noindex = false,
 } = Astro.props;
 
 const resources = await getI18nResources(lang);
 const initialSanityProductsByCategory = await getHeaderMegaMenuData(lang);
 ---
 
-<BaseLayout lang={lang} title={title} description={description}>
+<BaseLayout lang={lang} title={title} description={description} noindex={noindex}>
   <!-- Forward named slots to BaseLayout (e.g. per-page JSON-LD, extra meta tags). -->
   <slot name="head" slot="head" />
 

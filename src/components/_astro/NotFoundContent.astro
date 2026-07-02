@@ -1,0 +1,117 @@
+---
+// Shared 404 page content (used by /404 and the localized /{lang}/404 pages).
+const {
+  title,
+  text,
+  homeHref,
+  homeLabel,
+  productsHref,
+  productsLabel,
+} = Astro.props;
+---
+
+<!-- SiteLayout already renders <main>, so this is a section -->
+<section class="nf">
+  <p class="nfCode" aria-hidden="true">404</p>
+  <h1 class="nfTitle">{title}</h1>
+  <p class="nfText">{text}</p>
+  <div class="nfActions">
+    <a class="nfBtnPrimary" href={homeHref}>{homeLabel}</a>
+    <a class="nfBtnGhost" href={productsHref}>{productsLabel}</a>
+  </div>
+</section>
+
+<style>
+  .nf {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: calc(var(--header-height) + 4rem) 2rem 6rem;
+    background:
+      radial-gradient(ellipse at 50% 0%, rgba(1, 126, 84, 0.28) 0%, transparent 60%),
+      linear-gradient(180deg, #001308 0%, #052b14 100%);
+    color: var(--color-text-light);
+  }
+
+  .nfCode {
+    font-family: var(--font-heading);
+    font-size: clamp(8rem, 18vw, 14rem);
+    font-weight: var(--fw-light);
+    line-height: 1;
+    margin: 0 0 1rem;
+    color: #2e8b57;
+    letter-spacing: 0.04em;
+    text-shadow: 0 2px 24px rgba(46, 139, 87, 0.35);
+  }
+
+  .nfTitle {
+    font-size: var(--fs-h2);
+    font-weight: var(--fw-medium);
+    margin: 0 0 1rem;
+    color: #f8f9fa;
+  }
+
+  .nfText {
+    font-size: var(--fs-base);
+    color: rgba(248, 249, 250, 0.75);
+    margin: 0 0 3rem;
+    max-width: 44rem;
+  }
+
+  .nfActions {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .nfBtnPrimary {
+    display: inline-flex;
+    align-items: center;
+    background: var(--cta-primary-bg);
+    color: var(--cta-primary-text);
+    padding: 1.1rem 2.4rem;
+    border-radius: 8px;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-medium);
+    text-decoration: none;
+    transition: var(--cta-primary-transition);
+  }
+
+  .nfBtnPrimary:hover {
+    transform: translateY(var(--cta-primary-hover-translate-y));
+    box-shadow: var(--cta-primary-hover-shadow);
+    color: var(--cta-primary-text);
+  }
+
+  .nfBtnPrimary:active {
+    transform: scale(0.98);
+    box-shadow: none;
+  }
+
+  .nfBtnGhost {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid #2e8b57;
+    color: var(--color-text-light);
+    padding: 1.1rem 2.4rem;
+    border-radius: 8px;
+    font-size: var(--fs-sm);
+    font-weight: var(--fw-medium);
+    text-decoration: none;
+    transition:
+      background-color var(--transition-default),
+      border-color var(--transition-default);
+  }
+
+  .nfBtnGhost:hover {
+    background: rgba(46, 139, 87, 0.18);
+    border-color: #34a465;
+    color: #ffffff;
+  }
+</style>

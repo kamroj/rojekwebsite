@@ -46,6 +46,25 @@
   color: var(--color-accent);
 }
 
+/* Underline grows on hover (active items keep their own static underline) */
+.baseNavItem:not(.active)::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: currentColor;
+  opacity: 0.6;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s ease;
+}
+
+.baseNavItem:not(.active):hover::after {
+  transform: scaleX(1);
+}
+
 .pastThreshold {
   font-weight: 400;
 }
@@ -79,9 +98,7 @@
   background-color: #009247;
 }
 
-.headerNavContainer {
-  /* desktop header nav */
-}
+/* .headerNavContainer (desktop header nav) — styled only in media queries below */
 
 /* Avoid custom media here (see Header.module.css note) */
 @media (max-width: 992px) {

@@ -1,10 +1,15 @@
 ---
 import SiteLayout from '../layouts/SiteLayout.astro';
+import NotFoundContent from '../components/_astro/NotFoundContent.astro';
 ---
 
-<SiteLayout lang="pl" title="404" description="404">
-  <main style="padding: 64px 16px; text-align: center;">
-    <h1 style="font-size: 40px; margin: 0 0 16px;">404</h1>
-    <p style="margin: 0;">Nie znaleziono strony.</p>
-  </main>
+<SiteLayout lang="pl" title="404 — Nie znaleziono strony" description="Strona, której szukasz, nie istnieje lub została przeniesiona." noindex={true}>
+  <NotFoundContent
+    title="Nie znaleziono strony"
+    text="Strona, której szukasz, mogła zostać przeniesiona albo nie istnieje."
+    homeHref="/"
+    homeLabel="Strona główna"
+    productsHref="/produkty"
+    productsLabel="Zobacz produkty"
+  />
 </SiteLayout>

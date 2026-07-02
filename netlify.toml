@@ -33,6 +33,24 @@
   status = 301
   force = true
 
+# Localized 404 pages.
+# Non-forced rules: applied only when the requested path has no matching file,
+# so existing pages always win. Root /404.html stays the default for Polish.
+[[redirects]]
+  from = "/en/*"
+  to = "/en/404/index.html"
+  status = 404
+
+[[redirects]]
+  from = "/de/*"
+  to = "/de/404/index.html"
+  status = 404
+
+[[redirects]]
+  from = "/fr/*"
+  to = "/fr/404/index.html"
+  status = 404
+
 # Note:
 # - SPA routing is already handled by public/_redirects.
 # - Set environment variables in Netlify dashboard:

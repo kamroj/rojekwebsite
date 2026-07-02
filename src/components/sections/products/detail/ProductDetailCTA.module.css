@@ -59,6 +59,11 @@
   box-shadow: var(--cta-primary-hover-shadow);
 }
 
+.primaryButton:active {
+  transform: scale(0.98);
+  box-shadow: none;
+}
+
 .primaryButton svg {
   font-size: 1.3rem;
 }

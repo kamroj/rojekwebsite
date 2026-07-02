@@ -225,6 +225,8 @@
 
 .sliderDot.isActive {
   background: #1a5618b3;
+  width: 22px;
+  border-radius: 5px;
 }
 
 .sliderDot:hover {
@@ -266,6 +268,10 @@
 .sliderArrow:hover {
   background: rgb(16 44 1 / 30%);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.sliderArrow:active {
+  transform: translateY(-50%) scale(0.92);
 }
 
 .sliderArrow svg {

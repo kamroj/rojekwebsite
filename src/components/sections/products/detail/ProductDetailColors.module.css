@@ -13,12 +13,20 @@
   }
 }
 
+/* Wspólna kolumna dla obu przełączników (paleta + gatunek drewna):
+   inline-grid wyrównuje ich szerokość — węższy rozciąga się do szerszego. */
+.tabsStack {
+  display: inline-grid;
+  justify-items: stretch;
+  row-gap: 1rem;
+  margin-bottom: 2.25rem;
+}
+
 .paletteTabs {
   position: relative;
   display: inline-grid;
   grid-template-columns: repeat(var(--tabs-count, 2), minmax(0, 1fr));
   align-items: center;
-  margin-bottom: 2.25rem;
   padding: 0.3rem;
   border-radius: 999px;
   background: #e9f0ea;
@@ -63,8 +71,11 @@
 }
 
 @media (--bp-sm) {
-  .paletteTabs {
+  .tabsStack {
     margin-bottom: 1.75rem;
+  }
+
+  .paletteTabs {
     min-width: 220px;
   }
 
@@ -134,8 +145,12 @@
   transition: all 0.2s ease;
 }
 
-.colorSwatchButton:hover {
-  background: rgba(255, 255, 255, 0.8);
+.colorSwatchButton:hover .colorSquare {
+  transform: scale(1.06);
+}
+
+.colorSwatchButton:active .colorSquare {
+  transform: scale(0.97);
 }
 
 .colorSquare {
@@ -154,8 +169,8 @@
 }
 
 .colorSquare.isActive {
-  border-color: #1a5618;
-  box-shadow: 0 0 0 2px rgba(26, 86, 24, 0.2);
+  border-color: rgba(26, 86, 24, 0.45);
+  box-shadow: 0 0 0 1px rgba(26, 86, 24, 0.12);
 }
 
 @media (--bp-sm) {
@@ -224,14 +239,13 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
+  transition: background-color 0.25s ease;
 }
 
-/* Mniejszy wariant przełącznika dla gatunku drewna w zakładce Lazur */
+/* Mniejszy wariant przełącznika dla gatunku drewna w zakładce Lazur.
+   Szerokość dziedziczy z .tabsStack (stretch) — równa z przełącznikiem palet. */
 .speciesTabs {
-  margin-top: -1rem;
-  margin-bottom: 1.75rem;
   padding: 0.25rem;
-  min-width: 220px;
 }
 
 .speciesTabButton {

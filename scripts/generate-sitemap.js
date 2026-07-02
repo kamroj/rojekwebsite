@@ -8,7 +8,7 @@ import { buildSanityLastmodMap, resolveSanityLastmod } from './sitemap-lastmod.j
 const DIST_DIR = path.resolve('dist');
 const OUTPUT_PATH = path.join(DIST_DIR, 'sitemap.xml');
 
-const EXCLUDED_PREFIXES = ['/404', '/admin', '/preview', '/draft'];
+const EXCLUDED_PREFIXES = ['/404', '/en/404', '/de/404', '/fr/404', '/admin', '/preview', '/draft'];
 const EXCLUDED_EXACT = new Set(['/sitemap.xml', '/sitemap-index.xml', '/sitemap_index.xml']);
 
 function normalizeUrlPath(urlPath) {

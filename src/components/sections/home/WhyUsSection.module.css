@@ -98,7 +98,6 @@
   border-radius: 8px;
   width: 100%;
   max-width: 350px;
-  transition: transform var(--transition-default), background-color var(--transition-default);
 }
 
 .iconWrapper {
@@ -113,22 +112,6 @@
   background-color: var(--color-background);
   position: relative;
   overflow: hidden;
-}
-
-.iconWrapper::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: var(--color-bottle-green);
-  opacity: 0;
-  transition: opacity var(--transition-default);
-}
-
-.featureCard:hover .iconWrapper::before {
-  opacity: 0.05;
 }
 
 .icon {

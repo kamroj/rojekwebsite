@@ -15,6 +15,13 @@
   position: relative;
 }
 
+/* Zigzag: alternate image side on desktop for a more dynamic list */
+@media (min-width: 993px) {
+  .productCard:nth-child(even) {
+    flex-direction: row-reverse;
+  }
+}
+
 @media (--bp-md) {
   .productCard {
     flex-direction: column;
@@ -209,6 +216,11 @@
   box-shadow: var(--cta-primary-hover-shadow);
 }
 
+.viewMoreButton:active {
+  transform: scale(0.98);
+  box-shadow: none;
+}
+
 .viewMoreButton svg {
   font-size: 1.4rem;
   transition: transform 0.3s ease;
@@ -235,6 +247,7 @@
   background: #ffffff;
   position: relative;
   overflow: hidden;
+  padding: 2rem;
 }
 
 @media (--bp-md) {
@@ -254,9 +267,11 @@
   }
 }
 
+/* Fixed box + object-fit: contain, so images with different source
+   dimensions (Sanity) render at a consistent visual size */
 .productImage {
   width: 100%;
-  height: auto;
+  height: 100%;
   max-height: 450px;
   object-fit: contain;
   display: block;
@@ -272,12 +287,14 @@
 
 @media (--bp-md) {
   .productImage {
+    height: 280px;
     max-height: 280px;
   }
 }
 
 @media (--bp-sm) {
   .productImage {
+    height: 240px;
     max-height: 240px;
   }
 }

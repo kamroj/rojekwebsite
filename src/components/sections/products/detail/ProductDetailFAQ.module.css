@@ -123,6 +123,11 @@
   font-weight: 500;
   color: var(--color-text);
   line-height: 1.58;
+  transition: color 0.2s ease;
+}
+
+.faqQuestion:hover .faqQuestionText {
+  color: #326647;
 }
 
 .faqQuestionText.isOpen {

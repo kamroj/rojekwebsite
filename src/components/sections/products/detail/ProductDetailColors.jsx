@@ -61,6 +61,7 @@ export default function ProductDetailColors({
       <Section>
         <h2 className={styles.sectionTitle}>{title}</h2>
 
+        <div className={styles.tabsStack}>
         <div
           className={styles.paletteTabs}
           role="tablist"
@@ -121,6 +122,7 @@ export default function ProductDetailColors({
             ))}
           </div>
         ) : null}
+        </div>
 
         <div className={styles.colorsLayout}>
           <div className={styles.colorSwatchesContainer}>
