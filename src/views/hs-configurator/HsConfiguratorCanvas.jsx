@@ -24,6 +24,7 @@ import {
 } from 'three';
 
 import { ALU_COLORS, DEFAULT_ALU_COLOR } from './hsOptions.js';
+import { createHandleLeverGeometry, createHandlePlateGeometry } from './hsHandleGeometry.js';
 
 // Awaryjna mapa słojów (gdy resolver nie dostarczy ścieżek) — sosna
 const FALLBACK_GRAIN = '/models/lazur/grain-pine.jpg';
@@ -530,22 +531,34 @@ function FrameRing({ cx, cy, z, width, height, profile, depth, materialV, materi
   );
 }
 
-// Klamka HS wg rysunku: płytka 57 x 143,5, dźwignia ~312 mm w górę,
-// odsadzenie uchwytu 61 mm od powierzchni skrzydła. Szyjka i dźwignia siedzą
-// w grupie obracanej wokół osi trzpienia (animacja otwierania)
+// Klamka HS wg rysunku technicznego G-U: płytka 46 x 143,5 x 19 mm, dźwignia
+// 27 x 15 mm łukiem przez szyjkę do trzpienia w środku płytki (= kotwica
+// grupy), czubek ścięty „dziobkiem" ku szybie; całość 311,7 mm. Bryły z
+// profili w hsHandleGeometry.js — dźwignia siedzi w grupie obracanej wokół
+// osi trzpienia (animacja otwierania)
 function PullHandle({ position, material, leverRef }) {
+  const geometries = useMemo(
+    () => ({ plate: createHandlePlateGeometry(), lever: createHandleLeverGeometry() }),
+    []
+  );
+
+  useEffect(
+    () => () => {
+      Object.values(geometries).forEach((geometry) => geometry.dispose());
+    },
+    [geometries]
+  );
+
   return (
     <group position={position}>
-      {/* płytka montażowa */}
-      <BoxPart position={[0, 0, 0.006]} size={[0.057, 0.1435, 0.012]} material={material} />
-      {/* trzpień obrotowy */}
-      <BoxPart position={[0, -0.03, 0.025]} size={[0.034, 0.036, 0.026]} material={material} />
+      <mesh geometry={geometries.plate} castShadow receiveShadow>
+        {material}
+      </mesh>
       {/* userData pozwala eksportowi AR znaleźć i wyzerować obrót dźwigni na klonie */}
-      <group ref={leverRef} position={[0, -0.03, 0]} userData={{ hsLever: true }}>
-        {/* szyjka łącząca trzpień z dźwignią */}
-        <BoxPart position={[0, 0, 0.05]} size={[0.028, 0.045, 0.024]} material={material} />
-        {/* dźwignia pionowa (płaskownik) */}
-        <BoxPart position={[0, 0.128, 0.061]} size={[0.025, 0.3, 0.019]} material={material} />
+      <group ref={leverRef} userData={{ hsLever: true }}>
+        <mesh geometry={geometries.lever} castShadow receiveShadow>
+          {material}
+        </mesh>
       </group>
     </group>
   );
