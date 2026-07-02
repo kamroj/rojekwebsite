@@ -266,12 +266,21 @@
 
   transition:
     background-color var(--transition-default),
-    border-color var(--transition-default);
+    border-color var(--transition-default),
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .ctaButton:hover {
   background-color: #0136005c;
   border-color: #34a465;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 14px rgba(0, 19, 8, 0.35);
+}
+
+.ctaButton:active {
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 @media (--bp-sm) {
