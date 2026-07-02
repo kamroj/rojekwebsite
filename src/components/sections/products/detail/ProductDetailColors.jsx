@@ -62,66 +62,66 @@ export default function ProductDetailColors({
         <h2 className={styles.sectionTitle}>{title}</h2>
 
         <div className={styles.tabsStack}>
-        <div
-          className={styles.paletteTabs}
-          role="tablist"
-          aria-label="Wybór palety kolorów"
-          style={{
-            '--active-index': activePaletteIndex,
-            '--tabs-count': paletteTabsCount,
-          }}
-        >
-          <span className={styles.paletteTabsThumb} aria-hidden="true" />
-
-          <button
-            type="button"
-            role="tab"
-            aria-selected={activePalette === 'ral'}
-            className={[styles.paletteTabButton, activePalette === 'ral' ? styles.isActive : null].filter(Boolean).join(' ')}
-            onClick={() => setActivePalette('ral')}
-          >
-            {ralTabLabel}
-          </button>
-          {hasLazur ? (
-            <button
-              type="button"
-              role="tab"
-              aria-selected={activePalette === 'lazur'}
-              className={[styles.paletteTabButton, activePalette === 'lazur' ? styles.isActive : null].filter(Boolean).join(' ')}
-              onClick={() => setActivePalette('lazur')}
-            >
-              {lazurTabLabel}
-            </button>
-          ) : null}
-        </div>
-
-        {hasSpecies ? (
           <div
-            className={`${styles.paletteTabs} ${styles.speciesTabs}`}
+            className={styles.paletteTabs}
             role="tablist"
-            aria-label="Gatunek drewna"
+            aria-label="Wybór palety kolorów"
             style={{
-              '--active-index': Math.max(SPECIES_KEYS.indexOf(species), 0),
-              '--tabs-count': SPECIES_KEYS.length,
+              '--active-index': activePaletteIndex,
+              '--tabs-count': paletteTabsCount,
             }}
           >
             <span className={styles.paletteTabsThumb} aria-hidden="true" />
-            {SPECIES_KEYS.map((key) => (
+
+            <button
+              type="button"
+              role="tab"
+              aria-selected={activePalette === 'ral'}
+              className={[styles.paletteTabButton, activePalette === 'ral' ? styles.isActive : null].filter(Boolean).join(' ')}
+              onClick={() => setActivePalette('ral')}
+            >
+              {ralTabLabel}
+            </button>
+            {hasLazur ? (
               <button
-                key={key}
                 type="button"
                 role="tab"
-                aria-selected={species === key}
-                className={[styles.paletteTabButton, styles.speciesTabButton, species === key ? styles.isActive : null]
-                  .filter(Boolean)
-                  .join(' ')}
-                onClick={() => setSpecies(key)}
+                aria-selected={activePalette === 'lazur'}
+                className={[styles.paletteTabButton, activePalette === 'lazur' ? styles.isActive : null].filter(Boolean).join(' ')}
+                onClick={() => setActivePalette('lazur')}
               >
-                {speciesTabLabels[key] ?? key}
+                {lazurTabLabel}
               </button>
-            ))}
+            ) : null}
           </div>
-        ) : null}
+
+          {hasSpecies ? (
+            <div
+              className={`${styles.paletteTabs} ${styles.speciesTabs}`}
+              role="tablist"
+              aria-label="Gatunek drewna"
+              style={{
+                '--active-index': Math.max(SPECIES_KEYS.indexOf(species), 0),
+                '--tabs-count': SPECIES_KEYS.length,
+              }}
+            >
+              <span className={styles.paletteTabsThumb} aria-hidden="true" />
+              {SPECIES_KEYS.map((key) => (
+                <button
+                  key={key}
+                  type="button"
+                  role="tab"
+                  aria-selected={species === key}
+                  className={[styles.paletteTabButton, styles.speciesTabButton, species === key ? styles.isActive : null]
+                    .filter(Boolean)
+                    .join(' ')}
+                  onClick={() => setSpecies(key)}
+                >
+                  {speciesTabLabels[key] ?? key}
+                </button>
+              ))}
+            </div>
+          ) : null}
         </div>
 
         <div className={styles.colorsLayout}>
