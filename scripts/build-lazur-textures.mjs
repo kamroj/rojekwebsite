@@ -65,16 +65,19 @@ const PALETTES = [
     ch: 95,
     names: [
       'Cream', 'Ivory', 'Oyster', 'Mineral Grey', 'Concrete Grey', 'Pure Taupe', 'Straw',
-      'Vanilla', 'Savanna', 'Ginger', 'Gold Satin', 'Ochre', 'Khaki', 'Natural Wool',
+      'Vanilla', 'Savanna', 'Ginger', 'Gold Satin', 'Ochre', 'Natural Wool', 'Khaki',
       'Sandstone', 'Graphite', 'Chestnut', 'Sepia', 'Charcoal', 'Indigo',
     ],
     slugs: [
       'cream', 'ivory', 'oyster', 'mineral-grey', 'concrete-grey', 'pure-taupe', 'straw',
-      'vanilla', 'savanna', 'ginger', 'gold-satin', 'ochre', 'khaki', 'natural-wool',
+      'vanilla', 'savanna', 'ginger', 'gold-satin', 'ochre', 'natural-wool', 'khaki',
       'sandstone', 'graphite', 'chestnut', 'sepia', 'charcoal', 'indigo',
     ],
-    // 2 rz × 5 kol na stronę, dwie strony (góra/dół) w kolejności czytania
-    idxOf: [4, 3, 2, 1, 0, 9, 8, 7, 6, 5, 14, 13, 12, 11, 10, 19, 18, 17, 16, 15],
+    // 2 rz × 5 kol na stronę, dwie strony (góra/dół) w kolejności czytania.
+    // Uwaga: próbki 13 (Natural Wool) i 14 (Khaki) leżą we wzorniku w zamienionych
+    // gniazdach (kolejność w rzędzie: 15, 13, 14, 12, 11) — stąd idx 11 i 12 nie
+    // malejąco; zweryfikowane etykietami na tylnych licach.
+    idxOf: [4, 3, 2, 1, 0, 9, 8, 7, 6, 5, 14, 13, 11, 12, 10, 19, 18, 17, 16, 15],
   },
 ];
 

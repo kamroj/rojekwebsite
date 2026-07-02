@@ -13,8 +13,8 @@ import {
   ExtrudeGeometry,
   LinearFilter,
   LinearMipMapLinearFilter,
+  LinearToneMapping,
   Matrix4,
-  NeutralToneMapping,
   NoColorSpace,
   RepeatWrapping,
   Shape,
@@ -945,21 +945,31 @@ function ProceduralHsModel({
       isRalWood ? (
         // RAL = lakier kryjący: jednolity kolor; sosna/dąb gładko, meranti ma
         // otwarte pory → delikatny relief przez lakier
-        <meshStandardMaterial
+        <meshPhysicalMaterial
           color={woodFinish.hex}
           bumpMap={isMeranti ? grain : null}
           bumpScale={isMeranti ? 0.5 : 0}
           roughness={0.55}
           metalness={0.02}
+          specularIntensity={0.12}
+          envMapIntensity={0.35}
         />
       ) : (
-        <meshStandardMaterial
+        // meshPhysicalMaterial zamiast standard wyłącznie dla specularIntensity:
+        // szeroki spekular dielektryka (F0 4%) od świateł dokładał na drewnie
+        // biały sheen ~0.03-0.05 liniowo, który rozjaśniał kanał B lazurów
+        // o kilkanaście % i odbarwiał je względem wzornika (roughness NIE tłumi
+        // tego lobe'a przy geometrii frontu). specularIntensity 0.25 + kalibracja
+        // świateł (patrz komentarz przy toneMapping) dają front 1:1 ze swatchem.
+        <meshPhysicalMaterial
           map={tex}
           bumpMap={grain}
           bumpScale={lazurBump}
           color={woodFinish?.hex ?? '#ffffff'}
           roughness={0.5}
           metalness={0.02}
+          specularIntensity={0.12}
+          envMapIntensity={0.35}
         />
       );
 
@@ -1241,7 +1251,13 @@ export default function HsConfiguratorCanvas({
       gl={{
         logarithmicDepthBuffer: true,
         antialias: true,
-        toneMapping: NeutralToneMapping,
+        // Liniowy tor koloru: lazur na froncie ma być 1:1 z kolorem zmierzonym
+        // z wzornika (hex × mapa słojów — dokładnie jak swatche CSS multiply).
+        // NeutralToneMapping odejmuje offset ~0.04 liniowo (przyciemnia i dosyca
+        // średnie tony), więc nie umie oddać koloru 1:1. Exposure skalibrowane
+        // pomiarowo (headless screenshot → średnia RGB frontu vs wzornik) tak,
+        // by efektywna irradiancja frontowych lic ≈ 1.0.
+        toneMapping: LinearToneMapping,
         toneMappingExposure: 1.0,
       }}
     >
@@ -1249,7 +1265,7 @@ export default function HsConfiguratorCanvas({
         <color attach="background" args={['#fffefe']} />
         {/* Ambient rozjaśnia powierzchnie rozproszone (drewno); metale (metalness
             ~0.95) prawie go nie odbierają, więc nie przepala klamki ani progu */}
-        <ambientLight intensity={0.45} />
+        <ambientLight intensity={1.63} />
         <directionalLight
           position={[5, 6, 9]}
           intensity={1.4}
