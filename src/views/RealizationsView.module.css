@@ -60,6 +60,13 @@
 .selectedFilters {
   display: grid;
   gap: 8px;
+  margin: 0 0 14px;
+}
+
+/* [hidden] must win over the display values above/below */
+.selectedFilters[hidden],
+.emptyState[hidden] {
+  display: none;
 }
 
 .selectedFiltersLabel {
@@ -74,17 +81,27 @@
   gap: 8px;
 }
 
+/* Same visual language as article tags (ArticleCard .tag) */
 :global(.realizations-selected-chip) {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  border: 1px solid #7aa486;
-  background: #eff7f1;
-  color: #1f4b2f;
-  border-radius: 999px;
-  padding: 4px 10px;
+  border: 1px solid rgba(2, 99, 3, 0.25);
+  background: rgba(2, 99, 3, 0.1);
+  color: rgba(11, 90, 42, 0.95);
+  border-radius: 3px;
+  padding: 5px 10px;
   font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
   cursor: pointer;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+:global(.realizations-selected-chip:hover) {
+  background: rgba(2, 99, 3, 0.16);
+  border-color: rgba(2, 99, 3, 0.35);
 }
 
 .realizationsContent {
@@ -242,6 +259,9 @@
   display: flex;
   align-items: center;
   gap: 10px;
+  /* Align the row's right edge with the filter-group boxes below
+     (.filterGroups is inset by padding-right + reserved scrollbar gutter) */
+  padding-right: 16px;
 }
 
 .filterSearchInput {
@@ -483,6 +503,7 @@
 }
 
 .singleRealizationContainer {
+  position: relative;
   height: 350px;
   width: 100%;
   max-width: 380px;
@@ -493,6 +514,62 @@
   cursor: pointer;
   box-shadow: var(--shadow-home-product-card);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* Zoom affordance: appears on hover/focus (desktop) and on the centered card (mobile) */
+.zoomBadge {
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  display: grid;
+  place-items: center;
+  background: rgba(1, 39, 18, 0.72);
+  color: #fff;
+  z-index: 2;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+
+.zoomBadge svg {
+  width: 18px;
+  height: 18px;
+}
+
+.singleRealizationContainer:hover .zoomBadge {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.emptyState {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 40px 20px;
+  margin: 4px 0 20px;
+  text-align: center;
+  border: 1px dashed #b9d2c0;
+  border-radius: 10px;
+  background: #fbfdfb;
+}
+
+.emptyStateTitle {
+  margin: 0;
+  font-size: var(--fs-md);
+  font-weight: var(--fw-semibold);
+  color: #21462f;
+}
+
+.emptyStateText {
+  margin: 0 0 10px;
+  font-size: var(--fs-sm);
+  color: var(--color-text-muted);
 }
 
 @media (max-width: 1024px) {
@@ -739,6 +816,27 @@
   display: block;
 }
 
+.lightbox[aria-hidden='false'] .lightboxBackdrop {
+  animation: lightboxFadeIn 0.2s ease both;
+}
+
+.lightbox[aria-hidden='false'] .lightboxDialog {
+  animation: lightboxZoomIn 0.24s ease both;
+}
+
+@keyframes lightboxFadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes lightboxZoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+}
+
 .lightboxBackdrop {
   position: absolute;
   inset: 0;
@@ -813,35 +911,90 @@
 }
 
 .lightboxTags {
+  position: absolute;
+  left: 12px;
+  right: 76px;
+  bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Same visual language as article tags (ArticleCard .tag); near-opaque
+   background because these sit on top of a photo */
+.lightboxTags :global(.lightbox-tag) {
+  background: rgba(238, 247, 239, 0.92);
+  border: 1px solid rgba(2, 99, 3, 0.25);
+  color: rgba(11, 90, 42, 0.95);
+  padding: 5px 10px;
+  border-radius: 3px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  white-space: nowrap;
+  -webkit-backdrop-filter: blur(0.3rem);
+  backdrop-filter: blur(0.3rem);
+}
+
+.lightboxCounter {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 3;
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(1, 39, 18, 0.6);
+  color: #fff;
+  font-size: 1.2rem;
+  font-weight: var(--fw-medium);
+  letter-spacing: 0.4px;
+  pointer-events: none;
+  -webkit-backdrop-filter: blur(0.4rem);
+  backdrop-filter: blur(0.4rem);
+}
+
+.lightboxCounter:empty {
   display: none;
 }
 
+/* Unified with product-detail gallery arrows (ProductDetailHero .sliderArrow) */
 .lightboxClose,
 .lightboxNavPrev,
 .lightboxNavNext {
   position: absolute;
   z-index: 3;
   padding: 0;
-  border: none;
   border-radius: 999px;
-  width: 52px;
-  height: 52px;
+  width: 48px;
+  height: 48px;
   display: grid;
   place-items: center;
   background: rgb(36 96 2 / 30%);
   backdrop-filter: blur(0.4rem);
   color: #fff;
   cursor: pointer;
-  transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.18);
+  transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(42, 228, 36, 0.3);
 }
 
 .lightboxClose:hover,
 .lightboxNavPrev:hover,
 .lightboxNavNext:hover {
-  background: rgb(16 44 1 / 40%);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+  background: rgb(16 44 1 / 30%);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.lightboxNavPrev:active,
+.lightboxNavNext:active {
+  transform: translateY(-50%) scale(0.92);
+}
+
+.lightboxClose:active {
+  transform: scale(0.92);
 }
 
 .lightboxClose {
@@ -862,14 +1015,14 @@
 }
 
 .lightboxClose svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 .lightboxNavPrev svg,
 .lightboxNavNext svg {
-  width: 26px;
-  height: 26px;
+  width: 22px;
+  height: 22px;
 }
 
 .lightboxNavPrev {
@@ -892,7 +1045,14 @@
   }
 
   .lightboxTags {
-    display: none;
+    left: 10px;
+    right: 10px;
+    bottom: calc(env(safe-area-inset-bottom, 0px) + 10px);
+  }
+
+  .lightboxTags :global(.lightbox-tag) {
+    font-size: 1.05rem;
+    padding: 4px 10px;
   }
 
   .lightboxNavPrev,

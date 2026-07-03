@@ -694,7 +694,8 @@
       "clear": "Wyczyść",
       "apply": "Zastosuj",
       "filtersTitle": "Filtry",
-      "close": "Zamknij"
+      "close": "Zamknij",
+      "selected": "Wybrane filtry"
     },
     "productTypes": {
       "interiorDoors": "Wewnętrzne",

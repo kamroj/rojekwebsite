@@ -184,6 +184,11 @@ const filterGroups = baseFilterGroups;
           </div>
         </div>
 
+        <div id="realizations-selected-filters" class={styles.selectedFilters} hidden>
+          <span class={styles.selectedFiltersLabel}>{t('realizationsPage.filters.selected', 'Wybrane filtry')}</span>
+          <div id="realizations-selected-chips" class={styles.selectedFiltersChips}></div>
+        </div>
+
         <div class={styles.realizationsContainer} id="realizations-grid">
           {realizations.map((item, idx) => (
             <div
@@ -225,8 +230,22 @@ const filterGroups = baseFilterGroups;
                   </div>
                 ) : null;
               })()}
+              <span class={styles.zoomBadge} aria-hidden="true">
+                <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M15.5 14h-.79l-.28-.27a6.5 6.5 0 1 0-.7.7l.27.28v.79l4.99 5L20.49 19l-4.99-5Zm-6 0A4.5 4.5 0 1 1 14 9.5 4.5 4.5 0 0 1 9.5 14Z" fill="currentColor" />
+                  <path d="M12 9h-2V7H9v2H7v1h2v2h1v-2h2Z" fill="currentColor" />
+                </svg>
+              </span>
             </div>
           ))}
+        </div>
+
+        <div id="realizations-empty-state" class={styles.emptyState} hidden>
+          <p class={styles.emptyStateTitle}>{t('realizationsPage.results.noResults', 'Brak wyników')}</p>
+          <p class={styles.emptyStateText}>{t('realizationsPage.results.noResultsMessage', 'Nie znaleziono realizacji dla wybranych filtrów.')}</p>
+          <button id="realizations-empty-clear" type="button" class={styles.filterResetButton}>
+            {t('realizationsPage.filters.clear', 'Wyczyść')}
+          </button>
         </div>
 
         <PaginationSsg
@@ -248,6 +267,8 @@ const filterGroups = baseFilterGroups;
         aria-label={t('realizationsPage.filters.openImage', 'Podgląd realizacji')}
         tabindex="-1"
       >
+        <div id="lightbox-counter" class={styles.lightboxCounter} aria-hidden="true"></div>
+
         <button
           id="lightbox-close"
           type="button"
@@ -358,7 +379,9 @@ const filterGroups = baseFilterGroups;
   const resetButtons = [
     document.getElementById('realizations-filter-reset-top'),
     document.getElementById('realizations-filter-reset-bottom'),
+    document.getElementById('realizations-empty-clear'),
   ].filter(Boolean);
+  const emptyState = document.getElementById('realizations-empty-state');
   const selectedFiltersBox = document.getElementById('realizations-selected-filters');
   const selectedChipsContainer = document.getElementById('realizations-selected-chips');
   const cards = Array.from(document.querySelectorAll('[data-realization-card]'));
@@ -376,6 +399,7 @@ const filterGroups = baseFilterGroups;
   const lightboxNext = document.getElementById('lightbox-next');
   const lightboxBackdrop = document.querySelector('[data-lightbox-close]');
   const lightboxFrame = document.getElementById('lightbox-image-frame');
+  const lightboxCounter = document.getElementById('lightbox-counter');
 
   let visibleCards = [];
   let activeCardIndex = -1;
@@ -520,7 +544,6 @@ const filterGroups = baseFilterGroups;
 
   const fillLightboxFromCard = (card) => {
     const image = card.querySelector('img');
-    const tags = card.querySelector('[class*="realizationTags"]');
     if (!image || !lightboxImage) return;
 
     lightboxImage.setAttribute('src', image.getAttribute('src') || '');
@@ -533,7 +556,43 @@ const filterGroups = baseFilterGroups;
     else lightboxImage.removeAttribute('sizes');
 
     lightboxImage.setAttribute('alt', image.getAttribute('alt') || '');
-    if (lightboxTags) lightboxTags.innerHTML = tags ? tags.innerHTML : '';
+
+    // Tagi realizacji jako chipy (etykiety z metadanych filtrów).
+    if (lightboxTags) {
+      lightboxTags.innerHTML = '';
+      const pairs = (card.getAttribute('data-tag-pairs') || '').split(',').filter(Boolean);
+      pairs.forEach((pair) => {
+        const meta = optionMetaByPair.get(pair);
+        if (!meta || !meta.optionLabel) return;
+        const chip = document.createElement('span');
+        chip.className = 'lightbox-tag';
+        chip.textContent = meta.categoryLabel
+          ? `${meta.categoryLabel}: ${meta.optionLabel}`
+          : meta.optionLabel;
+        lightboxTags.appendChild(chip);
+      });
+    }
+  };
+
+  const updateLightboxCounter = () => {
+    if (!lightboxCounter) return;
+    lightboxCounter.textContent =
+      visibleCards.length > 0 && activeCardIndex >= 0
+        ? `${activeCardIndex + 1} / ${visibleCards.length}`
+        : '';
+  };
+
+  const preloadNeighborImage = (offset) => {
+    if (visibleCards.length < 2) return;
+    const idx = (activeCardIndex + offset + visibleCards.length) % visibleCards.length;
+    const img = visibleCards[idx]?.querySelector('img');
+    if (!img) return;
+    const preloaded = new Image();
+    const srcset = img.getAttribute('srcset');
+    const sizes = img.getAttribute('sizes');
+    if (srcset) preloaded.srcset = srcset;
+    if (sizes) preloaded.sizes = sizes;
+    preloaded.src = img.getAttribute('src') || '';
   };
 
   const renderLightbox = ({ instant = false, direction = 1 } = {}) => {
@@ -541,6 +600,10 @@ const filterGroups = baseFilterGroups;
 
     const nextCard = visibleCards[activeCardIndex];
     if (!nextCard || !lightboxImage) return;
+
+    updateLightboxCounter();
+    preloadNeighborImage(1);
+    preloadNeighborImage(-1);
 
     if (lightboxSwitchTimeoutId) {
       window.clearTimeout(lightboxSwitchTimeoutId);
@@ -711,6 +774,8 @@ const filterGroups = baseFilterGroups;
         'Znaleziono {{count}} realizacji';
       counterItem.innerHTML = template.replace('{{count}}', `<span class="${counterNumberClass}">${visibleCount}</span>`);
     });
+
+    if (emptyState) emptyState.hidden = visibleCount !== 0;
 
     if (isLightboxOpen()) {
       const nextVisibleCards = getVisibleCards();

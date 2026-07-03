@@ -716,7 +716,8 @@
       "clear": "Löschen",
       "apply": "Anwenden",
       "filtersTitle": "Filter",
-      "close": "Schließen"
+      "close": "Schließen",
+      "selected": "Ausgewählte Filter"
     },
     "productTypes": {
       "interiorDoors": "Innen",

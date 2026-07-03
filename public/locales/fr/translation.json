@@ -719,7 +719,8 @@
       "clear": "Effacer",
       "apply": "Appliquer",
       "filtersTitle": "Filtres",
-      "close": "Fermer"
+      "close": "Fermer",
+      "selected": "Filtres sélectionnés"
     },
     "productTypes": {
       "interiorDoors": "Intérieures",
