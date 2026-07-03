@@ -1,5 +1,5 @@
 // Serializacja konfiguracji HS do parametrów URL (kod QR / udostępnianie).
-// Format: ?s=d&w=3200&h=2200&mt=a&ac=7016&wc=l5&hd=g&th=b&wd=oak&a=5&ar=1
+// Format: ?s=d&w=3200&h=2200&p=100&mt=a&ac=7016&wc=l5&hd=g&th=b&wd=oak&a=5&ar=1
 // Krótkie kody opcji (`urlCode`) pochodzą z hsOptions.js — ścieżki plików
 // nigdy nie trafiają do URL. Kolor drewna `wc`: RAL = kod cyfrowy (numer RAL),
 // lazur = `l` + numer wybarwienia w palecie (paletę rozstrzyga wariant `mt`,
@@ -15,6 +15,7 @@ import {
   HANDLE_FINISHES,
   HEIGHT_RANGE,
   MATERIAL_TYPES,
+  PLINTH_RANGE,
   THRESHOLDS,
   TYPES,
   WOOD_RAL_COLORS,
@@ -39,6 +40,8 @@ export const serializeHsConfig = (config) => {
   params.set('s', config.scheme);
   params.set('w', String(config.width));
   params.set('h', String(config.height));
+  // Podwalina (mm) — zawsze obecna w modelu, więc zawsze w URL
+  if (Number.isFinite(config.plinth)) params.set('p', String(config.plinth));
 
   const materialType = MATERIAL_TYPES.find((item) => item.value === config.materialType);
   if (materialType) params.set('mt', materialType.urlCode);
@@ -110,6 +113,7 @@ export const parseHsConfig = (search, { pricing = null } = {}) => {
     scheme: typeData.value,
     width: parseDimension(params.get('w'), ranges.width),
     height: parseDimension(params.get('h'), ranges.height),
+    plinth: parseDimension(params.get('p'), PLINTH_RANGE),
     materialType,
     aluColor: (findByUrlCode(ALU_COLORS, params.get('ac')) ?? ALU_COLORS.find((color) => color.value === DEFAULT_ALU_COLOR)).value,
     woodColor,

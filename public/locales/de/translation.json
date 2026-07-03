@@ -93,6 +93,7 @@
       "aluColor": "Farbe der Aluminium-Deckschalen:",
       "width": "Fensterbreite:",
       "height": "Fensterhöhe:",
+      "plinthHeight": "Sockelhöhe:",
       "woodSpecies": "Holzart:"
     },
     "warnings": {

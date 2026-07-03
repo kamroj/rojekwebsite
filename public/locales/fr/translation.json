@@ -93,6 +93,7 @@
       "aluColor": "Couleur des capotages aluminium :",
       "width": "Largeur de la fenêtre :",
       "height": "Hauteur de la fenêtre :",
+      "plinthHeight": "Hauteur du socle :",
       "woodSpecies": "Essence de bois :"
     },
     "warnings": {

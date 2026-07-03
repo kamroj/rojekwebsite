@@ -205,6 +205,9 @@ export const THRESHOLDS = [
 export const DEFAULT_HEIGHT = 2040;
 export const HEIGHT_RANGE = { min: 2000, max: 3000, default: DEFAULT_HEIGHT };
 
+// Podwalina — belka montażowa pod progiem (mm); wysokość konfigurowalna suwakiem
+export const PLINTH_RANGE = { min: 50, max: 150, default: 100 };
+
 // Kolejność wyznacza bity maski dodatków w URL (silentClose=1, cylinderLock=2, …)
 export const ADDON_OPTIONS = [
   { key: 'silentClose', labelKey: 'hsConfigurator.addons.silentClose', fallback: 'SilentClose / StopUnit' },

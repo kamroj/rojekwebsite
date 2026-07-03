@@ -23,7 +23,7 @@ import {
   Vector3,
 } from 'three';
 
-import { ALU_COLORS, DEFAULT_ALU_COLOR } from './hsOptions.js';
+import { ALU_COLORS, DEFAULT_ALU_COLOR, PLINTH_RANGE } from './hsOptions.js';
 import { createHandleLeverGeometry, createHandlePlateGeometry } from './hsHandleGeometry.js';
 
 // Awaryjna mapa słojów (gdy resolver nie dostarczy ścieżek) — sosna
@@ -849,6 +849,7 @@ function ProceduralHsModel({
   aluColor,
   width,
   height,
+  plinthHeight = PLINTH_RANGE.default,
   onReady,
   exportRef,
   ...props
@@ -892,6 +893,7 @@ function ProceduralHsModel({
 
   const modelWidth = width / 1000;
   const modelHeight = height / 1000;
+  const plinthM = plinthHeight / 1000;
   const openingWidth = modelWidth - PROFILE.frame * 2;
   const openingBottom = PROFILE.threshold;
   const openingTop = modelHeight - PROFILE.frame;
@@ -1006,6 +1008,10 @@ function ProceduralHsModel({
         />
       ),
       gasket: <meshStandardMaterial color="#1c1e1c" roughness={0.85} metalness={0.05} />,
+      // Podwalina (belka montażowa pod progiem, np. purenit): matowa szara
+      // bryła bez metaliczności — ma się czytać jako materiał budowlany,
+      // nie jako element okucia
+      plinth: <meshStandardMaterial color="#8e9093" roughness={0.8} metalness={0.04} />,
       // Lakier proszkowy nakładek alu: matowy, lekko metaliczny — bez anizotropii,
       // żeby płaskie lica czytały się jako jednolite płaszczyzny (Gemini Quadrat)
       alu: (
@@ -1023,7 +1029,7 @@ function ProceduralHsModel({
 
   useEffect(() => {
     onReady?.();
-  }, [aluColor, handleFinish, height, materialType, onReady, scheme, thresholdType, textures, width, woodFinish]);
+  }, [aluColor, handleFinish, height, materialType, onReady, plinthHeight, scheme, thresholdType, textures, width, woodFinish]);
 
   return (
     // exportRef wskazuje samą grupę modelu (bez Center/świateł/ContactShadows) —
@@ -1114,6 +1120,16 @@ function ProceduralHsModel({
         outerRail={hasOuterSliding}
       />
 
+      {/* Podwalina — szara belka montażowa pod całym progiem, na pełną
+          szerokość ościeżnicy i głębokość ramy; nos okapowy progu wystaje
+          przed jej lico (jak w realnym montażu, gdzie okapnik przykrywa
+          styk progu z podwaliną) */}
+      <BoxPart
+        position={[0, -plinthM / 2, 0]}
+        size={[modelWidth, plinthM, PROFILE.frameDepth]}
+        material={materials.plinth}
+      />
+
       {/* Słupki statyczne (np. schemat G2) — siedzą na zewnętrznym stopniu progu */}
       {mullions.map((fraction, index) => (
         <group key={`mullion-${scheme}-${index}`}>
@@ -1177,7 +1193,7 @@ function ProceduralHsModel({
   );
 }
 
-function FrontFit({ modelRef, width, height, scheme }) {
+function FrontFit({ modelRef, width, height, scheme, plinth }) {
   const controls = useThree((state) => state.controls);
   const { camera } = useThree();
   const lastFittedDimensions = useRef(null);
@@ -1185,7 +1201,7 @@ function FrontFit({ modelRef, width, height, scheme }) {
   useEffect(() => {
     if (!modelRef?.current) return;
 
-    const dimensionsKey = `${scheme}-${width}x${height}`;
+    const dimensionsKey = `${scheme}-${width}x${height}-p${plinth}`;
     if (lastFittedDimensions.current === dimensionsKey) return;
 
     const box = new Box3().setFromObject(modelRef.current);
@@ -1225,7 +1241,7 @@ function FrontFit({ modelRef, width, height, scheme }) {
     }
 
     lastFittedDimensions.current = dimensionsKey;
-  }, [modelRef, camera, controls, width, height, scheme]);
+  }, [modelRef, camera, controls, width, height, scheme, plinth]);
 
   return null;
 }
@@ -1239,6 +1255,7 @@ export default function HsConfiguratorCanvas({
   selectedAluColor = DEFAULT_ALU_COLOR,
   width,
   height,
+  plinthHeight = PLINTH_RANGE.default,
   onReady,
   exportRef,
 }) {
@@ -1293,15 +1310,17 @@ export default function HsConfiguratorCanvas({
               aluColor={selectedAluColor}
               width={width}
               height={height}
+              plinthHeight={plinthHeight}
               onReady={onReady}
               exportRef={exportRef}
             />
           </group>
         </Center>
-        <FrontFit modelRef={modelRef} width={width} height={height} scheme={selectedType} />
-        {/* Cień przyziemny pod modelem — model jest wyśrodkowany, więc podłoga leży na -h/2 */}
+        <FrontFit modelRef={modelRef} width={width} height={height} scheme={selectedType} plinth={plinthHeight} />
+        {/* Cień przyziemny pod modelem — model jest wyśrodkowany, więc podłoga
+            leży na -(wysokość okna + podwalina)/2 */}
         <ContactShadows
-          position={[0, -height / 2000 - 0.002, 0]}
+          position={[0, -(height + plinthHeight) / 2000 - 0.002, 0]}
           opacity={0.35}
           blur={2.5}
           far={10}

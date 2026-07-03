@@ -93,6 +93,7 @@
       "aluColor": "Aluminium cladding colour:",
       "width": "Window width:",
       "height": "Window height:",
+      "plinthHeight": "Base (plinth) height:",
       "woodSpecies": "Wood species:"
     },
     "warnings": {

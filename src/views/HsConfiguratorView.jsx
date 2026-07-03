@@ -15,6 +15,7 @@ import {
   HANDLE_FINISHES,
   HEIGHT_RANGE,
   MATERIAL_TYPES,
+  PLINTH_RANGE,
   THRESHOLDS,
   TYPES,
   WOOD_RAL_COLORS,
@@ -103,6 +104,7 @@ const HsConfiguratorPage = ({ pricing = null }) => {
   const [height, setHeight] = useState(
     () => deriveRanges(pricing?.schemes?.[TYPES[0].value]?.matrix, TYPES[0].widthRange, HEIGHT_RANGE).height.default
   );
+  const [plinthHeight, setPlinthHeight] = useState(PLINTH_RANGE.default);
   const [selectedWood, setSelectedWood] = useState(() => getDefaultWoodKey(pricing?.settings?.woodSpecies));
   const [addons, setAddons] = useState({
     silentClose: false,
@@ -127,6 +129,7 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     setSelectedType(parsed.scheme);
     setWidth(parsed.width);
     setHeight(parsed.height);
+    setPlinthHeight(parsed.plinth);
     setSelectedWoodColor(parsed.woodColor);
     setWoodPaletteTab(parsed.woodColor.palette);
     setSelectedHandleFinish(parsed.handleFinish);
@@ -232,6 +235,7 @@ const HsConfiguratorPage = ({ pricing = null }) => {
       scheme: selectedType,
       width,
       height,
+      plinth: plinthHeight,
       woodColor: selectedWoodColor,
       handleFinish: selectedHandleFinish,
       threshold: selectedThreshold,
@@ -244,6 +248,7 @@ const HsConfiguratorPage = ({ pricing = null }) => {
       selectedType,
       width,
       height,
+      plinthHeight,
       selectedWoodColor,
       selectedHandleFinish,
       selectedThreshold,
@@ -336,6 +341,7 @@ const HsConfiguratorPage = ({ pricing = null }) => {
       t('hsConfigurator.price.messageIntro', 'Dzień dobry, proszę o wycenę poniższej konfiguracji HS:'),
       `- ${stripColon(t('hsConfigurator.sectionsLabel.scheme', 'Schemat'))}: ${selectedTypeData.label}`,
       `- ${stripColon(t('hsConfigurator.sections.dimensions', 'Wymiary'))}: ${width} × ${height} mm`,
+      `- ${stripColon(t('hsConfigurator.labels.plinthHeight', 'Wysokość podwaliny'))}: ${plinthHeight} mm`,
     ];
 
     const materialType = MATERIAL_TYPES.find((item) => item.value === selectedMaterialType);
@@ -382,6 +388,7 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     selectedTypeData,
     width,
     height,
+    plinthHeight,
     woodColorInfo,
     aluColorInfo,
     selectedHandleFinish,
@@ -593,6 +600,24 @@ const HsConfiguratorPage = ({ pricing = null }) => {
                   </div>
                 </div>
 
+                <div className={styles.controlGroup}>
+                  <div className={styles.labelRow}>
+                    <label className={styles.label}>{t('hsConfigurator.labels.plinthHeight', 'Wysokość podwaliny')}</label>
+                    <span className={styles.rangeBadge}>{plinthHeight} mm</span>
+                  </div>
+                  <div className={styles.rangeContainer}>
+                    <input
+                      className={styles.rangeInput}
+                      type="range"
+                      min={PLINTH_RANGE.min}
+                      max={PLINTH_RANGE.max}
+                      step="10"
+                      value={plinthHeight}
+                      onChange={handleDimensionChange(setPlinthHeight)}
+                    />
+                  </div>
+                </div>
+
                 <div className={styles.infoCard}>
                   <span className={styles.infoCardTitle}>{t('hsConfigurator.info.title', 'Wizualizacja w czasie rzeczywistym')}</span>
                   <p className={styles.infoCardText}>
@@ -659,6 +684,7 @@ const HsConfiguratorPage = ({ pricing = null }) => {
                   selectedAluColor={selectedAluColor}
                   width={width}
                   height={height}
+                  plinthHeight={plinthHeight}
                   onReady={handleCanvasReady}
                   exportRef={modelExportRef}
                 />
