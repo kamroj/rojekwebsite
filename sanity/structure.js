@@ -95,12 +95,39 @@ export const structure = (S) =>
             .items([
               S.listItem().title('Wszystkie realizacje').child(S.documentTypeList('realization').title('Realizacje')),
               S.divider(),
+              // Klucz (kategoria filtru) -> jego wartości. Widok zagnieżdżony,
+              // żeby od razu było widać, co jest kategorią, a co wartością.
               S.listItem()
-                .title('Klucze tagów realizacji')
-                .child(S.documentTypeList('realizationTagKey').title('Klucze tagów realizacji')),
+                .title('Tagi realizacji (kategorie i wartości)')
+                .child(
+                  S.documentTypeList('realizationTagKey')
+                    .title('Kategorie filtrów (klucze tagów)')
+                    .defaultOrdering([{field: 'sortOrder', direction: 'asc'}])
+                    .child((keyId) =>
+                      S.list()
+                        .title('Kategoria filtru')
+                        .items([
+                          S.listItem()
+                            .title('Ustawienia kategorii (klucza)')
+                            .child(
+                              S.document().schemaType('realizationTagKey').documentId(keyId)
+                            ),
+                          S.divider(),
+                          S.listItem()
+                            .title('Wartości w tej kategorii')
+                            .child(
+                              S.documentList()
+                                .title('Wartości w tej kategorii')
+                                .schemaType('realizationTag')
+                                .filter('_type == "realizationTag" && key._ref == $keyId')
+                                .params({keyId})
+                            ),
+                        ])
+                    )
+                ),
               S.listItem()
-                .title('Wartości tagów realizacji')
-                .child(S.documentTypeList('realizationTag').title('Wartości tagów realizacji')),
+                .title('Wszystkie wartości tagów')
+                .child(S.documentTypeList('realizationTag').title('Wszystkie wartości tagów')),
             ])
         ),
 

@@ -17,7 +17,12 @@ export default defineType({
           name: 'alt',
           title: 'Alt (tekst alternatywny)',
           type: 'localizedString',
-          description: 'Opis obrazka dla SEO i dostępności (PL/EN/DE).',
+          description: 'Opis obrazka dla SEO i dostępności (PL/EN/DE/FR).',
+          validation: (Rule) =>
+            Rule.custom((value) => {
+              if (String(value?.pl || '').trim()) return true
+              return 'Uzupełnij alt (min. PL) — pomaga w SEO i dostępności.'
+            }).warning(),
         }),
       ],
     }),

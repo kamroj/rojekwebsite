@@ -720,7 +720,8 @@
       "apply": "Appliquer",
       "filtersTitle": "Filtres",
       "close": "Fermer",
-      "selected": "Filtres sélectionnés"
+      "selected": "Filtres sélectionnés",
+      "searchPlaceholder": "Filtrer la liste des tags…"
     },
     "productTypes": {
       "interiorDoors": "Intérieures",

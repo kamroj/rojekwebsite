@@ -717,7 +717,8 @@
       "apply": "Anwenden",
       "filtersTitle": "Filter",
       "close": "Schließen",
-      "selected": "Ausgewählte Filter"
+      "selected": "Ausgewählte Filter",
+      "searchPlaceholder": "Tagliste filtern…"
     },
     "productTypes": {
       "interiorDoors": "Innen",

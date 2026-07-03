@@ -14,7 +14,7 @@ export default defineType({
     }),
     defineField({
       name: 'value',
-      title: 'Wartość (PL/EN/DE)',
+      title: 'Wartość (PL/EN/DE/FR)',
       type: 'localizedString',
       validation: (Rule) =>
         Rule.required().custom(async (value, context) => {

@@ -84,9 +84,27 @@ export default defineType({
     }),
     defineField({
       name: 'label',
-      title: 'Nazwa klucza (PL/EN/DE)',
+      title: 'Nazwa klucza (PL/EN/DE/FR)',
       type: 'localizedString',
-      validation: (Rule) => Rule.required(),
+      description:
+        'Klucz to KATEGORIA filtru (np. Typ, Kolor, Klamka) — nie konkretna wartość. Wartości (np. "RAL 7032", "Złota") dodaje się jako "Wartość tagu" pod wybranym kluczem.',
+      validation: (Rule) => [
+        Rule.required(),
+        Rule.custom((value) => {
+          const pl = String(value?.pl || '')
+          if (/RAL\s*-?\s*\d/i.test(pl)) {
+            return 'To wygląda na wartość koloru (RAL…). Dodaj ją jako WARTOŚĆ tagu pod kluczem „Kolor”, a nie jako nowy klucz.'
+          }
+          return true
+        }).warning(),
+      ],
+    }),
+    defineField({
+      name: 'sortOrder',
+      title: 'Kolejność na liście filtrów',
+      type: 'number',
+      description:
+        'Mniejsza liczba = wyżej na liście filtrów na stronie realizacji. Puste = na końcu (kolejność alfabetyczna).',
     }),
   ],
   preview: {

@@ -53,7 +53,8 @@ export const fetchRealizationsPageData = async ({ lang = 'pl', signal } = {}) =>
         },
         "key": key->{
           key,
-          label
+          label,
+          sortOrder
         }
       }
     }
@@ -74,6 +75,7 @@ export const fetchRealizationsPageData = async ({ lang = 'pl', signal } = {}) =>
           return {
             categoryKey,
             categoryLabel: toUpperTagLabel(pickLocale(tag?.key?.label, lang) || categoryKey),
+            categorySortOrder: Number.isFinite(tag?.key?.sortOrder) ? tag.key.sortOrder : null,
             valueKey,
             valueLabel,
           };

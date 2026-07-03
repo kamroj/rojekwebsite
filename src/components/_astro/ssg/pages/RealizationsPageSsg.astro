@@ -47,6 +47,7 @@ for (const realization of realizations) {
       filterGroupsMap.set(tag.categoryKey, {
         key: tag.categoryKey,
         label: tag.categoryLabel,
+        sortOrder: Number.isFinite(tag.categorySortOrder) ? tag.categorySortOrder : null,
         options: new Map(),
       });
     }
@@ -67,12 +68,16 @@ for (const realization of realizations) {
 const sortByKey = (a, b) =>
   String(a.key || '').localeCompare(String(b.key || ''), 'pl', { sensitivity: 'base' });
 
-// Stała kolejność głównych kategorii; nieznane klucze trafiają na koniec alfabetycznie.
+// Kolejność kategorii: najpierw `sortOrder` ustawiony w Sanity (mniejsza liczba
+// = wyżej); klucze bez sortOrder trafiają za nimi wg stałego priorytetu,
+// a nieznane — na koniec alfabetycznie.
 const CATEGORY_PRIORITY = ['typ', 'kolor', 'klamka'];
 const categoryPriority = (key) => {
   const index = CATEGORY_PRIORITY.indexOf(String(key || '').toLowerCase());
   return index === -1 ? CATEGORY_PRIORITY.length : index;
 };
+const groupOrder = (group) =>
+  Number.isFinite(group.sortOrder) ? group.sortOrder : 1000 + categoryPriority(group.key);
 
 const baseFilterGroups = Array.from(filterGroupsMap.values()).map((group) => {
   const options = Array.from(group.options.values()).sort(sortByKey);
@@ -81,7 +86,7 @@ const baseFilterGroups = Array.from(filterGroupsMap.values()).map((group) => {
     ...group,
     options,
   };
-}).sort((a, b) => categoryPriority(a.key) - categoryPriority(b.key) || sortByKey(a, b));
+}).sort((a, b) => groupOrder(a) - groupOrder(b) || sortByKey(a, b));
 
 const filterGroups = baseFilterGroups;
 
@@ -120,8 +125,8 @@ const pageIndexOf = (idx) => Math.floor(idx / REALIZATIONS_PER_PAGE) + 1;
             id="realizations-filter-search"
             class={styles.filterSearchInput}
             type="search"
-            placeholder={t('realizationsPage.filters.searchPlaceholder', 'Szukaj tagu, np. DR')}
-            aria-label={t('realizationsPage.filters.searchPlaceholder', 'Szukaj tagu, np. DR')}
+            placeholder={t('realizationsPage.filters.searchPlaceholder', 'Filtruj listę tagów…')}
+            aria-label={t('realizationsPage.filters.searchPlaceholder', 'Filtruj listę tagów…')}
             autocomplete="off"
           />
           <button
@@ -954,7 +959,11 @@ const pageIndexOf = (idx) => Math.floor(idx / REALIZATIONS_PER_PAGE) + 1;
 
   mobileFiltersOpen?.addEventListener('click', () => setMobileDrawerOpen(true));
   mobileFiltersClose?.addEventListener('click', closeMobileDrawer);
-  mobileFiltersApply?.addEventListener('click', closeMobileDrawer);
+  mobileFiltersApply?.addEventListener('click', () => {
+    closeMobileDrawer();
+    // Po zastosowaniu filtrów pokaż wyniki (licznik "Znaleziono X" + siatka).
+    (counters[0] || grid)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
   filtersBackdrop?.addEventListener('click', closeMobileDrawer);
 
   syncInputsFromSelection();

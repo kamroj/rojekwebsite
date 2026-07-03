@@ -717,7 +717,8 @@
       "apply": "Apply",
       "filtersTitle": "Filters",
       "close": "Close",
-      "selected": "Selected filters"
+      "selected": "Selected filters",
+      "searchPlaceholder": "Filter tag list…"
     },
     "productTypes": {
       "interiorDoors": "Interior",
