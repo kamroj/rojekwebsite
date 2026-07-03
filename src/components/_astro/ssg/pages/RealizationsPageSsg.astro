@@ -11,6 +11,7 @@ import { t as tt, tPlural } from '../../../../lib/i18n/t.js';
 import { getSectionPath } from '../../../../lib/i18n/routing.js';
 import { fetchRealizationsPageData } from '../../../../lib/sanity/realizations.js';
 import { getSanityImageProps } from '../../../../lib/sanity/sanityImageProps.js';
+import { REALIZATIONS_PER_PAGE } from '../../../../lib/realizationsPagination.js';
 
 const {
   lang = 'pl',
@@ -66,6 +67,13 @@ for (const realization of realizations) {
 const sortByKey = (a, b) =>
   String(a.key || '').localeCompare(String(b.key || ''), 'pl', { sensitivity: 'base' });
 
+// Stała kolejność głównych kategorii; nieznane klucze trafiają na koniec alfabetycznie.
+const CATEGORY_PRIORITY = ['typ', 'kolor', 'klamka'];
+const categoryPriority = (key) => {
+  const index = CATEGORY_PRIORITY.indexOf(String(key || '').toLowerCase());
+  return index === -1 ? CATEGORY_PRIORITY.length : index;
+};
+
 const baseFilterGroups = Array.from(filterGroupsMap.values()).map((group) => {
   const options = Array.from(group.options.values()).sort(sortByKey);
 
@@ -73,9 +81,14 @@ const baseFilterGroups = Array.from(filterGroupsMap.values()).map((group) => {
     ...group,
     options,
   };
-}).sort(sortByKey);
+}).sort((a, b) => categoryPriority(a.key) - categoryPriority(b.key) || sortByKey(a, b));
 
 const filterGroups = baseFilterGroups;
+
+// Klientowa paginacja: renderujemy całą kolekcję, karty spoza bieżącej strony
+// są ukryte klasą `realization-hidden-by-page` (zdejmowaną przy aktywnych filtrach).
+const currentPage = Math.max(1, Number(pagination?.currentPage || 1));
+const pageIndexOf = (idx) => Math.floor(idx / REALIZATIONS_PER_PAGE) + 1;
 ---
 
 <div>
@@ -123,32 +136,39 @@ const filterGroups = baseFilterGroups;
         <div class={styles.filterGroups}>
           <ul class={styles.filterCategoryList}>
             {filterGroups.map((group) => (
-              <li class={styles.filterCategoryItem} data-filter-group>
-                <div class={styles.filterGroupHeader}>
-                  <span class={styles.filterGroupTitle}>{group.label}</span>
-                </div>
+              <li data-filter-group>
+                <details class={styles.filterGroup} open>
+                  <summary class={styles.filterGroupToggle}>
+                    <span class={styles.filterGroupTitle}>{group.label}</span>
+                    <svg class={styles.filterGroupChevron} viewBox="0 0 24 24" width="14" height="14" aria-hidden="true" focusable="false">
+                      <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6Z" fill="currentColor" />
+                    </svg>
+                  </summary>
 
-                <ul class={styles.filterOptionsList}>
-                  {group.options.map((option) => (
-                    <li
-                      class={styles.filterOptionItem}
-                      data-filter-option
-                      data-filter-search-text={`${group.label} ${option.label}`.toUpperCase()}
-                    >
-                      <label class={styles.filterOption}>
-                        <input
-                          type="checkbox"
-                          class={styles.filterOptionInput}
-                          data-filter-input
-                          data-filter-value={`${group.key}::${option.key}`}
-                          data-category-label={group.label}
-                          data-option-label={option.label}
-                        />
-                        <span class={styles.filterOptionText}>{option.label}</span>
-                      </label>
-                    </li>
-                  ))}
-                </ul>
+                  <div class={styles.filterGroupBody}>
+                    <ul class={styles.filterOptionsList}>
+                      {group.options.map((option) => (
+                        <li
+                          class={styles.filterOptionItem}
+                          data-filter-option
+                          data-filter-search-text={`${group.label} ${option.label}`.toUpperCase()}
+                        >
+                          <label class={styles.filterOption}>
+                            <input
+                              type="checkbox"
+                              class={styles.filterOptionInput}
+                              data-filter-input
+                              data-filter-value={`${group.key}::${option.key}`}
+                              data-category-label={group.label}
+                              data-option-label={option.label}
+                            />
+                            <span class={styles.filterOptionText}>{option.label}</span>
+                          </label>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </details>
               </li>
             ))}
           </ul>
@@ -168,6 +188,7 @@ const filterGroups = baseFilterGroups;
         <div class={styles.contentTopBar}>
           <button id="realizations-mobile-filters-open" type="button" class={styles.mobileFiltersButton}>
             {t('realizationsPage.filters.filtersTitle', 'Filtry')}
+            <span id="realizations-mobile-filters-count" class={styles.mobileFiltersCount} hidden></span>
           </button>
           <div
             class={styles.filterCounter}
@@ -189,10 +210,14 @@ const filterGroups = baseFilterGroups;
           <div id="realizations-selected-chips" class={styles.selectedFiltersChips}></div>
         </div>
 
-        <div class={styles.realizationsContainer} id="realizations-grid">
+        <div class={styles.realizationsContainer} id="realizations-grid" data-current-page={currentPage}>
           {realizations.map((item, idx) => (
             <div
-              class={styles.singleRealizationContainer}
+              class:list={[
+                styles.singleRealizationContainer,
+                pageIndexOf(idx) !== currentPage && 'realization-hidden-by-page',
+              ]}
+              data-page-index={pageIndexOf(idx)}
               data-tag-pairs={(item.tagPairs || []).join(',')}
               data-realization-card
               role="button"
@@ -248,10 +273,12 @@ const filterGroups = baseFilterGroups;
           </button>
         </div>
 
-        <PaginationSsg
-          pagination={pagination}
-          ariaLabel={t('pagination.navigation', 'Pagination')}
-        />
+        <div id="realizations-pagination">
+          <PaginationSsg
+            pagination={pagination}
+            ariaLabel={t('pagination.navigation', 'Pagination')}
+          />
+        </div>
       </section>
     </div>
 
@@ -389,6 +416,38 @@ const filterGroups = baseFilterGroups;
   const counterNumberClass = counters[0]?.getAttribute('data-counter-number-class') || 'filterCounterNumber';
   const selectedByCategory = new Map();
   const optionMetaByPair = new Map();
+  const countElByInput = new Map();
+  const mobileFiltersCount = document.getElementById('realizations-mobile-filters-count');
+  const paginationWrap = document.getElementById('realizations-pagination');
+  const grid = document.getElementById('realizations-grid');
+  const currentPageIndex = Number(grid?.getAttribute('data-current-page') || 1);
+
+  // Tagi kart sparsowane raz (kategoria -> zbiór wartości) — używane przez
+  // filtrowanie i liczniki opcji.
+  const cardTagMaps = new Map();
+  cards.forEach((card) => {
+    const itemMap = new Map();
+    (card.getAttribute('data-tag-pairs') || '').split(',').filter(Boolean).forEach((pair) => {
+      const [category, value] = pair.split('::');
+      if (!category || !value) return;
+      if (!itemMap.has(category)) itemMap.set(category, new Set());
+      itemMap.get(category).add(value);
+    });
+    cardTagMaps.set(card, itemMap);
+  });
+
+  // Czy karta pasuje do wyboru (AND między kategoriami, OR w kategorii).
+  // `exceptCategory` pomija jedną kategorię — do liczników opcji (facet counts).
+  const matchesSelection = (itemMap, exceptCategory = null) => {
+    for (const [category, wantedValues] of selectedByCategory.entries()) {
+      if (exceptCategory !== null && category === exceptCategory) continue;
+      const itemValues = itemMap?.get(category);
+      if (!itemValues || !Array.from(wantedValues).some((value) => itemValues.has(value))) {
+        return false;
+      }
+    }
+    return true;
+  };
 
   const lightbox = document.getElementById('realization-lightbox');
   const lightboxDialog = document.getElementById('realization-lightbox-dialog');
@@ -403,6 +462,7 @@ const filterGroups = baseFilterGroups;
 
   let visibleCards = [];
   let activeCardIndex = -1;
+  let lastFocusedCard = null;
   let touchStartX = 0;
   let mobileZoomRafId = 0;
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -496,7 +556,12 @@ const filterGroups = baseFilterGroups;
   };
 
   const isLightboxOpen = () => lightbox?.getAttribute('aria-hidden') === 'false';
-  const getVisibleCards = () => cards.filter((card) => !card.classList.contains('realization-hidden-by-filter'));
+  const getVisibleCards = () =>
+    cards.filter(
+      (card) =>
+        !card.classList.contains('realization-hidden-by-filter') &&
+        !card.classList.contains('realization-hidden-by-page')
+    );
 
   const clearMobileActiveCard = () => {
     cards.forEach((card) => card.removeAttribute('data-mobile-active'));
@@ -576,10 +641,17 @@ const filterGroups = baseFilterGroups;
 
   const updateLightboxCounter = () => {
     if (!lightboxCounter) return;
+    // Przy jednym wyniku licznik "1 / 1" nie niesie informacji — chowamy.
     lightboxCounter.textContent =
-      visibleCards.length > 0 && activeCardIndex >= 0
+      visibleCards.length > 1 && activeCardIndex >= 0
         ? `${activeCardIndex + 1} / ${visibleCards.length}`
         : '';
+  };
+
+  const updateLightboxNav = () => {
+    const single = visibleCards.length < 2;
+    if (lightboxPrev) lightboxPrev.hidden = single;
+    if (lightboxNext) lightboxNext.hidden = single;
   };
 
   const preloadNeighborImage = (offset) => {
@@ -602,6 +674,7 @@ const filterGroups = baseFilterGroups;
     if (!nextCard || !lightboxImage) return;
 
     updateLightboxCounter();
+    updateLightboxNav();
     preloadNeighborImage(1);
     preloadNeighborImage(-1);
 
@@ -651,7 +724,7 @@ const filterGroups = baseFilterGroups;
   };
 
   const moveLightbox = (step) => {
-    if (!visibleCards.length) return;
+    if (visibleCards.length < 2) return;
     activeCardIndex = (activeCardIndex + step + visibleCards.length) % visibleCards.length;
     renderLightbox({ direction: step });
   };
@@ -671,6 +744,12 @@ const filterGroups = baseFilterGroups;
     document.body.style.overflow = '';
     activeCardIndex = -1;
     visibleCards = [];
+
+    // Fokus wraca na kartę, z której otwarto podgląd.
+    if (lastFocusedCard) {
+      lastFocusedCard.focus();
+      lastFocusedCard = null;
+    }
   };
 
   const openLightbox = (card) => {
@@ -680,6 +759,7 @@ const filterGroups = baseFilterGroups;
     activeCardIndex = visibleCards.indexOf(card);
     if (activeCardIndex < 0) activeCardIndex = 0;
 
+    lastFocusedCard = card;
     renderLightbox({ instant: true });
 
     if (!lightbox || !lightboxDialog) return;
@@ -727,35 +807,71 @@ const filterGroups = baseFilterGroups;
         (option) => option.style.display !== 'none'
       );
       group.style.display = anyVisible ? '' : 'none';
+
+      // Przy szukaniu rozwijamy grupy, żeby trafienia były widoczne.
+      if (query) {
+        const details = group.querySelector('details');
+        if (details) details.open = true;
+      }
     });
   };
 
   const applyFilters = () => {
+    const filtersActive = selectedByCategory.size > 0;
     let visibleCount = 0;
 
     for (const card of cards) {
-      const rawPairs = (card.getAttribute('data-tag-pairs') || '').split(',').filter(Boolean);
-      const itemMap = new Map();
-
-      for (const pair of rawPairs) {
-        const [category, value] = pair.split('::');
-        if (!category || !value) continue;
-        if (!itemMap.has(category)) itemMap.set(category, new Set());
-        itemMap.get(category).add(value);
-      }
-
-      let matches = true;
-      for (const [category, wantedValues] of selectedByCategory.entries()) {
-        const itemValues = itemMap.get(category);
-        const hasAny = itemValues && Array.from(wantedValues).some((value) => itemValues.has(value));
-        if (!hasAny) {
-          matches = false;
-          break;
-        }
-      }
-
+      const matches = matchesSelection(cardTagMaps.get(card));
       card.classList.toggle('realization-hidden-by-filter', !matches);
       if (matches) visibleCount += 1;
+    }
+
+    // Paginacja klientowa: bez filtrów widać tylko karty bieżącej strony,
+    // z filtrami — wszystkie dopasowania z całej kolekcji (paginacja znika).
+    cards.forEach((card) => {
+      const onCurrentPage = card.getAttribute('data-page-index') === String(currentPageIndex);
+      card.classList.toggle('realization-hidden-by-page', !filtersActive && !onCurrentPage);
+    });
+    if (paginationWrap) paginationWrap.hidden = filtersActive;
+
+    // Liczniki przy opcjach (w obrębie wyboru z pozostałych kategorii)
+    // + wygaszenie opcji dających zero wyników.
+    filterInputs.forEach((input) => {
+      const pair = input.getAttribute('data-filter-value') || '';
+      const [category, value] = pair.split('::');
+      let count = 0;
+      for (const card of cards) {
+        const itemMap = cardTagMaps.get(card);
+        if (!itemMap?.get(category)?.has(value)) continue;
+        if (matchesSelection(itemMap, category)) count += 1;
+      }
+      const countEl = countElByInput.get(input);
+      if (countEl) countEl.textContent = `(${count})`;
+      const label = input.closest('label');
+      if (label) label.setAttribute('data-zero', String(count === 0 && !input.checked));
+    });
+
+    // Licznik aktywnych filtrów na mobilnym przycisku "Filtry".
+    let selectedCount = 0;
+    for (const values of selectedByCategory.values()) selectedCount += values.size;
+    if (mobileFiltersCount) {
+      mobileFiltersCount.textContent = String(selectedCount);
+      mobileFiltersCount.hidden = selectedCount === 0;
+    }
+
+    // Stan filtrów w URL (?f=kategoria::wartość,...) — replaceState,
+    // żeby nie zaśmiecać historii.
+    try {
+      const url = new URL(window.location.href);
+      const pairs = [];
+      for (const [category, values] of selectedByCategory.entries()) {
+        for (const value of values) pairs.push(`${category}::${value}`);
+      }
+      if (pairs.length) url.searchParams.set('f', pairs.join(','));
+      else url.searchParams.delete('f');
+      window.history.replaceState(null, '', url);
+    } catch {
+      /* noop — URL API/replaceState niedostępne */
     }
 
     counters.forEach((counterItem) => {
@@ -799,6 +915,12 @@ const filterGroups = baseFilterGroups;
       optionLabel: input.getAttribute('data-option-label') || '',
     });
 
+    // Licznik wyników przy opcji — wypełniany w applyFilters.
+    const countEl = document.createElement('span');
+    countEl.className = 'filter-option-count';
+    input.closest('label')?.appendChild(countEl);
+    countElByInput.set(input, countEl);
+
     input.addEventListener('change', () => {
       const pair = input.getAttribute('data-filter-value') || '';
       toggleFilter(pair, input.checked);
@@ -806,6 +928,18 @@ const filterGroups = baseFilterGroups;
       renderSelectedFilters();
     });
   });
+
+  // Przywrócenie stanu filtrów z URL (?f=kategoria::wartość,...).
+  try {
+    const rawFilters = new URLSearchParams(window.location.search).get('f');
+    if (rawFilters) {
+      rawFilters.split(',').filter(Boolean).forEach((pair) => {
+        if (optionMetaByPair.has(pair)) toggleFilter(pair, true);
+      });
+    }
+  } catch {
+    /* noop — nieprawidłowy parametr ignorujemy */
+  }
 
   filterSearchInput?.addEventListener('input', applyFilterSearch);
 
@@ -825,6 +959,7 @@ const filterGroups = baseFilterGroups;
 
   syncInputsFromSelection();
   applyFilterSearch();
+  applyFilters();
   renderSelectedFilters();
   setupScrollReveal();
   scheduleMobileActiveUpdate();
@@ -869,6 +1004,23 @@ const filterGroups = baseFilterGroups;
     if (event.key === 'Escape') closeLightbox();
     if (event.key === 'ArrowLeft') moveLightbox(-1);
     if (event.key === 'ArrowRight') moveLightbox(1);
+
+    // Focus trap: Tab krąży po przyciskach lightboxa, nie ucieka do tła.
+    if (event.key === 'Tab') {
+      const focusables = [lightboxClose, lightboxPrev, lightboxNext].filter((el) => el && !el.hidden);
+      if (!focusables.length) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+      const insideDialog = lightboxDialog?.contains(active);
+      if (event.shiftKey && (active === first || !insideDialog)) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && (active === last || !insideDialog)) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
   });
 
   window.addEventListener('resize', () => {

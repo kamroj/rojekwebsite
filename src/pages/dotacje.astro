@@ -1,0 +1,82 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import PageHeaderSsg from '../components/_astro/ssg/PageHeaderSsg.astro';
+import BreadcrumbsSsg from '../components/_astro/ssg/BreadcrumbsSsg.astro';
+import containerStyles from '../components/ui/MaxWidthContainer.module.css';
+
+const breadcrumbs = [
+  { label: 'Strona główna', to: '/' },
+  { label: 'Dotacje' },
+];
+---
+
+<SiteLayout
+  lang="pl"
+  title="Dotacje – ROJEK"
+  description="Informacje o dotacjach ROJEK OKNA I DRZWI Sp. z o.o."
+>
+  <PageHeaderSsg
+    imageSrc="/images/policy/policy-top.webp"
+    title="Dotacje"
+    height={500}
+  />
+
+  <main class="grant-page">
+    <div class={containerStyles.root} data-max-width-container="true">
+      <BreadcrumbsSsg items={breadcrumbs} />
+
+      <article class="grant-content" aria-labelledby="grant-title">
+        <h2 id="grant-title">Dotacje</h2>
+
+        <figure class="grant-image-wrapper">
+          <img
+            class="grant-image"
+            src="/images/grant/grant.jpg"
+            alt="Informacja o dotacji dla ROJEK OKNA I DRZWI Sp. z o.o."
+            loading="eager"
+            decoding="async"
+          />
+        </figure>
+      </article>
+    </div>
+  </main>
+
+  <style>
+    .grant-page {
+      padding: 0 0 var(--space-xl);
+      background: var(--color-background);
+    }
+
+    .grant-content {
+      max-width: none;
+      width: 100%;
+      font-family: var(--font-main);
+      color: var(--color-text-dark);
+    }
+
+    .grant-content h2 {
+      font-family: var(--font-heading);
+      color: var(--color-bottle-green);
+      font-size: clamp(1.9rem, 2.2vw, 2.4rem);
+      font-weight: 500;
+      line-height: 1.3;
+      margin: 2rem 0 1.6rem;
+    }
+
+    .grant-image-wrapper {
+      width: 100%;
+      margin: 0;
+      padding: clamp(1.2rem, 2vw, 2.4rem);
+      background: #ffffff;
+      border-radius: 1.2rem;
+      box-shadow: 0 1.2rem 3rem rgba(15, 23, 42, 0.08);
+    }
+
+    .grant-image {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 0.8rem;
+    }
+  </style>
+</SiteLayout>

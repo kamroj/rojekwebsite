@@ -14,6 +14,7 @@ const Footer = ({ lang = 'pl' }) => {
 
   const privacyPolicyPath = getSectionPath(activeLang, 'privacyPolicy');
   const cookiePolicyPath = getSectionPath(activeLang, 'cookiePolicy');
+  const grantsPath = '/dotacje';
   const sitemapPath = '/sitemap.xml';
   const privacyPolicyFallbackByLang = {
     pl: 'Polityka prywatności',
@@ -150,6 +151,14 @@ const Footer = ({ lang = 'pl' }) => {
             <a href={cookiePolicyPath} className={styles.policyLink}>
               {t('cookies.actions.cookiePolicy', cookiePolicyFallbackByLang[activeLang])}
             </a>
+            {activeLang === 'pl' ? (
+              <>
+                <span className={styles.actionSeparator} aria-hidden="true">|</span>
+                <a href={grantsPath} className={styles.policyLink}>
+                  Dotacje
+                </a>
+              </>
+            ) : null}
             <span className={styles.actionSeparator} aria-hidden="true">|</span>
             <a href={sitemapPath} className={styles.policyLink}>
               {t('cookies.actions.sitemap', sitemapFallbackByLang[activeLang])}
@@ -162,6 +171,7 @@ const Footer = ({ lang = 'pl' }) => {
 };
 
 export default Footer;
+
 
 
 

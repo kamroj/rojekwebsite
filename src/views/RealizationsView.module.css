@@ -143,6 +143,26 @@
   letter-spacing: var(--ls-wide);
 }
 
+/* Licznik aktywnych filtrów na przycisku "Filtry" (mobile) */
+.mobileFiltersCount {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  margin-left: 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.92);
+  color: #0b3b1c;
+  font-size: 1.05rem;
+  font-weight: var(--fw-bold);
+  line-height: 1;
+}
+
+.mobileFiltersCount[hidden] {
+  display: none;
+}
+
 .mobileDrawerActions {
   display: none;
 }
@@ -360,6 +380,11 @@
   justify-content: space-between;
   gap: 8px;
   cursor: pointer;
+  list-style: none;
+}
+
+.filterGroupChevron {
+  flex-shrink: 0;
 }
 
 .filterGroupToggle::-webkit-details-marker {
@@ -427,11 +452,22 @@
   padding: 9px 10px;
   background: #fff;
   cursor: pointer;
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease, opacity 0.2s ease;
 }
 
 .filterOption:hover {
   background: #f2f8f4;
+}
+
+/* Opcja bez wyników przy obecnym wyborze — przygaszona, wciąż klikalna */
+.filterOption[data-zero='true'] {
+  opacity: 0.45;
+}
+
+.filterOption :global(.filter-option-count) {
+  margin-left: auto;
+  font-size: var(--fs-xs);
+  color: #8aa392;
 }
 
 .filterOptionItem + .filterOptionItem .filterOption {
@@ -726,7 +762,8 @@
   outline-offset: 2px;
 }
 
-.singleRealizationContainer:global(.realization-hidden-by-filter) {
+.singleRealizationContainer:global(.realization-hidden-by-filter),
+.singleRealizationContainer:global(.realization-hidden-by-page) {
   display: none;
 }
 
@@ -991,6 +1028,12 @@
 .lightboxNavPrev:active,
 .lightboxNavNext:active {
   transform: translateY(-50%) scale(0.92);
+}
+
+/* Przy jednym widocznym wyniku strzałki są chowane z JS */
+.lightboxNavPrev[hidden],
+.lightboxNavNext[hidden] {
+  display: none;
 }
 
 .lightboxClose:active {
