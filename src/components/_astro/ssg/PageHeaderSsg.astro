@@ -5,7 +5,8 @@ import containerStyles from '../../ui/MaxWidthContainer.module.css';
 const {
   imageSrc,
   title,
-  height = 300,
+  height = 360,
+  mobileHeight,
   // Hint that this header image is likely the LCP element.
   // Use "high" only for above-the-fold headers (default true for PageHeader).
   fetchPriority = 'high',
@@ -16,10 +17,21 @@ const {
   contentBg,
   contentColor,
 } = Astro.props;
+
+const numericHeight = Number(height);
+const resolvedHeight = Number.isFinite(numericHeight) ? `${numericHeight}px` : '360px';
+const resolvedMobileHeight = Number.isFinite(Number(mobileHeight))
+  ? `${Number(mobileHeight)}px`
+  : (numericHeight >= 420 ? '320px' : numericHeight >= 360 ? '300px' : numericHeight >= 320 ? '280px' : resolvedHeight);
+const resolvedSmallMobileHeight =
+  numericHeight >= 420 ? '300px' : numericHeight >= 360 ? '280px' : numericHeight >= 320 ? '260px' : resolvedMobileHeight;
 ---
 
 <section class={headerStyles.headerWrapper} id={id}>
-  <div class={headerStyles.headerImageWrapper} style={`height: ${height ? `${height}px` : '300px'}`}> 
+  <div
+    class={headerStyles.headerImageWrapper}
+    style={`--header-height: ${resolvedHeight}; --header-height-mobile: ${resolvedMobileHeight}; --header-height-small: ${resolvedSmallMobileHeight};`}
+  > 
     <img
       class={headerStyles.headerImage}
       src={imageSrc}

@@ -6,7 +6,7 @@ const PageHeader = ({
   imageSrc = undefined,
   image = undefined,
   title = undefined,
-  height = 300,
+  height = 360,
   id = undefined,
   overlayColor = undefined,
   contentBg = undefined,
@@ -23,10 +23,12 @@ const PageHeader = ({
   children,
 }) => {
   const numericHeight = Number(height);
-  const resolvedHeight = Number.isFinite(numericHeight) ? `${numericHeight}px` : '300px';
+  const resolvedHeight = Number.isFinite(numericHeight) ? `${numericHeight}px` : '360px';
   const resolvedMobileHeight = Number.isFinite(Number(mobileHeight))
     ? `${Number(mobileHeight)}px`
-    : (numericHeight === 500 ? '400px' : resolvedHeight);
+    : (numericHeight >= 420 ? '320px' : numericHeight >= 360 ? '300px' : numericHeight >= 320 ? '280px' : resolvedHeight);
+  const resolvedSmallMobileHeight =
+    numericHeight >= 420 ? '300px' : numericHeight >= 360 ? '280px' : numericHeight >= 320 ? '260px' : resolvedMobileHeight;
 
   return (
     <section className={styles.headerWrapper} id={id}>
@@ -35,6 +37,7 @@ const PageHeader = ({
         style={{
           '--header-height': resolvedHeight,
           '--header-height-mobile': resolvedMobileHeight,
+          '--header-height-small': resolvedSmallMobileHeight,
         }}
       >
         {image ? (

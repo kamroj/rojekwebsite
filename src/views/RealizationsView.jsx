@@ -150,7 +150,7 @@ export default function RealizationsPage() {
   };
 
   return (
-    <Page imageSrc="/images/realizations/top.jpg" height={500} title={t('realizationsPage.title')}>
+    <Page imageSrc="/images/realizations/top.jpg" height={360} title={t('realizationsPage.title')}>
       <div className={styles.filterContainer}>
         <div className={styles.filterCounter}>{t('realizationsPage.results.found', { count: filteredRealizations.length })}</div>
         {isBrowser ? (

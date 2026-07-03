@@ -23,7 +23,7 @@ const Page = ({
     imageSrc,
     headerImage,
     title,
-    height = 500,
+    height = 360,
     id,
     overlayColor,
     contentBg,
