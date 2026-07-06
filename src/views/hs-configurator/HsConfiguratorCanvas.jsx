@@ -1009,7 +1009,7 @@ function ProceduralHsModel({
 
   useEffect(() => {
     setOpenPanels({});
-  }, [scheme, mirrored, width, height]);
+  }, [scheme, mirrored, activeSash, width, height]);
 
   const togglePanel = useCallback(
     (index) => {
@@ -1021,11 +1021,21 @@ function ProceduralHsModel({
           );
           // Skrzydło kolizyjne: najpierw trzeba zamknąć drugie z pary
           if (blocked) return prev;
+          // C/F: skrzydło bierne środkowej pary jest fizycznie ryglowane przez
+          // aktywne (zamek na styku pary) — otworzy się dopiero po otwarciu
+          // aktywnego. Nie dotyczy skrzydeł tylnych (F) — te odblokowuje sam
+          // ich tor, pilnują ich tylko pary kolizyjne wyżej.
+          const middlePair = ACTIVE_PANEL_INDEX[scheme];
+          if (middlePair) {
+            const activeIndex = middlePair[activeSash] ?? middlePair.left;
+            const passiveIndex = activeIndex === middlePair.left ? middlePair.right : middlePair.left;
+            if (index === passiveIndex && !prev[activeIndex]) return prev;
+          }
         }
         return { ...prev, [index]: willOpen };
       });
     },
-    [animationSpec]
+    [animationSpec, scheme, activeSash]
   );
 
   const modelWidth = width / 1000;

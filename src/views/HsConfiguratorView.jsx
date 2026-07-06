@@ -165,6 +165,10 @@ const HsConfiguratorPage = ({ pricing = null }) => {
 
   const handleTypeChange = useCallback(
     (type) => {
+      // Ponowny klik w już wybrany schemat nie ma czego przebudowywać —
+      // bez tego guarda gasiliśmy canvas (overlay ładowania), a żadna zmiana
+      // propsów nie wołała potem onReady i podgląd wyglądał na zacięty
+      if (type === selectedType) return;
       setIsCanvasReady(false);
       setSelectedType(type);
       // Odbicie i aktywne skrzydło są specyficzne dla schematu — nowy schemat
@@ -177,7 +181,7 @@ const HsConfiguratorPage = ({ pricing = null }) => {
       setWidth(nextRanges.width.default);
       setHeight(nextRanges.height.default);
     },
-    [pricing]
+    [pricing, selectedType]
   );
 
   const handleMirrorToggle = useCallback((event) => {
@@ -185,40 +189,53 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     setMirrored(event.target.checked);
   }, []);
 
-  const handleActiveSashChange = useCallback((value) => {
-    setIsCanvasReady(false);
-    setActiveSash(value);
-  }, []);
+  const handleActiveSashChange = useCallback(
+    (value) => {
+      if (value === activeSash) return;
+      setIsCanvasReady(false);
+      setActiveSash(value);
+    },
+    [activeSash]
+  );
 
-  const handleMaterialTypeChange = useCallback((value) => {
-    setIsCanvasReady(false);
-    setSelectedMaterialType(value);
-    // Wzornik lazurów różni się między wariantami — przy zmianie materiału
-    // przenosimy wybór lazuru na ten sam numer w nowej palecie (RAL bez zmian)
-    setSelectedWoodColor((prev) => {
-      if (prev.palette !== 'lazur') return prev;
-      const fromPalette = getLazurPalette(prev.palette === 'lazur' ? (value === 'woodAlu' ? 'wood' : 'woodAlu') : 'wood');
-      const toPalette = getLazurPalette(value);
-      const index = Math.max(
-        fromPalette.findIndex((c) => c.value === prev.id),
-        0
-      );
-      return { palette: 'lazur', id: (toPalette[index] ?? toPalette[0]).value };
-    });
-  }, []);
+  const handleMaterialTypeChange = useCallback(
+    (value) => {
+      if (value === selectedMaterialType) return;
+      setIsCanvasReady(false);
+      setSelectedMaterialType(value);
+      // Wzornik lazurów różni się między wariantami — przy zmianie materiału
+      // przenosimy wybór lazuru na ten sam numer w nowej palecie (RAL bez zmian)
+      setSelectedWoodColor((prev) => {
+        if (prev.palette !== 'lazur') return prev;
+        const fromPalette = getLazurPalette(prev.palette === 'lazur' ? (value === 'woodAlu' ? 'wood' : 'woodAlu') : 'wood');
+        const toPalette = getLazurPalette(value);
+        const index = Math.max(
+          fromPalette.findIndex((c) => c.value === prev.id),
+          0
+        );
+        return { palette: 'lazur', id: (toPalette[index] ?? toPalette[0]).value };
+      });
+    },
+    [selectedMaterialType]
+  );
 
   const handleWoodColorChange = useCallback(
     (palette) => (id) => {
+      if (palette === selectedWoodColor.palette && id === selectedWoodColor.id) return;
       setIsCanvasReady(false);
       setSelectedWoodColor({ palette, id });
     },
-    []
+    [selectedWoodColor]
   );
 
-  const handleAluColorChange = useCallback((id) => {
-    setIsCanvasReady(false);
-    setSelectedAluColor(id);
-  }, []);
+  const handleAluColorChange = useCallback(
+    (id) => {
+      if (id === selectedAluColor) return;
+      setIsCanvasReady(false);
+      setSelectedAluColor(id);
+    },
+    [selectedAluColor]
+  );
 
   // Gatunek wpływa nie tylko na cenę, ale i na teksturę lazuru w modelu
   const handleWoodChange = useCallback((event) => {
