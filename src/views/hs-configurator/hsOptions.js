@@ -70,9 +70,16 @@ export const resolveWoodFinish = ({ palette, id }, speciesKey, materialType = 'w
   return { type: 'lazur', hex: lazur.hex, grainPath, species, dark: hexLuminance(lazur.hex) < 80 };
 };
 
+// Kolory klamek wg oferty okuć: anodowane F1/F4, lakierowane (biały, czarny,
+// antracyt) i stal nierdzewna. Wartości `silver`/`gold` zostają dla zgodności
+// ze starymi URL-ami (kody `s`/`g`)
 export const HANDLE_FINISHES = [
-  { value: 'silver', urlCode: 's', labelKey: 'hsConfigurator.options.handleTextures.silver', fallback: 'Srebrna' },
-  { value: 'gold', urlCode: 'g', labelKey: 'hsConfigurator.options.handleTextures.gold', fallback: 'Złota' },
+  { value: 'silver', urlCode: 's', labelKey: 'hsConfigurator.options.handleTextures.silver', fallback: 'F1 srebrny' },
+  { value: 'gold', urlCode: 'g', labelKey: 'hsConfigurator.options.handleTextures.gold', fallback: 'F4 stare złoto' },
+  { value: 'white', urlCode: 'w', labelKey: 'hsConfigurator.options.handleTextures.white', fallback: 'Biały' },
+  { value: 'black', urlCode: 'b', labelKey: 'hsConfigurator.options.handleTextures.black', fallback: 'Czarny' },
+  { value: 'anthracite', urlCode: 'a', labelKey: 'hsConfigurator.options.handleTextures.anthracite', fallback: 'Antracyt' },
+  { value: 'inox', urlCode: 'i', labelKey: 'hsConfigurator.options.handleTextures.inox', fallback: 'Inox' },
 ];
 
 // Wariant materiałowy stolarki: czyste drewno lub drewno z aluminiowymi
@@ -198,7 +205,6 @@ export const TYPES = [
 export const THRESHOLDS = [
   { value: 'silver', urlCode: 's', labelKey: 'hsConfigurator.options.thresholds.silver', fallback: 'Srebrny' },
   { value: 'black', urlCode: 'b', labelKey: 'hsConfigurator.options.thresholds.black', fallback: 'Czarny' },
-  { value: 'gold', urlCode: 'g', labelKey: 'hsConfigurator.options.thresholds.gold', fallback: 'Złoty' },
 ];
 
 // Standardowa wysokość okna HS — domyślna i przywracana przy zmianie schematu

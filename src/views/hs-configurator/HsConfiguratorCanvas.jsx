@@ -235,14 +235,20 @@ const SCHEME_ANIMATIONS = {
   },
 };
 
-// Wykończenia klamki wg realnych okuć G-U: srebro = satynowane (anodowane)
-// aluminium — neutralna jasna szarość, delikatne szczotkowanie; złoto =
-// „stare złoto" F4 — przygaszony oliwkowo-brązowy mat okuciowy, bez
-// jubilerskiej żółci i połysku. Wyższy roughness i niepełny metalness dają
-// satynę zamiast lustra; anizotropia zostawia podłużne ślady szczotkowania
+// Wykończenia klamki wg realnych okuć G-U: F1 srebrny = satynowane (anodowane)
+// aluminium — neutralna jasna szarość, delikatne szczotkowanie; F4 „stare
+// złoto" — przygaszony oliwkowo-brązowy mat okuciowy, bez jubilerskiej żółci
+// i połysku. Wyższy roughness i niepełny metalness dają satynę zamiast lustra;
+// anizotropia zostawia podłużne ślady szczotkowania. Biały/czarny/antracyt to
+// lakier proszkowy — niski metalness, bez szczotkowania; inox = szczotkowana
+// stal nierdzewna, chłodniejsza i bardziej lustrzana niż anodowane F1
 const HANDLE_FINISHES = {
   silver: { color: '#cfd1d2', roughness: 0.42, metalness: 0.9, anisotropy: 0.5 },
   gold: { color: '#9b8153', roughness: 0.52, metalness: 0.7, anisotropy: 0.35 },
+  white: { color: '#f1f1ee', roughness: 0.55, metalness: 0.15, anisotropy: 0 },
+  black: { color: '#1f2022', roughness: 0.5, metalness: 0.25, anisotropy: 0 },
+  anthracite: { color: '#3a3f43', roughness: 0.52, metalness: 0.3, anisotropy: 0 },
+  inox: { color: '#c2c4c3', roughness: 0.32, metalness: 1, anisotropy: 0.6 },
 };
 
 // Funkcja do tworzenia materiału progu
@@ -254,7 +260,7 @@ function getThresholdMaterial(thresholdType) {
   };
 
   // Odcienie jak w realnych profilach progów (anodowane aluminium): satyna
-  // zamiast połysku, złoto = przygaszone „stare złoto" F4 jak w okuciach G-U
+  // zamiast połysku
   switch (thresholdType) {
     case 'silver':
       // Niższy metalness niż w klamce: pionowe lica progu odbijają ciemny
@@ -267,11 +273,6 @@ function getThresholdMaterial(thresholdType) {
       material.color = '#2b2b2b';
       material.roughness = 0.45;
       material.metalness = 0.6;
-      break;
-    case 'gold':
-      material.color = '#9b8153';
-      material.roughness = 0.5;
-      material.metalness = 0.7;
       break;
     default:
       break;

@@ -130,13 +130,16 @@
         "zielen-maltanska": "Maltese Green"
       },
       "handleTextures": {
-        "silver": "Silver",
-        "gold": "Gold"
+        "silver": "F1 silver",
+        "gold": "F4 old gold",
+        "white": "White",
+        "black": "Black",
+        "anthracite": "Anthracite",
+        "inox": "Stainless steel (inox)"
       },
       "thresholds": {
         "silver": "Silver",
-        "black": "Black",
-        "gold": "Gold"
+        "black": "Black"
       },
       "materialTypes": {
         "wood": "Wood",

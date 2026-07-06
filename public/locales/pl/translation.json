@@ -129,13 +129,16 @@
         "zielen-maltanska": "Zieleń Maltańska"
       },
       "handleTextures": {
-        "silver": "Srebrna",
-        "gold": "Złota"
+        "silver": "F1 srebrny",
+        "gold": "F4 stare złoto",
+        "white": "Biały",
+        "black": "Czarny",
+        "anthracite": "Antracyt",
+        "inox": "Inox"
       },
       "thresholds": {
         "silver": "Srebrny",
-        "black": "Czarny",
-        "gold": "Złoty"
+        "black": "Czarny"
       },
       "materialTypes": {
         "wood": "Drewno",

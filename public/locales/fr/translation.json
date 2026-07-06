@@ -130,13 +130,16 @@
         "zielen-maltanska": "Vert maltais"
       },
       "handleTextures": {
-        "silver": "Argent",
-        "gold": "Or"
+        "silver": "F1 argent",
+        "gold": "F4 vieil or",
+        "white": "Blanc",
+        "black": "Noir",
+        "anthracite": "Anthracite",
+        "inox": "Inox"
       },
       "thresholds": {
         "silver": "Argent",
-        "black": "Noir",
-        "gold": "Or"
+        "black": "Noir"
       },
       "materialTypes": {
         "wood": "Bois",

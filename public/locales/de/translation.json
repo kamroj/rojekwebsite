@@ -130,13 +130,16 @@
         "zielen-maltanska": "Malteser Grün"
       },
       "handleTextures": {
-        "silver": "Silber",
-        "gold": "Gold"
+        "silver": "F1 Silber",
+        "gold": "F4 Altgold",
+        "white": "Weiß",
+        "black": "Schwarz",
+        "anthracite": "Anthrazit",
+        "inox": "Edelstahl (Inox)"
       },
       "thresholds": {
         "silver": "Silber",
-        "black": "Schwarz",
-        "gold": "Gold"
+        "black": "Schwarz"
       },
       "materialTypes": {
         "wood": "Holz",

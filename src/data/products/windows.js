@@ -386,7 +386,8 @@ export function getLocalizedWindowColorsPalette(locale = 'pl') {
   });
 }
 
-// Dwa wzorniki lazurów (po 20 wybarwień). Architektura "słoje × kolor": wygląd
+// Dwa wzorniki lazurów (drewno 18, drewno-alu 20 wybarwień). Architektura
+// "słoje × kolor": wygląd
 // próbki powstaje na żywo z mapy słojów gatunku (LAZUR_GRAIN_IMAGES) zabarwionej
 // zmierzonym kolorem (LAZUR_COLORS, generowane przez build-lazur-textures.mjs) —
 // w UI przez background-blend-mode: multiply, w konfiguratorze 3D przez tint
@@ -398,7 +399,10 @@ export const LAZUR_GRAIN_IMAGES = {
   oak: '/models/lazur/grain-oak.jpg',
 }
 
-// [slug, nazwa oryginalna z wzornika, nazwa PL] w kolejności wzornika (1..20)
+// [slug, nazwa oryginalna z wzornika, nazwa PL] w kolejności wzornika.
+// Fizyczny wzornik drewna ma 20 próbek, ale dwie ostatnie (RAL 7016 / RAL 9016)
+// to farby KRYJĄCE, nie lazury — w ofercie żyją w palecie RAL, więc tu ich nie
+// pokazujemy (paleta lazurów = 18 wybarwień)
 const DREWNO_DEFS = [
   ['pine', 'Pine', 'Sosna'],
   ['old-pine', 'Old Pine', 'Stara sosna'],
@@ -418,8 +422,6 @@ const DREWNO_DEFS = [
   ['nuttree', 'Nuttree', 'Orzechowiec'],
   ['olive-green', 'Olive Green', 'Zieleń oliwkowa'],
   ['rojwin', 'Rojwin', 'Rojwin'],
-  ['ral-7016', 'RAL 7016', 'Antracyt (RAL 7016)'],
-  ['ral-9016', 'RAL 9016', 'Biały (RAL 9016)'],
 ]
 
 const DREWNO_ALU_DEFS = [
