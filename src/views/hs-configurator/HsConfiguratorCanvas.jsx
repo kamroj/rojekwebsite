@@ -332,7 +332,9 @@ const BADGE_COLOR = '#0f3d2a';
 const TEMPERED_ICON_PATH = '/images/hs/hart-glass.png';
 
 // Badge „A": okrąg + litera rysowane na CanvasTexture (bez zewnętrznych
-// fontów), tło w pełni przezroczyste — na szybie zostaje sam zielony znak
+// fontów), tło w pełni przezroczyste. Kreska celowo cienka i lekko
+// przepuszczalna — znak ma wagę wizualną ikony szyby hartowanej (delikatna
+// adnotacja na szkle), nie przycisku UI
 const createActiveMarkerTexture = () => {
   const size = 256;
   const canvas = document.createElement('canvas');
@@ -340,16 +342,17 @@ const createActiveMarkerTexture = () => {
   canvas.height = size;
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, size, size);
+  ctx.globalAlpha = 0.8;
   ctx.beginPath();
-  ctx.arc(size / 2, size / 2, size / 2 - 14, 0, Math.PI * 2);
-  ctx.lineWidth = 12;
+  ctx.arc(size / 2, size / 2, size / 2 - 12, 0, Math.PI * 2);
+  ctx.lineWidth = 7;
   ctx.strokeStyle = BADGE_COLOR;
   ctx.stroke();
   ctx.fillStyle = BADGE_COLOR;
-  ctx.font = '700 150px "Segoe UI", Arial, sans-serif';
+  ctx.font = '500 130px "Segoe UI", Arial, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText('A', size / 2, size / 2 + 8);
+  ctx.fillText('A', size / 2, size / 2 + 6);
   const texture = new CanvasTexture(canvas);
   texture.colorSpace = SRGBColorSpace;
   texture.anisotropy = 8;
