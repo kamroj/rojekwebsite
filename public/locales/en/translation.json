@@ -157,9 +157,6 @@
         "right": "Right"
       },
       "sashPositions": {
-        "left": "left",
-        "right": "right",
-        "middle": "middle",
         "middleLeft": "middle left",
         "middleRight": "middle right"
       },

@@ -169,6 +169,7 @@ export const TYPES = [
     descriptionKey: 'hsConfigurator.options.schemes.h.description',
     descriptionFallback: 'Trzy pola, wszystkie skrzydła przesuwne.',
     widthRange: WIDTH_3_FIELDS,
+    mirrorable: true,
   },
   {
     value: 'k',
@@ -212,38 +213,13 @@ export const ACTIVE_SASH_OPTIONS = [
 ];
 export const DEFAULT_ACTIVE_SASH = ACTIVE_SASH_OPTIONS[0].value;
 
-// Położenie aktywnego skrzydła w świetle otworu — do oznaczenia w danych
-// zamówienia (wiadomość wyceny). C/F zależą od wyboru użytkownika, reszta ma
-// położenie stałe; odbicie lustrzane zamienia strony.
-const ACTIVE_SASH_POSITIONS = {
-  a: 'left',
-  d: 'left',
-  e: 'left',
-  g2: 'middle',
-  g3: 'middle',
-  h: 'middle',
-  k: 'left',
-  c: { left: 'middleLeft', right: 'middleRight' },
-  f: { left: 'middleLeft', right: 'middleRight' },
-};
-const MIRRORED_POSITION = {
-  left: 'right',
-  right: 'left',
-  middle: 'middle',
-  middleLeft: 'middleRight',
-  middleRight: 'middleLeft',
-};
-
-export const getActiveSashPosition = (scheme, { mirrored = false, activeSash = DEFAULT_ACTIVE_SASH } = {}) => {
-  const entry = ACTIVE_SASH_POSITIONS[scheme] ?? 'left';
-  const position = typeof entry === 'string' ? entry : (entry[activeSash] ?? entry.left);
-  return mirrored ? MIRRORED_POSITION[position] : position;
-};
+// Położenie aktywnego skrzydła (tylko C/F — wybór ze środkowej pary) — do
+// oznaczenia w danych zamówienia (wiadomość wyceny). Pozostałe schematy nie
+// niosą tej informacji: układ jednoznacznie wynika ze schematu i lustra.
+export const getActiveSashPosition = (activeSash = DEFAULT_ACTIVE_SASH) =>
+  activeSash === 'right' ? 'middleRight' : 'middleLeft';
 
 export const SASH_POSITION_LABELS = {
-  left: { labelKey: 'hsConfigurator.options.sashPositions.left', fallback: 'lewe' },
-  right: { labelKey: 'hsConfigurator.options.sashPositions.right', fallback: 'prawe' },
-  middle: { labelKey: 'hsConfigurator.options.sashPositions.middle', fallback: 'środkowe' },
   middleLeft: { labelKey: 'hsConfigurator.options.sashPositions.middleLeft', fallback: 'środkowe lewe' },
   middleRight: { labelKey: 'hsConfigurator.options.sashPositions.middleRight', fallback: 'środkowe prawe' },
 };

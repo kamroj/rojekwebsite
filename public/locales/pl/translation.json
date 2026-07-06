@@ -156,9 +156,6 @@
         "right": "Prawe"
       },
       "sashPositions": {
-        "left": "lewe",
-        "right": "prawe",
-        "middle": "środkowe",
         "middleLeft": "środkowe lewe",
         "middleRight": "środkowe prawe"
       },

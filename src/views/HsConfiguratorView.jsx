@@ -368,17 +368,19 @@ const HsConfiguratorPage = ({ pricing = null }) => {
       `- ${stripColon(t('hsConfigurator.sectionsLabel.scheme', 'Schemat'))}: ${selectedTypeData.label}`,
     ];
 
-    // Wersja lustrzana (schematy z opcją odbicia) i aktywne skrzydło — muszą
-    // trafić do danych zamówienia, żeby handlowiec widział dokładny układ
+    // Wersja lustrzana (schematy z opcją odbicia) i aktywne skrzydło (C/F) —
+    // muszą trafić do danych zamówienia, żeby handlowiec widział dokładny układ
     if (selectedTypeData.mirrorable) {
       lines.push(
         `- ${stripColon(t('hsConfigurator.labels.mirror', 'Odbicie lustrzane'))}: ${mirrored ? t('hsConfigurator.options.mirror.yes', 'tak') : t('hsConfigurator.options.mirror.no', 'nie')}`
       );
     }
-    const sashPosition = SASH_POSITION_LABELS[getActiveSashPosition(selectedType, { mirrored, activeSash })];
-    lines.push(
-      `- ${stripColon(t('hsConfigurator.labels.activeSash', 'Aktywne skrzydło'))}: ${t(sashPosition.labelKey, sashPosition.fallback)}`
-    );
+    if (selectedTypeData.activeSashChoice) {
+      const sashPosition = SASH_POSITION_LABELS[getActiveSashPosition(activeSash)];
+      lines.push(
+        `- ${stripColon(t('hsConfigurator.labels.activeSash', 'Aktywne skrzydło'))}: ${t(sashPosition.labelKey, sashPosition.fallback)}`
+      );
+    }
 
     lines.push(
       `- ${stripColon(t('hsConfigurator.sections.dimensions', 'Wymiary'))}: ${width} × ${height} mm`,
@@ -495,9 +497,11 @@ const HsConfiguratorPage = ({ pricing = null }) => {
                       })}
                     </div>
                   </div>
-                  <p className={styles.schemeFootnote}>
-                    {t('hsConfigurator.activeSashNote', 'A — aktywne skrzydło / skrzydło otwierane jako pierwsze')}
-                  </p>
+                  {selectedTypeData.activeSashChoice ? (
+                    <p className={styles.schemeFootnote}>
+                      {t('hsConfigurator.activeSashNote', 'A — aktywne skrzydło / skrzydło otwierane jako pierwsze')}
+                    </p>
+                  ) : null}
                 </div>
 
                 {selectedTypeData.mirrorable ? (
@@ -779,6 +783,7 @@ const HsConfiguratorPage = ({ pricing = null }) => {
                   selectedType={selectedType}
                   mirrored={mirrored}
                   activeSash={activeSash}
+                  temperedGlass={addons.temperedGlass}
                   selectedThreshold={selectedThreshold}
                   selectedMaterialType={selectedMaterialType}
                   selectedAluColor={selectedAluColor}

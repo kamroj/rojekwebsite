@@ -308,30 +308,31 @@ function getThresholdMaterial(thresholdType) {
   return material;
 }
 
-// Skrzydło aktywne (otwierane jako pierwsze) per schemat — indeks w `panels`.
-// C i F mają wybór między środkową parą (left/right); przy odbiciu lustrzanym
-// indeksy zostają, bo panele odbijamy w miejscu (geometria sama zmienia stronę).
+// Skrzydło aktywne (otwierane jako pierwsze) — oznaczenie TYLKO dla schematów
+// z wyborem (C/F, środkowa para); w pozostałych układ jest jednoznaczny i
+// plakietka byłaby szumem. Indeksy w `panels` nie zmieniają się przy lustrze.
 const ACTIVE_PANEL_INDEX = {
-  a: 0,
   c: { left: 1, right: 2 },
-  d: 0,
-  e: 0,
   f: { left: 1, right: 2 },
-  g2: 1,
-  g3: 1,
-  h: 1,
-  k: 0,
 };
 
 const resolveActivePanelIndex = (scheme, activeSash) => {
-  const entry = ACTIVE_PANEL_INDEX[scheme] ?? 0;
-  if (typeof entry === 'number') return entry;
+  const entry = ACTIVE_PANEL_INDEX[scheme];
+  if (!entry) return null;
   return entry[activeSash] ?? entry.left;
 };
 
-// Badge „A" na szybie aktywnego skrzydła: okrągła plakietka rysowana na
-// CanvasTexture (bez zewnętrznych fontów). Oznaczenie informacyjne podglądu —
-// eksport AR je usuwa (userData.hsActiveMarker w prepareModelForExport)
+// Plakietki informacyjne na szybie (prawy dolny róg): „A" = aktywne skrzydło,
+// tarcza = szyba hartowana. Obie mają identyczny wymiar i przezroczyste tło;
+// eksport AR je usuwa (userData.hsGlassBadge w prepareModelForExport)
+const GLASS_BADGE_SIZE = 0.09; // bok plakietki w metrach
+const GLASS_BADGE_INSET = 0.035; // odstęp plakietki od krawędzi szyby
+const GLASS_BADGE_GAP = 0.02; // odstęp między plakietkami
+const BADGE_COLOR = '#0f3d2a';
+const TEMPERED_ICON_PATH = '/images/hs/hart-glass.png';
+
+// Badge „A": okrąg + litera rysowane na CanvasTexture (bez zewnętrznych
+// fontów), tło w pełni przezroczyste — na szybie zostaje sam zielony znak
 const createActiveMarkerTexture = () => {
   const size = 256;
   const canvas = document.createElement('canvas');
@@ -340,13 +341,11 @@ const createActiveMarkerTexture = () => {
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0, 0, size, size);
   ctx.beginPath();
-  ctx.arc(size / 2, size / 2, size / 2 - 12, 0, Math.PI * 2);
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
-  ctx.fill();
-  ctx.lineWidth = 10;
-  ctx.strokeStyle = '#0f3d2a';
+  ctx.arc(size / 2, size / 2, size / 2 - 14, 0, Math.PI * 2);
+  ctx.lineWidth = 12;
+  ctx.strokeStyle = BADGE_COLOR;
   ctx.stroke();
-  ctx.fillStyle = '#0f3d2a';
+  ctx.fillStyle = BADGE_COLOR;
   ctx.font = '700 150px "Segoe UI", Arial, sans-serif';
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
@@ -357,15 +356,23 @@ const createActiveMarkerTexture = () => {
   return texture;
 };
 
-const ACTIVE_MARKER_SIZE = 0.09; // średnica plakietki w metrach
-
-function ActiveSashMarker({ position, texture }) {
+function GlassBadge({ position, texture }) {
   return (
-    <mesh position={position} userData={{ hsActiveMarker: true }} renderOrder={2}>
-      <planeGeometry args={[ACTIVE_MARKER_SIZE, ACTIVE_MARKER_SIZE]} />
+    <mesh position={position} userData={{ hsGlassBadge: true }} renderOrder={2}>
+      <planeGeometry args={[GLASS_BADGE_SIZE, GLASS_BADGE_SIZE]} />
       <meshBasicMaterial map={texture} transparent depthWrite={false} toneMapped={false} />
     </mesh>
   );
+}
+
+// Ikona szyby hartowanej — osobny komponent, żeby useTexture (Suspense)
+// ładował plik tylko wtedy, gdy dodatek jest zaznaczony
+function TemperedGlassBadge({ position }) {
+  const texture = useTexture(TEMPERED_ICON_PATH, (tex) => {
+    tex.colorSpace = SRGBColorSpace;
+    tex.anisotropy = 8;
+  });
+  return <GlassBadge position={position} texture={texture} />;
 }
 
 function BoxPart({ position, size, material, castShadow = true, receiveShadow = true }) {
@@ -687,6 +694,7 @@ function GlazedPanel({
   onToggle,
   activeMarker = false,
   markerTexture = null,
+  temperedGlass = false,
 }) {
   const isSliding = panel.type === 'sliding';
   const isGlazing = panel.type === 'glazing';
@@ -876,12 +884,25 @@ function GlazedPanel({
         castShadow={false}
         receiveShadow={false}
       />
-      {/* Oznaczenie skrzydła aktywnego — plakietka „A" na wewnętrznym licu
-          szyby; siedzi w grupie skrzydła, więc jeździ razem z nim i sama
-          zmienia stronę przy odbiciu lustrzanym schematu */}
-      {activeMarker && markerTexture && (
-        <ActiveSashMarker position={[cx, cy, z + 0.021]} texture={markerTexture} />
-      )}
+      {/* Plakietki w prawym dolnym rogu szyby (wewnętrzne lico): „A" dla
+          aktywnego skrzydła (C/F), tarcza dla szyby hartowanej — hartowana
+          na KAŻDEJ szybie, a gdy obie plakietki są obecne, tarcza staje obok
+          „A". Siedzą w grupie skrzydła, więc jeżdżą razem z nim i same
+          zmieniają stronę przy odbiciu lustrzanym schematu */}
+      {(() => {
+        const showActive = activeMarker && markerTexture;
+        if (!showActive && !temperedGlass) return null;
+        const badgeZ = z + 0.021;
+        const badgeY = cy - glassH / 2 + GLASS_BADGE_INSET + GLASS_BADGE_SIZE / 2;
+        const cornerX = cx + glassW / 2 - GLASS_BADGE_INSET - GLASS_BADGE_SIZE / 2;
+        const temperedX = showActive ? cornerX - GLASS_BADGE_SIZE - GLASS_BADGE_GAP : cornerX;
+        return (
+          <group>
+            {showActive && <GlassBadge position={[cornerX, badgeY, badgeZ]} texture={markerTexture} />}
+            {temperedGlass && <TemperedGlassBadge position={[temperedX, badgeY, badgeZ]} />}
+          </group>
+        );
+      })()}
       {/* Listwa maskująca nad polem stałym — renderowana w licu skrzydła
           (pełna głębokość 115 mm wystawałaby poza profil i psuła bryłę) */}
       {!isSliding && !isGlazing && (
@@ -942,6 +963,7 @@ function ProceduralHsModel({
   scheme,
   mirrored = false,
   activeSash = 'left',
+  temperedGlass = false,
   woodFinish,
   handleFinish,
   thresholdType,
@@ -1148,7 +1170,7 @@ function ProceduralHsModel({
 
   useEffect(() => {
     onReady?.();
-  }, [activeSash, aluColor, handleFinish, height, materialType, mirrored, onReady, plinthHeight, scheme, thresholdType, textures, width, woodFinish]);
+  }, [activeSash, aluColor, handleFinish, height, materialType, mirrored, onReady, plinthHeight, scheme, temperedGlass, thresholdType, textures, width, woodFinish]);
 
   return (
     // exportRef wskazuje samą grupę modelu (bez Center/świateł/ContactShadows) —
@@ -1306,8 +1328,9 @@ function ProceduralHsModel({
             slideDistance={panelAnimation ? panelAnimation.distance(openingWidth) : 0}
             open={Boolean(openPanels[index])}
             onToggle={togglePanel}
-            activeMarker={index === activePanelIndex}
+            activeMarker={activePanelIndex !== null && index === activePanelIndex}
             markerTexture={markerTexture}
+            temperedGlass={temperedGlass}
           />
         );
       })}
@@ -1372,6 +1395,7 @@ export default function HsConfiguratorCanvas({
   selectedType = 'a',
   mirrored = false,
   activeSash = 'left',
+  temperedGlass = false,
   selectedWoodFinish,
   selectedHandleFinish,
   selectedThreshold,
@@ -1429,6 +1453,7 @@ export default function HsConfiguratorCanvas({
               scheme={selectedType}
               mirrored={mirrored}
               activeSash={activeSash}
+              temperedGlass={temperedGlass}
               woodFinish={selectedWoodFinish}
               handleFinish={selectedHandleFinish}
               thresholdType={selectedThreshold}
