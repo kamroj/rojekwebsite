@@ -72,6 +72,7 @@
       "messageIntro": "Guten Tag, ich bitte um ein Angebot für die folgende HS-Konfiguration:"
     },
     "activeScheme": "Aktive Variante",
+    "activeSashNote": "A — aktiver Flügel / zuerst zu öffnender Flügel",
     "info": {
       "title": "Vorschau in Echtzeit",
       "description": "Das Modell aktualisiert Materialien und Proportionen laufend, damit Sie Varianten vor dem Gespräch mit unserem Team leichter vergleichen können."
@@ -94,7 +95,9 @@
       "width": "Fensterbreite:",
       "height": "Fensterhöhe:",
       "plinthHeight": "Sockelhöhe:",
-      "woodSpecies": "Holzart:"
+      "woodSpecies": "Holzart:",
+      "mirror": "Spiegelvariante",
+      "activeSash": "Aktiver Flügel"
     },
     "warnings": {
       "animationOnlyDefault": "Animation ist nur bei den Standardabmessungen verfügbar"
@@ -145,14 +148,25 @@
         "wood": "Holz",
         "woodAlu": "Holz-Aluminium"
       },
+      "mirror": {
+        "yes": "ja",
+        "no": "nein"
+      },
+      "activeSash": {
+        "left": "Links",
+        "right": "Rechts"
+      },
+      "sashPositions": {
+        "left": "links",
+        "right": "rechts",
+        "middle": "mittig",
+        "middleLeft": "Mitte links",
+        "middleRight": "Mitte rechts"
+      },
       "schemes": {
         "a": {
           "label": "Schema A",
           "description": "Zwei Felder mit einem Schiebeflügel."
-        },
-        "a3": {
-          "label": "Schema A3",
-          "description": "Gespiegeltes A – Schiebeflügel auf der rechten Seite."
         },
         "d": {
           "label": "Schema D",

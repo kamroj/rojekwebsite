@@ -31,6 +31,14 @@ export function prepareModelForExport(source) {
   clone.rotation.set(0, 0, 0);
   clone.scale.set(1, 1, 1);
 
+  // Plakietka „A" (oznaczenie aktywnego skrzydła) to element informacyjny
+  // podglądu — w realistycznym modelu AR wyglądałaby jak naklejka na szybie
+  const markers = [];
+  clone.traverse((object) => {
+    if (object.userData?.hsActiveMarker) markers.push(object);
+  });
+  markers.forEach((marker) => marker.parent?.remove(marker));
+
   clone.traverse((object) => {
     // Domknięcie skrzydeł i klamek niezależnie od stanu animacji w konfiguratorze
     if (object.userData?.hsSash) {

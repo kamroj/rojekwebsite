@@ -72,6 +72,7 @@
       "messageIntro": "Hello, I would like a quote for the following HS configuration:"
     },
     "activeScheme": "Active variant",
+    "activeSashNote": "A — active sash / sash that opens first",
     "info": {
       "title": "Real-time preview",
       "description": "The model updates materials and proportions instantly, so you can compare variants more easily before speaking with our team."
@@ -94,7 +95,9 @@
       "width": "Window width:",
       "height": "Window height:",
       "plinthHeight": "Base (plinth) height:",
-      "woodSpecies": "Wood species:"
+      "woodSpecies": "Wood species:",
+      "mirror": "Mirrored layout",
+      "activeSash": "Active sash"
     },
     "warnings": {
       "animationOnlyDefault": "Animation is only available for the default dimensions"
@@ -145,14 +148,25 @@
         "wood": "Wood",
         "woodAlu": "Wood-Aluminium"
       },
+      "mirror": {
+        "yes": "yes",
+        "no": "no"
+      },
+      "activeSash": {
+        "left": "Left",
+        "right": "Right"
+      },
+      "sashPositions": {
+        "left": "left",
+        "right": "right",
+        "middle": "middle",
+        "middleLeft": "middle left",
+        "middleRight": "middle right"
+      },
       "schemes": {
         "a": {
           "label": "Scheme A",
           "description": "Two fields with one sliding sash."
-        },
-        "a3": {
-          "label": "Scheme A3",
-          "description": "Mirrored A — sliding sash on the right side."
         },
         "d": {
           "label": "Scheme D",

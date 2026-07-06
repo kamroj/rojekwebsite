@@ -99,6 +99,11 @@ const WIDTH_2_FIELDS = { min: 2000, max: 4000, default: 2320 };
 const WIDTH_3_FIELDS = { min: 2500, max: 4500, default: 3000 };
 const WIDTH_4_FIELDS = { min: 3000, max: 5000, default: 3750 };
 
+// `mirrorable` — schemat ma wariant lustrzany (przełącznik w UI, geometria
+// odbijana w canvasie). Dawny schemat A3 (lustrzane A) został wycofany —
+// zastępuje go A z włączonym odbiciem. `activeSashChoice` — użytkownik wskazuje,
+// które ze środkowych skrzydeł jest aktywne (otwierane jako pierwsze); sama
+// animacja się nie zmienia, zmienia się tylko oznaczenie i dane zamówienia.
 export const TYPES = [
   {
     value: 'a',
@@ -109,16 +114,7 @@ export const TYPES = [
     descriptionKey: 'hsConfigurator.options.schemes.a.description',
     descriptionFallback: 'Dwa pola z jednym skrzydłem przesuwnym.',
     widthRange: WIDTH_2_FIELDS,
-  },
-  {
-    value: 'a3',
-    label: 'A3',
-    image: '/images/hs/schemat-A3.png',
-    labelKey: 'hsConfigurator.options.schemes.a3.label',
-    fallback: 'Schemat A3',
-    descriptionKey: 'hsConfigurator.options.schemes.a3.description',
-    descriptionFallback: 'Lustrzane A — skrzydło przesuwne z prawej strony.',
-    widthRange: WIDTH_2_FIELDS,
+    mirrorable: true,
   },
   {
     value: 'd',
@@ -129,6 +125,7 @@ export const TYPES = [
     descriptionKey: 'hsConfigurator.options.schemes.d.description',
     descriptionFallback: 'Dwa pola, oba skrzydła przesuwne.',
     widthRange: WIDTH_2_FIELDS,
+    mirrorable: true,
   },
   {
     value: 'e',
@@ -139,6 +136,7 @@ export const TYPES = [
     descriptionKey: 'hsConfigurator.options.schemes.e.description',
     descriptionFallback: 'Trzy pola, dwa skrzydła przesuwne w jedną stronę.',
     widthRange: WIDTH_3_FIELDS,
+    mirrorable: true,
   },
   {
     value: 'g2',
@@ -149,6 +147,7 @@ export const TYPES = [
     descriptionKey: 'hsConfigurator.options.schemes.g2.description',
     descriptionFallback: 'Trzy pola, środkowe skrzydło przesuwne, słupki statyczne.',
     widthRange: WIDTH_3_FIELDS,
+    mirrorable: true,
   },
   {
     value: 'g3',
@@ -159,6 +158,7 @@ export const TYPES = [
     descriptionKey: 'hsConfigurator.options.schemes.g3.description',
     descriptionFallback: 'Trzy pola, środkowe skrzydło przesuwne, bez słupków statycznych.',
     widthRange: WIDTH_3_FIELDS,
+    mirrorable: true,
   },
   {
     value: 'h',
@@ -189,6 +189,7 @@ export const TYPES = [
     descriptionKey: 'hsConfigurator.options.schemes.c.description',
     descriptionFallback: 'Cztery pola z dwoma środkowymi skrzydłami przesuwnymi.',
     widthRange: WIDTH_4_FIELDS,
+    activeSashChoice: true,
   },
   {
     value: 'f',
@@ -199,8 +200,53 @@ export const TYPES = [
     descriptionKey: 'hsConfigurator.options.schemes.f.description',
     descriptionFallback: 'Cztery pola, wszystkie skrzydła przesuwne.',
     widthRange: WIDTH_4_FIELDS,
+    activeSashChoice: true,
   },
 ];
+
+// Wybór aktywnego skrzydła (C/F): które ze środkowej pary jest otwierane jako
+// pierwsze. Dla pozostałych schematów aktywne skrzydło wynika z układu.
+export const ACTIVE_SASH_OPTIONS = [
+  { value: 'left', urlCode: 'l', labelKey: 'hsConfigurator.options.activeSash.left', fallback: 'Lewe' },
+  { value: 'right', urlCode: 'r', labelKey: 'hsConfigurator.options.activeSash.right', fallback: 'Prawe' },
+];
+export const DEFAULT_ACTIVE_SASH = ACTIVE_SASH_OPTIONS[0].value;
+
+// Położenie aktywnego skrzydła w świetle otworu — do oznaczenia w danych
+// zamówienia (wiadomość wyceny). C/F zależą od wyboru użytkownika, reszta ma
+// położenie stałe; odbicie lustrzane zamienia strony.
+const ACTIVE_SASH_POSITIONS = {
+  a: 'left',
+  d: 'left',
+  e: 'left',
+  g2: 'middle',
+  g3: 'middle',
+  h: 'middle',
+  k: 'left',
+  c: { left: 'middleLeft', right: 'middleRight' },
+  f: { left: 'middleLeft', right: 'middleRight' },
+};
+const MIRRORED_POSITION = {
+  left: 'right',
+  right: 'left',
+  middle: 'middle',
+  middleLeft: 'middleRight',
+  middleRight: 'middleLeft',
+};
+
+export const getActiveSashPosition = (scheme, { mirrored = false, activeSash = DEFAULT_ACTIVE_SASH } = {}) => {
+  const entry = ACTIVE_SASH_POSITIONS[scheme] ?? 'left';
+  const position = typeof entry === 'string' ? entry : (entry[activeSash] ?? entry.left);
+  return mirrored ? MIRRORED_POSITION[position] : position;
+};
+
+export const SASH_POSITION_LABELS = {
+  left: { labelKey: 'hsConfigurator.options.sashPositions.left', fallback: 'lewe' },
+  right: { labelKey: 'hsConfigurator.options.sashPositions.right', fallback: 'prawe' },
+  middle: { labelKey: 'hsConfigurator.options.sashPositions.middle', fallback: 'środkowe' },
+  middleLeft: { labelKey: 'hsConfigurator.options.sashPositions.middleLeft', fallback: 'środkowe lewe' },
+  middleRight: { labelKey: 'hsConfigurator.options.sashPositions.middleRight', fallback: 'środkowe prawe' },
+};
 
 export const THRESHOLDS = [
   { value: 'silver', urlCode: 's', labelKey: 'hsConfigurator.options.thresholds.silver', fallback: 'Srebrny' },

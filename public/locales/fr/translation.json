@@ -72,6 +72,7 @@
       "messageIntro": "Bonjour, je souhaite un devis pour la configuration HS suivante :"
     },
     "activeScheme": "Variante active",
+    "activeSashNote": "A — vantail actif / vantail ouvert en premier",
     "info": {
       "title": "Aperçu en temps réel",
       "description": "Le modèle met à jour instantanément les matériaux et les proportions, afin de comparer plus facilement les variantes avant de parler à notre équipe."
@@ -94,7 +95,9 @@
       "width": "Largeur de la fenêtre :",
       "height": "Hauteur de la fenêtre :",
       "plinthHeight": "Hauteur du socle :",
-      "woodSpecies": "Essence de bois :"
+      "woodSpecies": "Essence de bois :",
+      "mirror": "Version miroir",
+      "activeSash": "Vantail actif"
     },
     "warnings": {
       "animationOnlyDefault": "L'animation est disponible uniquement pour les dimensions par défaut"
@@ -145,14 +148,25 @@
         "wood": "Bois",
         "woodAlu": "Bois-Aluminium"
       },
+      "mirror": {
+        "yes": "oui",
+        "no": "non"
+      },
+      "activeSash": {
+        "left": "Gauche",
+        "right": "Droit"
+      },
+      "sashPositions": {
+        "left": "gauche",
+        "right": "droit",
+        "middle": "central",
+        "middleLeft": "central gauche",
+        "middleRight": "central droit"
+      },
       "schemes": {
         "a": {
           "label": "Schéma A",
           "description": "Deux champs avec un vantail coulissant."
-        },
-        "a3": {
-          "label": "Schéma A3",
-          "description": "A inversé — vantail coulissant à droite."
         },
         "d": {
           "label": "Schéma D",

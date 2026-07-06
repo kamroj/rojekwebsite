@@ -1,9 +1,10 @@
 import {defineField, defineType} from 'sanity'
 import HsPriceMatrixInput from '../components/HsPriceMatrixInput'
 
+// Schemat A3 (lustrzane A) został wycofany z konfiguratora — wariant lustrzany
+// A nie wymaga osobnego cennika
 const SCHEME_OPTIONS = [
   {title: 'Schemat A', value: 'a'},
-  {title: 'Schemat A3 (lustrzane A — używa cennika A)', value: 'a3'},
   {title: 'Schemat C', value: 'c'},
   {title: 'Schemat D', value: 'd'},
   {title: 'Schemat E', value: 'e'},
@@ -28,8 +29,7 @@ export default defineType({
       name: 'scheme',
       title: 'Schemat',
       type: 'string',
-      description:
-        'Jeden dokument na schemat. Schemat A3 nie wymaga osobnego dokumentu — używa cennika A.',
+      description: 'Jeden dokument na schemat.',
       options: {list: SCHEME_OPTIONS, layout: 'dropdown'},
       validation: (rule) => rule.required(),
     }),

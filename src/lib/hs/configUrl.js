@@ -1,15 +1,19 @@
 // Serializacja konfiguracji HS do parametrów URL (kod QR / udostępnianie).
-// Format: ?s=d&w=3200&h=2200&p=100&mt=a&ac=7016&wc=l5&hd=g&th=b&wd=oak&a=5&ar=1
+// Format: ?s=d&w=3200&h=2200&p=100&mt=a&ac=7016&wc=l5&hd=g&th=b&wd=oak&mr=1&as=r&a=5&ar=1
 // Krótkie kody opcji (`urlCode`) pochodzą z hsOptions.js — ścieżki plików
 // nigdy nie trafiają do URL. Kolor drewna `wc`: RAL = kod cyfrowy (numer RAL),
 // lazur = `l` + numer wybarwienia w palecie (paletę rozstrzyga wariant `mt`,
-// bo wood i woodAlu mają różne wzorniki lazurów). Parser waliduje każde pole
-// osobno; błędna wartość nie psuje reszty, tylko wraca do wartości domyślnej.
+// bo wood i woodAlu mają różne wzorniki lazurów). `mr` = odbicie lustrzane
+// (tylko schematy mirrorable), `as` = aktywne skrzydło (tylko C/F). Parser
+// waliduje każde pole osobno; błędna wartość nie psuje reszty, tylko wraca do
+// wartości domyślnej.
 
 import { deriveRanges } from '../pricing/hsPrice.js';
 import {
+  ACTIVE_SASH_OPTIONS,
   ADDON_OPTIONS,
   ALU_COLORS,
+  DEFAULT_ACTIVE_SASH,
   DEFAULT_ALU_COLOR,
   DEFAULT_WOOD_COLOR,
   HANDLE_FINISHES,
@@ -42,6 +46,14 @@ export const serializeHsConfig = (config) => {
   params.set('h', String(config.height));
   // Podwalina (mm) — zawsze obecna w modelu, więc zawsze w URL
   if (Number.isFinite(config.plinth)) params.set('p', String(config.plinth));
+
+  // Odbicie lustrzane i aktywne skrzydło tylko tam, gdzie schemat je obsługuje
+  const schemeData = TYPES.find((type) => type.value === config.scheme);
+  if (schemeData?.mirrorable && config.mirrored) params.set('mr', '1');
+  if (schemeData?.activeSashChoice) {
+    const activeSash = ACTIVE_SASH_OPTIONS.find((item) => item.value === config.activeSash);
+    if (activeSash) params.set('as', activeSash.urlCode);
+  }
 
   const materialType = MATERIAL_TYPES.find((item) => item.value === config.materialType);
   if (materialType) params.set('mt', materialType.urlCode);
@@ -79,9 +91,17 @@ export const parseHsConfig = (search, { pricing = null } = {}) => {
   const params = new URLSearchParams(search ?? '');
   if ([...params.keys()].length === 0) return null;
 
-  // Najpierw schemat — od niego zależą zakresy wymiarów (jak w handleTypeChange)
-  const typeData = TYPES.find((type) => type.value === params.get('s')) ?? TYPES[0];
+  // Najpierw schemat — od niego zależą zakresy wymiarów (jak w handleTypeChange).
+  // Wycofany schemat A3 (lustrzane A) mapujemy na A z włączonym odbiciem,
+  // żeby stare linki / kody QR nadal odtwarzały ten sam układ.
+  const rawScheme = params.get('s');
+  const isLegacyA3 = rawScheme === 'a3';
+  const typeData = TYPES.find((type) => type.value === rawScheme) ?? TYPES[0];
   const ranges = deriveRanges(pricing?.schemes?.[typeData.value]?.matrix, typeData.widthRange, HEIGHT_RANGE);
+  const mirrored = Boolean(typeData.mirrorable) && (params.get('mr') === '1' || (isLegacyA3 && typeData.value === 'a'));
+  const activeSash = typeData.activeSashChoice
+    ? (findByUrlCode(ACTIVE_SASH_OPTIONS, params.get('as')) ?? ACTIVE_SASH_OPTIONS[0]).value
+    : DEFAULT_ACTIVE_SASH;
 
   const woodSpecies = pricing?.settings?.woodSpecies ?? [];
   const requestedWood = params.get('wd');
@@ -111,6 +131,8 @@ export const parseHsConfig = (search, { pricing = null } = {}) => {
 
   return {
     scheme: typeData.value,
+    mirrored,
+    activeSash,
     width: parseDimension(params.get('w'), ranges.width),
     height: parseDimension(params.get('h'), ranges.height),
     plinth: parseDimension(params.get('p'), PLINTH_RANGE),

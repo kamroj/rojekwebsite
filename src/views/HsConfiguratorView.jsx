@@ -9,16 +9,20 @@ import { pickLocale } from '../lib/sanity/i18n.js';
 import ArLauncher from './hs-configurator/ar/ArLauncher.jsx';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from './HomeView';
 import {
+  ACTIVE_SASH_OPTIONS,
   ADDON_OPTIONS,
+  DEFAULT_ACTIVE_SASH,
   DEFAULT_ALU_COLOR,
   DEFAULT_WOOD_COLOR,
   HANDLE_FINISHES,
   HEIGHT_RANGE,
   MATERIAL_TYPES,
   PLINTH_RANGE,
+  SASH_POSITION_LABELS,
   THRESHOLDS,
   TYPES,
   WOOD_RAL_COLORS,
+  getActiveSashPosition,
   getDefaultWoodKey,
   getLazurPalette,
   resolveWoodFinish,
@@ -95,6 +99,8 @@ const HsConfiguratorPage = ({ pricing = null }) => {
   const [woodPaletteTab, setWoodPaletteTab] = useState(DEFAULT_WOOD_COLOR.palette);
   const [selectedHandleFinish, setSelectedHandleFinish] = useState(HANDLE_FINISHES[0].value);
   const [selectedType, setSelectedType] = useState(TYPES[0].value);
+  const [mirrored, setMirrored] = useState(false);
+  const [activeSash, setActiveSash] = useState(DEFAULT_ACTIVE_SASH);
   const [selectedThreshold, setSelectedThreshold] = useState(THRESHOLDS[0].value);
   const [selectedMaterialType, setSelectedMaterialType] = useState(MATERIAL_TYPES[0].value);
   const [selectedAluColor, setSelectedAluColor] = useState(DEFAULT_ALU_COLOR);
@@ -127,6 +133,8 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     const parsed = parseHsConfig(window.location.search, { pricing });
     if (!parsed) return;
     setSelectedType(parsed.scheme);
+    setMirrored(parsed.mirrored);
+    setActiveSash(parsed.activeSash);
     setWidth(parsed.width);
     setHeight(parsed.height);
     setPlinthHeight(parsed.plinth);
@@ -159,6 +167,10 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     (type) => {
       setIsCanvasReady(false);
       setSelectedType(type);
+      // Odbicie i aktywne skrzydło są specyficzne dla schematu — nowy schemat
+      // startuje w wariancie bazowym
+      setMirrored(false);
+      setActiveSash(DEFAULT_ACTIVE_SASH);
       const typeData = TYPES.find((item) => item.value === type);
       if (!typeData?.widthRange) return;
       const nextRanges = deriveRanges(pricing?.schemes?.[type]?.matrix, typeData.widthRange, HEIGHT_RANGE);
@@ -167,6 +179,16 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     },
     [pricing]
   );
+
+  const handleMirrorToggle = useCallback((event) => {
+    setIsCanvasReady(false);
+    setMirrored(event.target.checked);
+  }, []);
+
+  const handleActiveSashChange = useCallback((value) => {
+    setIsCanvasReady(false);
+    setActiveSash(value);
+  }, []);
 
   const handleMaterialTypeChange = useCallback((value) => {
     setIsCanvasReady(false);
@@ -233,6 +255,8 @@ const HsConfiguratorPage = ({ pricing = null }) => {
   const arConfig = useMemo(
     () => ({
       scheme: selectedType,
+      mirrored,
+      activeSash,
       width,
       height,
       plinth: plinthHeight,
@@ -246,6 +270,8 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     }),
     [
       selectedType,
+      mirrored,
+      activeSash,
       width,
       height,
       plinthHeight,
@@ -340,9 +366,24 @@ const HsConfiguratorPage = ({ pricing = null }) => {
     const lines = [
       t('hsConfigurator.price.messageIntro', 'Dzień dobry, proszę o wycenę poniższej konfiguracji HS:'),
       `- ${stripColon(t('hsConfigurator.sectionsLabel.scheme', 'Schemat'))}: ${selectedTypeData.label}`,
-      `- ${stripColon(t('hsConfigurator.sections.dimensions', 'Wymiary'))}: ${width} × ${height} mm`,
-      `- ${stripColon(t('hsConfigurator.labels.plinthHeight', 'Wysokość podwaliny'))}: ${plinthHeight} mm`,
     ];
+
+    // Wersja lustrzana (schematy z opcją odbicia) i aktywne skrzydło — muszą
+    // trafić do danych zamówienia, żeby handlowiec widział dokładny układ
+    if (selectedTypeData.mirrorable) {
+      lines.push(
+        `- ${stripColon(t('hsConfigurator.labels.mirror', 'Odbicie lustrzane'))}: ${mirrored ? t('hsConfigurator.options.mirror.yes', 'tak') : t('hsConfigurator.options.mirror.no', 'nie')}`
+      );
+    }
+    const sashPosition = SASH_POSITION_LABELS[getActiveSashPosition(selectedType, { mirrored, activeSash })];
+    lines.push(
+      `- ${stripColon(t('hsConfigurator.labels.activeSash', 'Aktywne skrzydło'))}: ${t(sashPosition.labelKey, sashPosition.fallback)}`
+    );
+
+    lines.push(
+      `- ${stripColon(t('hsConfigurator.sections.dimensions', 'Wymiary'))}: ${width} × ${height} mm`,
+      `- ${stripColon(t('hsConfigurator.labels.plinthHeight', 'Wysokość podwaliny'))}: ${plinthHeight} mm`
+    );
 
     const materialType = MATERIAL_TYPES.find((item) => item.value === selectedMaterialType);
     if (materialType) {
@@ -386,6 +427,9 @@ const HsConfiguratorPage = ({ pricing = null }) => {
   }, [
     t,
     selectedTypeData,
+    selectedType,
+    mirrored,
+    activeSash,
     width,
     height,
     plinthHeight,
@@ -451,7 +495,61 @@ const HsConfiguratorPage = ({ pricing = null }) => {
                       })}
                     </div>
                   </div>
+                  <p className={styles.schemeFootnote}>
+                    {t('hsConfigurator.activeSashNote', 'A — aktywne skrzydło / skrzydło otwierane jako pierwsze')}
+                  </p>
                 </div>
+
+                {selectedTypeData.mirrorable ? (
+                  <div className={styles.controlGroup}>
+                    <label className={styles.checkboxRow}>
+                      <input
+                        type="checkbox"
+                        className={styles.checkbox}
+                        checked={mirrored}
+                        onChange={handleMirrorToggle}
+                      />
+                      <span className={styles.checkboxLabel}>
+                        {t('hsConfigurator.labels.mirror', 'Odbicie lustrzane')}
+                      </span>
+                    </label>
+                  </div>
+                ) : null}
+
+                {selectedTypeData.activeSashChoice ? (
+                  <div className={styles.controlGroup}>
+                    <label className={styles.label}>{t('hsConfigurator.labels.activeSash', 'Aktywne skrzydło')}</label>
+                    <div
+                      className={styles.materialTabs}
+                      role="radiogroup"
+                      aria-label={t('hsConfigurator.labels.activeSash', 'Aktywne skrzydło')}
+                      style={{
+                        '--active-index': Math.max(
+                          ACTIVE_SASH_OPTIONS.findIndex((option) => option.value === activeSash),
+                          0
+                        ),
+                        '--tabs-count': ACTIVE_SASH_OPTIONS.length,
+                      }}
+                    >
+                      <span className={styles.materialTabsThumb} aria-hidden="true" />
+                      {ACTIVE_SASH_OPTIONS.map((option) => {
+                        const isSelected = activeSash === option.value;
+                        return (
+                          <button
+                            key={option.value}
+                            type="button"
+                            role="radio"
+                            aria-checked={isSelected}
+                            className={`${styles.materialTabButton} ${styles.paletteTabButtonCompact} ${isSelected ? styles.materialTabButtonActive : ''}`}
+                            onClick={() => handleActiveSashChange(option.value)}
+                          >
+                            {t(option.labelKey, option.fallback)}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ) : null}
               </div>
 
               <div className={`${styles.controlSection} ${styles.controlSectionDivided}`}>
@@ -679,6 +777,8 @@ const HsConfiguratorPage = ({ pricing = null }) => {
                   selectedWoodFinish={woodFinish}
                   selectedHandleFinish={selectedHandleFinish}
                   selectedType={selectedType}
+                  mirrored={mirrored}
+                  activeSash={activeSash}
                   selectedThreshold={selectedThreshold}
                   selectedMaterialType={selectedMaterialType}
                   selectedAluColor={selectedAluColor}

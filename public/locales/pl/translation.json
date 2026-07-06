@@ -77,6 +77,7 @@
       "previewTag": "PODGLĄD"
     },
     "activeScheme": "Aktywny wariant",
+    "activeSashNote": "A — aktywne skrzydło / skrzydło otwierane jako pierwsze",
     "info": {
       "title": "Wizualizacja w czasie rzeczywistym",
       "description": "Model aktualizuje materiały i proporcje na bieżąco, dzięki czemu łatwiej porównasz warianty przed rozmową handlową."
@@ -93,7 +94,9 @@
       "width": "Szerokość okna:",
       "height": "Wysokość okna:",
       "plinthHeight": "Wysokość podwaliny:",
-      "woodSpecies": "Gatunek drewna:"
+      "woodSpecies": "Gatunek drewna:",
+      "mirror": "Odbicie lustrzane",
+      "activeSash": "Aktywne skrzydło"
     },
     "warnings": {
       "animationOnlyDefault": "Animacja dostępna tylko przy domyślnych wymiarach"
@@ -144,14 +147,25 @@
         "wood": "Drewno",
         "woodAlu": "Drewno-Aluminium"
       },
+      "mirror": {
+        "yes": "tak",
+        "no": "nie"
+      },
+      "activeSash": {
+        "left": "Lewe",
+        "right": "Prawe"
+      },
+      "sashPositions": {
+        "left": "lewe",
+        "right": "prawe",
+        "middle": "środkowe",
+        "middleLeft": "środkowe lewe",
+        "middleRight": "środkowe prawe"
+      },
       "schemes": {
         "a": {
           "label": "Schemat A",
           "description": "Dwa pola z jednym skrzydłem przesuwnym."
-        },
-        "a3": {
-          "label": "Schemat A3",
-          "description": "Lustrzane A — skrzydło przesuwne z prawej strony."
         },
         "d": {
           "label": "Schemat D",

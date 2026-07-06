@@ -10,6 +10,7 @@ import {
 
 import {
   Box3,
+  CanvasTexture,
   ExtrudeGeometry,
   LinearFilter,
   LinearMipMapLinearFilter,
@@ -81,17 +82,14 @@ const GLAZING = { profile: 0.045, depth: 0.09, z: -0.04 };
 // sliding = skrzydło przesuwne, fixed = skrzydło stałe ramowe,
 // glazing = szklenie stałe bezpośrednio w ościeżnicy (bez ramy skrzydła).
 // span = udział w szerokości światła ościeżnicy.
+// `extraDepth` (schemat E) pogłębia ościeżnicę i próg o dodatkowy tor —
+// E wg rysunku producenta jest trzytorowe: skrzydła kaskadowo od wnętrza,
+// pole stałe na najbardziej zewnętrznej płaszczyźnie (tor `outerFar`).
 const SCHEME_DEFINITIONS = {
   a: {
     panels: [
       { type: 'sliding', span: [0, 0.5], track: 'inner', handle: 'left', extend: [0, OV] },
       { type: 'fixed', span: [0.5, 1], track: 'outer', extend: [-OV, 0] },
-    ],
-  },
-  a3: {
-    panels: [
-      { type: 'fixed', span: [0, 0.5], track: 'outer', extend: [0, OV] },
-      { type: 'sliding', span: [0.5, 1], track: 'inner', handle: 'right', extend: [-OV, 0] },
     ],
   },
   c: {
@@ -109,11 +107,15 @@ const SCHEME_DEFINITIONS = {
     ],
   },
   e: {
+    // Układ trzytorowy wg rysunku: lewe skrzydło najbliżej wnętrza (klamka przy
+    // futrynie), środkowe na środkowym torze z klamką na prawym słupku, pole
+    // stałe najdalej od wnętrza; oba skrzydła przesuwają się w prawo
     panels: [
-      { type: 'sliding', span: [0, 1 / 3], track: 'outer', handle: 'left', extend: [0, OV] },
-      { type: 'sliding', span: [1 / 3, 2 / 3], track: 'inner', handle: 'left', extend: [-OV, OV] },
-      { type: 'fixed', span: [2 / 3, 1], track: 'outer', extend: [-OV, 0] },
+      { type: 'sliding', span: [0, 1 / 3], track: 'inner', handle: 'left', extend: [0, OV] },
+      { type: 'sliding', span: [1 / 3, 2 / 3], track: 'outer', handle: 'right', extend: [-OV, OV] },
+      { type: 'fixed', span: [2 / 3, 1], track: 'outerFar', extend: [-OV, 0] },
     ],
+    extraDepth: 0.11,
   },
   f: {
     panels: [
@@ -154,10 +156,35 @@ const SCHEME_DEFINITIONS = {
   },
 };
 
+// `outerFar` to trzecia płaszczyzna schematu E (pogłębiona ościeżnica) —
+// o pełny rozstaw toru (0.11) za torem zewnętrznym
 const TRACK_Z = {
   inner: PROFILE.trackInnerZ,
   outer: PROFILE.trackOuterZ,
+  outerFar: PROFILE.trackOuterZ - 0.11,
 };
+
+// Odbicie lustrzane schematu liczone w danych, nie przez scale(-1) na grupie
+// (ujemna skala odwraca winding i psuje cieniowanie brył). Panele zostają na
+// swoich indeksach (animacje i oznaczenie aktywnego skrzydła nie wymagają
+// przemapowania) — odbijamy span/zakłady/stronę klamki, słupki i kierunki jazdy.
+const mirrorSchemeDefinition = (definition) => ({
+  ...definition,
+  panels: definition.panels.map((panel) => ({
+    ...panel,
+    span: [1 - panel.span[1], 1 - panel.span[0]],
+    extend: [-panel.extend[1], -panel.extend[0]],
+    handle: panel.handle === 'left' ? 'right' : panel.handle === 'right' ? 'left' : panel.handle,
+  })),
+  mullions: definition.mullions?.map((fraction) => 1 - fraction),
+});
+
+const mirrorAnimationSpec = (spec) => ({
+  ...spec,
+  panels: Object.fromEntries(
+    Object.entries(spec.panels ?? {}).map(([index, sash]) => [index, { ...sash, dir: -sash.dir }])
+  ),
+});
 
 // Klamka skrzydła na torze zewnętrznym wystaje do przodu, w płaszczyznę toru
 // wewnętrznego. Skrzydła muszą się zatrzymywać, zanim klamka (własna lub
@@ -173,7 +200,6 @@ const HANDLE_CLEARANCE = 0.085;
 // zamknięciu pierwszego.
 const SCHEME_ANIMATIONS = {
   a: { panels: { 0: { dir: 1, distance: (w) => w / 2 - OV } } },
-  a3: { panels: { 1: { dir: -1, distance: (w) => w / 2 - OV } } },
   c: {
     panels: {
       1: { dir: -1, distance: (w) => w / 4 - OV },
@@ -192,7 +218,8 @@ const SCHEME_ANIMATIONS = {
   },
   e: {
     panels: {
-      // Lewe (zewnętrzne) zatrzymuje klamkę przed środkowym skrzydłem
+      // Lewe (wewnętrzne) zatrzymuje się przed klamką na prawym słupku
+      // środkowego skrzydła; środkowe zajeżdża przed pole stałe
       0: { dir: 1, distance: (w) => w / 3 - OV - HANDLE_CLEARANCE },
       1: { dir: 1, distance: (w) => w / 3 - OV },
     },
@@ -281,6 +308,66 @@ function getThresholdMaterial(thresholdType) {
   return material;
 }
 
+// Skrzydło aktywne (otwierane jako pierwsze) per schemat — indeks w `panels`.
+// C i F mają wybór między środkową parą (left/right); przy odbiciu lustrzanym
+// indeksy zostają, bo panele odbijamy w miejscu (geometria sama zmienia stronę).
+const ACTIVE_PANEL_INDEX = {
+  a: 0,
+  c: { left: 1, right: 2 },
+  d: 0,
+  e: 0,
+  f: { left: 1, right: 2 },
+  g2: 1,
+  g3: 1,
+  h: 1,
+  k: 0,
+};
+
+const resolveActivePanelIndex = (scheme, activeSash) => {
+  const entry = ACTIVE_PANEL_INDEX[scheme] ?? 0;
+  if (typeof entry === 'number') return entry;
+  return entry[activeSash] ?? entry.left;
+};
+
+// Badge „A" na szybie aktywnego skrzydła: okrągła plakietka rysowana na
+// CanvasTexture (bez zewnętrznych fontów). Oznaczenie informacyjne podglądu —
+// eksport AR je usuwa (userData.hsActiveMarker w prepareModelForExport)
+const createActiveMarkerTexture = () => {
+  const size = 256;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0, 0, size, size);
+  ctx.beginPath();
+  ctx.arc(size / 2, size / 2, size / 2 - 12, 0, Math.PI * 2);
+  ctx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+  ctx.fill();
+  ctx.lineWidth = 10;
+  ctx.strokeStyle = '#0f3d2a';
+  ctx.stroke();
+  ctx.fillStyle = '#0f3d2a';
+  ctx.font = '700 150px "Segoe UI", Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('A', size / 2, size / 2 + 8);
+  const texture = new CanvasTexture(canvas);
+  texture.colorSpace = SRGBColorSpace;
+  texture.anisotropy = 8;
+  return texture;
+};
+
+const ACTIVE_MARKER_SIZE = 0.09; // średnica plakietki w metrach
+
+function ActiveSashMarker({ position, texture }) {
+  return (
+    <mesh position={position} userData={{ hsActiveMarker: true }} renderOrder={2}>
+      <planeGeometry args={[ACTIVE_MARKER_SIZE, ACTIVE_MARKER_SIZE]} />
+      <meshBasicMaterial map={texture} transparent depthWrite={false} toneMapped={false} />
+    </mesh>
+  );
+}
+
 function BoxPart({ position, size, material, castShadow = true, receiveShadow = true }) {
   return (
     <mesh position={position} castShadow={castShadow} receiveShadow={receiveShadow}>
@@ -315,10 +402,12 @@ function ThresholdRail({ z, width, sectionTop, material }) {
 // realnym montażu. Elementy funkcyjne (szyny, nakładki) tylko w świetle
 // otworu, między stojakami. Szyna toru zewnętrznego pojawia się wyłącznie w
 // schematach, w których jeździ po nim skrzydło — przy polach stałych
-// zewnętrzna strefa to płaski stopień
-function LowThreshold({ bodyWidth, openingWidth, material, outerRail }) {
+// zewnętrzna strefa to płaski stopień. `extraDepth` (schemat E, trzeci tor)
+// wydłuża stopień i wysuwa nos okapowy o rozstaw dodatkowej płaszczyzny
+function LowThreshold({ bodyWidth, openingWidth, material, outerRail, extraDepth = 0 }) {
   const { inner, platform, nose, plate, rail } = THRESHOLD;
   const plateGap = rail.width / 2 + 0.005; // odstęp nakładek od osi szyny
+  const platformZFrom = platform.zFrom - extraDepth;
   return (
     <group>
       <BoxPart
@@ -345,8 +434,8 @@ function LowThreshold({ bodyWidth, openingWidth, material, outerRail }) {
       />
       {/* Stopień pod pole stałe / tor zewnętrzny */}
       <BoxPart
-        position={[0, platform.height / 2, (platform.zFrom + platform.zTo) / 2]}
-        size={[bodyWidth, platform.height, platform.zTo - platform.zFrom]}
+        position={[0, platform.height / 2, (platformZFrom + platform.zTo) / 2]}
+        size={[bodyWidth, platform.height, platform.zTo - platformZFrom]}
         material={material}
       />
       {outerRail && (
@@ -359,7 +448,7 @@ function LowThreshold({ bodyWidth, openingWidth, material, outerRail }) {
       )}
       {/* Nos okapowy przed licem ościeżnicy */}
       <BoxPart
-        position={[0, nose.height / 2, (nose.zFrom + nose.zTo) / 2]}
+        position={[0, nose.height / 2, (nose.zFrom + nose.zTo) / 2 - extraDepth]}
         size={[bodyWidth, nose.height, nose.zTo - nose.zFrom]}
         material={material}
       />
@@ -596,6 +685,8 @@ function GlazedPanel({
   slideDistance = 0,
   open = false,
   onToggle,
+  activeMarker = false,
+  markerTexture = null,
 }) {
   const isSliding = panel.type === 'sliding';
   const isGlazing = panel.type === 'glazing';
@@ -785,6 +876,12 @@ function GlazedPanel({
         castShadow={false}
         receiveShadow={false}
       />
+      {/* Oznaczenie skrzydła aktywnego — plakietka „A" na wewnętrznym licu
+          szyby; siedzi w grupie skrzydła, więc jeździ razem z nim i sama
+          zmienia stronę przy odbiciu lustrzanym schematu */}
+      {activeMarker && markerTexture && (
+        <ActiveSashMarker position={[cx, cy, z + 0.021]} texture={markerTexture} />
+      )}
       {/* Listwa maskująca nad polem stałym — renderowana w licu skrzydła
           (pełna głębokość 115 mm wystawałaby poza profil i psuła bryłę) */}
       {!isSliding && !isGlazing && (
@@ -843,6 +940,8 @@ function GlazedPanel({
 
 function ProceduralHsModel({
   scheme,
+  mirrored = false,
+  activeSash = 'left',
   woodFinish,
   handleFinish,
   thresholdType,
@@ -859,13 +958,28 @@ function ProceduralHsModel({
   const isRalWood = woodFinish?.type === 'ral';
   const grainPath = woodFinish?.grainPath ?? FALLBACK_GRAIN;
   const grainTexture = useTexture(grainPath);
-  const schemeDef = SCHEME_DEFINITIONS[scheme] ?? SCHEME_DEFINITIONS.a;
+  // Wariant lustrzany liczony z definicji bazowej — panele zostają na swoich
+  // indeksach, więc animacje i aktywne skrzydło nie wymagają przemapowania
+  const { schemeDef, animationSpec } = useMemo(() => {
+    const baseDef = SCHEME_DEFINITIONS[scheme] ?? SCHEME_DEFINITIONS.a;
+    const baseAnim = SCHEME_ANIMATIONS[scheme] ?? SCHEME_ANIMATIONS.a;
+    if (!mirrored) return { schemeDef: baseDef, animationSpec: baseAnim };
+    return { schemeDef: mirrorSchemeDefinition(baseDef), animationSpec: mirrorAnimationSpec(baseAnim) };
+  }, [scheme, mirrored]);
   const panels = schemeDef.panels;
   const mullions = schemeDef.mullions ?? [];
-  const animationSpec = SCHEME_ANIMATIONS[scheme] ?? SCHEME_ANIMATIONS.a;
+  // Dodatkowa głębokość ościeżnicy/progu (schemat E — trzeci tor)
+  const extraDepth = schemeDef.extraDepth ?? 0;
+  const frameDepth = PROFILE.frameDepth + extraDepth;
+  const frameZ = -extraDepth / 2; // rama pogłębia się w stronę zewnętrzną (-z)
   // Tylne skrzydła przesuwne (schematy D/E/F/H) potrzebują szyny na torze
   // zewnętrznym; przy polach stałych zewnętrzna strefa progu zostaje płaska
   const hasOuterSliding = panels.some((panel) => panel.type === 'sliding' && panel.track === 'outer');
+
+  const activePanelIndex = resolveActivePanelIndex(scheme, activeSash);
+  // Tekstura badge'a „A" tworzona raz na życie modelu (client-only render)
+  const markerTexture = useMemo(() => createActiveMarkerTexture(), []);
+  useEffect(() => () => markerTexture.dispose(), [markerTexture]);
 
   // Stan otwarcia skrzydeł trzymany na poziomie modelu, bo skrzydła z par
   // kolizyjnych muszą znać stan sąsiada
@@ -873,7 +987,7 @@ function ProceduralHsModel({
 
   useEffect(() => {
     setOpenPanels({});
-  }, [scheme, width, height]);
+  }, [scheme, mirrored, width, height]);
 
   const togglePanel = useCallback(
     (index) => {
@@ -1028,9 +1142,13 @@ function ProceduralHsModel({
 
   const aluMaterial = isWoodAlu ? materials.alu : null;
 
+  // Zewnętrzne lico ościeżnicy (przy pogłębionej ramie schematu E przesuwa
+  // się o extraDepth w stronę zewnętrzną)
+  const frameOuterZ = -PROFILE.frameDepth / 2 - extraDepth;
+
   useEffect(() => {
     onReady?.();
-  }, [aluColor, handleFinish, height, materialType, onReady, plinthHeight, scheme, thresholdType, textures, width, woodFinish]);
+  }, [activeSash, aluColor, handleFinish, height, materialType, mirrored, onReady, plinthHeight, scheme, thresholdType, textures, width, woodFinish]);
 
   return (
     // exportRef wskazuje samą grupę modelu (bez Center/świateł/ContactShadows) —
@@ -1045,21 +1163,21 @@ function ProceduralHsModel({
             position={[
               side * (modelWidth / 2 - PROFILE.frame / 2),
               PROFILE.threshold + (modelHeight - PROFILE.threshold) / 2,
-              0,
+              frameZ,
             ]}
-            size={[PROFILE.frame, modelHeight - PROFILE.threshold, PROFILE.frameDepth]}
+            size={[PROFILE.frame, modelHeight - PROFILE.threshold, frameDepth]}
             material={materials.woodV}
           />
           <BoxPart
             position={[
               side * (modelWidth / 2 - PROFILE.frame / 2),
               (THRESHOLD.platform.height + PROFILE.threshold) / 2,
-              (THRESHOLD.platform.zFrom + THRESHOLD.platform.zTo) / 2,
+              (THRESHOLD.platform.zFrom - extraDepth + THRESHOLD.platform.zTo) / 2,
             ]}
             size={[
               PROFILE.frame,
               PROFILE.threshold - THRESHOLD.platform.height,
-              THRESHOLD.platform.zTo - THRESHOLD.platform.zFrom,
+              THRESHOLD.platform.zTo - THRESHOLD.platform.zFrom + extraDepth,
             ]}
             material={materials.woodV}
           />
@@ -1074,7 +1192,7 @@ function ProceduralHsModel({
                 position={[
                   side * (modelWidth / 2 - PROFILE.frame / 2),
                   THRESHOLD.platform.height + (modelHeight - THRESHOLD.platform.height) / 2,
-                  -PROFILE.frameDepth / 2 - ALU.depth / 2,
+                  frameOuterZ - ALU.depth / 2,
                 ]}
                 size={[PROFILE.frame, modelHeight - THRESHOLD.platform.height, ALU.depth]}
                 material={aluMaterial}
@@ -1083,9 +1201,9 @@ function ProceduralHsModel({
                 position={[
                   side * (modelWidth / 2 - PROFILE.frame) - side * (ALU.side / 2),
                   PROFILE.threshold + (openingTop - PROFILE.threshold) / 2,
-                  (-PROFILE.frameDepth / 2 - ALU.depth) / 2,
+                  (frameOuterZ - ALU.depth) / 2,
                 ]}
-                size={[ALU.side, openingTop - PROFILE.threshold, PROFILE.frameDepth / 2 + ALU.depth]}
+                size={[ALU.side, openingTop - PROFILE.threshold, -frameOuterZ + ALU.depth]}
                 material={aluMaterial}
               />
             </>
@@ -1093,21 +1211,21 @@ function ProceduralHsModel({
         </group>
       ))}
       <BoxPart
-        position={[0, modelHeight - PROFILE.frame / 2, 0]}
-        size={[openingWidth, PROFILE.frame, PROFILE.frameDepth]}
+        position={[0, modelHeight - PROFILE.frame / 2, frameZ]}
+        size={[openingWidth, PROFILE.frame, frameDepth]}
         material={materials.woodH}
       />
       {aluMaterial && (
         <>
           <BoxPart
-            position={[0, modelHeight - PROFILE.frame / 2, -PROFILE.frameDepth / 2 - ALU.depth / 2]}
+            position={[0, modelHeight - PROFILE.frame / 2, frameOuterZ - ALU.depth / 2]}
             size={[openingWidth, PROFILE.frame, ALU.depth]}
             material={aluMaterial}
           />
           {/* Plakieta na wnęce nadproża — analogicznie do wnęk stojaków */}
           <BoxPart
-            position={[0, openingTop - ALU.side / 2, (-PROFILE.frameDepth / 2 - ALU.depth) / 2]}
-            size={[openingWidth, ALU.side, PROFILE.frameDepth / 2 + ALU.depth]}
+            position={[0, openingTop - ALU.side / 2, (frameOuterZ - ALU.depth) / 2]}
+            size={[openingWidth, ALU.side, -frameOuterZ + ALU.depth]}
             material={aluMaterial}
           />
         </>
@@ -1119,6 +1237,7 @@ function ProceduralHsModel({
         openingWidth={openingWidth}
         material={materials.threshold}
         outerRail={hasOuterSliding}
+        extraDepth={extraDepth}
       />
 
       {/* Podwalina — szara belka montażowa pod całym progiem, na pełną
@@ -1126,8 +1245,8 @@ function ProceduralHsModel({
           przed jej lico (jak w realnym montażu, gdzie okapnik przykrywa
           styk progu z podwaliną) */}
       <BoxPart
-        position={[0, -plinthM / 2, 0]}
-        size={[modelWidth, plinthM, PROFILE.frameDepth]}
+        position={[0, -plinthM / 2, frameZ]}
+        size={[modelWidth, plinthM, frameDepth]}
         material={materials.plinth}
       />
 
@@ -1173,8 +1292,8 @@ function ProceduralHsModel({
         const panelAnimation = panel.type === 'sliding' ? animationSpec.panels?.[index] : undefined;
         return (
           <GlazedPanel
-            // Wymiary w kluczu resetują transformacje przy zmianie schematu/rozmiaru
-            key={`${scheme}-${width}-${height}-${index}-${panel.type}`}
+            // Wymiary i lustro w kluczu resetują transformacje przy zmianie schematu/rozmiaru
+            key={`${scheme}-${mirrored ? 'm' : 'b'}-${width}-${height}-${index}-${panel.type}`}
             panel={panel}
             panelIndex={index}
             openingWidth={openingWidth}
@@ -1187,6 +1306,8 @@ function ProceduralHsModel({
             slideDistance={panelAnimation ? panelAnimation.distance(openingWidth) : 0}
             open={Boolean(openPanels[index])}
             onToggle={togglePanel}
+            activeMarker={index === activePanelIndex}
+            markerTexture={markerTexture}
           />
         );
       })}
@@ -1249,6 +1370,8 @@ function FrontFit({ modelRef, width, height, scheme, plinth }) {
 
 export default function HsConfiguratorCanvas({
   selectedType = 'a',
+  mirrored = false,
+  activeSash = 'left',
   selectedWoodFinish,
   selectedHandleFinish,
   selectedThreshold,
@@ -1304,6 +1427,8 @@ export default function HsConfiguratorCanvas({
           <group ref={modelRef}>
             <ProceduralHsModel
               scheme={selectedType}
+              mirrored={mirrored}
+              activeSash={activeSash}
               woodFinish={selectedWoodFinish}
               handleFinish={selectedHandleFinish}
               thresholdType={selectedThreshold}

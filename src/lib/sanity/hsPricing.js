@@ -111,10 +111,5 @@ export const fetchHsPricing = async ({ signal } = {}) => {
     };
   }
 
-  // Scheme A3 is a mirror of A and shares its pricing unless it gets its own document.
-  if (!schemes.a3 && schemes.a) {
-    schemes.a3 = schemes.a;
-  }
-
   return { settings, schemes };
 };
