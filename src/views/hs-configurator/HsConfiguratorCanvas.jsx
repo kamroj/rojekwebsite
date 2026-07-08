@@ -16,8 +16,8 @@ import {
   LinearMipMapLinearFilter,
   LinearToneMapping,
   Matrix4,
+  MirroredRepeatWrapping,
   NoColorSpace,
-  RepeatWrapping,
   Shape,
   Sphere,
   SRGBColorSpace,
@@ -378,10 +378,33 @@ function TemperedGlassBadge({ position }) {
   return <GlassBadge position={position} texture={texture} />;
 }
 
+// Deterministyczny pseudo-losowy hash z wymiarów elementu — stały między
+// renderami (bez migotania), inny dla każdej belki
+const uvHash = (a, b, c, d) => {
+  const s = Math.sin(a * 12.9898 + b * 78.233 + c * 37.719 + d * 4.581) * 43758.5453;
+  return s - Math.floor(s);
+};
+
+// Każda belka to w realnym oknie OSOBNY kawałek drewna — identyczny rysunek
+// słojów na każdym elemencie czyta się jak tapeta. Przesuwamy więc UV każdego
+// boxa o losowy (deterministyczny) offset, żeby próbkował inny wycinek mapy;
+// MirroredRepeatWrapping na teksturach domyka próbkowanie poza [0,1] bez szwu
+const applyUvOffset = (geometry, offsetU, offsetV) => {
+  if (geometry.userData.uvOffsetApplied) return;
+  geometry.userData.uvOffsetApplied = true;
+  const uv = geometry.attributes.uv;
+  for (let i = 0; i < uv.count; i += 1) {
+    uv.setXY(i, uv.getX(i) + offsetU, uv.getY(i) + offsetV);
+  }
+  uv.needsUpdate = true;
+};
+
 function BoxPart({ position, size, material, castShadow = true, receiveShadow = true }) {
+  const offsetU = uvHash(position[0], position[1], size[0], size[1]);
+  const offsetV = uvHash(position[1], position[2] + 1.73, size[2], size[0]);
   return (
     <mesh position={position} castShadow={castShadow} receiveShadow={receiveShadow}>
-      <boxGeometry args={size} />
+      <boxGeometry args={size} onUpdate={(geometry) => applyUvOffset(geometry, offsetU, offsetV)} />
       {material}
     </mesh>
   );
@@ -526,7 +549,7 @@ function AluSideWrap({
 // na ucios jak w stolarce
 const BEAD = { width: PROFILE.bead, depth: 0.022, land: 0.005 };
 
-function createBeadGeometry(length) {
+function createBeadGeometry(length, uvSeed = 0) {
   const { width: B, depth: D, land } = BEAD;
 
   // Przekrój w (u, v): u=0 przy ramie skrzydła, u=B przy szybie; v wzdłuż osi Z
@@ -555,7 +578,9 @@ function createBeadGeometry(length) {
     const u = pos.getX(i);
     const z = pos.getZ(i) < length / 2 ? u : length - u;
     pos.setZ(i, z);
-    uvAttr.setXY(i, z / length, u / B);
+    // uvSeed przesuwa próbkowanie wzdłuż mapy — każda listwa pokazuje inny
+    // wycinek słojów (jak BoxPart z applyUvOffset)
+    uvAttr.setXY(i, z / length + uvSeed, u / B);
   }
   geo.computeVertexNormals();
   geo.translate(0, -D / 2, -length / 2);
@@ -574,12 +599,12 @@ const BEAD_ORIENTATIONS = {
 function MiteredBeadRing({ cx, cy, z, width, height, material, flip = false }) {
   const geometries = useMemo(
     () => ({
-      bottom: createBeadGeometry(width).applyMatrix4(BEAD_ORIENTATIONS.bottom),
-      top: createBeadGeometry(width).applyMatrix4(BEAD_ORIENTATIONS.top),
-      left: createBeadGeometry(height).applyMatrix4(BEAD_ORIENTATIONS.left),
-      right: createBeadGeometry(height).applyMatrix4(BEAD_ORIENTATIONS.right),
+      bottom: createBeadGeometry(width, uvHash(cx, cy, width, 1.1)).applyMatrix4(BEAD_ORIENTATIONS.bottom),
+      top: createBeadGeometry(width, uvHash(cx, cy, width, 2.3)).applyMatrix4(BEAD_ORIENTATIONS.top),
+      left: createBeadGeometry(height, uvHash(cx, cy, height, 3.7)).applyMatrix4(BEAD_ORIENTATIONS.left),
+      right: createBeadGeometry(height, uvHash(cx, cy, height, 4.9)).applyMatrix4(BEAD_ORIENTATIONS.right),
     }),
-    [width, height]
+    [cx, cy, width, height]
   );
 
   useEffect(
@@ -1054,8 +1079,11 @@ function ProceduralHsModel({
   const textures = useMemo(() => {
     const setup = (rotate, colorSpace) => {
       const tex = grainTexture.clone();
-      tex.wrapS = RepeatWrapping;
-      tex.wrapT = RepeatWrapping;
+      // Lustrzane zawijanie: elementy próbkują mapę z losowym offsetem UV
+      // (osobny kawałek drewna per belka), więc wychodzą poza [0,1] — mirror
+      // domyka to bez widocznego szwu
+      tex.wrapS = MirroredRepeatWrapping;
+      tex.wrapT = MirroredRepeatWrapping;
       tex.colorSpace = colorSpace;
       tex.anisotropy = 16;
       tex.minFilter = LinearMipMapLinearFilter;
