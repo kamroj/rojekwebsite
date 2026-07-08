@@ -17,8 +17,8 @@ import styles from './ArLauncher.module.css';
 // Sygnatura części konfiguracji wpływającej na geometrię/materiały modelu —
 // dodatki nie zmieniają eksportu, więc nie unieważniają cache'u. Gatunek
 // (wood) jest w sygnaturze, bo lazur może mieć teksturę per gatunek.
-// Aktywnego skrzydła tu nie ma: jego oznaczenie jest usuwane z eksportu AR,
-// więc nie zmienia modelu
+// Aktywnego skrzydła tu nie ma: plakietki (aktywne skrzydło, szyba hartowana)
+// są usuwane z eksportu AR, więc modelu nie zmieniają
 const exportSignature = (config) =>
   [
     config.scheme,

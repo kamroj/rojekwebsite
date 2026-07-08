@@ -479,10 +479,26 @@ function LowThreshold({ bodyWidth, openingWidth, material, outerRail, extraDepth
           material={material}
         />
       )}
+      {/* Spadek odwadniający: cienka nakładka pochylona ku zewnętrzu,
+          zawiasowo od wewnętrznej krawędzi stopnia (pola stałe stoją płasko
+          na stopniu, nakładka zaczyna się 1,5 mm niżej) */}
+      <group position={[0, platform.height, platform.zTo]} rotation={[-0.04, 0, 0]}>
+        <BoxPart
+          position={[0, -0.0015, -(platform.zTo - platformZFrom) / 2]}
+          size={[bodyWidth, 0.003, platform.zTo - platformZFrom]}
+          material={material}
+        />
+      </group>
       {/* Nos okapowy przed licem ościeżnicy */}
       <BoxPart
         position={[0, nose.height / 2, (nose.zFrom + nose.zTo) / 2 - extraDepth]}
         size={[bodyWidth, nose.height, nose.zTo - nose.zFrom]}
+        material={material}
+      />
+      {/* Wystający okapnik na krawędzi noska (jak na renderach progów) */}
+      <BoxPart
+        position={[0, nose.height - 0.0015, nose.zFrom - extraDepth - 0.005]}
+        size={[bodyWidth, 0.003, 0.02]}
         material={material}
       />
     </group>
@@ -662,6 +678,69 @@ function FrameRing({ cx, cy, z, width, height, profile, depth, materialV, materi
   );
 }
 
+// Pakiet 3-szybowy wg przekroju HS-90: 3 tafle 4 mm + 2 komory 12 mm (razem
+// 36 mm — jak dotychczasowa pojedyncza bryła). Tafle wchodzą pod listwy
+// przyszybowe (underlap), a ramki dystansowe kończą się 2 mm ZA krawędzią
+// widocznego otworu — jak w realnej stolarce ramka jest schowana pod listwą
+// i widać ją tylko krawędziowo pod ostrym kątem, nie jako czarną obwódkę
+const IGU = { pane: 0.004, gap: 0.012, spacerProfile: 0.012, underlap: 0.015 };
+
+function GlazingUnit({ cx, cy, z, width, height, materials }) {
+  const pitch = IGU.pane + IGU.gap; // rozstaw osi sąsiednich tafli
+  const paneW = width + IGU.underlap * 2;
+  const paneH = height + IGU.underlap * 2;
+  return (
+    <group>
+      {[-pitch, 0, pitch].map((offset) => (
+        <BoxPart
+          key={`pane-${offset}`}
+          position={[cx, cy, z + offset]}
+          size={[paneW, paneH, IGU.pane]}
+          material={materials.glass}
+          castShadow={false}
+          receiveShadow={false}
+        />
+      ))}
+      {[-1, 1].map((side) => (
+        <FrameRing
+          key={`spacer-${side}`}
+          cx={cx}
+          cy={cy}
+          z={z + (side * pitch) / 2}
+          width={paneW - 0.002}
+          height={paneH - 0.002}
+          profile={IGU.spacerProfile}
+          depth={IGU.gap}
+          materialV={materials.spacer}
+          materialH={materials.spacer}
+        />
+      ))}
+    </group>
+  );
+}
+
+// Prowadnica górna wg przekroju producenta: aluminiowa szyna T pod nadprożem
+// nad każdym torem skrzydeł przesuwnych — półka przy nadprożu + żebro
+// schodzące w kanał wyfrezowany w górnym ryglu skrzydła
+const TOP_GUIDE = { flangeH: 0.004, flangeD: 0.03, webH: 0.012, webD: 0.004 };
+
+function TopGuide({ z, width, openingTop, material }) {
+  return (
+    <group>
+      <BoxPart
+        position={[0, openingTop - TOP_GUIDE.flangeH / 2, z]}
+        size={[width, TOP_GUIDE.flangeH, TOP_GUIDE.flangeD]}
+        material={material}
+      />
+      <BoxPart
+        position={[0, openingTop - TOP_GUIDE.flangeH - TOP_GUIDE.webH / 2, z]}
+        size={[width, TOP_GUIDE.webH, TOP_GUIDE.webD]}
+        material={material}
+      />
+    </group>
+  );
+}
+
 // Klamka HS wg rysunku technicznego G-U: płytka 46 x 143,5 x 19 mm, dźwignia
 // 27 x 15 mm łukiem przez szyjkę do trzpienia w środku płytki (= kotwica
 // grupy), czubek ścięty „dziobkiem" ku szybie; całość 311,7 mm. Bryły z
@@ -723,6 +802,7 @@ function GlazedPanel({
   activeMarker = false,
   markerTexture = null,
   temperedGlass = false,
+  lapSeals = [],
 }) {
   const isSliding = panel.type === 'sliding';
   const isGlazing = panel.type === 'glazing';
@@ -747,9 +827,11 @@ function GlazedPanel({
   const lapsRight = panel.extend[1] !== 0;
 
   // Skrzydło przesuwne jedzie po szynie progu, pole stałe schodzi niżej — na
-  // zewnętrzny stopień progu; od góry pole stałe domyka listwa maskująca 19 x 115
+  // zewnętrzny stopień progu; od góry pole stałe domyka listwa maskująca 19 x 115.
+  // Szczelina górna skrzydła przesuwnego 14 mm — mieści żebro prowadnicy
+  // górnej (TopGuide) wchodzące w kanał rygla
   const bottom = isSliding ? openingBottom + 0.012 : THRESHOLD.platform.height;
-  const top = openingTop - (isSliding ? 0.004 : isGlazing ? 0 : PROFILE.filler.height);
+  const top = openingTop - (isSliding ? 0.014 : isGlazing ? 0 : PROFILE.filler.height);
   const cy = (bottom + top) / 2;
   const panelHeight = top - bottom;
 
@@ -761,6 +843,9 @@ function GlazedPanel({
 
   const handleX = panel.handle === 'left' ? xLeft + profile / 2 : xRight - profile / 2;
   const handleY = Math.min(bottom + 1.0, cy);
+  // Lico zewnętrzne panelu (przy drewno-alu za nakładką) — kotwica dla
+  // okapnika, pochwytu zewnętrznego i rozety wkładki
+  const exteriorZ = z - depth / 2 - (aluMaterial ? ALU.depth : 0);
 
   // Animacja otwierania (tylko skrzydła oznaczone jako animatable)
   const sashRef = useRef();
@@ -904,14 +989,50 @@ function GlazedPanel({
         materialV={materials.gasket}
         materialH={materials.gasket}
       />
-      {/* Pakiet szybowy */}
-      <BoxPart
-        position={[cx, cy, z]}
-        size={[glassW, glassH, 0.036]}
-        material={materials.glass}
-        castShadow={false}
-        receiveShadow={false}
-      />
+      {/* Pakiet szybowy: 3 tafle + ramki dystansowe (przekrój HS-90) */}
+      <GlazingUnit cx={cx} cy={cy} z={z} width={glassW} height={glassH} materials={materials} />
+      {/* Uszczelki szczotkowe zakładów — na licu zwróconym ku sąsiedniemu polu
+          (kierunek dz policzony w modelu, bo panel nie zna sąsiadów) */}
+      {lapSeals.map(({ side, dz }) => (
+        <BoxPart
+          key={`lap-seal-${side}`}
+          position={[side === 'left' ? xLeft + 0.005 : xRight - 0.005, cy, z + dz * (depth / 2 + 0.007)]}
+          size={[0.007, panelHeight - 0.02, 0.014]}
+          material={materials.gasket}
+        />
+      ))}
+      {/* Uszczelka progowa — styk pola stałego / szklenia ze stopniem progu */}
+      {!isSliding && (
+        <BoxPart position={[cx, bottom, z]} size={[panelWidth - 0.01, 0.006, depth * 0.6]} material={materials.gasket} />
+      )}
+      {/* Szczotki kanału prowadnicy górnej na górnym ryglu skrzydła */}
+      {isSliding &&
+        [-1, 1].map((side) => (
+          <BoxPart
+            key={`top-brush-${side}`}
+            position={[cx, top + 0.005, z + side * 0.012]}
+            size={[panelWidth, 0.01, 0.004]}
+            material={materials.gasket}
+          />
+        ))}
+      {/* Osłona wózków: dolny rygiel schodzi osłoną prawie do progu (w realnym
+          skrzydle wózki są niemal całkiem zakryte) — zostaje 4 mm szczeliny nad
+          nakładkami progu, a rolki widać dopiero po uniesieniu skrzydła */}
+      {isSliding && (
+        <BoxPart
+          position={[cx, bottom - 0.004, z]}
+          size={[panelWidth - 0.004, 0.008, 0.055]}
+          material={materials.gasket}
+        />
+      )}
+      {/* Okapnik aluminiowy na dolnym ryglu od zewnątrz */}
+      {!isGlazing && (
+        <BoxPart
+          position={[cx, bottom + 0.008, exteriorZ - 0.003]}
+          size={[panelWidth, 0.02, 0.006]}
+          material={materials.threshold}
+        />
+      )}
       {/* Plakietki w prawym dolnym rogu szyby (wewnętrzne lico): „A" dla
           aktywnego skrzydła (C/F), tarcza dla szyby hartowanej — hartowana
           na KAŻDEJ szybie, a gdy obie plakietki są obecne, tarcza staje obok
@@ -1030,6 +1151,35 @@ function ProceduralHsModel({
   // Tekstura badge'a „A" tworzona raz na życie modelu (client-only render)
   const markerTexture = useMemo(() => createActiveMarkerTexture(), []);
   useEffect(() => () => markerTexture.dispose(), [markerTexture]);
+
+  // Kierunki szczotek na zakładach: szczotka siedzi na licu zwróconym ku
+  // płaszczyźnie sąsiedniego pola — znak różnicy torów; panel sam nie zna
+  // sąsiadów, więc liczone na poziomie modelu
+  const lapSealsByPanel = useMemo(
+    () =>
+      panels.map((panel, index) => {
+        if (panel.type !== 'sliding') return [];
+        const panelZ = TRACK_Z[panel.track] ?? PROFILE.trackOuterZ;
+        const seals = [];
+        const edges = [
+          ['left', panel.span[0], panel.extend[0]],
+          ['right', panel.span[1], panel.extend[1]],
+        ];
+        for (const [side, edge, extend] of edges) {
+          if (extend === 0) continue;
+          const neighbor = panels.find(
+            (other, j) =>
+              j !== index && Math.abs((side === 'left' ? other.span[1] : other.span[0]) - edge) < 1e-6
+          );
+          if (!neighbor) continue;
+          const neighborZ = neighbor.type === 'glazing' ? GLAZING.z : TRACK_Z[neighbor.track] ?? PROFILE.trackOuterZ;
+          const dz = Math.sign(neighborZ - panelZ);
+          if (dz) seals.push({ side, dz });
+        }
+        return seals;
+      }),
+    [panels]
+  );
 
   // Stan otwarcia skrzydeł trzymany na poziomie modelu, bo skrzydła z par
   // kolizyjnych muszą znać stan sąsiada
@@ -1186,6 +1336,9 @@ function ProceduralHsModel({
         />
       ),
       gasket: <meshStandardMaterial color="#1c1e1c" roughness={0.85} metalness={0.05} />,
+      // Ramka dystansowa pakietu szybowego (ciepła ramka): ciemny grafit,
+      // widoczny przez szkło przy krawędzi pakietu
+      spacer: <meshStandardMaterial color="#2f3236" roughness={0.6} metalness={0.3} />,
       // Podwalina (belka montażowa pod progiem, np. purenit): matowa szara
       // bryła bez metaliczności — ma się czytać jako materiał budowlany,
       // nie jako element okucia
@@ -1351,6 +1504,20 @@ function ProceduralHsModel({
         </group>
       ))}
 
+      {/* Prowadnice górne — szyna T pod nadprożem nad każdym torem, po którym
+          jeździ skrzydło (pola stałe prowadnicy nie potrzebują) */}
+      {[...new Set(panels.filter((panel) => panel.type === 'sliding').map((panel) => panel.track))].map(
+        (track) => (
+          <TopGuide
+            key={`top-guide-${track}`}
+            z={TRACK_Z[track]}
+            width={openingWidth}
+            openingTop={openingTop}
+            material={materials.threshold}
+          />
+        )
+      )}
+
       {panels.map((panel, index) => {
         const panelAnimation = panel.type === 'sliding' ? animationSpec.panels?.[index] : undefined;
         return (
@@ -1372,6 +1539,7 @@ function ProceduralHsModel({
             activeMarker={activePanelIndex !== null && index === activePanelIndex}
             markerTexture={markerTexture}
             temperedGlass={temperedGlass}
+            lapSeals={lapSealsByPanel[index]}
           />
         );
       })}
