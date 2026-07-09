@@ -35,14 +35,14 @@
   align-items: center;
   gap: var(--space-xs);
   padding: var(--space-sm) var(--space-md);
-  font-size: 0.875rem;
+  font-size: 1.3rem;
   font-weight: 500;
   color: var(--color-text);
   background: transparent;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .pageButton:hover:not(:disabled) {
@@ -75,14 +75,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.875rem;
+  font-size: 1.3rem;
   font-weight: 500;
   color: var(--color-text);
   background: transparent;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .pageNumber:hover {

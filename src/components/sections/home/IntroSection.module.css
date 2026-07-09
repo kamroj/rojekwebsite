@@ -162,7 +162,7 @@
   cursor: pointer;
   
   outline: none;
-  transition: opacity var(--transition-default);
+  transition: opacity var(--transition-default), transform 0.15s ease;
   opacity: 0.8;
 
   z-index: 2;
@@ -173,6 +173,10 @@
 
 .videoControlButton:hover {
   opacity: 1;
+}
+
+.videoControlButton:active {
+  transform: scale(0.94);
 }
 
 @media (--bp-sm) {

@@ -180,23 +180,29 @@
   }
 }
 
+/* Rozwijanie przez grid-template-rows 0fr->1fr: animuje do naturalnej
+   wysokości (bez magicznego max-height, który przycinał długie odpowiedzi).
+   Delay 0.15s sekwencjonuje animację: najpierw ikona przycisku (0.25s),
+   potem szybkie rozwinięcie panelu. */
 .faqAnswerWrapper {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.4s ease;
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.18s ease 0.15s;
 }
 
 .faqAnswerWrapper.isOpen {
-  max-height: 500px;
+  grid-template-rows: 1fr;
 }
 
 .faqAnswer {
-  padding: 0 16px 14px 16px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0 16px;
 }
 
 @media (--bp-sm) {
   .faqAnswer {
-    padding: 0 1.5rem 1.25rem 1.5rem;
+    padding: 0 1.5rem;
   }
 }
 
@@ -206,7 +212,15 @@
   line-height: 1.58;
   margin: 0;
   padding-top: 0.5rem;
+  /* padding-bottom tutaj (nie na .faqAnswer), żeby przy 0fr nic nie wystawało */
+  padding-bottom: 14px;
   border-top: 1px dashed #2e8b5755;
+}
+
+@media (--bp-sm) {
+  .faqAnswerText {
+    padding-bottom: 1.25rem;
+  }
 }
 
 @media (--bp-sm) {

@@ -8,7 +8,7 @@
 .prose {
   font-size: var(--fs-base);
   line-height: var(--lh-relaxed);
-  color: #000000ff;
+  color: var(--color-text);
 }
 
 .prose p {
@@ -50,7 +50,7 @@
 }
 
 .prose a:hover {
-  color: #e6c619;
+  color: #014d07;
 }
 
 /* PortableText helper wrappers */

@@ -81,7 +81,7 @@
   font-size: 1.2rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .profileThicknessButton:hover {
@@ -139,6 +139,17 @@
 .profileThicknessImageWrap {
   width: 100%;
   height: 100%;
+  /* Fade przy przełączaniu zakładki (obrazek dostaje key w JSX -> remount) */
+  animation: hsTabImageFadeIn 0.25s ease;
+}
+
+@keyframes hsTabImageFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .profileThicknessTitleBlock {
@@ -225,7 +236,7 @@
   font-size: 1.2rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .thresholdButton:hover {
@@ -308,6 +319,7 @@
 .thresholdImageWrap {
   width: 100%;
   height: 100%;
+  animation: hsTabImageFadeIn 0.25s ease;
 }
 
 .usageSection {
@@ -351,7 +363,7 @@
   font-size: 1.2rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
 .usageButton:hover {

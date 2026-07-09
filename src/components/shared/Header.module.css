@@ -298,8 +298,11 @@
   text-overflow: ellipsis;
   text-transform: uppercase;
 
-  animation: fadeIn 0.3s forwards;
+  /* Animacja wejścia gra dopiero przy otwarciu menu (patrz reguły
+     .mobileMenuContainerOpen niżej); transition daje miękkie zgaśnięcie
+     przy zamykaniu. Inline animation-delay z JSX zapewnia kaskadę. */
   opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
 @media (min-height: 700px) {
@@ -361,8 +364,8 @@
   text-align: left;
   text-transform: uppercase;
 
-  animation: fadeIn 0.3s forwards;
   opacity: 0;
+  transition: opacity 0.2s ease;
 }
 
 .mobileNavButton svg {
@@ -530,9 +533,21 @@
   padding-right: var(--space-sm);
   display: flex;
   justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* Animacje wejścia itemów odpalane przy KAŻDYM otwarciu menu (kontener
+   jest stale w DOM — bez bramkowania klasą otwarcia zagrałyby tylko raz,
+   przy hydracji, gdy menu jest jeszcze schowane). */
+.mobileMenuContainerOpen .mobileNavItem,
+.mobileMenuContainerOpen .mobileNavButton {
+  animation: fadeIn 0.3s forwards;
+}
+
+.mobileMenuContainerOpen .mobileLangSwitcher {
   animation: fadeIn 0.3s forwards;
   animation-delay: 0.3s;
-  opacity: 0;
 }
 
 @keyframes slideInRight {

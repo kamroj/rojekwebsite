@@ -112,6 +112,11 @@
   box-shadow: var(--cta-primary-hover-shadow);
 }
 
+.primaryButton:active {
+  transform: scale(0.98);
+  box-shadow: none;
+}
+
 .primaryButton svg {
   font-size: 1.3rem;
 }
@@ -136,6 +141,10 @@
   color: #1a5618;
 }
 
+.outlineButton:active {
+  transform: scale(0.98);
+}
+
 .outlineButton svg {
   font-size: 1.2rem;
 }
@@ -148,6 +157,8 @@
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
   background: #f8faf8;
   aspect-ratio: 4/3;
+  /* Poziome swipe'y obsługuje galeria, pion zostaje dla scrolla strony */
+  touch-action: pan-y;
 }
 
 @media (--bp-lg) {

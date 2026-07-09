@@ -456,7 +456,8 @@ const Navigation = ({
             <div className={styles.megaMenuImageCol} aria-hidden="true">
               <div className={styles.megaMenuImageWrapper}>
                 {resolvedActiveProductImage ? (
-                  <img className={styles.megaMenuImage} src={resolvedActiveProductImage} alt="" loading="lazy" />
+                  // key -> remount przy zmianie produktu, żeby zagrała animacja fade-in
+                  <img key={resolvedActiveProductImage} className={styles.megaMenuImage} src={resolvedActiveProductImage} alt="" loading="lazy" />
                 ) : isActiveCategoryLoading && loadingPreviewImage ? (
                   <img
                     className={cn(styles.megaMenuImage, styles.megaMenuImageBlurPlaceholder)}

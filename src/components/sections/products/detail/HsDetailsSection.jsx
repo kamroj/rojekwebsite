@@ -501,6 +501,7 @@ export default function HsDetailsSection({
             <div className={styles.profileThicknessPlaceholder}>
               {activeProfile?.image?.asset ? (
                 <SanityImage
+                  key={activeProfile.tabId}
                   wrapperClassName={styles.profileThicknessImageWrap}
                   image={activeProfile.image}
                   altFallback={activeProfile.title}
@@ -511,6 +512,7 @@ export default function HsDetailsSection({
                 />
               ) : typeof activeProfile?.image === 'string' ? (
                 <ImageWithSpinner
+                  key={activeProfile.tabId}
                   wrapperClassName={styles.profileThicknessImageWrap}
                   src={activeProfile.image}
                   alt={activeProfile.title}
@@ -612,6 +614,7 @@ export default function HsDetailsSection({
           <div className={styles.thresholdMedia}>
             {activeThresholdContent?.image?.asset ? (
               <SanityImage
+                key={activeThresholdContent.tabId}
                 wrapperClassName={styles.thresholdImageWrap}
                 className={styles.thresholdImage}
                 image={activeThresholdContent.image}
@@ -622,6 +625,7 @@ export default function HsDetailsSection({
               />
             ) : activeThresholdContent?.image ? (
               <ImageWithSpinner
+                key={activeThresholdContent.tabId}
                 wrapperClassName={styles.thresholdImageWrap}
                 src={activeThresholdContent.image}
                 alt={activeThresholdContent.title}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { IoIosArrowBack, IoIosArrowForward } from 'react-icons/io';
 import { FiDownload, FiPhone } from 'react-icons/fi';
 import { useFitText } from '../../../../hooks';
@@ -41,6 +41,22 @@ export default function ProductDetailHero({
     setCurrentImageIndex((prev) => (prev === 0 ? totalSlides - 1 : prev - 1));
   };
 
+  // Swipe palcem po galerii (pion zostaje dla scrolla — patrz touch-action w CSS).
+  const touchStartXRef = useRef(0);
+
+  const handleGalleryTouchStart = (event) => {
+    touchStartXRef.current = event.changedTouches?.[0]?.clientX || 0;
+  };
+
+  const handleGalleryTouchEnd = (event) => {
+    if (totalSlides < 2) return;
+    const endX = event.changedTouches?.[0]?.clientX || 0;
+    const delta = endX - touchStartXRef.current;
+    if (Math.abs(delta) < 50) return;
+    if (delta < 0) nextImage();
+    else prevImage();
+  };
+
   return (
     <div className={styles.heroSection}>
       <div className={styles.heroContent}>
@@ -75,7 +91,11 @@ export default function ProductDetailHero({
         </div>
       </div>
 
-      <div className={styles.heroImageContainer}>
+      <div
+        className={styles.heroImageContainer}
+        onTouchStart={handleGalleryTouchStart}
+        onTouchEnd={handleGalleryTouchEnd}
+      >
         {hasSanityGallery
           ? gallery.map((image, index) => (
             <SanityImage

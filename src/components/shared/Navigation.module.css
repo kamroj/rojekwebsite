@@ -139,7 +139,11 @@
   }
 }
 
-/* MegaMenu */
+/* MegaMenu.
+   UWAGA: nie animujemy opacity na tym kontenerze — animacja opacity na
+   przodku elementu z backdrop-filter wyłącza blur do końca animacji
+   (Chromium). Panel wjeżdża transformem z blurem od pierwszej klatki,
+   a fade dostaje sama treść (.megaMenuGrid). */
 .megaMenu {
   position: fixed;
   top: var(--header-height);
@@ -150,10 +154,8 @@
 
   visibility: hidden;
   pointer-events: none;
-  opacity: 0;
   transform: translateY(-8px);
   transition:
-    opacity 0.18s ease,
     transform 0.22s ease,
     visibility 0s linear 0.18s;
 }
@@ -161,12 +163,19 @@
 .megaMenuOpen {
   visibility: visible;
   pointer-events: auto;
-  opacity: 1;
   transform: translateY(0);
   transition:
-    opacity 0.18s ease,
     transform 0.22s ease,
     visibility 0s;
+}
+
+.megaMenu .megaMenuGrid {
+  opacity: 0;
+  transition: opacity 0.18s ease;
+}
+
+.megaMenuOpen .megaMenuGrid {
+  opacity: 1;
 }
 
 .megaMenuInner {
@@ -249,6 +258,17 @@
   object-fit: contain;
   object-position: center;
   display: block;
+  /* Fade-in przy podmianie produktu (img dostaje key w JSX -> remount) */
+  animation: megaMenuImageFadeIn 0.2s ease;
+}
+
+@keyframes megaMenuImageFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .megaMenuImageBlurPlaceholder {
@@ -420,9 +440,9 @@
   display: inline-flex;
   align-items: baseline;
   gap: 6px;
-  padding: 6px 8px;
+  padding: 6px 10px;
   border-radius: 999px;
-  background: rgba(1, 99, 3, 0.388);
+  background: rgba(1, 60, 12, 0.55);
   border: 1px solid rgba(13, 151, 16, 0.618);
 
   color: rgb(255, 255, 255);
@@ -437,7 +457,7 @@
 }
 
 .specBadge span:last-child {
-  font-size: 0.92rem;
+  font-size: 1.15rem;
   font-weight: 700;
   letter-spacing: 0.2px;
 }
@@ -447,9 +467,9 @@
 }
 
 .specBadge span:first-child {
-  font-size: 0.78rem;
+  font-size: 1rem;
   font-weight: 600;
-  color: rgb(213, 213, 213);
+  color: rgba(255, 255, 255, 0.85);
   text-transform: uppercase;
   letter-spacing: 0.6px;
 }
