@@ -19,7 +19,7 @@
   }
 }
 
-/* Kontener dla Swiper na mobile */
+/* Kontener dla płynnego marquee na mobile */
 .mobileSwiper {
   display: none;
   margin-bottom: var(--space-lg);
@@ -29,18 +29,30 @@
   .mobileSwiper {
     display: block;
     width: 100%;
-    padding: var(--space-sm) 0;
+    overflow: hidden;
+    padding: var(--space-sm) 0 var(--space-md);
+    cursor: grab;
+    touch-action: pan-y;
+    -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
+    mask-image: linear-gradient(90deg, transparent 0, #000 12%, #000 88%, transparent 100%);
   }
 
-  .mobileSwiper :global(.swiper) {
-    width: 100%;
-    height: auto;
-    overflow: visible;
+  .mobileTrack {
+    --partners-drag-offset: 0px;
+    display: flex;
+    width: max-content;
+    gap: var(--space-sm);
+    will-change: transform;
+    animation: partners-marquee 22s linear infinite;
   }
 
-  .mobileSwiper :global(.swiper-slide) {
-    width: auto !important;
-    height: auto;
+  .mobileSwiperPaused .mobileTrack {
+    animation-play-state: paused;
+  }
+
+  .mobileSwiperDragging {
+    cursor: grabbing;
+    user-select: none;
   }
 }
 
@@ -77,17 +89,15 @@
 }
 
 .mobilePartnerItem {
-  display: block;
-  width: 220px;
-  height: 140px;
+  width: clamp(180px, 54vw, 220px);
+  height: 128px;
   border-radius: 4px;
   padding: var(--space-sm);
   background-color: #fff;
   cursor: pointer;
   text-decoration: none;
-  flex-shrink: 0;
+  flex: 0 0 auto;
   transition: transform 0.35s ease, box-shadow 0.35s ease;
-  margin-right: var(--space-sm);
 
   display: flex;
   align-items: center;
@@ -116,4 +126,47 @@
 
 .mobilePartnerItem:hover .logo {
   transform: scale(1.03);
+}
+
+@keyframes partners-marquee {
+  from {
+    transform: translate3d(var(--partners-drag-offset), 0, 0);
+  }
+
+  to {
+    transform: translate3d(calc(-50% - (var(--space-sm) / 2) + var(--partners-drag-offset)), 0, 0);
+  }
+}
+
+@media (--bp-md) {
+  .mobilePartnerItem:hover {
+    transform: none;
+    box-shadow: var(--shadow-home-product-card);
+  }
+
+  .mobilePartnerItem:hover .logo {
+    transform: none;
+  }
+
+  .mobilePartnerItem:active {
+    transform: scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobileSwiper {
+    overflow-x: auto;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .mobileTrack {
+    animation: none;
+    padding-inline: var(--space-sm);
+    scroll-snap-type: x mandatory;
+  }
+
+  .mobilePartnerItem {
+    scroll-snap-align: center;
+  }
 }

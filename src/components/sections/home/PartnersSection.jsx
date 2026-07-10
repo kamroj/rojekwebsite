@@ -1,12 +1,6 @@
 // src/components/home/PartnersSection.jsx
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay } from 'swiper/modules';
-
-// Import Swiper styles
-import 'swiper/css';
-import 'swiper/css/autoplay';
 import MaxWidthContainer from '../../ui/MaxWidthContainer';
 import { HeaderWrap, ProductHeader, ProductHeaderSubtitle } from '../../../views/HomeView';
 import styles from './PartnersSection.module.css';
@@ -45,6 +39,35 @@ const partnersData = [
 
 const PartnersSection = () => {
   const { t } = useTranslation();
+  const mobileScrollerRef = React.useRef(null);
+  const mobileTrackRef = React.useRef(null);
+  const resumeAnimationTimeoutRef = React.useRef(null);
+  const dragOffsetRef = React.useRef(0);
+  const dragStateRef = React.useRef({
+    isPointerDown: false,
+    startX: 0,
+    startDragOffset: 0,
+    hasDragged: false,
+  });
+  const [isMobileAnimationPaused, setIsMobileAnimationPaused] = React.useState(false);
+  const [isMobileDragging, setIsMobileDragging] = React.useState(false);
+
+  const clearResumeAnimationTimeout = () => {
+    if (resumeAnimationTimeoutRef.current) {
+      window.clearTimeout(resumeAnimationTimeoutRef.current);
+      resumeAnimationTimeoutRef.current = null;
+    }
+  };
+
+  const scheduleMobileAnimationResume = () => {
+    clearResumeAnimationTimeout();
+    resumeAnimationTimeoutRef.current = window.setTimeout(() => {
+      setIsMobileAnimationPaused(false);
+      resumeAnimationTimeoutRef.current = null;
+    }, 900);
+  };
+
+  React.useEffect(() => () => clearResumeAnimationTimeout(), []);
 
   const handleLogoError = (e, partnerName) => {
     // Avoid innerHTML injection. Replace the <img> with a simple text fallback.
@@ -88,14 +111,17 @@ const PartnersSection = () => {
     </a>
   );
 
-  // Funkcja renderująca partnera dla mobile
-  const renderMobilePartner = (partner) => (
+  // Funkcja renderująca partnera dla mobile. Drugi zestaw jest tylko wizualny,
+  // żeby marquee mogło zapętlać się płynnie bez skoku i bez dodatkowego Swipera.
+  const renderMobilePartner = (partner, { duplicate = false } = {}) => (
     <a
-      key={partner.id}
+      key={`${duplicate ? 'duplicate' : 'mobile'}-${partner.id}`}
       className={styles.mobilePartnerItem}
       href={partner.website}
       target="_blank"
       rel="noopener noreferrer"
+      aria-hidden={duplicate ? 'true' : undefined}
+      tabIndex={duplicate ? -1 : undefined}
       aria-label={t('partners.visitWebsite', { name: partner.name }, `Odwiedź stronę ${partner.name}`)}
     >
       <img
@@ -110,6 +136,68 @@ const PartnersSection = () => {
     </a>
   );
 
+  const handleMobilePointerDown = (event) => {
+    if (event.button !== undefined && event.button !== 0) return;
+
+    const scroller = mobileScrollerRef.current;
+    if (!scroller) return;
+
+    clearResumeAnimationTimeout();
+    setIsMobileAnimationPaused(true);
+    setIsMobileDragging(true);
+
+    dragStateRef.current = {
+      isPointerDown: true,
+      startX: event.clientX,
+      startDragOffset: dragOffsetRef.current,
+      hasDragged: false,
+    };
+
+    scroller.setPointerCapture?.(event.pointerId);
+  };
+
+  const handleMobilePointerMove = (event) => {
+    const track = mobileTrackRef.current;
+    const dragState = dragStateRef.current;
+    if (!track || !dragState.isPointerDown) return;
+
+    const deltaX = event.clientX - dragState.startX;
+    if (Math.abs(deltaX) > 4) {
+      dragState.hasDragged = true;
+      event.preventDefault();
+    }
+
+    const nextOffset = dragState.startDragOffset + deltaX;
+    dragOffsetRef.current = nextOffset;
+    track.style.setProperty('--partners-drag-offset', `${nextOffset}px`);
+  };
+
+  const finishMobileDrag = (event) => {
+    const scroller = mobileScrollerRef.current;
+    const dragState = dragStateRef.current;
+    if (!dragState.isPointerDown) return;
+
+    const shouldSuppressClick = dragState.hasDragged;
+    dragState.isPointerDown = false;
+    setIsMobileDragging(false);
+    scroller?.releasePointerCapture?.(event.pointerId);
+    scheduleMobileAnimationResume();
+
+    if (shouldSuppressClick) {
+      window.setTimeout(() => {
+        dragStateRef.current.hasDragged = false;
+      }, 0);
+    }
+  };
+
+  const handleMobileClickCapture = (event) => {
+    if (!dragStateRef.current.hasDragged) return;
+
+    event.preventDefault();
+    event.stopPropagation();
+    dragStateRef.current.hasDragged = false;
+  };
+
   return (
       <MaxWidthContainer className={styles.sectionRoot}>
         <HeaderWrap className='full-width' reversed>
@@ -122,46 +210,25 @@ const PartnersSection = () => {
           {partnersData.map(renderDesktopPartner)}
         </div>
 
-        {/* Mobile version - Swiper carousel */}
-        <div className={styles.mobileSwiper}>
-          <Swiper
-            modules={[Autoplay]}
-            spaceBetween={10}
-            slidesPerView="auto"
-            centeredSlides={true}
-            loop={true}
-            autoplay={{
-              delay: 0.5,
-              disableOnInteraction: false,
-              pauseOnMouseEnter: true,
-              reverseDirection: false,
-            }}
-            speed={5000}
-            allowTouchMove={true}
-            grabCursor={true}
-            freeMode={false}
-            loopAdditionalSlides={2}
-            className="partners-swiper"
-          >
-            {/* Renderujemy partnerów w Swiper slides */}
-            {partnersData.map((partner) => (
-              <SwiperSlide key={partner.id}>
-                {renderMobilePartner(partner)}
-              </SwiperSlide>
-            ))}
-            {/* Duplikujemy dla lepszej pętli */}
-            {partnersData.map((partner) => (
-              <SwiperSlide key={`duplicate-${partner.id}`}>
-                {renderMobilePartner(partner)}
-              </SwiperSlide>
-            ))}
-            {/* Dodatkowa duplikacja dla super płynnej pętli */}
-            {partnersData.map((partner) => (
-              <SwiperSlide key={`duplicate2-${partner.id}`}>
-                {renderMobilePartner(partner)}
-              </SwiperSlide>
-            ))}
-          </Swiper>
+        {/* Mobile version - smooth marquee */}
+        <div
+          ref={mobileScrollerRef}
+          className={[
+            styles.mobileSwiper,
+            isMobileAnimationPaused ? styles.mobileSwiperPaused : null,
+            isMobileDragging ? styles.mobileSwiperDragging : null,
+          ].filter(Boolean).join(' ')}
+          onPointerDown={handleMobilePointerDown}
+          onPointerMove={handleMobilePointerMove}
+          onPointerUp={finishMobileDrag}
+          onPointerCancel={finishMobileDrag}
+          onLostPointerCapture={finishMobileDrag}
+          onClickCapture={handleMobileClickCapture}
+        >
+          <div ref={mobileTrackRef} className={styles.mobileTrack}>
+            {partnersData.map((partner) => renderMobilePartner(partner))}
+            {partnersData.map((partner) => renderMobilePartner(partner, { duplicate: true }))}
+          </div>
         </div>
       </MaxWidthContainer>
   );
