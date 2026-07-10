@@ -65,25 +65,25 @@ const productData = {
     id: PRODUCT_TYPES.WINDOWS,
     name: t('products.windows.name', 'Okna'),
     description: t('products.windows.description', ''),
-    backgroundSrc: '/images/aboutus/okno-kafelka.webp',
+    backgroundSrc: '/images/home-tiles/okna.webp',
   },
   [PRODUCT_TYPES.DOORS]: {
     id: PRODUCT_TYPES.DOORS,
     name: t('products.doors.name', 'Drzwi'),
     description: t('products.doors.description', ''),
-    backgroundSrc: '/images/aboutus/drzwi-kafelka.webp',
+    backgroundSrc: '/images/home-tiles/drzwi.webp',
   },
   [PRODUCT_TYPES.TERRACE_DOORS]: {
     id: PRODUCT_TYPES.TERRACE_DOORS,
     name: t('products.terraceDoors.name', 'Okna przesuwne'),
     description: t('products.terraceDoors.description', ''),
-    backgroundSrc: '/images/aboutus/hs-kafelka.webp',
+    backgroundSrc: '/images/home-tiles/okna-przesuwne.webp',
   },
   [PRODUCT_TYPES.FIRE_RESISTANT]: {
     id: PRODUCT_TYPES.FIRE_RESISTANT,
     name: t('products.fireResistant.name', 'Ppoż'),
     description: t('products.fireResistant.description', ''),
-    backgroundSrc: '/images/aboutus/drzwi-ppoz-kafelka.webp',
+    backgroundSrc: '/images/home-tiles/ppoz.webp',
   },
 };
 
@@ -142,6 +142,72 @@ const homeArticlesCopy = {
 
 const articleCopy = homeArticlesCopy[lang] || homeArticlesCopy.pl;
 
+// Sekcja-showcase konfiguratora HS (wszystkie języki)
+const homeHsConfigCopy = {
+  pl: {
+    title: 'KONFIGURATOR HS',
+    subtitle: 'zaprojektuj swoje drzwi przesuwne online',
+    lead:
+      'Wybierz schemat, dopasuj wymiary i kolorystykę, a konfigurator pokaże Twoje drzwi HS w modelu 3D — z orientacyjną wyceną od ręki i podglądem AR w Twoim wnętrzu.',
+    features: [
+      'Model 3D w czasie rzeczywistym',
+      'Kolory RAL i lazury na gatunkach drewna',
+      'Podgląd AR w Twoim domu',
+      'Orientacyjna wycena od ręki',
+    ],
+    cta: 'Otwórz konfigurator',
+    note: 'Bez rejestracji, prosto w przeglądarce.',
+    tagline: 'Model 3D · kolory RAL i lazury · wycena od ręki',
+  },
+  en: {
+    title: 'HS CONFIGURATOR',
+    subtitle: 'design your sliding door online',
+    lead:
+      'Pick a scheme, adjust dimensions and colours — the configurator shows your HS door as a 3D model, with an instant price estimate and an AR preview in your own home.',
+    features: [
+      'Real-time 3D model',
+      'RAL colours & wood stains',
+      'AR preview in your home',
+      'Instant price estimate',
+    ],
+    cta: 'Open the configurator',
+    note: 'No sign-up — right in your browser.',
+    tagline: '3D model · RAL colours & stains · instant estimate',
+  },
+  de: {
+    title: 'HS-KONFIGURATOR',
+    subtitle: 'Gestalten Sie Ihre Schiebetür online',
+    lead:
+      'Wählen Sie das Schema, passen Sie Maße und Farben an — der Konfigurator zeigt Ihre HS-Tür als 3D-Modell, mit sofortiger Preisschätzung und AR-Vorschau bei Ihnen zuhause.',
+    features: [
+      '3D-Modell in Echtzeit',
+      'RAL-Farben & Holzlasuren',
+      'AR-Vorschau bei Ihnen zuhause',
+      'Sofortige Preisschätzung',
+    ],
+    cta: 'Konfigurator öffnen',
+    note: 'Ohne Registrierung, direkt im Browser.',
+    tagline: '3D-Modell · RAL-Farben & Lasuren · Sofortpreis',
+  },
+  fr: {
+    title: 'CONFIGURATEUR HS',
+    subtitle: 'concevez votre porte coulissante en ligne',
+    lead:
+      'Choisissez le schéma, ajustez les dimensions et les couleurs — le configurateur affiche votre porte HS en 3D, avec une estimation de prix immédiate et un aperçu AR chez vous.',
+    features: [
+      'Modèle 3D en temps réel',
+      'Couleurs RAL et lasures bois',
+      'Aperçu AR chez vous',
+      'Estimation de prix immédiate',
+    ],
+    cta: 'Ouvrir le configurateur',
+    note: 'Sans inscription, directement dans le navigateur.',
+    tagline: 'Modèle 3D · couleurs RAL et lasures · estimation immédiate',
+  },
+};
+
+const hsConfigCopy = homeHsConfigCopy[lang] || homeHsConfigCopy.pl;
+
 const homeH1ByLang = {
   pl: 'ROJEK Kraków – Producent okien i drzwi drewnianych, HS, EI30 i EI60',
   en: 'ROJEK Kraków – Manufacturer of Wooden Windows and Doors, HS, EI30 & EI60',
@@ -175,27 +241,18 @@ const homeH1 = homeH1ByLang[lang] || homeH1ByLang.pl;
           return (
             <article class={productStyles.card}>
               <a class={productStyles.cardLink} href={to} aria-label={`${p.name} - ${t('common.learnMore', 'Dowiedz się więcej')}`}>
-                <div class={productStyles.imageContainer}>
-                  <div class="media-spinner-host" data-media-spinner>
-                    <span class="media-spinner-overlay" aria-hidden="true">
-                      <span class="media-spinner-ring"></span>
-                    </span>
-                    <img
-                      class={productStyles.image}
-                      src={p.backgroundSrc}
-                      alt={p.name}
-                      loading="eager"
-                      fetchpriority="high"
-                      decoding="async"
-                    />
-                  </div>
-                </div>
+                <img
+                  class={productStyles.image}
+                  src={p.backgroundSrc}
+                  alt={p.name}
+                  loading="lazy"
+                  decoding="async"
+                />
+                <div class={productStyles.overlay} aria-hidden="true"></div>
                 <div class={productStyles.cardContent}>
-                  <h3 class={productStyles.cardTitle}>{p.name}</h3>
-                  <div class={productStyles.divider} />
                   <p class={productStyles.description}>{p.description}</p>
-                  <div class={productStyles.footer}>
-                    <span class={productStyles.linkText}>{t('common.learnMore', 'Dowiedz się więcej')}</span>
+                  <div class={productStyles.titleRow}>
+                    <h3 class={productStyles.cardTitle}>{p.name}</h3>
                     <span class={productStyles.arrowWrapper} aria-hidden="true">
                       <IoIosArrowForward className={productStyles.arrowIcon} />
                     </span>
@@ -237,6 +294,34 @@ const homeH1 = homeH1ByLang[lang] || homeH1ByLang.pl;
 
 <!-- COMPANY PRESENTATION (island; youtube iframe on click) -->
 <CompanyPresentationIslandWithResources lang={lang} hydrate="load" />
+
+<!-- HS CONFIGURATOR SHOWCASE (SSG) — fotokafel na klasach kafli produktów -->
+<section class="home-hs-section" aria-labelledby="home-hs-heading">
+  <div class={MaxWidthContainerStyles.root} data-max-width-container="true">
+    <article class={`${productStyles.card} ${productStyles.cardWide}`}>
+      <a class={productStyles.cardLink} href={getSectionPath(lang, 'hsConfigurator')} aria-label={`${hsConfigCopy.title} - ${hsConfigCopy.cta}`}>
+        <img
+          class={productStyles.image}
+          src="/images/home-tiles/hsconfigurator.webp"
+          alt={hsConfigCopy.title}
+          loading="lazy"
+          decoding="async"
+        />
+        <div class={productStyles.overlay} aria-hidden="true"></div>
+        <div class={productStyles.cardContent}>
+          <p class={productStyles.description}>{hsConfigCopy.lead}</p>
+          <div class={productStyles.titleRow}>
+            <h2 class={productStyles.cardTitle} id="home-hs-heading">{hsConfigCopy.title}</h2>
+            <span class={productStyles.arrowWrapper} aria-hidden="true">
+              <IoIosArrowForward className={productStyles.arrowIcon} />
+            </span>
+          </div>
+          <p class={productStyles.wideTagline}>{hsConfigCopy.tagline}</p>
+        </div>
+      </a>
+    </article>
+  </div>
+</section>
 
 <!-- LATEST ARTICLES (SSG, only PL) -->
 {lang === 'pl' && latestArticles.length > 0 && (
@@ -532,6 +617,17 @@ const homeH1 = homeH1ByLang[lang] || homeH1ByLang.pl;
       width: 100%;
       height: 210px;
       border-radius: 6px 6px 0 0;
+    }
+  }
+  /* --- HS Configurator (fotokafel) --- */
+  .home-hs-section {
+    padding: var(--section-gap) 0;
+    background: #fbfbfb;
+  }
+
+  @media (max-width: 640px) {
+    .home-hs-section {
+      padding: var(--section-gap-sm) 0;
     }
   }
 </style>

@@ -104,16 +104,12 @@ export const formatPln = (value) => plnFormatter.format(value);
 
 const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
-const intersectRange = (a, b) => {
-  const min = Math.max(a.min, b.min);
-  const max = Math.min(a.max, b.max);
-  return min < max ? { min, max } : null;
-};
+const hasRealPrice = (price) => typeof price === 'number' && price > 0;
 
 /**
- * Derive slider ranges from the pricing matrix, intersected with the hardcoded
- * design ranges. Falls back to the hardcoded ranges when there is no matrix or
- * the intersection is empty.
+ * Derive slider ranges from the pricing matrix — the price table is the source
+ * of truth for available dimensions. Falls back to the hardcoded design ranges
+ * only when there is no matrix or no band has a real price.
  *
  * @param {object|null} matrix
  * @param {{min: number, max: number, default: number}} hardWidthRange
@@ -129,18 +125,17 @@ export const deriveRanges = (matrix, hardWidthRange, hardHeightRange) => {
 
   // Usable width columns: at least one row has a real price (excludes all-CNZ columns).
   const usableBands = matrix.widthBands.filter((band, index) =>
-    matrix.rows.some((row) => typeof row.prices?.[index] === 'number' && row.prices[index] > 0)
+    matrix.rows.some((row) => hasRealPrice(row.prices?.[index]))
   );
-  if (!usableBands.length) return fallback;
+  // Usable height rows, symmetrically: at least one real price in the row.
+  const usableRows = matrix.rows.filter((row) => row.prices?.some(hasRealPrice));
+  if (!usableBands.length || !usableRows.length) return fallback;
 
-  const matrixWidth = { min: usableBands[0].min, max: usableBands[usableBands.length - 1].max };
-  const matrixHeight = {
-    min: matrix.rows[0].heightMin,
-    max: matrix.rows[matrix.rows.length - 1].heightMax,
+  const width = { min: usableBands[0].min, max: usableBands[usableBands.length - 1].max };
+  const height = {
+    min: usableRows[0].heightMin,
+    max: usableRows[usableRows.length - 1].heightMax,
   };
-
-  const width = intersectRange(matrixWidth, hardWidthRange) ?? { min: hardWidthRange.min, max: hardWidthRange.max };
-  const height = intersectRange(matrixHeight, hardHeightRange) ?? { min: hardHeightRange.min, max: hardHeightRange.max };
 
   return {
     width: { ...width, default: clamp(hardWidthRange.default, width.min, width.max) },

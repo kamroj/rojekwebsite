@@ -17,23 +17,18 @@ const ProductTile = ({ id, product }) => {
   return (
     <article className={styles.card}>
       <RouterAgnosticLink className={styles.cardLink} href={to} aria-label={`${product.name} - ${t('common.learnMore', 'Dowiedz się więcej')}`}>
-        <div className={styles.imageContainer}>
-          <img className={styles.image}
-            src={product.backgroundSrc} 
-            alt={product.name}
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-          />
-        </div>
-        
+        <img className={styles.image}
+          src={product.backgroundSrc}
+          alt={product.name}
+          loading="lazy"
+          decoding="async"
+        />
+        <div className={styles.overlay} aria-hidden="true" />
+
         <div className={styles.cardContent}>
-          <h3 className={styles.cardTitle}>{product.name}</h3>
-          <div className={styles.divider} />
           <p className={styles.description}>{product.description}</p>
-          
-          <div className={styles.footer}>
-            <span className={styles.linkText}>{product.linkText || t('common.learnMore', 'Dowiedz się więcej')}</span>
+          <div className={styles.titleRow}>
+            <h3 className={styles.cardTitle}>{product.name}</h3>
             <span className={styles.arrowWrapper} aria-hidden="true">
               <IoIosArrowForward className={styles.arrowIcon} />
             </span>
