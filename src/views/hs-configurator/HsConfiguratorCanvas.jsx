@@ -717,10 +717,24 @@ function FrameRing({ cx, cy, z, width, height, profile, depth, materialV, materi
 // i widać ją tylko krawędziowo pod ostrym kątem, nie jako czarną obwódkę
 const IGU = { pane: 0.004, gap: 0.012, spacerProfile: 0.012, underlap: 0.015 };
 
-function GlazingUnit({ cx, cy, z, width, height, materials }) {
+function GlazingUnit({ cx, cy, z, width, height, materials, lite = false }) {
   const pitch = IGU.pane + IGU.gap; // rozstaw osi sąsiednich tafli
   const paneW = width + IGU.underlap * 2;
   const paneH = height + IGU.underlap * 2;
+  // Mobile: pakiet jako jedna bryła 36 mm (geometria sprzed „Adjust wood
+  // view") — trzy nałożone tafle to 3x przebieg shadera szkła na piksel,
+  // a na ekranie telefonu różnicy między pakietem a bryłą nie widać
+  if (lite) {
+    return (
+      <BoxPart
+        position={[cx, cy, z]}
+        size={[paneW, paneH, 0.036]}
+        material={materials.glass}
+        castShadow={false}
+        receiveShadow={false}
+      />
+    );
+  }
   return (
     <group>
       {[-pitch, 0, pitch].map((offset) => (
@@ -835,6 +849,7 @@ function GlazedPanel({
   markerTexture = null,
   temperedGlass = false,
   lapSeals = [],
+  liteGlazing = false,
 }) {
   const isSliding = panel.type === 'sliding';
   const isGlazing = panel.type === 'glazing';
@@ -1022,7 +1037,7 @@ function GlazedPanel({
         materialH={materials.gasket}
       />
       {/* Pakiet szybowy: 3 tafle + ramki dystansowe (przekrój HS-90) */}
-      <GlazingUnit cx={cx} cy={cy} z={z} width={glassW} height={glassH} materials={materials} />
+      <GlazingUnit cx={cx} cy={cy} z={z} width={glassW} height={glassH} materials={materials} lite={liteGlazing} />
       {/* Uszczelki szczotkowe zakładów — na licu zwróconym ku sąsiedniemu polu
           (kierunek dz policzony w modelu, bo panel nie zna sąsiadów) */}
       {lapSeals.map(({ side, dz }) => (
@@ -1153,6 +1168,7 @@ function ProceduralHsModel({
   width,
   height,
   plinthHeight = PLINTH_RANGE.default,
+  lowPower = false,
   onReady,
   exportRef,
   ...props
@@ -1262,7 +1278,7 @@ function ProceduralHsModel({
     // Mobile: wspólny, pomniejszony obraz POT dla wszystkich 4 klonów —
     // z ~32 MB tekstur GPU robi się ~5,5 MB i znika wolna ścieżka mipmap
     // dla wymiarów niebędących potęgą dwójki. Desktop bez zmian
-    const image = detectLowPowerDevice()
+    const image = lowPower
       ? downscaleToSquarePot(grainTexture.image, MOBILE_GRAIN_SIZE)
       : grainTexture.image;
     const setup = (rotate, colorSpace) => {
@@ -1291,7 +1307,7 @@ function ProceduralHsModel({
       grainV: setup(true, NoColorSpace),
       grainH: setup(false, NoColorSpace),
     };
-  }, [grainTexture]);
+  }, [grainTexture, lowPower]);
 
   // Klony żyją poza cachem useTexture — bez sprzątania każda zmiana gatunku
   // drewna zostawiała na GPU 4 martwe tekstury (kolejne ~32 MB na mobile)
@@ -1319,8 +1335,21 @@ function ProceduralHsModel({
     // bardziej grają); sosna pozostaje gładsza.
     const isMeranti = woodFinish?.species === 'meranti';
     const lazurBump = isMeranti ? 1.1 : woodFinish?.species === 'oak' ? 0.95 : 0.6;
+    // Mobile: drewno jak w wersji sprzed lazurów — meshStandardMaterial z samą
+    // mapą koloru (tint hex zostaje). bumpMapa na drewnie to największa
+    // pojedyncza pozycja kosztu piksela w scenie (drewno pokrywa większość
+    // ekranu), a meshPhysical dokłada drugą — zmierzono +~30% czasu klatki.
+    // Kolor lazuru = map × color, identycznie jak na desktopie; znika tylko
+    // mikro-relief, niewidoczny na ekranie telefonu
     const makeWood = (tex, grain) =>
-      isRalWood ? (
+      lowPower ? (
+        <meshStandardMaterial
+          map={isRalWood ? null : tex}
+          color={woodFinish?.hex ?? '#ffffff'}
+          roughness={0.5}
+          metalness={0.02}
+        />
+      ) : isRalWood ? (
         // RAL = lakier kryjący: jednolity kolor; sosna/dąb gładko, meranti ma
         // otwarte pory → delikatny relief przez lakier
         <meshPhysicalMaterial
@@ -1402,7 +1431,7 @@ function ProceduralHsModel({
         />
       ),
     };
-  }, [textures, thresholdType, handleFinish, aluColor, isRalWood, woodFinish]);
+  }, [textures, thresholdType, handleFinish, aluColor, isRalWood, woodFinish, lowPower]);
 
   const aluMaterial = isWoodAlu ? materials.alu : null;
 
@@ -1588,6 +1617,7 @@ function ProceduralHsModel({
             markerTexture={markerTexture}
             temperedGlass={temperedGlass}
             lapSeals={lapSealsByPanel[index]}
+            liteGlazing={lowPower}
           />
         );
       })}
@@ -1665,6 +1695,7 @@ export default function HsConfiguratorCanvas({
   exportRef,
 }) {
   const modelRef = useRef();
+  const [lowPower] = useState(detectLowPowerDevice);
   // Overlay ?debug3d=1 — czysta obserwacja (bez ingerencji w scenę): profil,
   // GPU, utraty kontekstu i błędy JS wypisywane na ekranie urządzenia
   const [debugEnabled] = useState(isDebug3dEnabled);
@@ -1678,7 +1709,7 @@ export default function HsConfiguratorCanvas({
     if (!debugEnabled) return undefined;
     pushDebug(`ua: …${navigator.userAgent.slice(-52)}`);
     pushDebug(
-      `lowPower=${detectLowPowerDevice()} devicePR=${window.devicePixelRatio} touch=${navigator.maxTouchPoints}`
+      `lowPower=${lowPower} devicePR=${window.devicePixelRatio} touch=${navigator.maxTouchPoints}`
     );
     const onError = (event) =>
       pushDebug(`ERR: ${event.message ?? event.reason?.message ?? String(event.reason ?? '?')}`);
@@ -1688,7 +1719,7 @@ export default function HsConfiguratorCanvas({
       window.removeEventListener('error', onError);
       window.removeEventListener('unhandledrejection', onError);
     };
-  }, [debugEnabled, pushDebug]);
+  }, [debugEnabled, lowPower, pushDebug]);
 
   const handleCreated = useCallback(
     ({ gl }) => {
@@ -1730,8 +1761,14 @@ export default function HsConfiguratorCanvas({
       shadows
       onCreated={handleCreated}
       camera={{ position: [3, 2, 4], fov: 45 }}
+      // Mobile: dpr 1.5 zamiast 2 — przy antyaliasingu różnica ostrości
+      // minimalna, a liczba pikseli do cieniowania spada prawie o połowę
+      dpr={lowPower ? [1, 1.5] : [1, 2]}
       gl={{
-        logarithmicDepthBuffer: true,
+        // Log-depth pisze głębię we fragment shaderze (wyłącza early-Z) — na
+        // mobilnych GPU podraża każdy piksel. Near/far ustawia FrontFit, więc
+        // standardowy bufor 24-bit wystarcza na 1-milimetrowe odsadzenia sceny
+        logarithmicDepthBuffer: !lowPower,
         antialias: true,
         // Liniowy tor koloru: lazur na froncie ma być 1:1 z kolorem zmierzonym
         // z wzornika (hex × mapa słojów — dokładnie jak swatche CSS multiply).
@@ -1752,7 +1789,7 @@ export default function HsConfiguratorCanvas({
           position={[5, 6, 9]}
           intensity={1.4}
           castShadow
-          shadow-mapSize={[2048, 2048]}
+          shadow-mapSize={lowPower ? [1024, 1024] : [2048, 2048]}
           shadow-bias={-0.0004}
           shadow-camera-left={-3.5}
           shadow-camera-right={3.5}
@@ -1779,6 +1816,7 @@ export default function HsConfiguratorCanvas({
               width={width}
               height={height}
               plinthHeight={plinthHeight}
+              lowPower={lowPower}
               onReady={onReady}
               exportRef={exportRef}
             />
