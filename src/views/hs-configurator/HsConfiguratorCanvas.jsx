@@ -30,6 +30,38 @@ import { createHandleLeverGeometry, createHandlePlateGeometry } from './hsHandle
 // Awaryjna mapa słojów (gdy resolver nie dostarczy ścieżek) — sosna
 const FALLBACK_GRAIN = '/models/lazur/grain-pine.jpg';
 
+// Telefony/tablety: mapy słojów lądują na GPU w 4 kopiach (kolor/relief ×
+// pion/poziom) — przy plikach 1254²+ to było ~32 MB tekstur i, co gorsze,
+// wymiary NIEbędące potęgą dwójki, dla których mobilne sterowniki generują
+// mipmapy awaryjną, wolną ścieżką (pojedyncze wywołanie GL na sekundy →
+// watchdog Androida ubija kontekst WebGL). iPadOS udaje desktopowego Safari,
+// stąd oprócz user agenta warunek coarse pointer + dotyk
+const detectLowPowerDevice = () => {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
+  if (/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) return true;
+  const coarsePointer = window.matchMedia?.('(pointer: coarse)')?.matches ?? false;
+  return coarsePointer && (navigator.maxTouchPoints ?? 0) > 1;
+};
+
+// Rozmiar map słojów na mobile: 512 = potęga dwójki (szybka ścieżka mipmap),
+// a na ekranie telefonu belka profilu ma kilkadziesiąt px — różnicy nie widać
+const MOBILE_GRAIN_SIZE = 512;
+
+const downscaleToSquarePot = (image, size) => {
+  if (!image || (image.width <= size && image.height <= size)) return image;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  canvas.getContext('2d').drawImage(image, 0, 0, size, size);
+  return canvas;
+};
+
+// Diagnostyka na urządzeniu (adres z ?debug3d=1): overlay wypisuje wykryty
+// profil, GPU i zdarzenia kontekstu/błędy wprost na ekranie — jedyny sposób,
+// by zobaczyć co dzieje się na telefonie bez podpinania go do inspektora
+const isDebug3dEnabled = () =>
+  typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug3d');
+
 // Wymiary profili systemu HS wg przekroju producenta (w metrach)
 const PROFILE = {
   frame: 0.056, // ościeżnica 56 x 208 mm
@@ -1227,8 +1259,15 @@ function ProceduralHsModel({
   // Ta sama mapa słojów gatunku służy jako mapa koloru (sRGB, tintowana
   // material.color) i jako mapa reliefu (liniowa)
   const textures = useMemo(() => {
+    // Mobile: wspólny, pomniejszony obraz POT dla wszystkich 4 klonów —
+    // z ~32 MB tekstur GPU robi się ~5,5 MB i znika wolna ścieżka mipmap
+    // dla wymiarów niebędących potęgą dwójki. Desktop bez zmian
+    const image = detectLowPowerDevice()
+      ? downscaleToSquarePot(grainTexture.image, MOBILE_GRAIN_SIZE)
+      : grainTexture.image;
     const setup = (rotate, colorSpace) => {
       const tex = grainTexture.clone();
+      tex.image = image;
       // Lustrzane zawijanie: elementy próbkują mapę z losowym offsetem UV
       // (osobny kawałek drewna per belka), więc wychodzą poza [0,1] — mirror
       // domyka to bez widocznego szwu
@@ -1253,6 +1292,15 @@ function ProceduralHsModel({
       grainH: setup(false, NoColorSpace),
     };
   }, [grainTexture]);
+
+  // Klony żyją poza cachem useTexture — bez sprzątania każda zmiana gatunku
+  // drewna zostawiała na GPU 4 martwe tekstury (kolejne ~32 MB na mobile)
+  useEffect(
+    () => () => {
+      Object.values(textures).forEach((tex) => tex.dispose());
+    },
+    [textures]
+  );
 
   const materials = useMemo(() => {
     const thresholdMat = getThresholdMaterial(thresholdType);
@@ -1617,10 +1665,70 @@ export default function HsConfiguratorCanvas({
   exportRef,
 }) {
   const modelRef = useRef();
+  // Overlay ?debug3d=1 — czysta obserwacja (bez ingerencji w scenę): profil,
+  // GPU, utraty kontekstu i błędy JS wypisywane na ekranie urządzenia
+  const [debugEnabled] = useState(isDebug3dEnabled);
+  const [debugLines, setDebugLines] = useState([]);
+  const pushDebug = useCallback((line) => {
+    const stamp = new Date().toISOString().slice(11, 19);
+    setDebugLines((prev) => [...prev.slice(-13), `${stamp} ${line}`]);
+  }, []);
+
+  useEffect(() => {
+    if (!debugEnabled) return undefined;
+    pushDebug(`ua: …${navigator.userAgent.slice(-52)}`);
+    pushDebug(
+      `lowPower=${detectLowPowerDevice()} devicePR=${window.devicePixelRatio} touch=${navigator.maxTouchPoints}`
+    );
+    const onError = (event) =>
+      pushDebug(`ERR: ${event.message ?? event.reason?.message ?? String(event.reason ?? '?')}`);
+    window.addEventListener('error', onError);
+    window.addEventListener('unhandledrejection', onError);
+    return () => {
+      window.removeEventListener('error', onError);
+      window.removeEventListener('unhandledrejection', onError);
+    };
+  }, [debugEnabled, pushDebug]);
+
+  const handleCreated = useCallback(
+    ({ gl }) => {
+      if (!debugEnabled) return;
+      const ctx = gl.getContext();
+      const rendererInfo = ctx.getExtension('WEBGL_debug_renderer_info');
+      const gpu = rendererInfo ? ctx.getParameter(rendererInfo.UNMASKED_RENDERER_WEBGL) : 'n/a';
+      pushDebug(`ctx created, gpu: ${String(gpu).slice(0, 48)}`);
+      gl.domElement.addEventListener('webglcontextlost', () => pushDebug('ctx LOST'));
+      gl.domElement.addEventListener('webglcontextrestored', () => pushDebug('ctx restored'));
+    },
+    [debugEnabled, pushDebug]
+  );
 
   return (
+    <>
+    {debugEnabled && (
+      <div
+        style={{
+          position: 'fixed',
+          left: 8,
+          bottom: 8,
+          zIndex: 99999,
+          maxWidth: '92vw',
+          padding: '6px 9px',
+          borderRadius: 6,
+          background: 'rgba(0, 0, 0, 0.78)',
+          color: '#8f8',
+          font: '11px/1.45 monospace',
+          whiteSpace: 'pre-wrap',
+          overflowWrap: 'anywhere',
+          pointerEvents: 'none',
+        }}
+      >
+        {debugLines.join('\n')}
+      </div>
+    )}
     <Canvas
       shadows
+      onCreated={handleCreated}
       camera={{ position: [3, 2, 4], fov: 45 }}
       gl={{
         logarithmicDepthBuffer: true,
@@ -1689,5 +1797,6 @@ export default function HsConfiguratorCanvas({
         />
       </Suspense>
     </Canvas>
+    </>
   );
 }
