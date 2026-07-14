@@ -62,6 +62,24 @@ const downscaleToSquarePot = (image, size) => {
 const isDebug3dEnabled = () =>
   typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug3d');
 
+// Test rozstrzygający (?hstest=cube): ta sama strona, Canvas, światła i env,
+// ale zamiast modelu okna JEDEN sześcian. Pada → wina strony/infry R3F;
+// działa → wina zawartości modelu. Rozdziela dwie klasy przyczyn jednym testem
+const isCubeTestEnabled = () =>
+  typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('hstest') === 'cube';
+
+function TestCube({ onReady }) {
+  useEffect(() => {
+    onReady?.();
+  }, [onReady]);
+  return (
+    <mesh castShadow receiveShadow>
+      <boxGeometry args={[1.2, 1.2, 1.2]} />
+      <meshStandardMaterial color="#b5854b" roughness={0.6} metalness={0.05} />
+    </mesh>
+  );
+}
+
 // Wymiary profili systemu HS wg przekroju producenta (w metrach)
 const PROFILE = {
   frame: 0.056, // ościeżnica 56 x 208 mm
@@ -1696,6 +1714,7 @@ export default function HsConfiguratorCanvas({
 }) {
   const modelRef = useRef();
   const [lowPower] = useState(detectLowPowerDevice);
+  const [cubeTest] = useState(isCubeTestEnabled);
   // Overlay ?debug3d=1 — czysta obserwacja (bez ingerencji w scenę): profil,
   // GPU, utraty kontekstu i błędy JS wypisywane na ekranie urządzenia
   const [debugEnabled] = useState(isDebug3dEnabled);
@@ -1803,23 +1822,27 @@ export default function HsConfiguratorCanvas({
         <OrbitControls makeDefault enablePan enableZoom enableRotate />
         <Center>
           <group ref={modelRef}>
-            <ProceduralHsModel
-              scheme={selectedType}
-              mirrored={mirrored}
-              activeSash={activeSash}
-              temperedGlass={temperedGlass}
-              woodFinish={selectedWoodFinish}
-              handleFinish={selectedHandleFinish}
-              thresholdType={selectedThreshold}
-              materialType={selectedMaterialType}
-              aluColor={selectedAluColor}
-              width={width}
-              height={height}
-              plinthHeight={plinthHeight}
-              lowPower={lowPower}
-              onReady={onReady}
-              exportRef={exportRef}
-            />
+            {cubeTest ? (
+              <TestCube onReady={onReady} />
+            ) : (
+              <ProceduralHsModel
+                scheme={selectedType}
+                mirrored={mirrored}
+                activeSash={activeSash}
+                temperedGlass={temperedGlass}
+                woodFinish={selectedWoodFinish}
+                handleFinish={selectedHandleFinish}
+                thresholdType={selectedThreshold}
+                materialType={selectedMaterialType}
+                aluColor={selectedAluColor}
+                width={width}
+                height={height}
+                plinthHeight={plinthHeight}
+                lowPower={lowPower}
+                onReady={onReady}
+                exportRef={exportRef}
+              />
+            )}
           </group>
         </Center>
         <FrontFit modelRef={modelRef} width={width} height={height} scheme={selectedType} plinth={plinthHeight} />
