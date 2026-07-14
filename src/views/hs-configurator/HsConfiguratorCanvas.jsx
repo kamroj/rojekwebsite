@@ -68,6 +68,21 @@ const isDebug3dEnabled = () =>
 const isCubeTestEnabled = () =>
   typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('hstest') === 'cube';
 
+// Wyłączniki diagnostyczne (?hsoff=tex,glass,badge,anim — dowolny podzbiór):
+// wycinają z modelu okna po jednym podejrzanym podsystemie, żeby na urządzeniu
+// wskazać winowajcę bez kolejnych deployów. Kostka (hstest=cube) działa, model
+// pada — więc przyczyna siedzi w jednym z tych podsystemów:
+//   tex   → drewno bez map (same kolory; zero uploadu tekstur słojów na GPU)
+//   glass → w ogóle bez szyb (zero transmission i bufora refrakcji)
+//   badge → bez CanvasTexture plakietki „A" (jedyny canvas-upload w modelu)
+//   anim  → bez animacji skrzydeł (zero useFrame na panelach)
+const HS_OFF = (() => {
+  if (typeof window === 'undefined') return new Set();
+  return new Set(
+    (new URLSearchParams(window.location.search).get('hsoff') ?? '').split(',').filter(Boolean)
+  );
+})();
+
 function TestCube({ onReady }) {
   useEffect(() => {
     onReady?.();
@@ -739,6 +754,7 @@ function GlazingUnit({ cx, cy, z, width, height, materials, lite = false }) {
   const pitch = IGU.pane + IGU.gap; // rozstaw osi sąsiednich tafli
   const paneW = width + IGU.underlap * 2;
   const paneH = height + IGU.underlap * 2;
+  if (HS_OFF.has('glass')) return null;
   // Mobile: pakiet jako jedna bryła 36 mm (geometria sprzed „Adjust wood
   // view") — trzy nałożone tafle to 3x przebieg shadera szkła na piksel,
   // a na ekranie telefonu różnicy między pakietem a bryłą nie widać
@@ -1215,8 +1231,11 @@ function ProceduralHsModel({
 
   const activePanelIndex = resolveActivePanelIndex(scheme, activeSash);
   // Tekstura badge'a „A" tworzona raz na życie modelu (client-only render)
-  const markerTexture = useMemo(() => createActiveMarkerTexture(), []);
-  useEffect(() => () => markerTexture.dispose(), [markerTexture]);
+  const markerTexture = useMemo(
+    () => (HS_OFF.has('badge') ? null : createActiveMarkerTexture()),
+    []
+  );
+  useEffect(() => () => markerTexture?.dispose(), [markerTexture]);
 
   // Kierunki szczotek na zakładach: szczotka siedzi na licu zwróconym ku
   // płaszczyźnie sąsiedniego pola — znak różnicy torów; panel sam nie zna
@@ -1360,7 +1379,9 @@ function ProceduralHsModel({
     // Kolor lazuru = map × color, identycznie jak na desktopie; znika tylko
     // mikro-relief, niewidoczny na ekranie telefonu
     const makeWood = (tex, grain) =>
-      lowPower ? (
+      HS_OFF.has('tex') ? (
+        <meshStandardMaterial color={woodFinish?.hex ?? '#c8a165'} roughness={0.5} metalness={0.02} />
+      ) : lowPower ? (
         <meshStandardMaterial
           map={isRalWood ? null : tex}
           color={woodFinish?.hex ?? '#ffffff'}
@@ -1626,7 +1647,7 @@ function ProceduralHsModel({
             openingTop={openingTop}
             materials={materials}
             aluMaterial={aluMaterial}
-            animatable={Boolean(panelAnimation)}
+            animatable={Boolean(panelAnimation) && !HS_OFF.has('anim')}
             slideDirection={panelAnimation?.dir ?? 1}
             slideDistance={panelAnimation ? panelAnimation.distance(openingWidth) : 0}
             open={Boolean(openPanels[index])}
@@ -1728,7 +1749,7 @@ export default function HsConfiguratorCanvas({
     if (!debugEnabled) return undefined;
     pushDebug(`ua: …${navigator.userAgent.slice(-52)}`);
     pushDebug(
-      `lowPower=${lowPower} devicePR=${window.devicePixelRatio} touch=${navigator.maxTouchPoints}`
+      `lowPower=${lowPower} devicePR=${window.devicePixelRatio} touch=${navigator.maxTouchPoints} hsoff=${[...HS_OFF].join('+') || '-'}`
     );
     const onError = (event) =>
       pushDebug(`ERR: ${event.message ?? event.reason?.message ?? String(event.reason ?? '?')}`);
