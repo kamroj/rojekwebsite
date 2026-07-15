@@ -59,8 +59,11 @@ const downscaleToSquarePot = (image, size) => {
 // Diagnostyka na urządzeniu (adres z ?debug3d=1): overlay wypisuje wykryty
 // profil, GPU i zdarzenia kontekstu/błędy wprost na ekranie — jedyny sposób,
 // by zobaczyć co dzieje się na telefonie bez podpinania go do inspektora
-const isDebug3dEnabled = () =>
-  typeof window !== 'undefined' && new URLSearchParams(window.location.search).has('debug3d');
+const isDebug3dEnabled = () => {
+  if (typeof window === 'undefined') return false;
+  // Presety ?m=x włączają overlay automatycznie — po to istnieją
+  return new URLSearchParams(window.location.search).has('debug3d') || HS_PRESET !== null;
+};
 
 // Test rozstrzygający (?hstest=cube): ta sama strona, Canvas, światła i env,
 // ale zamiast modelu okna JEDEN sześcian. Pada → wina strony/infry R3F;
@@ -72,15 +75,42 @@ const isCubeTestEnabled = () =>
 // wycinają z modelu okna po jednym podejrzanym podsystemie, żeby na urządzeniu
 // wskazać winowajcę bez kolejnych deployów. Kostka (hstest=cube) działa, model
 // pada — więc przyczyna siedzi w jednym z tych podsystemów:
-//   tex   → drewno bez map (same kolory; zero uploadu tekstur słojów na GPU)
-//   glass → w ogóle bez szyb (zero transmission i bufora refrakcji)
-//   badge → bez CanvasTexture plakietki „A" (jedyny canvas-upload w modelu)
-//   anim  → bez animacji skrzydeł (zero useFrame na panelach)
+//   tex    → drewno bez map (same kolory; zero uploadu tekstur słojów na GPU)
+//   glass  → w ogóle bez szyb (zero transmission i bufora refrakcji)
+//   badge  → bez CanvasTexture plakietki „A" (jedyny canvas-upload w modelu)
+//   anim   → bez animacji skrzydeł (zero useFrame na panelach)
+// Grupy geometrii dodane po teście „kostka działa, minimalny model pada" —
+// wycinają nowości względem działającego cf0e049:
+//   handle → bez klamki (ExtrudeGeometry z hsHandleGeometry, po cf0e049)
+//   beads  → bez listew przyszybowych (uciosy 45° po cf0e049)
+//   rails  → próg bez szyn/nakładek/spadku/okapnika (sam korpus schodkowy)
+//   extras → bez prowadnic, szczotek, uszczelek zakładów, osłon, podwaliny
+//   uv     → bez losowych offsetów UV na belkach (bez mutacji geometrii)
+// Skróty protokołu bisekcji (?m=a … ?m=f): A = sam szkielet jak w cf0e049,
+// każda kolejna litera przywraca jedną grupę (B klamka, C listwy, D detale
+// progu, E dodatki, F offsety UV = stary „krok 1"). Litera włącza też overlay
+// diagnostyczny — pierwszy krok, który wywala model, wskazuje winowajcę
+const HS_PRESETS = {
+  a: ['tex', 'glass', 'badge', 'anim', 'handle', 'beads', 'rails', 'extras', 'uv'],
+  b: ['tex', 'glass', 'badge', 'anim', 'beads', 'rails', 'extras', 'uv'],
+  c: ['tex', 'glass', 'badge', 'anim', 'rails', 'extras', 'uv'],
+  d: ['tex', 'glass', 'badge', 'anim', 'extras', 'uv'],
+  e: ['tex', 'glass', 'badge', 'anim', 'uv'],
+  f: ['tex', 'glass', 'badge', 'anim'],
+};
+
+const HS_PRESET = (() => {
+  if (typeof window === 'undefined') return null;
+  const key = new URLSearchParams(window.location.search).get('m')?.toLowerCase() ?? null;
+  return key && HS_PRESETS[key] ? key : null;
+})();
+
 const HS_OFF = (() => {
   if (typeof window === 'undefined') return new Set();
-  return new Set(
-    (new URLSearchParams(window.location.search).get('hsoff') ?? '').split(',').filter(Boolean)
-  );
+  const manual = (new URLSearchParams(window.location.search).get('hsoff') ?? '')
+    .split(',')
+    .filter(Boolean);
+  return new Set([...(HS_PRESET ? HS_PRESETS[HS_PRESET] : []), ...manual]);
 })();
 
 function TestCube({ onReady }) {
@@ -469,7 +499,10 @@ function BoxPart({ position, size, material, castShadow = true, receiveShadow = 
   const offsetV = uvHash(position[1], position[2] + 1.73, size[2], size[0]);
   return (
     <mesh position={position} castShadow={castShadow} receiveShadow={receiveShadow}>
-      <boxGeometry args={size} onUpdate={(geometry) => applyUvOffset(geometry, offsetU, offsetV)} />
+      <boxGeometry
+        args={size}
+        onUpdate={HS_OFF.has('uv') ? undefined : (geometry) => applyUvOffset(geometry, offsetU, offsetV)}
+      />
       {material}
     </mesh>
   );
@@ -506,6 +539,9 @@ function LowThreshold({ bodyWidth, openingWidth, material, outerRail, extraDepth
   const { inner, platform, nose, plate, rail } = THRESHOLD;
   const plateGap = rail.width / 2 + 0.005; // odstęp nakładek od osi szyny
   const platformZFrom = platform.zFrom - extraDepth;
+  // hsoff=rails: zostaje sam schodkowy korpus (jak w cf0e049) — bez szyn,
+  // nakładek, spadku i okapników
+  const railsOff = HS_OFF.has('rails');
   return (
     <group>
       <BoxPart
@@ -514,29 +550,33 @@ function LowThreshold({ bodyWidth, openingWidth, material, outerRail, extraDepth
         material={material}
       />
       {/* Nakładki maskujące po obu stronach szyny — segmentowana góra profilu */}
-      <BoxPart
-        position={[0, inner.height + plate / 2, (PROFILE.trackInnerZ + plateGap + inner.zTo) / 2]}
-        size={[openingWidth, plate, inner.zTo - PROFILE.trackInnerZ - plateGap]}
-        material={material}
-      />
-      <BoxPart
-        position={[0, inner.height + plate / 2, (inner.zFrom + PROFILE.trackInnerZ - plateGap) / 2]}
-        size={[openingWidth, plate, PROFILE.trackInnerZ - plateGap - inner.zFrom]}
-        material={material}
-      />
-      <ThresholdRail
-        z={PROFILE.trackInnerZ}
-        width={openingWidth}
-        sectionTop={inner.height}
-        material={material}
-      />
+      {!railsOff && (
+        <>
+          <BoxPart
+            position={[0, inner.height + plate / 2, (PROFILE.trackInnerZ + plateGap + inner.zTo) / 2]}
+            size={[openingWidth, plate, inner.zTo - PROFILE.trackInnerZ - plateGap]}
+            material={material}
+          />
+          <BoxPart
+            position={[0, inner.height + plate / 2, (inner.zFrom + PROFILE.trackInnerZ - plateGap) / 2]}
+            size={[openingWidth, plate, PROFILE.trackInnerZ - plateGap - inner.zFrom]}
+            material={material}
+          />
+          <ThresholdRail
+            z={PROFILE.trackInnerZ}
+            width={openingWidth}
+            sectionTop={inner.height}
+            material={material}
+          />
+        </>
+      )}
       {/* Stopień pod pole stałe / tor zewnętrzny */}
       <BoxPart
         position={[0, platform.height / 2, (platformZFrom + platform.zTo) / 2]}
         size={[bodyWidth, platform.height, platform.zTo - platformZFrom]}
         material={material}
       />
-      {outerRail && (
+      {outerRail && !railsOff && (
         <ThresholdRail
           z={PROFILE.trackOuterZ}
           width={openingWidth}
@@ -547,13 +587,15 @@ function LowThreshold({ bodyWidth, openingWidth, material, outerRail, extraDepth
       {/* Spadek odwadniający: cienka nakładka pochylona ku zewnętrzu,
           zawiasowo od wewnętrznej krawędzi stopnia (pola stałe stoją płasko
           na stopniu, nakładka zaczyna się 1,5 mm niżej) */}
-      <group position={[0, platform.height, platform.zTo]} rotation={[-0.04, 0, 0]}>
-        <BoxPart
-          position={[0, -0.0015, -(platform.zTo - platformZFrom) / 2]}
-          size={[bodyWidth, 0.003, platform.zTo - platformZFrom]}
-          material={material}
-        />
-      </group>
+      {!railsOff && (
+        <group position={[0, platform.height, platform.zTo]} rotation={[-0.04, 0, 0]}>
+          <BoxPart
+            position={[0, -0.0015, -(platform.zTo - platformZFrom) / 2]}
+            size={[bodyWidth, 0.003, platform.zTo - platformZFrom]}
+            material={material}
+          />
+        </group>
+      )}
       {/* Nos okapowy przed licem ościeżnicy */}
       <BoxPart
         position={[0, nose.height / 2, (nose.zFrom + nose.zTo) / 2 - extraDepth]}
@@ -561,11 +603,13 @@ function LowThreshold({ bodyWidth, openingWidth, material, outerRail, extraDepth
         material={material}
       />
       {/* Wystający okapnik na krawędzi noska (jak na renderach progów) */}
-      <BoxPart
-        position={[0, nose.height - 0.0015, nose.zFrom - extraDepth - 0.005]}
-        size={[bodyWidth, 0.003, 0.02]}
-        material={material}
-      />
+      {!railsOff && (
+        <BoxPart
+          position={[0, nose.height - 0.0015, nose.zFrom - extraDepth - 0.005]}
+          size={[bodyWidth, 0.003, 0.02]}
+          material={material}
+        />
+      )}
     </group>
   );
 }
@@ -1037,7 +1081,7 @@ function GlazedPanel({
           rolę listew pełni główna rama panelu). UV listew biegnie wzdłuż sztuki,
           więc wszystkie używają nieobróconej tekstury drewna; w wariancie
           drewno-alu listwa zewnętrzna jest aluminiowa */}
-      {!isGlazing && (
+      {!isGlazing && !HS_OFF.has('beads') && (
         <>
           <MiteredBeadRing
             cx={cx}
@@ -1074,7 +1118,7 @@ function GlazedPanel({
       <GlazingUnit cx={cx} cy={cy} z={z} width={glassW} height={glassH} materials={materials} lite={liteGlazing} />
       {/* Uszczelki szczotkowe zakładów — na licu zwróconym ku sąsiedniemu polu
           (kierunek dz policzony w modelu, bo panel nie zna sąsiadów) */}
-      {lapSeals.map(({ side, dz }) => (
+      {!HS_OFF.has('extras') && lapSeals.map(({ side, dz }) => (
         <BoxPart
           key={`lap-seal-${side}`}
           position={[side === 'left' ? xLeft + 0.005 : xRight - 0.005, cy, z + dz * (depth / 2 + 0.007)]}
@@ -1083,11 +1127,12 @@ function GlazedPanel({
         />
       ))}
       {/* Uszczelka progowa — styk pola stałego / szklenia ze stopniem progu */}
-      {!isSliding && (
+      {!isSliding && !HS_OFF.has('extras') && (
         <BoxPart position={[cx, bottom, z]} size={[panelWidth - 0.01, 0.006, depth * 0.6]} material={materials.gasket} />
       )}
       {/* Szczotki kanału prowadnicy górnej na górnym ryglu skrzydła */}
       {isSliding &&
+        !HS_OFF.has('extras') &&
         [-1, 1].map((side) => (
           <BoxPart
             key={`top-brush-${side}`}
@@ -1099,7 +1144,7 @@ function GlazedPanel({
       {/* Osłona wózków: dolny rygiel schodzi osłoną prawie do progu (w realnym
           skrzydle wózki są niemal całkiem zakryte) — zostaje 4 mm szczeliny nad
           nakładkami progu, a rolki widać dopiero po uniesieniu skrzydła */}
-      {isSliding && (
+      {isSliding && !HS_OFF.has('extras') && (
         <BoxPart
           position={[cx, bottom - 0.004, z]}
           size={[panelWidth - 0.004, 0.008, 0.055]}
@@ -1107,7 +1152,7 @@ function GlazedPanel({
         />
       )}
       {/* Okapnik aluminiowy na dolnym ryglu od zewnątrz */}
-      {!isGlazing && (
+      {!isGlazing && !HS_OFF.has('extras') && (
         <BoxPart
           position={[cx, bottom + 0.008, exteriorZ - 0.003]}
           size={[panelWidth, 0.02, 0.006]}
@@ -1178,7 +1223,7 @@ function GlazedPanel({
           )}
         </>
       )}
-      {isSliding && (
+      {isSliding && !HS_OFF.has('handle') && (
         <PullHandle
           position={[handleX, handleY, z + depth / 2]}
           material={materials.handle}
@@ -1576,11 +1621,13 @@ function ProceduralHsModel({
           szerokość ościeżnicy i głębokość ramy; nos okapowy progu wystaje
           przed jej lico (jak w realnym montażu, gdzie okapnik przykrywa
           styk progu z podwaliną) */}
-      <BoxPart
-        position={[0, -plinthM / 2, frameZ]}
-        size={[modelWidth, plinthM, frameDepth]}
-        material={materials.plinth}
-      />
+      {!HS_OFF.has('extras') && (
+        <BoxPart
+          position={[0, -plinthM / 2, frameZ]}
+          size={[modelWidth, plinthM, frameDepth]}
+          material={materials.plinth}
+        />
+      )}
 
       {/* Słupki statyczne (np. schemat G2) — siedzą na zewnętrznym stopniu progu */}
       {mullions.map((fraction, index) => (
@@ -1622,7 +1669,8 @@ function ProceduralHsModel({
 
       {/* Prowadnice górne — szyna T pod nadprożem nad każdym torem, po którym
           jeździ skrzydło (pola stałe prowadnicy nie potrzebują) */}
-      {[...new Set(panels.filter((panel) => panel.type === 'sliding').map((panel) => panel.track))].map(
+      {!HS_OFF.has('extras') &&
+        [...new Set(panels.filter((panel) => panel.type === 'sliding').map((panel) => panel.track))].map(
         (track) => (
           <TopGuide
             key={`top-guide-${track}`}
@@ -1749,7 +1797,7 @@ export default function HsConfiguratorCanvas({
     if (!debugEnabled) return undefined;
     pushDebug(`ua: …${navigator.userAgent.slice(-52)}`);
     pushDebug(
-      `lowPower=${lowPower} devicePR=${window.devicePixelRatio} touch=${navigator.maxTouchPoints} hsoff=${[...HS_OFF].join('+') || '-'}`
+      `lowPower=${lowPower} devicePR=${window.devicePixelRatio} touch=${navigator.maxTouchPoints} m=${HS_PRESET ?? '-'} hsoff=${[...HS_OFF].join('+') || '-'}`
     );
     const onError = (event) =>
       pushDebug(`ERR: ${event.message ?? event.reason?.message ?? String(event.reason ?? '?')}`);
