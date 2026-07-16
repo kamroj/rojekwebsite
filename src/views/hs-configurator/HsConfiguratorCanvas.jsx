@@ -113,11 +113,12 @@ const HS_PRESETS = Object.fromEntries(
   'abcdefghijklm'.split('').map((letter, index) => [letter, HS_LADDER.slice(index)])
 );
 
-// Warianty mobilnego szkła (?glass=1…7). Wszystkie bez transmission
-// (destabilizowała GPU). DOMYŚLNY = 3 „lustrzany" (wybór Kamila: metaliczny
-// trik na czytelne odbicia otoczenia). Test stabilności clearcoatu (nr 5)
-// przeszedł na urządzeniu, więc 6 = trójka + clearcoat; 7 = trójka z
-// ostrzejszymi/mocniejszymi odbiciami bez clearcoatu
+// Warianty mobilnego szkła (?glass=1…7) — diagnostyczna paleta do porównań
+// na urządzeniu. Wszystkie bez transmission (destabilizowała GPU).
+// DOMYŚLNY = 7 (wybór Kamila): „lustrzany" trik (metalness 0.85 — odbicia
+// otoczenia czytelne mimo braku refrakcji) z ostrym roughness i mocnym env.
+// Clearcoat (5/6) przeszedł test stabilności na urządzeniu, więc w razie
+// potrzeby można go bezpiecznie użyć także gdzie indziej
 const MOBILE_GLASS_VARIANTS = {
   1: { color: '#e7f1ee', opacity: 0.15, roughness: 0.04, envMapIntensity: 1.5 },
   2: { color: '#e7f1ee', opacity: 0.18, roughness: 0.02, envMapIntensity: 2.6 },
@@ -127,7 +128,7 @@ const MOBILE_GLASS_VARIANTS = {
   6: { color: '#dfe9e7', opacity: 0.22, roughness: 0.03, metalness: 0.85, envMapIntensity: 2.2, clearcoat: 1, clearcoatRoughness: 0.04 },
   7: { color: '#dfe9e7', opacity: 0.2, roughness: 0.015, metalness: 0.85, envMapIntensity: 2.6 },
 };
-const DEFAULT_MOBILE_GLASS = 3;
+const DEFAULT_MOBILE_GLASS = 7;
 
 const HS_GLASS_VARIANT = (() => {
   if (typeof window === 'undefined') return null;
@@ -1452,8 +1453,10 @@ function ProceduralHsModel({
     return {
       woodV: setup(true, SRGBColorSpace),
       woodH: setup(false, SRGBColorSpace),
-      grainV: setup(true, NoColorSpace),
-      grainH: setup(false, NoColorSpace),
+      // Mapy reliefu tylko na desktopie — mobilne drewno nie używa bumpa,
+      // więc klonowanie ich tam było czystą stratą (dekodowanie + pamięć)
+      grainV: lowPower ? null : setup(true, NoColorSpace),
+      grainH: lowPower ? null : setup(false, NoColorSpace),
     };
   }, [grainTexture, lowPower]);
 
@@ -1461,7 +1464,7 @@ function ProceduralHsModel({
   // drewna zostawiała na GPU 4 martwe tekstury (kolejne ~32 MB na mobile)
   useEffect(
     () => () => {
-      Object.values(textures).forEach((tex) => tex.dispose());
+      Object.values(textures).forEach((tex) => tex?.dispose());
     },
     [textures]
   );
