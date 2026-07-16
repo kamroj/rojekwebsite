@@ -113,6 +113,24 @@ const HS_PRESETS = Object.fromEntries(
   'abcdefghijklm'.split('').map((letter, index) => [letter, HS_LADDER.slice(index)])
 );
 
+// Warianty mobilnego szkła do porównania na urządzeniu (?glass=1…5).
+// Wszystkie bez transmission (destabilizowała GPU); różnią się siłą odbić,
+// tintem i kryciem. Nr 3 = „lustrzane" (metaliczny trik na mocne odbicia),
+// nr 5 testuje clearcoat — cięższy wariant shadera, do sprawdzenia stabilności
+const MOBILE_GLASS_VARIANTS = {
+  1: { color: '#e7f1ee', opacity: 0.15, roughness: 0.04, envMapIntensity: 1.5 },
+  2: { color: '#e7f1ee', opacity: 0.18, roughness: 0.02, envMapIntensity: 2.6 },
+  3: { color: '#dfe9e7', opacity: 0.22, roughness: 0.03, metalness: 0.85, envMapIntensity: 2.2 },
+  4: { color: '#cfe0dc', opacity: 0.3, roughness: 0.05, envMapIntensity: 1.8 },
+  5: { color: '#e7f1ee', opacity: 0.15, roughness: 0.04, envMapIntensity: 1.5, clearcoat: 1, clearcoatRoughness: 0.06 },
+};
+
+const HS_GLASS_VARIANT = (() => {
+  if (typeof window === 'undefined') return null;
+  const raw = new URLSearchParams(window.location.search).get('glass');
+  return raw && MOBILE_GLASS_VARIANTS[raw] ? Number(raw) : null;
+})();
+
 const HS_PRESET = (() => {
   if (typeof window === 'undefined') return null;
   const key = new URLSearchParams(window.location.search).get('m')?.toLowerCase() ?? null;
@@ -1518,12 +1536,9 @@ function ProceduralHsModel({
       // Desktop bez zmian
       glass: lowPower ? (
         <meshPhysicalMaterial
-          color="#e7f1ee"
-          roughness={0.04}
-          metalness={0}
           transparent
-          opacity={0.15}
-          envMapIntensity={1.5}
+          metalness={0}
+          {...(MOBILE_GLASS_VARIANTS[HS_GLASS_VARIANT] ?? MOBILE_GLASS_VARIANTS[1])}
         />
       ) : (
         <meshPhysicalMaterial
@@ -1861,7 +1876,7 @@ export default function HsConfiguratorCanvas({
     if (!debugEnabled) return undefined;
     pushDebug(`ua: …${navigator.userAgent.slice(-52)}`);
     pushDebug(
-      `lowPower=${lowPower} devicePR=${window.devicePixelRatio} touch=${navigator.maxTouchPoints} m=${HS_PRESET ?? '-'} hsoff=${[...HS_OFF].join('+') || '-'}`
+      `lowPower=${lowPower} devicePR=${window.devicePixelRatio} touch=${navigator.maxTouchPoints} m=${HS_PRESET ?? '-'} hsoff=${[...HS_OFF].join('+') || '-'} glass=${HS_GLASS_VARIANT ?? 1}`
     );
     const onError = (event) =>
       pushDebug(`ERR: ${event.message ?? event.reason?.message ?? String(event.reason ?? '?')}`);
