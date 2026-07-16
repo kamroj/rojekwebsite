@@ -90,14 +90,28 @@ const isCubeTestEnabled = () =>
 // każda kolejna litera przywraca jedną grupę (B klamka, C listwy, D detale
 // progu, E dodatki, F offsety UV = stary „krok 1"). Litera włącza też overlay
 // diagnostyczny — pierwszy krok, który wywala model, wskazuje winowajcę
-const HS_PRESETS = {
-  a: ['tex', 'glass', 'badge', 'anim', 'handle', 'beads', 'rails', 'extras', 'uv'],
-  b: ['tex', 'glass', 'badge', 'anim', 'beads', 'rails', 'extras', 'uv'],
-  c: ['tex', 'glass', 'badge', 'anim', 'rails', 'extras', 'uv'],
-  d: ['tex', 'glass', 'badge', 'anim', 'extras', 'uv'],
-  e: ['tex', 'glass', 'badge', 'anim', 'uv'],
-  f: ['tex', 'glass', 'badge', 'anim'],
-};
+// Drabinka uporządkowana OD NAJMNIEJ DO NAJBARDZIEJ podejrzanego o psucie:
+// ?m=a = absolutne minimum (szkielet bez cieni/odbić), każda kolejna litera
+// dokłada JEDNĄ rzecz w kolejności rosnącego ryzyka, ?m=m = pełna scena.
+// Kolejność wg dotychczasowej bisekcji: infrastruktura sprawdzona kostką
+// najpierw, transmisyjne szyby i tekstury (historycznie najcięższe) na końcu
+const HS_LADDER = [
+  'cshadow', // b: + cień przyziemny
+  'env', //     c: + otoczenie HDR (odbicia)
+  'shadow', //  d: + mapy cieni
+  'uv', //      e: + losowe offsety UV belek
+  'extras', //  f: + prowadnice/szczotki/uszczelki/podwalina
+  'rails', //   g: + detale progu (szyny/nakładki/spadek/okapniki)
+  'beads', //   h: + listwy przyszybowe (uciosy)
+  'handle', //  i: + klamka (na mobile uproszczona)
+  'anim', //    j: + animacja skrzydeł
+  'badge', //   k: + plakietka CanvasTexture
+  'tex', //     l: + tekstury drewna
+  'glass', //   m: + szyby (transmisja) = pełna scena
+];
+const HS_PRESETS = Object.fromEntries(
+  'abcdefghijklm'.split('').map((letter, index) => [letter, HS_LADDER.slice(index)])
+);
 
 const HS_PRESET = (() => {
   if (typeof window === 'undefined') return null;
@@ -1525,7 +1539,10 @@ function ProceduralHsModel({
           color={thresholdMat.color}
           roughness={thresholdMat.roughness}
           metalness={thresholdMat.metalness}
-          anisotropy={0.5}
+          // Mobile: aniso 0 także na progu — anizotropowy wariant shadera
+          // physical to główny podejrzany o sporadyczne zawieszenia mobilnych
+          // GPU (kostka bez aniso: stabilna; szkielet z progiem aniso: flaky)
+          anisotropy={lowPower ? 0 : 0.5}
           envMapIntensity={1.2}
         />
       ),
@@ -1869,6 +1886,9 @@ export default function HsConfiguratorCanvas({
       });
       gl.domElement.addEventListener('webglcontextrestored', () => {
         clearTimeout(restoreTimer);
+        // Udany restore zeruje licznik — sporadyczne, odzyskiwane utraty
+        // kontekstu nie mogą z czasem wyczerpać limitu remountów
+        recoveryAttemptsRef.current = 0;
         if (debugEnabled) pushDebug('ctx restored');
       });
     },
@@ -1900,7 +1920,7 @@ export default function HsConfiguratorCanvas({
     )}
     <Canvas
       key={contextGeneration}
-      shadows
+      shadows={!HS_OFF.has('shadow')}
       onCreated={handleCreated}
       camera={{ position: [3, 2, 4], fov: 45 }}
       // Mobile: dpr 1.5 zamiast 2 — przy antyaliasingu różnica ostrości
@@ -1930,7 +1950,7 @@ export default function HsConfiguratorCanvas({
         <directionalLight
           position={[5, 6, 9]}
           intensity={1.4}
-          castShadow
+          castShadow={!HS_OFF.has('shadow')}
           shadow-mapSize={lowPower ? [1024, 1024] : [2048, 2048]}
           shadow-bias={-0.0004}
           shadow-camera-left={-3.5}
@@ -1941,7 +1961,7 @@ export default function HsConfiguratorCanvas({
           shadow-camera-far={40}
         />
         <directionalLight position={[-5, 3, -8]} intensity={0.45} />
-        <Environment preset="city" />
+        {!HS_OFF.has('env') && <Environment preset="city" />}
         <OrbitControls makeDefault enablePan enableZoom enableRotate />
         <Center>
           <group ref={modelRef}>
@@ -1971,14 +1991,16 @@ export default function HsConfiguratorCanvas({
         <FrontFit modelRef={modelRef} width={width} height={height} scheme={selectedType} plinth={plinthHeight} />
         {/* Cień przyziemny pod modelem — model jest wyśrodkowany, więc podłoga
             leży na -(wysokość okna + podwalina)/2 */}
-        <ContactShadows
-          position={[0, -(height + plinthHeight) / 2000 - 0.002, 0]}
-          opacity={0.35}
-          blur={2.5}
-          far={10}
-          resolution={256}
-          color="#000000"
-        />
+        {!HS_OFF.has('cshadow') && (
+          <ContactShadows
+            position={[0, -(height + plinthHeight) / 2000 - 0.002, 0]}
+            opacity={0.35}
+            blur={2.5}
+            far={10}
+            resolution={256}
+            color="#000000"
+          />
+        )}
       </Suspense>
     </Canvas>
     </>
