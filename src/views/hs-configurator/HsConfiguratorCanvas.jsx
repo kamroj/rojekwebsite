@@ -870,18 +870,47 @@ function TopGuide({ z, width, openingTop, material }) {
 // grupy), czubek ścięty „dziobkiem" ku szybie; całość 311,7 mm. Bryły z
 // profili w hsHandleGeometry.js — dźwignia siedzi w grupie obracanej wokół
 // osi trzpienia (animacja otwierania)
-function PullHandle({ position, material, leverRef }) {
+function PullHandle({ position, material, leverRef, lite = false }) {
   const geometries = useMemo(
-    () => ({ plate: createHandlePlateGeometry(), lever: createHandleLeverGeometry() }),
-    []
+    () => (lite ? null : { plate: createHandlePlateGeometry(), lever: createHandleLeverGeometry() }),
+    [lite]
   );
 
   useEffect(
     () => () => {
-      Object.values(geometries).forEach((geometry) => geometry.dispose());
+      if (geometries) Object.values(geometries).forEach((geometry) => geometry.dispose());
     },
     [geometries]
   );
+
+  // Mobile: klamka z prostych brył (indeksowane boxy) zamiast wyciąganych
+  // profili. Profile z ExtrudeGeometry mają na fazach mikroskopijne trójkąty
+  // (pola rzędu 1e-8 m²) — na mobilnych sterownikach zawieszały GPU (utrata
+  // kontekstu WebGL potwierdzona bisekcją ?m=a/?m=b na urządzeniu). Na ekranie
+  // telefonu klamka ma ~20 px, więc uproszczenie jest niewidoczne
+  if (lite) {
+    return (
+      <group position={position}>
+        <mesh position={[0, 0, 0.0095]} castShadow receiveShadow>
+          <boxGeometry args={[0.046, 0.1435, 0.019]} />
+          {material}
+        </mesh>
+        {/* userData jak w pełnej wersji — eksport AR zeruje obrót dźwigni */}
+        <group ref={leverRef} userData={{ hsLever: true }}>
+          {/* szyjka od płytki do dźwigni */}
+          <mesh position={[0, 0, 0.038]} castShadow receiveShadow>
+            <boxGeometry args={[0.027, 0.026, 0.046]} />
+            {material}
+          </mesh>
+          {/* dźwignia-płaskownik na osi trzpienia */}
+          <mesh position={[0, 0.112, 0.0685]} castShadow receiveShadow>
+            <boxGeometry args={[0.027, 0.256, 0.015]} />
+            {material}
+          </mesh>
+        </group>
+      </group>
+    );
+  }
 
   return (
     <group position={position}>
@@ -1228,6 +1257,7 @@ function GlazedPanel({
           position={[handleX, handleY, z + depth / 2]}
           material={materials.handle}
           leverRef={animatable ? leverRef : undefined}
+          lite={liteGlazing}
         />
       )}
     </group>
@@ -1478,12 +1508,15 @@ function ProceduralHsModel({
           envMapIntensity={1.5}
         />
       ),
+      // Mobile: klamka bez anisotropy — anizotropowy spekular liczy kierunek
+      // z pochodnych UV, a na drzazgowatych trójkątach faz profili dawał NaN-y
+      // zawieszające mobilne GPU. Na ~20 px klamki szczotkowania i tak nie widać
       handle: (
         <meshPhysicalMaterial
           color={handleMat.color}
           roughness={handleMat.roughness}
           metalness={handleMat.metalness}
-          anisotropy={handleMat.anisotropy}
+          anisotropy={lowPower ? 0 : handleMat.anisotropy}
           envMapIntensity={1.3}
         />
       ),
@@ -1809,15 +1842,35 @@ export default function HsConfiguratorCanvas({
     };
   }, [debugEnabled, lowPower, pushDebug]);
 
+  // Siatka bezpieczeństwa: three sam odzyskuje kontekst po webglcontextlost
+  // (robi preventDefault i czeka na restore — na telefonach to zwykle działa,
+  // model tylko mignie). Jeśli jednak restore nie nadejdzie w 4 s, stawiamy
+  // Canvas od nowa (zmiana klucza, max 3 próby) zamiast zostawiać martwy widok
+  const [contextGeneration, setContextGeneration] = useState(0);
+  const recoveryAttemptsRef = useRef(0);
   const handleCreated = useCallback(
     ({ gl }) => {
-      if (!debugEnabled) return;
-      const ctx = gl.getContext();
-      const rendererInfo = ctx.getExtension('WEBGL_debug_renderer_info');
-      const gpu = rendererInfo ? ctx.getParameter(rendererInfo.UNMASKED_RENDERER_WEBGL) : 'n/a';
-      pushDebug(`ctx created, gpu: ${String(gpu).slice(0, 48)}`);
-      gl.domElement.addEventListener('webglcontextlost', () => pushDebug('ctx LOST'));
-      gl.domElement.addEventListener('webglcontextrestored', () => pushDebug('ctx restored'));
+      if (debugEnabled) {
+        const ctx = gl.getContext();
+        const rendererInfo = ctx.getExtension('WEBGL_debug_renderer_info');
+        const gpu = rendererInfo ? ctx.getParameter(rendererInfo.UNMASKED_RENDERER_WEBGL) : 'n/a';
+        pushDebug(`ctx created, gpu: ${String(gpu).slice(0, 48)}`);
+      }
+      let restoreTimer = null;
+      gl.domElement.addEventListener('webglcontextlost', () => {
+        if (debugEnabled) pushDebug('ctx LOST');
+        clearTimeout(restoreTimer);
+        restoreTimer = setTimeout(() => {
+          recoveryAttemptsRef.current += 1;
+          if (recoveryAttemptsRef.current > 3) return;
+          if (debugEnabled) pushDebug(`brak restore — remount ${recoveryAttemptsRef.current}/3`);
+          setContextGeneration((generation) => generation + 1);
+        }, 4000);
+      });
+      gl.domElement.addEventListener('webglcontextrestored', () => {
+        clearTimeout(restoreTimer);
+        if (debugEnabled) pushDebug('ctx restored');
+      });
     },
     [debugEnabled, pushDebug]
   );
@@ -1846,6 +1899,7 @@ export default function HsConfiguratorCanvas({
       </div>
     )}
     <Canvas
+      key={contextGeneration}
       shadows
       onCreated={handleCreated}
       camera={{ position: [3, 2, 4], fov: 45 }}
