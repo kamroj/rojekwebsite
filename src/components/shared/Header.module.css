@@ -122,7 +122,6 @@
   display: flex;
   background: none;
   border: none;
-  font-size: var(--fs-xl);
   cursor: pointer;
   padding: 8px;
   margin: -8px;
@@ -154,12 +153,58 @@
   }
 }
 
-.mobileMenuButton svg {
+/* Hamburger z trzech kresek morfujących w X — transitions zamiast
+   keyframes, żeby przejście grało płynnie w OBIE strony i nie odpalało
+   się przy hydracji. Wymiary spójne z dawnym glifem FiMenu (24px box,
+   kreski ~75% szerokości). */
+.hamburgerIcon {
+  position: relative;
+  display: block;
+  width: 2.4rem;
+  height: 2.4rem;
   transition: transform 0.3s ease;
 }
 
-.mobileMenuButtonOpen svg {
-  animation: hamburgerToX 0.3s forwards;
+.hamburgerBar {
+  position: absolute;
+  top: 50%;
+  left: 12.5%;
+  width: 75%;
+  height: 2px;
+  border-radius: 2px;
+  background-color: currentColor;
+  transition: transform 0.3s ease, opacity 0.2s ease;
+}
+
+.hamburgerBar:nth-child(1) {
+  transform: translateY(calc(-50% - 0.6rem));
+}
+
+.hamburgerBar:nth-child(2) {
+  transform: translateY(-50%);
+}
+
+.hamburgerBar:nth-child(3) {
+  transform: translateY(calc(-50% + 0.6rem));
+}
+
+/* Otwarte: całość obraca się o 180deg, skrajne kreski schodzą do środka
+   i krzyżują w X, środkowa znika. */
+.mobileMenuButtonOpen .hamburgerIcon {
+  transform: rotate(180deg);
+}
+
+.mobileMenuButtonOpen .hamburgerBar:nth-child(1) {
+  transform: translateY(-50%) rotate(45deg);
+}
+
+.mobileMenuButtonOpen .hamburgerBar:nth-child(2) {
+  opacity: 0;
+  transform: translateY(-50%) scaleX(0);
+}
+
+.mobileMenuButtonOpen .hamburgerBar:nth-child(3) {
+  transform: translateY(-50%) rotate(-45deg);
 }
 
 .mobileMenuButton:hover {
@@ -297,12 +342,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   text-transform: uppercase;
-
-  /* Animacja wejścia gra dopiero przy otwarciu menu (patrz reguły
-     .mobileMenuContainerOpen niżej); transition daje miękkie zgaśnięcie
-     przy zamykaniu. Inline animation-delay z JSX zapewnia kaskadę. */
-  opacity: 0;
-  transition: opacity 0.2s ease;
 }
 
 @media (min-height: 700px) {
@@ -363,9 +402,6 @@
   cursor: pointer;
   text-align: left;
   text-transform: uppercase;
-
-  opacity: 0;
-  transition: opacity 0.2s ease;
 }
 
 .mobileNavButton svg {
@@ -533,21 +569,6 @@
   padding-right: var(--space-sm);
   display: flex;
   justify-content: center;
-  opacity: 0;
-  transition: opacity 0.2s ease;
-}
-
-/* Animacje wejścia itemów odpalane przy KAŻDYM otwarciu menu (kontener
-   jest stale w DOM — bez bramkowania klasą otwarcia zagrałyby tylko raz,
-   przy hydracji, gdy menu jest jeszcze schowane). */
-.mobileMenuContainerOpen .mobileNavItem,
-.mobileMenuContainerOpen .mobileNavButton {
-  animation: fadeIn 0.3s forwards;
-}
-
-.mobileMenuContainerOpen .mobileLangSwitcher {
-  animation: fadeIn 0.3s forwards;
-  animation-delay: 0.3s;
 }
 
 @keyframes slideInRight {
@@ -583,18 +604,6 @@
   }
   to {
     opacity: 0;
-  }
-}
-
-@keyframes hamburgerToX {
-  0% {
-    transform: rotate(0deg);
-  }
-  50% {
-    transform: rotate(180deg);
-  }
-  100% {
-    transform: rotate(360deg);
   }
 }
 

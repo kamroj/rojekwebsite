@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FiMenu, FiPhone, FiX } from 'react-icons/fi';
+import { FiPhone } from 'react-icons/fi';
 import { IoIosArrowForward } from 'react-icons/io';
 import LanguageSwitcher from './LanguageSwitcher';
 import Navigation from './Navigation';
@@ -292,7 +292,11 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
             isMobileMenuOpen && styles.mobileMenuButtonOpen
           )}
         >
-          {isMobileMenuOpen ? <FiX /> : <FiMenu />}
+          <span className={styles.hamburgerIcon} aria-hidden="true">
+            <span className={styles.hamburgerBar} />
+            <span className={styles.hamburgerBar} />
+            <span className={styles.hamburgerBar} />
+          </span>
         </button>
       </MaxWidthContainer>
 
@@ -347,7 +351,6 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
                           aria-haspopup="true"
                           aria-expanded={mobileMenuView !== 'main'}
                           className={styles.mobileNavButton}
-                          style={{ animationDelay: `${index * 0.05}s` }}
                         >
                           <span>{t(item.label)}</span>
                           <IoIosArrowForward aria-hidden="true" />
@@ -380,7 +383,6 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
                           styles.mobileNavItem,
                           isActive(item.path) && styles.mobileNavItemActive
                         )}
-                        style={{ animationDelay: `${index * 0.05}s` }}
                         aria-current={isActive(item.path) ? 'page' : undefined}
                       >
                         {t(item.label)}
@@ -401,7 +403,6 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
                     to={getSectionPath(lang, 'products')}
                     onClick={closeMobileMenu}
                     className={cn(styles.mobileNavItem, styles.mobileSeeAllLink)}
-                    style={{ animationDelay: '0s' }}
                   >
                     {t('common.seeAll', 'Zobacz wszystkie')}
                   </RouterAgnosticLink>
@@ -413,7 +414,6 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
                       aria-haspopup="true"
                       aria-expanded={mobileMenuView === 'category' && mobileActiveCategoryKey === c.key}
                       className={styles.mobileNavButton}
-                      style={{ animationDelay: `${idx * 0.05}s` }}
                     >
                       <span className={styles.mobileNavButtonLabel}>
                         <span className={styles.mobileCategoryIcon} aria-hidden="true">
@@ -438,7 +438,6 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
                     to={getProductCategoryPath(lang, mobileActiveCategoryKey)}
                     onClick={closeMobileMenu}
                     className={cn(styles.mobileNavItem, styles.mobileSeeAllLink)}
-                    style={{ animationDelay: '0s' }}
                   >
                     {t('common.seeAll', 'Zobacz wszystkie')}
                   </RouterAgnosticLink>
@@ -452,7 +451,6 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
                         to={getProductDetailPath(lang, mobileActiveCategoryKey, productRouteKey)}
                         onClick={closeMobileMenu}
                         className={styles.mobileNavItem}
-                        style={{ animationDelay: '0s' }}
                       >
                         {p.name}
                       </RouterAgnosticLink>
