@@ -113,17 +113,21 @@ const HS_PRESETS = Object.fromEntries(
   'abcdefghijklm'.split('').map((letter, index) => [letter, HS_LADDER.slice(index)])
 );
 
-// Warianty mobilnego szkła do porównania na urządzeniu (?glass=1…5).
-// Wszystkie bez transmission (destabilizowała GPU); różnią się siłą odbić,
-// tintem i kryciem. Nr 3 = „lustrzane" (metaliczny trik na mocne odbicia),
-// nr 5 testuje clearcoat — cięższy wariant shadera, do sprawdzenia stabilności
+// Warianty mobilnego szkła (?glass=1…7). Wszystkie bez transmission
+// (destabilizowała GPU). DOMYŚLNY = 3 „lustrzany" (wybór Kamila: metaliczny
+// trik na czytelne odbicia otoczenia). Test stabilności clearcoatu (nr 5)
+// przeszedł na urządzeniu, więc 6 = trójka + clearcoat; 7 = trójka z
+// ostrzejszymi/mocniejszymi odbiciami bez clearcoatu
 const MOBILE_GLASS_VARIANTS = {
   1: { color: '#e7f1ee', opacity: 0.15, roughness: 0.04, envMapIntensity: 1.5 },
   2: { color: '#e7f1ee', opacity: 0.18, roughness: 0.02, envMapIntensity: 2.6 },
   3: { color: '#dfe9e7', opacity: 0.22, roughness: 0.03, metalness: 0.85, envMapIntensity: 2.2 },
   4: { color: '#cfe0dc', opacity: 0.3, roughness: 0.05, envMapIntensity: 1.8 },
   5: { color: '#e7f1ee', opacity: 0.15, roughness: 0.04, envMapIntensity: 1.5, clearcoat: 1, clearcoatRoughness: 0.06 },
+  6: { color: '#dfe9e7', opacity: 0.22, roughness: 0.03, metalness: 0.85, envMapIntensity: 2.2, clearcoat: 1, clearcoatRoughness: 0.04 },
+  7: { color: '#dfe9e7', opacity: 0.2, roughness: 0.015, metalness: 0.85, envMapIntensity: 2.6 },
 };
+const DEFAULT_MOBILE_GLASS = 3;
 
 const HS_GLASS_VARIANT = (() => {
   if (typeof window === 'undefined') return null;
@@ -1538,7 +1542,7 @@ function ProceduralHsModel({
         <meshPhysicalMaterial
           transparent
           metalness={0}
-          {...(MOBILE_GLASS_VARIANTS[HS_GLASS_VARIANT] ?? MOBILE_GLASS_VARIANTS[1])}
+          {...(MOBILE_GLASS_VARIANTS[HS_GLASS_VARIANT] ?? MOBILE_GLASS_VARIANTS[DEFAULT_MOBILE_GLASS])}
         />
       ) : (
         <meshPhysicalMaterial
@@ -1876,7 +1880,7 @@ export default function HsConfiguratorCanvas({
     if (!debugEnabled) return undefined;
     pushDebug(`ua: …${navigator.userAgent.slice(-52)}`);
     pushDebug(
-      `lowPower=${lowPower} devicePR=${window.devicePixelRatio} touch=${navigator.maxTouchPoints} m=${HS_PRESET ?? '-'} hsoff=${[...HS_OFF].join('+') || '-'} glass=${HS_GLASS_VARIANT ?? 1}`
+      `lowPower=${lowPower} devicePR=${window.devicePixelRatio} touch=${navigator.maxTouchPoints} m=${HS_PRESET ?? '-'} hsoff=${[...HS_OFF].join('+') || '-'} glass=${HS_GLASS_VARIANT ?? DEFAULT_MOBILE_GLASS}`
     );
     const onError = (event) =>
       pushDebug(`ERR: ${event.message ?? event.reason?.message ?? String(event.reason ?? '?')}`);
