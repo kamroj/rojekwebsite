@@ -1511,7 +1511,21 @@ function ProceduralHsModel({
     return {
       woodV: makeWood(textures.woodV, textures.grainV),
       woodH: makeWood(textures.woodH, textures.grainH),
-      glass: (
+      // Mobile: szkło bez transmission — drabinka ?m=l/?m=m wskazała transmisję
+      // jako ostatni destabilizator (refrakcja renderuje scenę drugi raz co
+      // klatkę do mipmapowanego bufora). Przy płaskim jasnym tle za oknem
+      // refrakcji i tak nie widać: tint + odbicia env czytają się jak szkło.
+      // Desktop bez zmian
+      glass: lowPower ? (
+        <meshPhysicalMaterial
+          color="#e7f1ee"
+          roughness={0.04}
+          metalness={0}
+          transparent
+          opacity={0.15}
+          envMapIntensity={1.5}
+        />
+      ) : (
         <meshPhysicalMaterial
           color="#eef6f4"
           roughness={0.04}
