@@ -7,7 +7,6 @@ import Navigation from './Navigation';
 import SwipeHandler from './SwipeHandler';
 import { useScrollPosition } from '../../hooks';
 import { ROUTES } from '../../constants/index.js';
-import { handleKeyboardNavigation } from '../../utils';
 import { productCategories } from '../../data/products/index.js';
 // NOTE: In Astro, assets from /public should be referenced by URL string.
 // Importing from "/images/..." triggers Astro's asset pipeline and can fail.
@@ -56,6 +55,9 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
   const [mobileActiveCategoryKey, setMobileActiveCategoryKey] = useState(null);
   const mobileMenuId = 'mobile-menu';
   const restoreOverflowTimeoutRef = useRef(null);
+  const mobileMenuButtonRef = useRef(null);
+  const mobileMenuContainerRef = useRef(null);
+  const restoreFocusRef = useRef(null);
   const bodyOverflowBeforeOpenRef = useRef('');
   const isBodyScrollLockedRef = useRef(false);
   const lastPathnameRef = useRef(null);
@@ -115,13 +117,6 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
     setMobileMenuView('main');
     setMobileActiveCategoryKey(null);
   }, []);
-
-  const handleMenuButtonKeyDown = useCallback(
-    (event) => {
-      handleKeyboardNavigation(event, toggleMobileMenu, toggleMobileMenu);
-    },
-    [toggleMobileMenu]
-  );
 
   // CSS variable for layout offset
   useEffect(() => {
@@ -207,6 +202,82 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
     };
   }, [closeMobileCategory, closeMobileMenu, closeMobileProducts, isMobileMenuOpen, mobileMenuView]);
 
+  // Treat the mobile drawer like a modal dialog: move focus into it, keep
+  // keyboard focus inside the drawer/close button, then restore focus.
+  useEffect(() => {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    if (!isMobileMenuOpen) return;
+
+    restoreFocusRef.current = document.activeElement instanceof HTMLElement
+      ? document.activeElement
+      : mobileMenuButtonRef.current;
+
+    const getFocusableElements = () => {
+      const menuElements = mobileMenuContainerRef.current
+        ? Array.from(mobileMenuContainerRef.current.querySelectorAll(
+            'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+          ))
+        : [];
+
+      return [mobileMenuButtonRef.current, ...menuElements].filter(
+        (element) => element && !element.hasAttribute('disabled') && element.getClientRects().length > 0
+      );
+    };
+
+    const focusFrame = window.requestAnimationFrame(() => {
+      const initialTarget = mobileMenuContainerRef.current?.querySelector(
+        `.${styles.mobileNavigation} a[href], .${styles.mobileNavigation} button:not([disabled])`
+      );
+      initialTarget?.focus();
+    });
+
+    const trapFocus = (event) => {
+      if (event.key !== 'Tab') return;
+
+      const focusableElements = getFocusableElements();
+      if (focusableElements.length === 0) {
+        event.preventDefault();
+        return;
+      }
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+
+      if (event.shiftKey && document.activeElement === firstElement) {
+        event.preventDefault();
+        lastElement.focus();
+      } else if (!event.shiftKey && document.activeElement === lastElement) {
+        event.preventDefault();
+        firstElement.focus();
+      }
+    };
+
+    document.addEventListener('keydown', trapFocus);
+
+    return () => {
+      window.cancelAnimationFrame(focusFrame);
+      document.removeEventListener('keydown', trapFocus);
+      const restoreTarget = restoreFocusRef.current;
+      restoreFocusRef.current = null;
+      window.requestAnimationFrame(() => restoreTarget?.focus?.());
+    };
+  }, [isMobileMenuOpen]);
+
+  // When a nested drawer view replaces the current panel, focus its first
+  // action instead of letting focus fall back to the document body.
+  useEffect(() => {
+    if (!isMobileMenuOpen || typeof window === 'undefined') return;
+
+    const focusFrame = window.requestAnimationFrame(() => {
+      const initialTarget = mobileMenuContainerRef.current?.querySelector(
+        `.${styles.mobileNavigation} a[href], .${styles.mobileNavigation} button:not([disabled])`
+      );
+      initialTarget?.focus();
+    });
+
+    return () => window.cancelAnimationFrame(focusFrame);
+  }, [isMobileMenuOpen, mobileActiveCategoryKey, mobileMenuView]);
+
   // Defensive cleanup on unmount.
   useEffect(() => {
     return () => {
@@ -281,9 +352,9 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
         </div>
 
         <button
+          ref={mobileMenuButtonRef}
           onClick={toggleMobileMenu}
-          onKeyDown={handleMenuButtonKeyDown}
-          aria-label={t('nav.toggleMenu', 'Toggle menu')}
+          aria-label={isMobileMenuOpen ? t('buttons.close', 'Zamknij') : t('nav.toggleMenu', 'Toggle menu')}
           aria-expanded={isMobileMenuOpen}
           aria-controls={mobileMenuId}
           className={cn(
@@ -303,11 +374,18 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
       <div
         className={cn(styles.mobileMenuOverlay, isMobileMenuOpen && styles.mobileMenuOverlayOpen)}
         onClick={closeMobileMenu}
+        aria-hidden="true"
       />
 
       <div
+        ref={mobileMenuContainerRef}
         id={mobileMenuId}
         className={cn(styles.mobileMenuContainer, isMobileMenuOpen && styles.mobileMenuContainerOpen)}
+        role="dialog"
+        aria-modal="true"
+        aria-label={t('nav.mobileNavigation', 'Mobile navigation')}
+        aria-hidden={!isMobileMenuOpen}
+        inert={!isMobileMenuOpen}
       >
         <SwipeHandler onSwipeRight={closeMobileMenu} enabled={isMobileMenuOpen}>
           <div className={styles.mobileMenuLogo}>
@@ -339,7 +417,7 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
             >
               {mobileMenuView === 'main' && (
                 <>
-                  {navItems.map((item, index) => {
+                  {navItems.map((item) => {
                     if (item.onlyLang && item.onlyLang !== lang) return null;
                     if (item.key === 'home') return null;
                     if (item.key === 'contact') return null;
@@ -407,7 +485,7 @@ function HeaderUI({ pathname = '/', initialSanityProductsByCategory = {} }) {
                     {t('common.seeAll', 'Zobacz wszystkie')}
                   </RouterAgnosticLink>
 
-                  {mobileCategories.map((c, idx) => (
+                  {mobileCategories.map((c) => (
                     <button
                       key={c.key}
                       onClick={() => openMobileCategory(c.key)}

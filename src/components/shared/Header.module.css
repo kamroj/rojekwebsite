@@ -120,18 +120,21 @@
 
 .mobileMenuButton {
   display: flex;
+  width: 44px;
+  height: 44px;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
   cursor: pointer;
-  padding: 8px;
-  margin: -8px;
+  padding: 10px;
+  margin: 0;
   position: fixed;
-  top: calc((var(--header-height) - 2.4rem) / 2);
-  right: 15px;
-  /* Bez width - pozycjonowanie przez top/right wystarczy */
+  top: calc((var(--header-height) - 44px) / 2);
+  right: 10px;
   z-index: 3002;
   transition: color 0.3s ease, transform 0.3s ease;
-  color: #2e8b57;
+  color: #ffffff;
 }
 
 .mobileMenuButtonPastThreshold {
@@ -140,6 +143,12 @@
 
 .mobileMenuButtonOpen {
   color: #2e8b57;
+}
+
+.mobileMenuButton:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
 }
 
 @media (min-width: 993px) {
@@ -342,6 +351,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   text-transform: uppercase;
+  min-height: 44px;
 }
 
 @media (min-height: 700px) {
@@ -402,6 +412,7 @@
   cursor: pointer;
   text-align: left;
   text-transform: uppercase;
+  min-height: 44px;
 }
 
 .mobileNavButton svg {
@@ -487,6 +498,7 @@
   font-size: var(--fs-base);
   cursor: pointer;
   text-transform: uppercase;
+  min-height: 44px;
 }
 
 .mobileBackIcon {
@@ -533,6 +545,7 @@
   font-size: var(--fs-sm);
   font-weight: var(--fw-medium);
   transition: var(--cta-primary-transition);
+  min-height: 44px;
 }
 
 .mobileContactCtaButton:link,

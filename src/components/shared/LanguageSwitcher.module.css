@@ -148,6 +148,9 @@
 
 .optionMobile {
   padding: 4px 8px;
+  min-width: 52px;
+  min-height: 44px;
+  justify-content: center;
 }
 
 .optionMobile:hover {
