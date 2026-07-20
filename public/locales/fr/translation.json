@@ -700,6 +700,7 @@
     "hours": "Heures d'ouverture",
     "contactTitle": "Contact",
     "locationTitle": "Notre localisation",
+    "openInMaps": "Ouvrir dans Google Maps",
     "roles": {
       "quotes": "Devis, demandes",
       "distribution": "Distribution, marketing, production"

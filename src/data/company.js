@@ -54,6 +54,7 @@ export const COMPANY = {
 
   map: {
     embedUrl: 'https://www.google.com/maps?q=Kryspinow+399&output=embed',
+    directionsUrl: 'https://www.google.com/maps/search/?api=1&query=Kryspinow+399',
   },
 };
 

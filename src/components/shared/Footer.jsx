@@ -100,13 +100,23 @@ const Footer = ({ lang = 'pl' }) => {
             <h3>{t('contact.locationTitle')}</h3>
             <div className={styles.mapContainer}>
               {mapConsent ? (
-                <iframe
-                  src={mapSrc}
-                  title={t('contact.locationTitle')}
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  allowFullScreen
-                />
+                <>
+                  <iframe
+                    src={mapSrc}
+                    title={t('contact.locationTitle')}
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    allowFullScreen
+                  />
+                  <a
+                    className={styles.mobileMapLink}
+                    href={COMPANY.map.directionsUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {t('contact.openInMaps', 'Otwórz w Mapach Google')}
+                  </a>
+                </>
               ) : (
                 <div className={styles.mapPlaceholder}>
                   <p>

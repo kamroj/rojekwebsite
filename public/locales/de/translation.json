@@ -697,6 +697,7 @@
     "hours": "Öffnungszeiten",
     "contactTitle": "Kontakt",
     "locationTitle": "Unser Standort",
+    "openInMaps": "In Google Maps öffnen",
     "roles": {
       "quotes": "Angebote, Anfragen",
       "distribution": "Vertrieb, Marketing, Produktion"

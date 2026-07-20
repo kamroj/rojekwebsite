@@ -675,6 +675,7 @@
     "hours": "Godziny otwarcia",
     "contactTitle": "Kontakt",
     "locationTitle": "Nasza lokalizacja",
+    "openInMaps": "Otwórz w Mapach Google",
     "roles": {
       "quotes": "Wyceny, zapytania",
       "distribution": "Dystrybucja, marketing, produkcja"
