@@ -63,6 +63,10 @@
 .mobileSwiper {
   display: block;
   position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 @media (min-width: 1400px) {
@@ -73,8 +77,10 @@
 
 .mobileSwiper :global(.swiper) {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   padding: 20px 0 20px;
-  overflow: visible;
+  overflow: hidden;
 }
 
 @media (max-width: 1400px) {

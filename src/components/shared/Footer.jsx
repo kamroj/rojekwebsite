@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FiPhone, FiMail } from 'react-icons/fi';
 import { COMPANY } from '../../data/company.js';
@@ -10,6 +10,7 @@ const Footer = ({ lang = 'pl' }) => {
   const { t } = useTranslation();
   const currentYear = new Date().getFullYear();
   const [mapConsent, setMapConsent] = useState(false);
+  const footerActionsRef = useRef(null);
   const activeLang = ['pl', 'en', 'de', 'fr'].includes(lang) ? lang : 'pl';
 
   const privacyPolicyPath = getSectionPath(activeLang, 'privacyPolicy');
@@ -56,6 +57,44 @@ const Footer = ({ lang = 'pl' }) => {
     });
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    const actions = footerActionsRef.current;
+    if (!actions) return undefined;
+
+    let animationFrameId;
+    const updateRowSeparators = () => {
+      cancelAnimationFrame(animationFrameId);
+      animationFrameId = requestAnimationFrame(() => {
+        const items = Array.from(actions.children);
+        let previousTop = items[0]?.offsetTop;
+
+        items.forEach((item, index) => {
+          const separator = item.querySelector('[data-footer-separator]');
+          if (separator) {
+            const startsNewRow = index > 0 && Math.abs(item.offsetTop - previousTop) > 1;
+            separator.classList.toggle(styles.actionSeparatorRowStart, startsNewRow);
+          }
+          previousTop = item.offsetTop;
+        });
+      });
+    };
+
+    const resizeObserver = typeof ResizeObserver === 'undefined'
+      ? null
+      : new ResizeObserver(updateRowSeparators);
+
+    resizeObserver?.observe(actions);
+    Array.from(actions.children).forEach((item) => resizeObserver?.observe(item));
+    window.addEventListener('resize', updateRowSeparators);
+    updateRowSeparators();
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+      resizeObserver?.disconnect();
+      window.removeEventListener('resize', updateRowSeparators);
+    };
+  }, [activeLang]);
 
   return (
     <footer className={styles.footerWrapper}>
@@ -141,7 +180,7 @@ const Footer = ({ lang = 'pl' }) => {
 
         <div className={styles.copyrightSection}>
           <p>{t('footer.copy', { year: currentYear })}</p>
-          <div className={styles.footerActions}>
+          <div ref={footerActionsRef} className={styles.footerActions}>
             <a
               href="#"
               className={styles.policyLink}
@@ -153,26 +192,32 @@ const Footer = ({ lang = 'pl' }) => {
             >
               {t('cookies.actions.openSettings', 'Ustawienia cookies')}
             </a>
-            <span className={styles.actionSeparator} aria-hidden="true">|</span>
-            <a href={privacyPolicyPath} className={styles.policyLink}>
-              {t('cookies.actions.privacyPolicy', privacyPolicyFallbackByLang[activeLang])}
-            </a>
-            <span className={styles.actionSeparator} aria-hidden="true">|</span>
-            <a href={cookiePolicyPath} className={styles.policyLink}>
-              {t('cookies.actions.cookiePolicy', cookiePolicyFallbackByLang[activeLang])}
-            </a>
+            <span className={styles.footerActionGroup}>
+              <span className={styles.actionSeparator} data-footer-separator aria-hidden="true">·</span>
+              <a href={privacyPolicyPath} className={styles.policyLink}>
+                {t('cookies.actions.privacyPolicy', privacyPolicyFallbackByLang[activeLang])}
+              </a>
+            </span>
+            <span className={styles.footerActionGroup}>
+              <span className={styles.actionSeparator} data-footer-separator aria-hidden="true">·</span>
+              <a href={cookiePolicyPath} className={styles.policyLink}>
+                {t('cookies.actions.cookiePolicy', cookiePolicyFallbackByLang[activeLang])}
+              </a>
+            </span>
             {activeLang === 'pl' ? (
-              <>
-                <span className={styles.actionSeparator} aria-hidden="true">|</span>
+              <span className={styles.footerActionGroup}>
+                <span className={styles.actionSeparator} data-footer-separator aria-hidden="true">·</span>
                 <a href={grantsPath} className={styles.policyLink}>
                   Dotacje
                 </a>
-              </>
+              </span>
             ) : null}
-            <span className={styles.actionSeparator} aria-hidden="true">|</span>
-            <a href={sitemapPath} className={styles.policyLink}>
-              {t('cookies.actions.sitemap', sitemapFallbackByLang[activeLang])}
-            </a>
+            <span className={styles.footerActionGroup}>
+              <span className={styles.actionSeparator} data-footer-separator aria-hidden="true">·</span>
+              <a href={sitemapPath} className={styles.policyLink}>
+                {t('cookies.actions.sitemap', sitemapFallbackByLang[activeLang])}
+              </a>
+            </span>
           </div>
         </div>
       </div>
