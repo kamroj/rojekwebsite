@@ -208,17 +208,7 @@ const homeHsConfigCopy = {
 
 const hsConfigCopy = homeHsConfigCopy[lang] || homeHsConfigCopy.pl;
 
-const homeH1ByLang = {
-  pl: 'ROJEK Kraków – Producent okien i drzwi drewnianych, HS, EI30 i EI60',
-  en: 'ROJEK Kraków – Manufacturer of Wooden Windows and Doors, HS, EI30 & EI60',
-  de: 'ROJEK Kraków – Hersteller von Holzfenstern und Holztüren, HS, EI30 und EI60',
-  fr: 'ROJEK Cracovie – Fabricant de fenêtres et portes en bois, HS, EI30 et EI60',
-};
-
-const homeH1 = homeH1ByLang[lang] || homeH1ByLang.pl;
 ---
-
-<h1 class="home-page-h1">{homeH1}</h1>
 
 <!-- HERO (interactive) -->
 <IntroIslandWithResources lang={lang} hydrate="load" viewProps={{ introMedia }} />
@@ -399,18 +389,6 @@ const homeH1 = homeH1ByLang[lang] || homeH1ByLang.pl;
 <PartnersIslandWithResources lang={lang} hydrate="load" />
 
 <style>
-  .home-page-h1 {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-  }
-
   .home-articles-section {
     padding: 0 0 3rem;
   }

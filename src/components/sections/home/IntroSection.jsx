@@ -206,6 +206,45 @@ export default function IntroSection({ id, introMedia }) {
   const ctaHref = currentIntroItem?.type === 'category'
     ? getProductCategoryPath(lang, currentIntroItem.value)
     : getSectionPath(lang, currentIntroItem?.value || 'home');
+  const renderVideoControl = () => (
+    <div className={styles.progressContainer}>
+      <svg
+        className={styles.progressSvg}
+        viewBox={`0 0 ${SIZE} ${SIZE}`}
+      >
+        <circle
+          cx={SIZE / 2} cy={SIZE / 2} r={R}
+          fill="none"
+          stroke="var(--color-border-accent)"
+          strokeWidth={STROKE}
+        />
+        <circle
+          cx={SIZE / 2} cy={SIZE / 2} r={R}
+          fill="none"
+          stroke="#3eb772"
+          strokeWidth={STROKE}
+          strokeDasharray={C}
+          strokeDashoffset={dashOffset}
+          transform={`rotate(-90 ${SIZE / 2} ${SIZE / 2})`}
+          style={{
+            transition: resetting ? 'none' : 'stroke-dashoffset 0.1s linear',
+          }}
+        />
+      </svg>
+      <button
+        className={styles.videoControlButton}
+        type="button"
+        onClick={toggle}
+        onTouchEnd={(e) => {
+          e.preventDefault();
+          toggle();
+        }}
+        aria-label={isPlaying ? t('buttons.pause', 'Pause') : t('buttons.play', 'Play')}
+      >
+        {isPlaying ? <FiPause /> : <FiPlay />}
+      </button>
+    </div>
+  );
 
   return (
     <section className={styles.introWrapper} id={id} ref={wrapperRef}>
@@ -253,58 +292,31 @@ export default function IntroSection({ id, introMedia }) {
 
       <div className={styles.videoOverlay} />
 
-      <div className={styles.bottomOverlay}>
-        <MaxWidthContainer className={styles.bottomInner}>
-          {videoSrc ? (
-            <div className={styles.progressContainer}>
-              <svg
-                className={styles.progressSvg}
-                viewBox={`0 0 ${SIZE} ${SIZE}`}
-              >
-                <circle
-                  cx={SIZE / 2} cy={SIZE / 2} r={R}
-                  fill="none"
-                  stroke="var(--color-border-accent)"
-                  strokeWidth={STROKE}
-                />
-                <circle
-                  cx={SIZE / 2} cy={SIZE / 2} r={R}
-                  fill="none"
-                  stroke="#3eb772"
-                  strokeWidth={STROKE}
-                  strokeDasharray={C}
-                  strokeDashoffset={dashOffset}
-                  transform={`rotate(-90 ${SIZE / 2} ${SIZE / 2})`}
-                  style={{
-                    transition: resetting ? 'none' : 'stroke-dashoffset 0.1s linear',
-                  }}
-                />
-              </svg>
-              <button
-                className={styles.videoControlButton}
-                type="button"
-                onClick={toggle}
-                onTouchEnd={(e) => {
-                  e.preventDefault();
-                  toggle();
-                }}
-                aria-label={isPlaying ? t('buttons.pause', 'Pause') : t('buttons.play', 'Play')}
-              >
-                {isPlaying ? <FiPause /> : <FiPlay />}
-              </button>
-            </div>
-          ) : null}
-
-          <div className={styles.rightBottomContent}>
+      <div className={styles.heroContent}>
+        <MaxWidthContainer className={styles.heroContentInner}>
+          <div className={styles.heroCopy}>
+            <h1 className={styles.heroHeading}>
+              {t('intro.heading', 'Okna i drzwi dopasowane do Twojego domu')}
+            </h1>
             <p className={styles.dynamicText} key={keyAnim}>
-            {t(keys[idx], '')}
+              {t(keys[idx], '')}
             </p>
-            <RouterAgnosticLink className={styles.ctaButton} href={ctaHref}>
-            {t('buttons.see','Zobacz')}
-            </RouterAgnosticLink>
+            <div className={styles.heroActions}>
+              <RouterAgnosticLink className={styles.ctaButton} href={ctaHref}>
+                {t('buttons.see', 'Zobacz')}
+              </RouterAgnosticLink>
+            </div>
           </div>
         </MaxWidthContainer>
       </div>
+
+      {videoSrc ? (
+        <div className={styles.bottomOverlay}>
+          <MaxWidthContainer className={styles.bottomInner}>
+            {renderVideoControl()}
+          </MaxWidthContainer>
+        </div>
+      ) : null}
     </section>
   );
 }
