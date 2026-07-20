@@ -108,15 +108,43 @@
 }
 
 .heroHeading {
-  max-width: 14ch;
+  width: min(100%, 70vw);
+  max-width: none;
   margin: 0;
   color: var(--color-text-light);
   font-family: var(--font-heading);
-  font-size: clamp(4rem, 6.2vw, 7.2rem);
+  font-size: clamp(3.6rem, 5.6vw, 6.5rem);
   font-weight: 100;
   letter-spacing: var(--ls-tight);
   line-height: 1.04;
   text-wrap: balance;
+}
+
+.heroHeadingAnimated {
+  opacity: 0;
+  animation: introHeadingCycle 7s ease-in-out forwards;
+}
+
+@keyframes introHeadingCycle {
+  0% {
+    opacity: 0;
+    transform: translateY(-18px);
+  }
+
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
 }
 
 @media (--bp-md) {
@@ -125,7 +153,7 @@
   }
 
   .heroHeading {
-    font-size: clamp(3.8rem, 7vw, 6rem);
+    font-size: clamp(3.4rem, 6.3vw, 5.5rem);
   }
 }
 
@@ -140,13 +168,19 @@
   }
 
   .heroHeading {
-    max-width: 16ch;
-    font-size: clamp(3.2rem, 10vw, 4.5rem);
+    font-size: clamp(2.9rem, 9vw, 4.1rem);
     line-height: 1.08;
   }
 
   .heroActions {
     padding-right: 7rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .heroHeadingAnimated {
+    opacity: 1;
+    animation: none;
   }
 }
 

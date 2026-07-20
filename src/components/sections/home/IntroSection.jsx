@@ -114,12 +114,12 @@ export default function IntroSection({ id, introMedia }) {
   }, [videoSrc]);
 
   const introItems = [
-    { key: 'intro.text1', type: 'category', value: 'drzwi' },
-    { key: 'intro.text2', type: 'section', value: 'hsConfigurator' },
-    { key: 'intro.text3', type: 'category', value: 'okna' },
-    { key: 'intro.text4', type: 'category', value: 'oknaDrzwiPrzeciwpozarowe' },
-    { key: 'intro.text5', type: 'section', value: 'realizations' },
-    { key: 'intro.text6', type: 'category', value: 'oknaPrzesuwne' },
+    { key: 'intro.text1', headingKey: 'intro.heading1', type: 'category', value: 'drzwi' },
+    { key: 'intro.text2', headingKey: 'intro.heading2', type: 'section', value: 'hsConfigurator' },
+    { key: 'intro.text3', headingKey: 'intro.heading3', type: 'category', value: 'okna' },
+    { key: 'intro.text4', headingKey: 'intro.heading4', type: 'category', value: 'oknaDrzwiPrzeciwpozarowe' },
+    { key: 'intro.text5', headingKey: 'intro.heading5', type: 'section', value: 'realizations' },
+    { key: 'intro.text6', headingKey: 'intro.heading6', type: 'category', value: 'oknaPrzesuwne' },
   ];
   const keys = introItems.map((item) => item.key);
   const [idx, setIdx] = useState(0);
@@ -295,8 +295,8 @@ export default function IntroSection({ id, introMedia }) {
       <div className={styles.heroContent}>
         <MaxWidthContainer className={styles.heroContentInner}>
           <div className={styles.heroCopy}>
-            <h1 className={styles.heroHeading}>
-              {t('intro.heading', 'Okna i drzwi dopasowane do Twojego domu')}
+            <h1 className={`${styles.heroHeading} ${styles.heroHeadingAnimated}`} key={`heading-${keyAnim}`}>
+              {t(currentIntroItem.headingKey, t('intro.heading', 'Okna i drzwi dopasowane do Twojego domu'))}
             </h1>
             <p className={styles.dynamicText} key={keyAnim}>
               {t(keys[idx], '')}
