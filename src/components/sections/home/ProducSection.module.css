@@ -152,9 +152,9 @@
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(0, 19, 8, 0.88) 0%,
-    rgba(0, 19, 8, 0.45) 34%,
-    rgba(0, 19, 8, 0) 62%
+    rgba(0, 0, 0, 0.9) 0%,
+    rgba(0, 0, 0, 0.5) 34%,
+    rgba(0, 0, 0, 0) 62%
   );
   transition: opacity 0.35s ease;
   pointer-events: none;
@@ -274,5 +274,65 @@
 @media (--bp-sm) {
   .arrowIcon {
     font-size: 1.4rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+    padding-inline: 0.25rem;
+  }
+
+  .card,
+  .cardWide {
+    aspect-ratio: 16 / 10;
+    border-radius: 12px;
+  }
+
+  .cardContent {
+    padding: 1.2rem 1.4rem;
+    gap: 0.5rem;
+  }
+
+  .overlay {
+    background: linear-gradient(
+      to top,
+      rgba(0, 0, 0, 0.94) 0%,
+      rgba(0, 0, 0, 0.62) 46%,
+      rgba(0, 0, 0, 0) 78%
+    );
+  }
+
+  .card:not(.cardWide) .description {
+    display: -webkit-box;
+    max-height: 2.8em;
+    opacity: 1;
+    transform: none;
+    overflow: hidden;
+    color: #3eb772;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+  }
+
+  .cardWide .description {
+    display: none;
+  }
+
+  .cardWide .wideTagline {
+    display: block;
+    color: #3eb772;
+  }
+
+  .cardTitle,
+  .cardWide .cardTitle {
+    font-size: var(--fs-base);
+    letter-spacing: 0.4px;
+  }
+
+  .arrowWrapper {
+    width: 32px;
+    height: 32px;
   }
 }
