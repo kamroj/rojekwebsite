@@ -24,11 +24,24 @@ export default function ProductDetailHero({
 
   // Prefer canonical Sanity gallery (array of SanityImage objects).
   // Fallback: legacy `product.images` (array of string URLs).
-  const gallery = Array.isArray(product?.gallery) ? product.gallery : [];
-  const images = Array.isArray(product?.images) ? product.images : [];
+  const gallery = Array.isArray(product?.gallery) ? product.gallery.filter(Boolean) : [];
+  const images = Array.isArray(product?.images) ? product.images.filter(Boolean) : [];
+  const sanitySlides = gallery.length > 0
+    ? gallery
+    : product?.headerImageSanity
+      ? [product.headerImageSanity]
+      : [];
+  const legacySlides = sanitySlides.length === 0
+    ? images.length > 0
+      ? images
+      : product?.headerImage
+        ? [product.headerImage]
+        : []
+    : [];
   const heroHighlights = Array.isArray(product?.heroHighlights) ? product.heroHighlights : [];
-  const hasSanityGallery = gallery.length > 0;
-  const totalSlides = hasSanityGallery ? gallery.length : images.length;
+  const hasSanitySlides = sanitySlides.length > 0;
+  const totalSlides = hasSanitySlides ? sanitySlides.length : legacySlides.length;
+  const hasGalleryMedia = totalSlides > 0;
   const hasPortableLongDescription = Array.isArray(longDescriptionContent);
 
   const nextImage = () => {
@@ -58,7 +71,7 @@ export default function ProductDetailHero({
   };
 
   return (
-    <div className={styles.heroSection}>
+    <div className={[styles.heroSection, !hasGalleryMedia ? styles.heroSectionNoMedia : null].filter(Boolean).join(' ')}>
       <div className={styles.heroContent}>
         <span className={styles.productCategory}>{categoryLabel}</span>
         <h1 className={styles.productTitle} ref={titleRef}>{product?.name}</h1>
@@ -91,13 +104,14 @@ export default function ProductDetailHero({
         </div>
       </div>
 
-      <div
-        className={styles.heroImageContainer}
-        onTouchStart={handleGalleryTouchStart}
-        onTouchEnd={handleGalleryTouchEnd}
-      >
-        {hasSanityGallery
-          ? gallery.map((image, index) => (
+      {hasGalleryMedia ? (
+        <div
+          className={styles.heroImageContainer}
+          onTouchStart={handleGalleryTouchStart}
+          onTouchEnd={handleGalleryTouchEnd}
+        >
+          {hasSanitySlides
+            ? sanitySlides.map((image, index) => (
             <SanityImage
               key={image?._key || index}
               image={image}
@@ -113,8 +127,8 @@ export default function ProductDetailHero({
               sizes="(max-width: 1024px) 100vw, 50vw"
               widths={[640, 800, 1024, 1280, 1600]}
             />
-          ))
-          : images.map((image, index) => (
+            ))
+            : legacySlides.map((image, index) => (
             <ImageWithSpinner
               key={index}
               wrapperClassName={[styles.heroImageSlide, index === currentImageIndex ? styles.isActive : null].filter(Boolean).join(' ')}
@@ -126,10 +140,10 @@ export default function ProductDetailHero({
               className={styles.heroImage}
               showSpinner={false}
             />
-          ))}
+            ))}
 
-        {totalSlides > 1 && (
-          <>
+          {totalSlides > 1 && (
+            <>
             <button
               className={[styles.sliderArrow, styles.left].join(' ')}
               onClick={prevImage}
@@ -157,9 +171,10 @@ export default function ProductDetailHero({
                 />
               ))}
             </div>
-          </>
-        )}
-      </div>
+            </>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }

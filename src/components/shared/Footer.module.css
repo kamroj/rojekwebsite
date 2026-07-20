@@ -1,4 +1,6 @@
 .footerWrapper {
+  --footer-accent: #34da7d;
+
   background: linear-gradient(127deg, #0f0f0f 50%, #112c03);
   color: var(--color-text-light);
   padding: var(--space-lg) var(--space-sm);
@@ -41,7 +43,7 @@
 
 .contactRole {
   font-size: var(--fs-sm);
-  color: #34da7d;
+  color: var(--footer-accent);
   font-weight: var(--fw-light);
   margin-bottom: 1rem;
   text-transform: uppercase;
@@ -76,11 +78,18 @@
 }
 
 .contactInfo a:hover {
-  color: var(--color-secondary);
+  color: var(--footer-accent);
+}
+
+.contactInfo a:focus-visible,
+.policyLink:focus-visible,
+.mapConsentButton:focus-visible {
+  outline: 2px solid var(--footer-accent);
+  outline-offset: 3px;
 }
 
 .contactIcon {
-  color: var(--color-bottle-green-light);
+  color: var(--footer-accent);
   font-size: var(--fs-md);
   display: flex;
   align-items: center;
@@ -182,7 +191,7 @@
   }
 
   .mobileMapLink:focus-visible {
-    outline: 2px solid var(--color-secondary);
+    outline: 2px solid var(--footer-accent);
     outline-offset: 2px;
   }
 }
@@ -230,7 +239,7 @@
 }
 
 .policyLink:hover {
-  color: var(--color-secondary);
+  color: var(--footer-accent);
 }
 
 .actionSeparator {

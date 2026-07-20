@@ -7,6 +7,11 @@
   min-height: 550px;
 }
 
+.heroSectionNoMedia {
+  grid-template-columns: minmax(0, 760px);
+  min-height: auto;
+}
+
 @media (--bp-lg) {
   .heroSection {
     grid-template-columns: 1fr;
