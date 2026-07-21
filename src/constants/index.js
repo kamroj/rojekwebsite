@@ -34,16 +34,6 @@ export const ANIMATION_DURATIONS = {
   SLOW: 500
 };
 
-export const GALLERY_CONFIG = {
-  DEFAULT_SLIDES_PER_VIEW: {
-    DESKTOP: 3,
-    TABLET: 2,
-    MOBILE: 1
-  },
-  DEFAULT_DELAY: 3500,
-  AUTOPLAY_DELAY: 4000
-};
-
 export const SUPPORTED_LANGUAGES = ['pl', 'en', 'de', 'fr'];
 
 export const DEFAULT_LANGUAGE = 'pl';

@@ -10,8 +10,7 @@ import PartnersSection from '../components/sections/home/PartnersSection';
 import {
   PRODUCT_TYPES,
   VIDEO_SOURCES,
-  REALIZATION_IMAGES,
-  GALLERY_CONFIG
+  REALIZATION_IMAGES
 } from '../constants/index.js';
 
 import styles from './HomeView.module.css';
@@ -101,17 +100,13 @@ const HomePage = () => {
       <Section
         noMarginBottom
         dark
-        style={{ background: 'rgb(15 15 15 / var(--tw-bg-opacity, 1))' }}
+        style={{
+          background: 'rgb(15 15 15 / var(--tw-bg-opacity, 1))',
+        }}
         noPadding
       >
         <RealizationsGallery
           images={realizationData}
-          options={{
-            slidesPerViewDesktop: GALLERY_CONFIG.DEFAULT_SLIDES_PER_VIEW.DESKTOP,
-            slidesPerViewTablet: GALLERY_CONFIG.DEFAULT_SLIDES_PER_VIEW.TABLET,
-            slidesPerViewMobile: GALLERY_CONFIG.DEFAULT_SLIDES_PER_VIEW.MOBILE,
-            delay: GALLERY_CONFIG.DEFAULT_DELAY,
-          }}
         />
       </Section>
       <WhyUsSection />

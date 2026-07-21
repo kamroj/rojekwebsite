@@ -9,7 +9,7 @@ import MaxWidthContainerStyles from '../../../ui/MaxWidthContainer.module.css';
 import homeHeaderStyles from '../../../../views/HomeView.module.css';
 import productStyles from '../../../sections/home/ProducSection.module.css';
 
-import { PRODUCT_TYPES, REALIZATION_IMAGES, GALLERY_CONFIG } from '../../../../constants/index.js';
+import { PRODUCT_TYPES, REALIZATION_IMAGES } from '../../../../constants/index.js';
 import {
   getArticleDetailPath,
   getArticlesIndexPath,
@@ -264,12 +264,6 @@ const hsConfigCopy = homeHsConfigCopy[lang] || homeHsConfigCopy.pl;
     hydrate="load"
     viewProps={{
       images: realizationsData,
-      options: {
-        slidesPerViewDesktop: GALLERY_CONFIG.DEFAULT_SLIDES_PER_VIEW.DESKTOP,
-        slidesPerViewTablet: GALLERY_CONFIG.DEFAULT_SLIDES_PER_VIEW.TABLET,
-        slidesPerViewMobile: GALLERY_CONFIG.DEFAULT_SLIDES_PER_VIEW.MOBILE,
-        delay: GALLERY_CONFIG.DEFAULT_DELAY,
-      },
     }}
   />
   <div class={MaxWidthContainerStyles.root} data-max-width-container="true" style="padding-bottom: 3rem; display: flex; justify-content: flex-end;">
