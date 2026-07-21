@@ -203,6 +203,7 @@ export default function IntroSection({ id, introMedia }) {
   const C = 2 * Math.PI * R;
   const dashOffset = C * (1 - progress);
   const currentIntroItem = introItems[idx] || introItems[0];
+  const isInitialTextCycle = keyAnim === 0;
   const ctaHref = currentIntroItem?.type === 'category'
     ? getProductCategoryPath(lang, currentIntroItem.value)
     : getSectionPath(lang, currentIntroItem?.value || 'home');
@@ -295,10 +296,16 @@ export default function IntroSection({ id, introMedia }) {
       <div className={styles.heroContent}>
         <MaxWidthContainer className={styles.heroContentInner}>
           <div className={styles.heroCopy}>
-            <h1 className={`${styles.heroHeading} ${styles.heroHeadingAnimated}`} key={`heading-${keyAnim}`}>
+            <h1
+              className={`${styles.heroHeading} ${isInitialTextCycle ? styles.heroHeadingInitial : styles.heroHeadingAnimated}`}
+              key={`heading-${keyAnim}`}
+            >
               {t(currentIntroItem.headingKey, t('intro.heading', 'Okna i drzwi dopasowane do Twojego domu'))}
             </h1>
-            <p className={styles.dynamicText} key={keyAnim}>
+            <p
+              className={`${styles.dynamicText} ${isInitialTextCycle ? styles.dynamicTextInitial : styles.dynamicTextAnimated}`}
+              key={keyAnim}
+            >
               {t(keys[idx], '')}
             </p>
             <div className={styles.heroActions}>
