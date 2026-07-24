@@ -731,6 +731,9 @@
   },
   "realizationsPage": {
     "title": "Realizations",
+    "hero": {
+      "subtitle": "Windows and doors in real interiors"
+    },
     "filters": {
       "doors": "Doors",
       "windows": "Windows",

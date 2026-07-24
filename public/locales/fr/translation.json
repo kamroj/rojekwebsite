@@ -734,6 +734,9 @@
   },
   "realizationsPage": {
     "title": "Réalisations",
+    "hero": {
+      "subtitle": "Fenêtres et portes dans de vrais intérieurs"
+    },
     "filters": {
       "doors": "Portes",
       "windows": "Fenêtres",

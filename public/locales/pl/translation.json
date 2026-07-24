@@ -709,6 +709,9 @@
   },
   "realizationsPage": {
     "title": "Realizacje",
+    "hero": {
+      "subtitle": "Okna i drzwi w prawdziwych wnętrzach"
+    },
     "filters": {
       "doors": "Drzwi",
       "windows": "Okna",

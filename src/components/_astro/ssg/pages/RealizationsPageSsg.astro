@@ -31,6 +31,11 @@ const realizations = Array.isArray(realizationsProp)
   ? realizationsProp
   : await fetchRealizationsPageData({ lang });
 
+const isLandscapeRealization = (item) => {
+  const dimensions = item?.image?.asset?.metadata?.dimensions;
+  return Number(dimensions?.width) / Number(dimensions?.height) >= 1.1;
+};
+
 const resultsTemplate =
   tPlural(tr, 'realizationsPage.results.found', realizations.length, lang, 'Znaleziono {{count}} realizacji') ||
   'Znaleziono {{count}} realizacji';
@@ -117,7 +122,17 @@ const pageIndexOf = (idx) => Math.floor(idx / REALIZATIONS_PER_PAGE) + 1;
       >
         <header class={styles.filtersSidebarHeader}>
           <h2 class={styles.filtersSidebarTitle}>{t('realizationsPage.filters.filtersTitle', 'Filtry')}</h2>
-          <button id="realizations-mobile-filters-close" type="button" class={styles.mobileDrawerClose} aria-label={t('realizationsPage.filters.close', 'Zamknij')}>✕</button>
+          <div class={styles.filtersSidebarActions}>
+            <button
+              id="realizations-filter-reset-top"
+              type="button"
+              class={`${styles.filterResetButton} ${styles.desktopOnlyReset}`}
+              disabled
+            >
+              {t('realizationsPage.filters.clear', 'Wyczyść')}
+            </button>
+            <button id="realizations-mobile-filters-close" type="button" class={styles.mobileDrawerClose} aria-label={t('realizationsPage.filters.close', 'Zamknij')}>✕</button>
+          </div>
         </header>
 
         <div class={styles.filterPanelTop}>
@@ -129,13 +144,6 @@ const pageIndexOf = (idx) => Math.floor(idx / REALIZATIONS_PER_PAGE) + 1;
             aria-label={t('realizationsPage.filters.searchPlaceholder', 'Filtruj listę tagów…')}
             autocomplete="off"
           />
-          <button
-            id="realizations-filter-reset-top"
-            type="button"
-            class={`${styles.filterResetButton} ${styles.desktopOnlyReset}`}
-          >
-            {t('realizationsPage.filters.clear', 'Wyczyść')}
-          </button>
         </div>
 
         <div class={styles.filterGroups}>
@@ -183,7 +191,7 @@ const pageIndexOf = (idx) => Math.floor(idx / REALIZATIONS_PER_PAGE) + 1;
           <button id="realizations-mobile-filters-apply" type="button" class={styles.mobileApplyButton}>
             {t('realizationsPage.filters.apply', 'Zastosuj')}
           </button>
-          <button id="realizations-filter-reset-bottom" type="button" class={styles.mobileClearButton}>
+          <button id="realizations-filter-reset-bottom" type="button" class={styles.mobileClearButton} disabled>
             {t('realizationsPage.filters.clear', 'Wyczyść')}
           </button>
         </footer>
@@ -220,6 +228,7 @@ const pageIndexOf = (idx) => Math.floor(idx / REALIZATIONS_PER_PAGE) + 1;
             <div
               class:list={[
                 styles.singleRealizationContainer,
+                isLandscapeRealization(item) && styles.realizationLandscape,
                 pageIndexOf(idx) !== currentPage && 'realization-hidden-by-page',
               ]}
               data-page-index={pageIndexOf(idx)}
@@ -228,6 +237,9 @@ const pageIndexOf = (idx) => Math.floor(idx / REALIZATIONS_PER_PAGE) + 1;
               role="button"
               tabindex="0"
               aria-label={t('realizationsPage.filters.openImage', 'Powiększ realizację')}
+              style={item?.image?.asset?.metadata?.dimensions?.width && item?.image?.asset?.metadata?.dimensions?.height
+                ? `--realization-aspect: ${item.image.asset.metadata.dimensions.width} / ${item.image.asset.metadata.dimensions.height};`
+                : undefined}
             >
               {(() => {
                 const imageProps = getSanityImageProps(item.image, {
@@ -266,6 +278,11 @@ const pageIndexOf = (idx) => Math.floor(idx / REALIZATIONS_PER_PAGE) + 1;
                   <path d="M12 9h-2V7H9v2H7v1h2v2h1v-2h2Z" fill="currentColor" />
                 </svg>
               </span>
+              {item.tags?.length > 0 && (
+                <div class={styles.cardMeta} aria-hidden="true">
+                  <span>{item.tags.slice(0, 2).map((tag) => tag.valueLabel).join(' · ')}</span>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -413,6 +430,10 @@ const pageIndexOf = (idx) => Math.floor(idx / REALIZATIONS_PER_PAGE) + 1;
     document.getElementById('realizations-filter-reset-bottom'),
     document.getElementById('realizations-empty-clear'),
   ].filter(Boolean);
+  const filterResetControls = [
+    document.getElementById('realizations-filter-reset-top'),
+    document.getElementById('realizations-filter-reset-bottom'),
+  ].filter(Boolean);
   const emptyState = document.getElementById('realizations-empty-state');
   const selectedFiltersBox = document.getElementById('realizations-selected-filters');
   const selectedChipsContainer = document.getElementById('realizations-selected-chips');
@@ -469,7 +490,6 @@ const pageIndexOf = (idx) => Math.floor(idx / REALIZATIONS_PER_PAGE) + 1;
   let activeCardIndex = -1;
   let lastFocusedCard = null;
   let touchStartX = 0;
-  let mobileZoomRafId = 0;
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const LIGHTBOX_SWITCH_MS = prefersReducedMotion ? 0 : 180;
   const LIGHTBOX_ENTER_MS = prefersReducedMotion ? 0 : 220;
@@ -567,50 +587,6 @@ const pageIndexOf = (idx) => Math.floor(idx / REALIZATIONS_PER_PAGE) + 1;
         !card.classList.contains('realization-hidden-by-filter') &&
         !card.classList.contains('realization-hidden-by-page')
     );
-
-  const clearMobileActiveCard = () => {
-    cards.forEach((card) => card.removeAttribute('data-mobile-active'));
-  };
-
-  const updateMobileActiveCard = () => {
-    const visible = getVisibleCards();
-    if (!visible.length) {
-      clearMobileActiveCard();
-      return;
-    }
-
-    const viewportCenterY = window.innerHeight / 2;
-    let bestCard = null;
-    let bestDistance = Number.POSITIVE_INFINITY;
-
-    for (const card of visible) {
-      const rect = card.getBoundingClientRect();
-      const cardCenterY = rect.top + rect.height / 2;
-      const distance = Math.abs(cardCenterY - viewportCenterY);
-
-      if (distance < bestDistance) {
-        bestDistance = distance;
-        bestCard = card;
-      }
-    }
-
-    cards.forEach((card) => {
-      const shouldActivate = bestCard === card;
-      if (shouldActivate) {
-        card.setAttribute('data-mobile-active', 'true');
-      } else {
-        card.removeAttribute('data-mobile-active');
-      }
-    });
-  };
-
-  const scheduleMobileActiveUpdate = () => {
-    if (mobileZoomRafId) return;
-    mobileZoomRafId = window.requestAnimationFrame(() => {
-      mobileZoomRafId = 0;
-      updateMobileActiveCard();
-    });
-  };
 
   const fillLightboxFromCard = (card) => {
     const image = card.querySelector('img');
@@ -863,6 +839,9 @@ const pageIndexOf = (idx) => Math.floor(idx / REALIZATIONS_PER_PAGE) + 1;
       mobileFiltersCount.textContent = String(selectedCount);
       mobileFiltersCount.hidden = selectedCount === 0;
     }
+    filterResetControls.forEach((button) => {
+      button.disabled = selectedCount === 0;
+    });
 
     // Stan filtrów w URL (?f=kategoria::wartość,...) — replaceState,
     // żeby nie zaśmiecać historii.
@@ -910,7 +889,6 @@ const pageIndexOf = (idx) => Math.floor(idx / REALIZATIONS_PER_PAGE) + 1;
       }
     }
 
-    scheduleMobileActiveUpdate();
   };
 
   filterInputs.forEach((input) => {
@@ -971,12 +949,6 @@ const pageIndexOf = (idx) => Math.floor(idx / REALIZATIONS_PER_PAGE) + 1;
   applyFilters();
   renderSelectedFilters();
   setupScrollReveal();
-  scheduleMobileActiveUpdate();
-
-  window.addEventListener('scroll', scheduleMobileActiveUpdate, { passive: true });
-  document.addEventListener('scroll', scheduleMobileActiveUpdate, true);
-  window.addEventListener('resize', scheduleMobileActiveUpdate);
-  window.setTimeout(scheduleMobileActiveUpdate, 0);
 
   cards.forEach((card) => {
     card.addEventListener('click', () => openLightbox(card));

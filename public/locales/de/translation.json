@@ -731,6 +731,9 @@
   },
   "realizationsPage": {
     "title": "Realisierungen",
+    "hero": {
+      "subtitle": "Fenster und Türen in echten Wohnräumen"
+    },
     "filters": {
       "doors": "Türen",
       "windows": "Fenster",

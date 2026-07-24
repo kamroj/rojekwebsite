@@ -1,22 +1,23 @@
 .realizationsLayout {
   display: grid;
-  grid-template-columns: minmax(300px, 350px) minmax(0, 1fr);
-  gap: 20px;
+  grid-template-columns: minmax(250px, 290px) minmax(0, 1fr);
+  gap: clamp(24px, 3vw, 42px);
   align-items: start;
-  margin-top: 8px;
+  margin-top: 14px;
 }
 
 .filtersSidebar {
   position: sticky;
   top: 96px;
   max-height: calc(100vh - 112px);
-  display: grid;
-  grid-template-rows: auto auto auto 1fr auto;
-  gap: 12px;
-  border: 1px solid var(--color-border);
-  background: linear-gradient(180deg, #ffffff, #fbfdfb);
-  border-radius: 10px;
-  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 0;
+  border-bottom: 1px solid rgba(15, 90, 44, 0.14);
+  background: transparent;
+  border-radius: 0;
+  padding: 18px 0;
   overflow: hidden;
 }
 
@@ -27,13 +28,19 @@
   gap: 12px;
 }
 
+.filtersSidebarActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .filtersSidebarTitle {
   margin: 0;
   font-size: var(--fs-sm);
   font-weight: var(--fw-medium);
   text-transform: uppercase;
   letter-spacing: var(--ls-wide);
-  color: #2e5a3c;
+  color: #28583b;
 }
 
 .mobileDrawerClose {
@@ -60,7 +67,9 @@
 .selectedFilters {
   display: grid;
   gap: 8px;
-  margin: 0 0 14px;
+  margin: 0 0 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid rgba(15, 90, 44, 0.12);
 }
 
 /* [hidden] must win over the display values above/below */
@@ -113,7 +122,10 @@
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
+  min-height: 38px;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(15, 90, 44, 0.14);
 }
 
 /* Shared CTA look for filter action buttons (single place to tweak colors/view) */
@@ -187,12 +199,14 @@
 
 .filterCounter {
   font-weight: var(--fw-regular);
-  font-size: var(--fs-base);
-  color: #326647;
+  font-size: var(--fs-sm);
+  color: #466755;
+  letter-spacing: 0.02em;
 }
 
 .filterCounterNumber {
-  font-weight: var(--fw-bold);
+  color: #18743d;
+  font-weight: var(--fw-semibold);
 }
 
 .filterToolbar {
@@ -281,7 +295,8 @@
   gap: 10px;
   /* Align the row's right edge with the filter-group boxes below
      (.filterGroups is inset by padding-right + reserved scrollbar gutter) */
-  padding-right: 16px;
+  padding: 0 8px 14px 0;
+  border-bottom: 1px solid rgba(15, 90, 44, 0.18);
 }
 
 .filterSearchInput {
@@ -298,7 +313,7 @@
 .filterSearchInput:focus {
   outline: none;
   border-color: #2e8b57;
-  box-shadow: 0 0 0 3px rgba(46, 139, 87, 0.12);
+  box-shadow: none;
 }
 
 .desktopOnlyReset {
@@ -307,12 +322,13 @@
 
 .filterGroups {
   display: grid;
+  flex: 1;
   grid-template-columns: 1fr;
-  gap: 12px;
+  gap: 0;
   max-height: min(52vh, 560px);
   min-height: 0;
   overflow: auto;
-  padding-right: 8px;
+  padding-right: 6px;
   scrollbar-gutter: stable;
   scrollbar-width: thin;
   scrollbar-color: #9bbf9d #ffffff;
@@ -343,7 +359,7 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 12px;
+  gap: 0;
 }
 
 .filterCategoryItem {
@@ -354,10 +370,15 @@
 }
 
 .filterGroup {
-  border: 1px solid #deebe1;
-  background: #ffffff;
-  border-radius: 5px;
+  border: 0;
+  border-top: 1px solid rgba(15, 90, 44, 0.11);
+  background: transparent;
+  border-radius: 0;
   overflow: hidden;
+}
+
+.filterCategoryList > li:first-child .filterGroup {
+  border-top: 0;
 }
 
 .filterGroupHeader {
@@ -371,10 +392,10 @@
 .filterGroupToggle {
   width: 100%;
   border: 0;
-  border-bottom: 1px solid #ecf3ee;
-  background: #f4f9f6;
+  border-bottom: 0;
+  background: transparent;
   text-align: left;
-  padding: 9px 10px;
+  padding: 13px 2px 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -416,7 +437,9 @@
   margin: 0;
   font-size: var(--fs-xs);
   font-weight: var(--fw-bold);
-  color: #21462f;
+  color: #28583b;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .filterGroupBody {
@@ -430,7 +453,7 @@
 .filterOptionsList {
   list-style: none;
   margin: 0;
-  padding: 4px 0;
+  padding: 0 0 10px;
   display: flex;
   flex-direction: column;
   gap: 0;
@@ -449,14 +472,14 @@
   width: 100%;
   border: 0;
   border-radius: 0;
-  padding: 9px 10px;
-  background: #fff;
+  padding: 8px 2px;
+  background: transparent;
   cursor: pointer;
   transition: background-color 0.2s ease, opacity 0.2s ease;
 }
 
 .filterOption:hover {
-  background: #f2f8f4;
+  background: rgba(2, 99, 3, 0.045);
 }
 
 /* Opcja bez wyników przy obecnym wyborze — przygaszona, wciąż klikalna */
@@ -471,7 +494,7 @@
 }
 
 .filterOptionItem + .filterOptionItem .filterOption {
-  border-top: 1px solid #edf4ef;
+  border-top: 0;
 }
 
 .filterOptionInput {
@@ -486,14 +509,26 @@
 
 .filterResetButton {
   align-self: center;
-  border-radius: 5px;
-  padding: 7px 14px;
+  border-radius: 999px;
+  padding: 6px 11px;
   font-size: var(--fs-xs);
   font-weight: var(--fw-regular);
   text-transform: uppercase;
   letter-spacing: var(--ls-wide);
   cursor: pointer;
   transition: all 0.2s ease;
+}
+
+.filterResetButton[hidden],
+.mobileClearButton[hidden] {
+  display: none;
+}
+
+.filterResetButton:disabled,
+.mobileClearButton:disabled {
+  opacity: 0.38;
+  cursor: default;
+  pointer-events: none;
 }
 
 @media (--bp-sm) {
@@ -518,12 +553,12 @@
 }
 
 .realizationsContainer {
-  padding: var(--space-md) 0 var(--space-lg);
+  padding: 6px 0 var(--space-lg);
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
-  align-items: stretch;
-  justify-items: center;
+  gap: clamp(18px, 2vw, 28px);
+  align-items: start;
+  justify-items: stretch;
 }
 
 @media (min-width: 900px) {
@@ -534,43 +569,61 @@
 
 @media (min-width: 1550px) {
   .realizationsContainer {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 .singleRealizationContainer {
   position: relative;
-  height: 350px;
+  height: auto;
+  aspect-ratio: var(--realization-aspect, 4 / 3);
   width: 100%;
-  max-width: 380px;
+  max-width: none;
   background-color: var(--color-background-alt);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  border-radius: 6px;
+  border: 1px solid rgba(14, 67, 34, 0.1);
+  border-radius: 8px;
   cursor: pointer;
-  box-shadow: var(--shadow-home-product-card);
+  box-shadow: 0 10px 26px rgba(5, 29, 14, 0.08);
   transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.realizationLandscape {
+  grid-column: 1 / -1;
+  aspect-ratio: 4 / 3;
+}
+
+.singleRealizationContainer::after {
+  content: '';
+  position: absolute;
+  inset: 42% 0 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(3, 14, 8, 0.76));
+  opacity: 0.78;
+  transition: opacity 0.25s ease;
 }
 
 /* Zoom affordance: appears on hover/focus (desktop) and on the centered card (mobile) */
 .zoomBadge {
   position: absolute;
-  right: 10px;
-  bottom: 10px;
-  width: 36px;
-  height: 36px;
+  right: 14px;
+  bottom: 14px;
+  width: 40px;
+  height: 40px;
   border-radius: 999px;
   display: grid;
   place-items: center;
-  background: rgba(1, 39, 18, 0.72);
+  border: 1px solid rgba(74, 211, 128, 0.34);
+  background: rgba(22, 74, 4, 0.44);
   color: #fff;
   z-index: 2;
   opacity: 0;
   transform: translateY(4px);
   transition: opacity 0.2s ease, transform 0.2s ease;
   pointer-events: none;
-  -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
 }
 
 .zoomBadge svg {
@@ -581,6 +634,36 @@
 .singleRealizationContainer:hover .zoomBadge {
   opacity: 1;
   transform: translateY(0);
+}
+
+.cardMeta {
+  position: absolute;
+  left: 16px;
+  right: 70px;
+  bottom: 16px;
+  z-index: 2;
+  display: flex;
+  align-items: flex-end;
+  min-height: 40px;
+  pointer-events: none;
+}
+
+.cardMeta span {
+  overflow: hidden;
+  padding: 7px 12px;
+  border: 1px solid rgba(73, 199, 126, 0.3);
+  border-radius: 3px;
+  background: rgba(3, 23, 11, 0.68);
+  color: #49c77e;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: 0.11em;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
 }
 
 .emptyState {
@@ -610,12 +693,8 @@
 
 @media (max-width: 1024px) {
   .realizationsLayout {
-    grid-template-columns: 300px minmax(0, 1fr);
-    gap: 14px;
-  }
-
-  .singleRealizationContainer {
-    max-width: 340px;
+    grid-template-columns: 250px minmax(0, 1fr);
+    gap: 22px;
   }
 }
 
@@ -641,7 +720,9 @@
     z-index: 1300;
     top: 0;
     padding: 14px;
-    grid-template-rows: auto auto minmax(0, 1fr) auto;
+    border: 0;
+    border-right: 1px solid rgba(15, 90, 44, 0.2);
+    background: #fbfdfb;
   }
 
   .filtersSidebar[data-mobile-open='true'] {
@@ -725,16 +806,31 @@
   }
 
   .contentTopBar {
-    margin-bottom: 8px;
+    position: sticky;
+    top: var(--header-height, 64px);
+    z-index: 8;
+    margin: 0 -15px 10px;
+    padding: 10px 15px;
+    border-top: 1px solid rgba(15, 90, 44, 0.08);
+    border-bottom: 1px solid rgba(15, 90, 44, 0.14);
+    background: rgba(251, 251, 251, 0.94);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
   }
 
   .filterCounter {
-    margin-left: auto;
+    width: calc(100% - 100px);
+    min-width: 0;
+    margin-left: 0;
+    overflow: hidden;
+    text-align: right;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .realizationsContainer {
     grid-template-columns: 1fr;
-    gap: 18px;
+    gap: 16px;
   }
 
   .singleRealizationContainer {
@@ -754,7 +850,12 @@
 }
 
 .singleRealizationContainer:hover {
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 15px 34px rgba(5, 29, 14, 0.13);
+}
+
+.singleRealizationContainer:hover::after {
+  opacity: 0.92;
 }
 
 .singleRealizationContainer:focus-visible {
@@ -785,8 +886,8 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 6px;
-  transition: transform 0.3s ease;
+  border-radius: 8px;
+  transition: transform 0.45s ease;
 }
 
 .realizationImageWrap {
@@ -795,7 +896,7 @@
 }
 
 .realizationImage:hover {
-  transform: scale(1.06);
+  transform: scale(1.025);
   cursor: pointer;
 }
 
@@ -807,14 +908,16 @@
     transform: scale(1);
   }
 
-  .singleRealizationContainer[data-mobile-active='true'] .realizationImage {
-    transform: scale(1.06);
+  .zoomBadge {
+    width: 36px;
+    height: 36px;
+    opacity: 1;
+    transform: none;
   }
-}
 
-@media (max-width: 767px) {
-  .singleRealizationContainer[data-mobile-active='true'] .realizationImage {
-    transform: scale(1.06);
+  .cardMeta {
+    right: 62px;
+    bottom: 14px;
   }
 }
 
@@ -877,16 +980,16 @@
 .lightboxBackdrop {
   position: absolute;
   inset: 0;
-  background: rgba(10, 16, 12, 0.78);
-  backdrop-filter: blur(2px);
+  background: rgba(5, 10, 7, 0.88);
+  backdrop-filter: blur(6px);
 }
 
 .lightboxDialog {
   position: relative;
   z-index: 1;
-  margin: 2vh auto;
-  width: min(1200px, 94vw);
-  height: 96vh;
+  margin: 3vh auto;
+  width: min(1320px, 96vw);
+  height: 94vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -899,7 +1002,7 @@
   z-index: 1;
   width: 100%;
   height: 100%;
-  background: #0c0f0d;
+  background: #070b08;
   border-radius: 12px;
   overflow: hidden;
   display: flex;
@@ -912,7 +1015,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  background: #0c0f0d;
+  background: #070b08;
   opacity: 1;
   transform: scale(1);
   transition: opacity 0.22s ease, transform 0.22s ease;
@@ -949,12 +1052,12 @@
 
 .lightboxTags {
   position: absolute;
-  left: 12px;
-  right: 76px;
-  bottom: 12px;
+  left: 18px;
+  right: 84px;
+  bottom: 18px;
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
+  gap: 8px;
   margin: 0;
   z-index: 3;
   pointer-events: none;
@@ -963,14 +1066,15 @@
 /* Same visual language as article tags (ArticleCard .tag); near-opaque
    background because these sit on top of a photo */
 .lightboxTags :global(.lightbox-tag) {
-  background: rgba(238, 247, 239, 0.92);
-  border: 1px solid rgba(2, 99, 3, 0.25);
-  color: rgba(11, 90, 42, 0.95);
-  padding: 5px 10px;
+  background: rgba(3, 23, 11, 0.68);
+  border: 1px solid rgba(73, 199, 126, 0.3);
+  color: #49c77e;
+  padding: 7px 12px;
   border-radius: 3px;
-  font-size: 1.1rem;
+  font-size: 1.15rem;
   font-weight: 600;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
   white-space: nowrap;
   -webkit-backdrop-filter: blur(0.3rem);
   backdrop-filter: blur(0.3rem);
@@ -978,14 +1082,15 @@
 
 .lightboxCounter {
   position: absolute;
-  top: 12px;
-  left: 12px;
+  top: 16px;
+  left: 16px;
   z-index: 3;
-  padding: 7px 14px;
+  padding: 8px 15px;
   border-radius: 999px;
-  background: rgba(1, 39, 18, 0.6);
+  border: 1px solid rgba(73, 199, 126, 0.24);
+  background: rgba(3, 23, 11, 0.62);
   color: #fff;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   font-weight: var(--fw-medium);
   letter-spacing: 0.4px;
   pointer-events: none;
