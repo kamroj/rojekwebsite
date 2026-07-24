@@ -19,7 +19,7 @@ export default function ProductDetailFeatures({ product, title, t }) {
           <VideoWithSpinner
             className={styles.productVideo}
             src={product.video}
-            poster="/images/video_poster.jpg"
+            poster="/images/video_poster.webp"
             autoPlay
             loop
             muted

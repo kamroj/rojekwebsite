@@ -14,7 +14,7 @@ export const productCategories = {
     title: 'Produkty okienne',
     subtitle: 'Poznaj nasze nowoczesne systemy okienne.',
     pageTitle: 'Okna',
-    headerImage: '/images/products/windows/top.jpg',
+    headerImage: '/images/products/windows/top.webp',
     products: [],
   },
   oknaPrzesuwne: {

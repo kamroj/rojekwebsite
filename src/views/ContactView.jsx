@@ -352,7 +352,7 @@ const ContactPage = (props = {}) => {
   return (
     <>
       {!isSsgMode && (
-        <Page imageSrc="/images/contactus/top.jpg" title={t('pageTitle.contact', 'Kontakt')}>
+        <Page imageSrc="/images/contactus/top.webp" title={t('pageTitle.contact', 'Kontakt')}>
       <Section>
         <HeaderWrap>
           <ProductHeader>{t('contactPage.header.title')}</ProductHeader>

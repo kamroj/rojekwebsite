@@ -56,7 +56,7 @@ export const collectRealizationsPageResources = () => {
   });
 
   // Obraz nagłówka strony
-  resources.push('/images/realizations/top.jpg');
+  resources.push('/images/realizations/top.webp');
 
   return resources;
 };
@@ -69,8 +69,8 @@ export const collectAboutPageResources = () => {
   resources.push('/images/logo.png');
 
   // Obrazy nagłówka i sekcji siedziby
-  resources.push('/images/company/company-top.jpg');
-  resources.push('/images/company/company-building.jpg');
+  resources.push('/images/company/company-top.webp');
+  resources.push('/images/company/company-building.webp');
 
   // Zdjęcia zespołu/management (AboutUsPage)
   resources.push('/images/history/przemek.jpg');
@@ -94,7 +94,7 @@ export const collectContactPageResources = () => {
   resources.push('/images/logo.png');
 
   // Obraz nagłówka strony kontakt
-  resources.push('/images/contactus/top.jpg');
+  resources.push('/images/contactus/top.webp');
 
   return resources;
 };

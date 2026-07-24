@@ -11,7 +11,7 @@ import { isSanityConfigured } from '../../../lib/sanity/config';
 import { useResourceCollector } from '../../../context/ResourceCollectorContext';
 import styles from './IntroSection.module.css';
 
-const FALLBACK_POSTER = '/images/video_poster.jpg';
+const FALLBACK_POSTER = '/images/video_poster.webp';
 
 export default function IntroSection({ id, introMedia }) {
   const { t, i18n } = useTranslation();

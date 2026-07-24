@@ -151,7 +151,7 @@ function ProductCategoryPageBase({
 
   return (
     <Page
-      imageSrc={categoryInfo?.headerImage || '/images/products/doors/drzwi-zewnetrzne-top.jpg'}
+      imageSrc={categoryInfo?.headerImage || '/images/products/doors/drzwi-zewnetrzne-top.webp'}
       headerImage={categoryHeaderImage}
       title={t(`pageTitle.${categoryKey}`, categoryInfo.pageTitle)}
       breadcrumbPathname={breadcrumbPathname}

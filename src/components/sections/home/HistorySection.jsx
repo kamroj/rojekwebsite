@@ -52,7 +52,7 @@ const HistorySection = () => {
       <div className={styles.headerImageWrapper}>
         <img
           className={styles.headerImage}
-          src="/images/realizations/top.jpg" 
+          src="/images/realizations/top.webp"
           alt={t('history.headerAlt', 'Historia firmy ROJEK')} 
         />
         <div className={styles.headerContent}>

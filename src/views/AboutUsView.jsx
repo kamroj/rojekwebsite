@@ -145,7 +145,7 @@ const AboutUsPage = () => {
   };
 
   return (
-    <Page imageSrc="/images/company/company-top.jpg" title={t('pageTitle.about', 'O Firmie')}>
+    <Page imageSrc="/images/company/company-top.webp" title={t('pageTitle.about', 'O Firmie')}>
       <Section>
         <HeaderWrap>
           <ProductHeader>
@@ -189,7 +189,7 @@ const AboutUsPage = () => {
             <ImageWithSpinner
               wrapperClassName={styles.headquartersMedia}
               className={styles.headquartersMediaImage}
-              src="/images/company/company-building.jpg"
+              src="/images/company/company-building.webp"
               alt={t('headquarters.imageAlt', 'Siedziba firmy ROJEK')}
             />
           </motion.div>

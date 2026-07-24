@@ -69,7 +69,7 @@ const ProductsPage = ({
             ? '/images/aboutus/okno-kafelka.webp'
             : key === 'drzwi'
               ? '/images/aboutus/drzwi-kafelka.webp'
-              : category?.headerImage || '/images/products/windows/top.jpg';
+              : category?.headerImage || '/images/products/windows/top.webp';
 
         return {
           key,
@@ -86,7 +86,7 @@ const ProductsPage = ({
 
   return (
     <Page
-      imageSrc="/images/products/windows/top.jpg"
+      imageSrc="/images/products/windows/top.webp"
       headerImage={productsHeaderImage}
       title={t('pageTitle.products', t('nav.products', 'Produkty'))}
       breadcrumbPathname={breadcrumbPathname}

@@ -216,7 +216,7 @@ const DoorStandardFeaturesSection = ({ t }) => {
             <ImageWithSpinner
               wrapperClassName={styles.productImageSpinnerWrap}
               className={`${styles.productImage} ${isThresholdCentered ? styles.productImageCentered : ''}`}
-              src="/images/products/doors/threshold-alu.png"
+              src="/images/products/doors/threshold-alu.webp"
               alt={t('productDetail.doors.threshold.imageAlt', 'Niski próg aluminiowy')}
               loading="eager"
               fetchPriority="high"
