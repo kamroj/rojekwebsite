@@ -11,6 +11,7 @@ const Footer = ({ lang = 'pl' }) => {
   const currentYear = new Date().getFullYear();
   const [mapConsent, setMapConsent] = useState(false);
   const footerActionsRef = useRef(null);
+  const mapLinkGestureRef = useRef({ startX: 0, startY: 0, moved: false });
   const activeLang = ['pl', 'en', 'de', 'fr'].includes(lang) ? lang : 'pl';
 
   const privacyPolicyPath = getSectionPath(activeLang, 'privacyPolicy');
@@ -48,6 +49,34 @@ const Footer = ({ lang = 'pl' }) => {
   ];
 
   const mapSrc = COMPANY.map.embedUrl;
+
+  const handleMapLinkTouchStart = (event) => {
+    const touch = event.touches[0];
+    if (!touch) return;
+    mapLinkGestureRef.current = {
+      startX: touch.clientX,
+      startY: touch.clientY,
+      moved: false,
+    };
+  };
+
+  const handleMapLinkTouchMove = (event) => {
+    const touch = event.touches[0];
+    if (!touch) return;
+    const gesture = mapLinkGestureRef.current;
+    if (
+      Math.abs(touch.clientX - gesture.startX) > 8
+      || Math.abs(touch.clientY - gesture.startY) > 8
+    ) {
+      gesture.moved = true;
+    }
+  };
+
+  const handleMapLinkClick = (event) => {
+    if (!mapLinkGestureRef.current.moved) return;
+    event.preventDefault();
+    mapLinkGestureRef.current.moved = false;
+  };
 
   useEffect(() => {
     setMapConsent(hasConsent('externalMedia'));
@@ -152,6 +181,10 @@ const Footer = ({ lang = 'pl' }) => {
                     href={COMPANY.map.directionsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
+                    draggable="false"
+                    onTouchStart={handleMapLinkTouchStart}
+                    onTouchMove={handleMapLinkTouchMove}
+                    onClick={handleMapLinkClick}
                   >
                     {t('contact.openInMaps', 'Otwórz w Mapach Google')}
                   </a>

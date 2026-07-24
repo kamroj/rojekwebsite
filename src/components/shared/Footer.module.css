@@ -165,7 +165,7 @@
  * tap and open the Maps app. Keep the preview passive on touch devices and
  * expose one explicit, small action instead.
  */
-@media (hover: none), (pointer: coarse) {
+@media (hover: none), (pointer: coarse), (max-width: 1024px) {
   .mapContainer iframe {
     pointer-events: none;
   }
@@ -188,6 +188,8 @@
     font-weight: var(--fw-medium);
     line-height: 1.2;
     text-decoration: none;
+    touch-action: pan-y;
+    user-select: none;
   }
 
   .mobileMapLink:focus-visible {
