@@ -1,11 +1,10 @@
 // Geometria klamki HS odwzorowana z rysunku technicznego G-U:
-// - płytka montażowa 46 x 143,5 x 19 mm o zaokrąglonych narożach,
-// - dźwignia-płaskownik 27 x 15 mm zbudowana z profilu bocznego wyciągniętego
-//   na szerokość: u dołu łukiem przechodzi w poziomą szyjkę na osi trzpienia,
-//   u góry kończy się „dziobkiem" ściętym ku szybie (najwyższy punkt od strony
-//   okna). Lico wewnętrzne dźwigni 61 mm od skrzydła, zewnętrzne 76 mm,
-//   całkowita wysokość 311,7 mm od dołu płytki do czubka.
-// Układ współrzędnych: początek = środek płytki = oś obrotu trzpienia,
+// - szyld 33,5 x 152 x 14 mm; mocowania co 80 mm, trzpień 40 mm pod górnym,
+// - czubek dźwigni 240 mm powyżej osi trzpienia,
+// - wysięg 56 mm od nasady dźwigni na licu szyldu (70 mm od skrzydła).
+// Promienie, szerokość chwytu i odsunięcie osi od góry szyldu nie są
+// zwymiarowane: odtworzone z proporcji konturu załączonego rysunku.
+// Układ współrzędnych: początek = oś obrotu trzpienia (powyżej środka szyldu),
 // +z od lica skrzydła w głąb pomieszczenia, wymiary w metrach.
 
 import { ExtrudeGeometry, Shape } from 'three';
@@ -14,8 +13,8 @@ import { toCreasedNormals } from 'three/examples/jsm/utils/BufferGeometryUtils.j
 const MM = 0.001;
 
 export const HANDLE = {
-  plate: { width: 46 * MM, height: 143.5 * MM, depth: 19 * MM, radius: 10 * MM },
-  lever: { width: 27 * MM, edge: 4 * MM }, // edge = promień zaokrąglenia krawędzi bocznych
+  plate: { width: 33.5 * MM, height: 152 * MM, depth: 14 * MM, radius: 5 * MM, axisFromTop: 52 * MM },
+  lever: { width: 25 * MM, height: 240 * MM, projection: 56 * MM, bottom: -13 * MM, gripDepth: 16 * MM, edge: 2 * MM },
 };
 
 function roundedRectShape(width, height, radius) {
@@ -55,32 +54,40 @@ function extrudeOnContour(shape, { thickness, edge, curveSegments }) {
 }
 
 export function createHandlePlateGeometry() {
-  const { width, height, depth, radius } = HANDLE.plate;
+  const { width, height, depth, radius, axisFromTop } = HANDLE.plate;
   const geometry = extrudeOnContour(roundedRectShape(width, height, radius), {
     thickness: depth,
     edge: 1 * MM,
     curveSegments: 8,
   });
   // Tył płytki na licu skrzydła (z=0), front na z = depth
-  geometry.translate(0, 0, depth / 2);
+  geometry.translate(0, axisFromTop - height / 2, depth / 2);
   return geometry;
 }
 
 // Profil boczny dźwigni w płaszczyźnie (z, y): z = odległość od lica skrzydła,
-// y względem osi trzpienia. Szyjka schowana 3 mm w płytce (z=16 < 19), żeby
-// przy obrocie dźwigni nie odsłaniała się szczelina.
+// y względem osi trzpienia. Szyjka schowana 1 mm w szyldzie, żeby obrót nie
+// odsłaniał szczeliny. Dolna szyjka jest krótka, a chwyt niemal prosty;
+// zaokrąglony górny koniec zawija się w stronę skrzydła.
 export function createHandleLeverGeometry() {
+  const face = HANDLE.plate.depth;
+  const outer = face + HANDLE.lever.projection;
+  const inner = outer - HANDLE.lever.gripDepth;
+  const top = HANDLE.lever.height;
   const p = new Shape();
-  p.moveTo(16 * MM, 13 * MM); // górna krawędź szyjki przy płytce
-  p.lineTo(30 * MM, 13 * MM);
-  p.quadraticCurveTo(61 * MM, 13 * MM, 61 * MM, 58 * MM); // łuk wewnętrzny szyjka → dźwignia
-  p.lineTo(61 * MM, 225 * MM); // lico wewnętrzne (61 mm od skrzydła)
-  p.lineTo(47 * MM, 240 * MM); // „dziobek" — czubek pochylony ku szybie
-  p.lineTo(76 * MM, 236 * MM); // ścięcie górne do lica zewnętrznego
-  p.lineTo(76 * MM, -4 * MM); // lico zewnętrzne (76 mm od skrzydła)
-  p.quadraticCurveTo(76 * MM, -16 * MM, 62 * MM, -16 * MM); // łuk zewnętrzny dołu
-  p.lineTo(40 * MM, -16 * MM);
-  p.quadraticCurveTo(28 * MM, -16 * MM, 16 * MM, -13 * MM); // spód szyjki wznosi się ku płytce
+  p.moveTo(face - MM, 12 * MM);
+  p.lineTo(face + 28 * MM, 15 * MM);
+  p.quadraticCurveTo(inner, 16 * MM, inner, 28 * MM);
+  p.lineTo(inner, top - 25 * MM);
+  p.quadraticCurveTo(inner, top - 18 * MM, inner - 7 * MM, top - 16 * MM);
+  p.lineTo(face + 23 * MM, top - 13 * MM);
+  p.quadraticCurveTo(face + 21 * MM, top - 13 * MM, face + 22 * MM, top - 10 * MM);
+  p.lineTo(face + 25 * MM, top);
+  p.lineTo(outer - 7 * MM, top - 6 * MM);
+  p.quadraticCurveTo(outer, top - 8 * MM, outer, top - 15 * MM);
+  p.lineTo(outer, 3 * MM);
+  p.quadraticCurveTo(outer, -8 * MM, outer - 12 * MM, -10 * MM);
+  p.lineTo(face - MM, HANDLE.lever.bottom);
   p.closePath();
 
   const geometry = extrudeOnContour(p, {

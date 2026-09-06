@@ -25,7 +25,8 @@ import {
 } from 'three';
 
 import { ALU_COLORS, DEFAULT_ALU_COLOR, PLINTH_RANGE } from './hsOptions.js';
-import { createHandleLeverGeometry, createHandlePlateGeometry } from './hsHandleGeometry.js';
+import { HANDLE, createHandleLeverGeometry, createHandlePlateGeometry } from './hsHandleGeometry.js';
+import { createProfileGeometry, WOOD_GRAIN_SCALE } from './hsProfileGeometry.js';
 
 // Awaryjna mapa słojów (gdy resolver nie dostarczy ścieżek) — sosna
 const FALLBACK_GRAIN = '/models/lazur/grain-pine.jpg';
@@ -532,14 +533,19 @@ const applyUvOffset = (geometry, offsetU, offsetV) => {
 };
 
 function BoxPart({ position, size, material, castShadow = true, receiveShadow = true }) {
+  const [width, height, depth] = size;
+  const radius = material.props.userData?.hsEdgeRadius ?? 0;
+  const grainAxis = material.props.userData?.hsGrainAxis ?? null;
   const offsetU = uvHash(position[0], position[1], size[0], size[1]);
   const offsetV = uvHash(position[1], position[2] + 1.73, size[2], size[0]);
+  const geometry = useMemo(() => {
+    const result = createProfileGeometry(width, height, depth, radius, grainAxis);
+    if (!HS_OFF.has('uv')) applyUvOffset(result, offsetU, offsetV);
+    return result;
+  }, [width, height, depth, radius, grainAxis, offsetU, offsetV]);
+  useEffect(() => () => geometry.dispose(), [geometry]);
   return (
-    <mesh position={position} castShadow={castShadow} receiveShadow={receiveShadow}>
-      <boxGeometry
-        args={size}
-        onUpdate={HS_OFF.has('uv') ? undefined : (geometry) => applyUvOffset(geometry, offsetU, offsetV)}
-      />
+    <mesh geometry={geometry} position={position} castShadow={castShadow} receiveShadow={receiveShadow}>
       {material}
     </mesh>
   );
@@ -572,7 +578,7 @@ function ThresholdRail({ z, width, sectionTop, material }) {
 // schematach, w których jeździ po nim skrzydło — przy polach stałych
 // zewnętrzna strefa to płaski stopień. `extraDepth` (schemat E, trzeci tor)
 // wydłuża stopień i wysuwa nos okapowy o rozstaw dodatkowej płaszczyzny
-function LowThreshold({ bodyWidth, openingWidth, material, outerRail, extraDepth = 0 }) {
+function LowThreshold({ bodyWidth, openingWidth, material, railMaterial, sealMaterial, outerRail, extraDepth = 0 }) {
   const { inner, platform, nose, plate, rail } = THRESHOLD;
   const plateGap = rail.width / 2 + 0.005; // odstęp nakładek od osi szyny
   const platformZFrom = platform.zFrom - extraDepth;
@@ -603,7 +609,13 @@ function LowThreshold({ bodyWidth, openingWidth, material, outerRail, extraDepth
             z={PROFILE.trackInnerZ}
             width={openingWidth}
             sectionTop={inner.height}
-            material={material}
+            material={railMaterial}
+          />
+          {/* Ciemna przekładka oddziela sekcje aluminiowe progu. */}
+          <BoxPart
+            position={[0, platform.height + 0.001, inner.zFrom - 0.004]}
+            size={[openingWidth, 0.002, 0.008]}
+            material={sealMaterial}
           />
         </>
       )}
@@ -618,7 +630,7 @@ function LowThreshold({ bodyWidth, openingWidth, material, outerRail, extraDepth
           z={PROFILE.trackOuterZ}
           width={openingWidth}
           sectionTop={platform.height}
-          material={material}
+          material={railMaterial}
         />
       )}
       {/* Spadek odwadniający: cienka nakładka pochylona ku zewnętrzu,
@@ -742,7 +754,7 @@ function createBeadGeometry(length, uvSeed = 0) {
     pos.setZ(i, z);
     // uvSeed przesuwa próbkowanie wzdłuż mapy — każda listwa pokazuje inny
     // wycinek słojów (jak BoxPart z applyUvOffset)
-    uvAttr.setXY(i, z / length + uvSeed, u / B);
+    uvAttr.setXY(i, z / WOOD_GRAIN_SCALE.along + uvSeed, u / WOOD_GRAIN_SCALE.across);
   }
   geo.computeVertexNormals();
   geo.translate(0, -D / 2, -length / 2);
@@ -902,9 +914,8 @@ function TopGuide({ z, width, openingTop, material }) {
   );
 }
 
-// Klamka HS wg rysunku technicznego G-U: płytka 46 x 143,5 x 19 mm, dźwignia
-// 27 x 15 mm łukiem przez szyjkę do trzpienia w środku płytki (= kotwica
-// grupy), czubek ścięty „dziobkiem" ku szybie; całość 311,7 mm. Bryły z
+// Klamka HS G-U: szyld 33,5 x 152 x 14 mm, dźwignia 240 mm od osi
+// trzpienia i 56 mm od lica szyldu. Trzpień leży powyżej środka szyldu. Bryły z
 // profili w hsHandleGeometry.js — dźwignia siedzi w grupie obracanej wokół
 // osi trzpienia (animacja otwierania)
 function PullHandle({ position, material, leverRef, lite = false }) {
@@ -926,22 +937,24 @@ function PullHandle({ position, material, leverRef, lite = false }) {
   // kontekstu WebGL potwierdzona bisekcją ?m=a/?m=b na urządzeniu). Na ekranie
   // telefonu klamka ma ~20 px, więc uproszczenie jest niewidoczne
   if (lite) {
+    const { plate, lever } = HANDLE;
+    const outerZ = plate.depth + lever.projection;
     return (
       <group position={position}>
-        <mesh position={[0, 0, 0.0095]} castShadow receiveShadow>
-          <boxGeometry args={[0.046, 0.1435, 0.019]} />
+        <mesh position={[0, plate.axisFromTop - plate.height / 2, plate.depth / 2]} castShadow receiveShadow>
+          <boxGeometry args={[plate.width, plate.height, plate.depth]} />
           {material}
         </mesh>
         {/* userData jak w pełnej wersji — eksport AR zeruje obrót dźwigni */}
         <group ref={leverRef} userData={{ hsLever: true }}>
           {/* szyjka od płytki do dźwigni */}
-          <mesh position={[0, 0, 0.038]} castShadow receiveShadow>
-            <boxGeometry args={[0.027, 0.026, 0.046]} />
+          <mesh position={[0, 0, (plate.depth - 0.001 + outerZ) / 2]} castShadow receiveShadow>
+            <boxGeometry args={[lever.width, 0.026, lever.projection + 0.001]} />
             {material}
           </mesh>
           {/* dźwignia-płaskownik na osi trzpienia */}
-          <mesh position={[0, 0.112, 0.0685]} castShadow receiveShadow>
-            <boxGeometry args={[0.027, 0.256, 0.015]} />
+          <mesh position={[0, (lever.height + lever.bottom) / 2, outerZ - lever.gripDepth / 2]} castShadow receiveShadow>
+            <boxGeometry args={[lever.width, lever.height - lever.bottom, lever.gripDepth]} />
             {material}
           </mesh>
         </group>
@@ -1168,18 +1181,22 @@ function GlazedPanel({
           />
         </>
       )}
-      {/* Uszczelka wokół szyby */}
-      <FrameRing
-        cx={cx}
-        cy={cy}
-        z={z}
-        width={glassW + PROFILE.gasket * 2 - 0.002}
-        height={glassH + PROFILE.gasket * 2 - 0.002}
-        profile={PROFILE.gasket}
-        depth={0.042}
-        materialV={materials.gasket}
-        materialH={materials.gasket}
-      />
+      {/* Dwie uszczelki dociskają zewnętrzne tafle pakietu. Przestrzeń
+          pomiędzy nimi wypełniają ramki dystansowe, widoczne pod kątem. */}
+      {[-1, 1].map((side) => (
+        <FrameRing
+          key={`glazing-seal-${side}`}
+          cx={cx}
+          cy={cy}
+          z={z + side * 0.02}
+          width={glassW + PROFILE.gasket * 2 - 0.002}
+          height={glassH + PROFILE.gasket * 2 - 0.002}
+          profile={PROFILE.gasket}
+          depth={0.004}
+          materialV={materials.gasket}
+          materialH={materials.gasket}
+        />
+      ))}
       {/* Pakiet szybowy: 3 tafle + ramki dystansowe (przekrój HS-90) */}
       <GlazingUnit cx={cx} cy={cy} z={z} width={glassW} height={glassH} materials={materials} lite={liteGlazing} />
       {/* Uszczelki szczotkowe zakładów — na licu zwróconym ku sąsiedniemu polu
@@ -1480,23 +1497,24 @@ function ProceduralHsModel({
     // swatche w UI). Relief celowo MINIMALNY — mocny bump robił sztuczne,
     // „wytłaczane" wrażenie; naturalne drewno stolarki jest niemal gładkie.
     // Mapa słojów ma niski kontrast (delikatne, kolorowe linie w albedo).
-    // Głębię daje bump — z low-kontrast mapy gradienty są łagodne, więc nawet
-    // wyższy bumpScale czyta się jako miękki relief, nie „wytłaczanie".
     // Meranti i dąb dostają głębszy relief (otwartoporowe — pod światłem słoje
     // bardziej grają); sosna pozostaje gładsza.
     const isMeranti = woodFinish?.species === 'meranti';
-    const lazurBump = isMeranti ? 1.1 : woodFinish?.species === 'oak' ? 0.95 : 0.6;
+    // Skala sceny to metry: relief lakierowanego drewna jest submilimetrowy.
+    const lazurBump = isMeranti ? 0.00045 : woodFinish?.species === 'oak' ? 0.00035 : 0.0002;
     // Mobile: drewno jak w wersji sprzed lazurów — meshStandardMaterial z samą
     // mapą koloru (tint hex zostaje). bumpMapa na drewnie to największa
     // pojedyncza pozycja kosztu piksela w scenie (drewno pokrywa większość
     // ekranu), a meshPhysical dokłada drugą — zmierzono +~30% czasu klatki.
     // Kolor lazuru = map × color, identycznie jak na desktopie; znika tylko
     // mikro-relief, niewidoczny na ekranie telefonu
-    const makeWood = (tex, grain) =>
-      HS_OFF.has('tex') ? (
-        <meshStandardMaterial color={woodFinish?.hex ?? '#c8a165'} roughness={0.5} metalness={0.02} />
+    const makeWood = (tex, grain, grainAxis) => {
+      const userData = { hsEdgeRadius: 0.0015, hsGrainAxis: grainAxis };
+      return HS_OFF.has('tex') ? (
+        <meshStandardMaterial userData={userData} color={woodFinish?.hex ?? '#c8a165'} roughness={0.42} metalness={0} />
       ) : lowPower ? (
         <meshStandardMaterial
+          userData={userData}
           map={isRalWood ? null : tex}
           color={woodFinish?.hex ?? '#ffffff'}
           roughness={0.5}
@@ -1506,41 +1524,40 @@ function ProceduralHsModel({
         // RAL = lakier kryjący: jednolity kolor; sosna/dąb gładko, meranti ma
         // otwarte pory → delikatny relief przez lakier
         <meshPhysicalMaterial
+          userData={userData}
           color={woodFinish.hex}
           bumpMap={isMeranti ? grain : null}
-          bumpScale={isMeranti ? 0.5 : 0}
-          roughness={0.55}
-          metalness={0.02}
-          specularIntensity={0.12}
+          bumpScale={isMeranti ? 0.0002 : 0}
+          roughness={0.4}
+          metalness={0}
+          specularIntensity={0.3}
           envMapIntensity={0.35}
         />
       ) : (
-        // meshPhysicalMaterial zamiast standard wyłącznie dla specularIntensity:
-        // szeroki spekular dielektryka (F0 4%) od świateł dokładał na drewnie
-        // biały sheen ~0.03-0.05 liniowo, który rozjaśniał kanał B lazurów
-        // o kilkanaście % i odbarwiał je względem wzornika (roughness NIE tłumi
-        // tego lobe'a przy geometrii frontu). specularIntensity 0.25 + kalibracja
-        // świateł (patrz komentarz przy toneMapping) dają front 1:1 ze swatchem.
+        // Satynowy lakier łapie światło na krawędziach; ograniczony refleks
+        // nie zasłania koloru lazuru ani rysunku włókien.
         <meshPhysicalMaterial
+          userData={userData}
           map={tex}
           bumpMap={grain}
           bumpScale={lazurBump}
           color={woodFinish?.hex ?? '#ffffff'}
-          roughness={0.5}
-          metalness={0.02}
-          specularIntensity={0.12}
+          roughness={0.42}
+          metalness={0}
+          specularIntensity={0.3}
           envMapIntensity={0.35}
         />
       );
+    };
 
     return {
-      woodV: makeWood(textures.woodV, textures.grainV),
-      woodH: makeWood(textures.woodH, textures.grainH),
+      woodV: makeWood(textures.woodV, textures.grainV, 'y'),
+      woodH: makeWood(textures.woodH, textures.grainH, 'x'),
       // Mobile: szkło bez transmission — drabinka ?m=l/?m=m wskazała transmisję
       // jako ostatni destabilizator (refrakcja renderuje scenę drugi raz co
       // klatkę do mipmapowanego bufora). Przy płaskim jasnym tle za oknem
       // refrakcji i tak nie widać: tint + odbicia env czytają się jak szkło.
-      // Desktop bez zmian
+      // Desktop: jasne szkło i grubość pojedynczej tafli pakietu.
       glass: lowPower ? (
         <meshPhysicalMaterial
           transparent
@@ -1549,11 +1566,11 @@ function ProceduralHsModel({
         />
       ) : (
         <meshPhysicalMaterial
-          color="#eef6f4"
-          roughness={0.04}
+          color="#f7fbfa"
+          roughness={0.025}
           metalness={0}
-          transmission={0.85}
-          thickness={0.02}
+          transmission={0.96}
+          thickness={IGU.pane}
           ior={1.52}
           envMapIntensity={1.5}
         />
@@ -1572,6 +1589,7 @@ function ProceduralHsModel({
       ),
       threshold: (
         <meshPhysicalMaterial
+          userData={{ hsEdgeRadius: 0.0006 }}
           color={thresholdMat.color}
           roughness={thresholdMat.roughness}
           metalness={thresholdMat.metalness}
@@ -1582,6 +1600,8 @@ function ProceduralHsModel({
           envMapIntensity={1.2}
         />
       ),
+      // Bieżnia pozostaje stalowa również przy czarnym wykończeniu progu.
+      rail: <meshStandardMaterial userData={{ hsEdgeRadius: 0.0003 }} color="#bec3c8" roughness={0.24} metalness={0.95} />,
       gasket: <meshStandardMaterial color="#1c1e1c" roughness={0.85} metalness={0.05} />,
       // Ramka dystansowa pakietu szybowego (ciepła ramka): ciemny grafit,
       // widoczny przez szkło przy krawędzi pakietu
@@ -1594,9 +1614,10 @@ function ProceduralHsModel({
       // żeby płaskie lica czytały się jako jednolite płaszczyzny (Gemini Quadrat)
       alu: (
         <meshStandardMaterial
+          userData={{ hsEdgeRadius: 0.0008 }}
           color={ALU_HEX[aluColor] ?? ALU_HEX[DEFAULT_ALU_COLOR]}
           roughness={0.55}
-          metalness={0.3}
+          metalness={0.12}
           envMapIntensity={1.0}
         />
       ),
@@ -1699,6 +1720,8 @@ function ProceduralHsModel({
         bodyWidth={modelWidth}
         openingWidth={openingWidth}
         material={materials.threshold}
+        railMaterial={materials.rail}
+        sealMaterial={materials.gasket}
         outerRail={hasOuterSliding}
         extraDepth={extraDepth}
       />
@@ -1836,7 +1859,9 @@ function FrontFit({ modelRef, width, height, scheme, plinth }) {
     camera.far = Math.max(camera.far || 1000, dist * 10);
     camera.updateProjectionMatrix();
 
-    camera.position.set(center.x, center.y + radius * 0.1, center.z + dist);
+    // Lekki widok z góry i boku pokazuje głębokość torów oraz odsunięcie
+    // skrzydeł już przy pierwszym wyświetleniu konfiguracji.
+    camera.position.set(center.x + dist * 0.12, center.y + dist * 0.06, center.z + dist);
 
     if (controls) {
       controls.target.set(center.x, center.y, center.z);
