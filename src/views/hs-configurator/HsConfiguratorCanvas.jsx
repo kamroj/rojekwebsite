@@ -25,19 +25,15 @@ import {
 } from 'three';
 
 import { ALU_COLORS, DEFAULT_ALU_COLOR, PLINTH_RANGE } from './hsOptions.js';
-import { HANDLE, createHandleLeverGeometry, createHandlePlateGeometry } from './hsHandleGeometry.js';
+import { createHandleLeverGeometry, createHandlePlateGeometry } from './hsHandleGeometry.js';
 import { createProfileGeometry, WOOD_GRAIN_SCALE } from './hsProfileGeometry.js';
 import { getWoodAppearance, getWoodGrainDrift } from './hsWoodAppearance.js';
 
 // Awaryjna mapa słojów (gdy resolver nie dostarczy ścieżek) — sosna
 const FALLBACK_GRAIN = '/models/lazur/grain-pine.jpg';
 
-// Telefony/tablety: mapy słojów lądują na GPU w 4 kopiach (kolor/relief ×
-// pion/poziom) — przy plikach 1254²+ to było ~32 MB tekstur i, co gorsze,
-// wymiary NIEbędące potęgą dwójki, dla których mobilne sterowniki generują
-// mipmapy awaryjną, wolną ścieżką (pojedyncze wywołanie GL na sekundy →
-// watchdog Androida ubija kontekst WebGL). iPadOS udaje desktopowego Safari,
-// stąd oprócz user agenta warunek coarse pointer + dotyk
+// Profil urządzenia wpływa tylko na rozdzielczość cieni, nie na model
+// ani materiały. iPadOS wykrywamy również przez coarse pointer + dotyk.
 const detectLowPowerDevice = () => {
   if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
   if (/Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)) return true;
@@ -45,9 +41,9 @@ const detectLowPowerDevice = () => {
   return coarsePointer && (navigator.maxTouchPoints ?? 0) > 1;
 };
 
-// Rozmiar map słojów na mobile: 512 = potęga dwójki (szybka ścieżka mipmap),
-// a na ekranie telefonu belka profilu ma kilkadziesiąt px — różnicy nie widać
-const MOBILE_GRAIN_SIZE = 512;
+// Wspólna rozdzielczość słojów i reliefu. POT zapewnia prostą ścieżkę
+// mipmap, a 1024 zachowuje drobne włókna również przy zbliżeniu na telefonie.
+const GRAIN_SIZE = 1024;
 
 const downscaleToSquarePot = (image, size) => {
   if (!image || (image.width <= size && image.height <= size)) return image;
@@ -105,23 +101,19 @@ const HS_LADDER = [
   'extras', //  f: + prowadnice/szczotki/uszczelki/podwalina
   'rails', //   g: + detale progu (szyny/nakładki/spadek/okapniki)
   'beads', //   h: + listwy przyszybowe (uciosy)
-  'handle', //  i: + klamka (na mobile uproszczona)
+  'handle', //  i: + klamka
   'anim', //    j: + animacja skrzydeł
   'badge', //   k: + plakietka CanvasTexture
   'tex', //     l: + tekstury drewna
-  'glass', //   m: + szyby (transmisja) = pełna scena
+  'glass', //   m: + szyby = pełna scena
 ];
 const HS_PRESETS = Object.fromEntries(
   'abcdefghijklm'.split('').map((letter, index) => [letter, HS_LADDER.slice(index)])
 );
 
-// Warianty mobilnego szkła (?glass=1…7) — diagnostyczna paleta do porównań
-// na urządzeniu. Wszystkie bez transmission (destabilizowała GPU).
-// DOMYŚLNY = 7 (wybór Kamila): „lustrzany" trik (metalness 0.85 — odbicia
-// otoczenia czytelne mimo braku refrakcji) z ostrym roughness i mocnym env.
-// Clearcoat (5/6) przeszedł test stabilności na urządzeniu, więc w razie
-// potrzeby można go bezpiecznie użyć także gdzie indziej
-const MOBILE_GLASS_VARIANTS = {
+// Historyczne warianty szkła dostępne wyłącznie przez jawne ?glass=1…7.
+// Domyślny materiał jest wspólny dla wszystkich urządzeń.
+const GLASS_TEST_VARIANTS = {
   1: { color: '#e7f1ee', opacity: 0.15, roughness: 0.04, envMapIntensity: 1.5 },
   2: { color: '#e7f1ee', opacity: 0.18, roughness: 0.02, envMapIntensity: 2.6 },
   3: { color: '#dfe9e7', opacity: 0.22, roughness: 0.03, metalness: 0.85, envMapIntensity: 2.2 },
@@ -130,12 +122,11 @@ const MOBILE_GLASS_VARIANTS = {
   6: { color: '#dfe9e7', opacity: 0.22, roughness: 0.03, metalness: 0.85, envMapIntensity: 2.2, clearcoat: 1, clearcoatRoughness: 0.04 },
   7: { color: '#dfe9e7', opacity: 0.2, roughness: 0.015, metalness: 0.85, envMapIntensity: 2.6 },
 };
-const DEFAULT_MOBILE_GLASS = 7;
 
 const HS_GLASS_VARIANT = (() => {
   if (typeof window === 'undefined') return null;
   const raw = new URLSearchParams(window.location.search).get('glass');
-  return raw && MOBILE_GLASS_VARIANTS[raw] ? Number(raw) : null;
+  return raw && GLASS_TEST_VARIANTS[raw] ? Number(raw) : null;
 })();
 
 const HS_PRESET = (() => {
@@ -848,25 +839,11 @@ function FrameRing({ cx, cy, z, width, height, profile, depth, materialV, materi
 // i widać ją tylko krawędziowo pod ostrym kątem, nie jako czarną obwódkę
 const IGU = { pane: 0.004, gap: 0.012, spacerProfile: 0.012, underlap: 0.015 };
 
-function GlazingUnit({ cx, cy, z, width, height, materials, lite = false }) {
+function GlazingUnit({ cx, cy, z, width, height, materials }) {
   const pitch = IGU.pane + IGU.gap; // rozstaw osi sąsiednich tafli
   const paneW = width + IGU.underlap * 2;
   const paneH = height + IGU.underlap * 2;
   if (HS_OFF.has('glass')) return null;
-  // Mobile: pakiet jako jedna bryła 36 mm (geometria sprzed „Adjust wood
-  // view") — trzy nałożone tafle to 3x przebieg shadera szkła na piksel,
-  // a na ekranie telefonu różnicy między pakietem a bryłą nie widać
-  if (lite) {
-    return (
-      <BoxPart
-        position={[cx, cy, z]}
-        size={[paneW, paneH, 0.036]}
-        material={materials.glass}
-        castShadow={false}
-        receiveShadow={false}
-      />
-    );
-  }
   return (
     <group>
       {[-pitch, 0, pitch].map((offset) => (
@@ -923,10 +900,10 @@ function TopGuide({ z, width, openingTop, material }) {
 // trzpienia i 56 mm od lica szyldu. Trzpień leży powyżej środka szyldu. Bryły z
 // profili w hsHandleGeometry.js — dźwignia siedzi w grupie obracanej wokół
 // osi trzpienia (animacja otwierania)
-function PullHandle({ position, material, leverRef, lite = false }) {
+function PullHandle({ position, material, leverRef }) {
   const geometries = useMemo(
-    () => (lite ? null : { plate: createHandlePlateGeometry(), lever: createHandleLeverGeometry() }),
-    [lite]
+    () => ({ plate: createHandlePlateGeometry(), lever: createHandleLeverGeometry() }),
+    []
   );
 
   useEffect(
@@ -935,37 +912,6 @@ function PullHandle({ position, material, leverRef, lite = false }) {
     },
     [geometries]
   );
-
-  // Mobile: klamka z prostych brył (indeksowane boxy) zamiast wyciąganych
-  // profili. Profile z ExtrudeGeometry mają na fazach mikroskopijne trójkąty
-  // (pola rzędu 1e-8 m²) — na mobilnych sterownikach zawieszały GPU (utrata
-  // kontekstu WebGL potwierdzona bisekcją ?m=a/?m=b na urządzeniu). Na ekranie
-  // telefonu klamka ma ~20 px, więc uproszczenie jest niewidoczne
-  if (lite) {
-    const { plate, lever } = HANDLE;
-    const outerZ = plate.depth + lever.projection;
-    return (
-      <group position={position}>
-        <mesh position={[0, plate.axisFromTop - plate.height / 2, plate.depth / 2]} castShadow receiveShadow>
-          <boxGeometry args={[plate.width, plate.height, plate.depth]} />
-          {material}
-        </mesh>
-        {/* userData jak w pełnej wersji — eksport AR zeruje obrót dźwigni */}
-        <group ref={leverRef} userData={{ hsLever: true }}>
-          {/* szyjka od płytki do dźwigni */}
-          <mesh position={[0, 0, (plate.depth - 0.001 + outerZ) / 2]} castShadow receiveShadow>
-            <boxGeometry args={[lever.width, 0.026, lever.projection + 0.001]} />
-            {material}
-          </mesh>
-          {/* dźwignia-płaskownik na osi trzpienia */}
-          <mesh position={[0, (lever.height + lever.bottom) / 2, outerZ - lever.gripDepth / 2]} castShadow receiveShadow>
-            <boxGeometry args={[lever.width, lever.height - lever.bottom, lever.gripDepth]} />
-            {material}
-          </mesh>
-        </group>
-      </group>
-    );
-  }
 
   return (
     <group position={position}>
@@ -1011,7 +957,6 @@ function GlazedPanel({
   markerTexture = null,
   temperedGlass = false,
   lapSeals = [],
-  liteGlazing = false,
 }) {
   const isSliding = panel.type === 'sliding';
   const isGlazing = panel.type === 'glazing';
@@ -1203,7 +1148,7 @@ function GlazedPanel({
         />
       ))}
       {/* Pakiet szybowy: 3 tafle + ramki dystansowe (przekrój HS-90) */}
-      <GlazingUnit cx={cx} cy={cy} z={z} width={glassW} height={glassH} materials={materials} lite={liteGlazing} />
+      <GlazingUnit cx={cx} cy={cy} z={z} width={glassW} height={glassH} materials={materials} />
       {/* Uszczelki szczotkowe zakładów — na licu zwróconym ku sąsiedniemu polu
           (kierunek dz policzony w modelu, bo panel nie zna sąsiadów) */}
       {!HS_OFF.has('extras') && lapSeals.map(({ side, dz }) => (
@@ -1316,7 +1261,6 @@ function GlazedPanel({
           position={[handleX, handleY, z + depth / 2]}
           material={materials.handle}
           leverRef={animatable ? leverRef : undefined}
-          lite={liteGlazing}
         />
       )}
     </group>
@@ -1336,7 +1280,6 @@ function ProceduralHsModel({
   width,
   height,
   plinthHeight = PLINTH_RANGE.default,
-  lowPower = false,
   onReady,
   exportRef,
   ...props
@@ -1445,10 +1388,7 @@ function ProceduralHsModel({
   // Kierunek włókien wyznaczają UV geometrii, więc piony, rygle i listwy
   // współdzielą jedną mapę koloru oraz jedną liniową mapę reliefu.
   const textures = useMemo(() => {
-    // Mobile: jedna pomniejszona mapa POT, bez dodatkowej mapy reliefu.
-    const image = lowPower
-      ? downscaleToSquarePot(grainTexture.image, MOBILE_GRAIN_SIZE)
-      : grainTexture.image;
+    const image = downscaleToSquarePot(grainTexture.image, GRAIN_SIZE);
     const setup = (colorSpace) => {
       const tex = grainTexture.clone();
       tex.image = image;
@@ -1467,9 +1407,9 @@ function ProceduralHsModel({
 
     return {
       wood: setup(SRGBColorSpace),
-      grain: lowPower ? null : setup(NoColorSpace),
+      grain: setup(NoColorSpace),
     };
-  }, [grainTexture, lowPower]);
+  }, [grainTexture]);
 
   // Klony żyją poza cachem useTexture — bez sprzątania każda zmiana gatunku
   // drewna zostawiała na GPU 4 martwe tekstury (kolejne ~32 MB na mobile)
@@ -1496,24 +1436,11 @@ function ProceduralHsModel({
     const isMeranti = woodFinish?.species === 'meranti';
     // Skala sceny to metry: relief lakierowanego drewna jest submilimetrowy.
     const appearance = getWoodAppearance(woodFinish?.species);
-    // Mobile: drewno jak w wersji sprzed lazurów — meshStandardMaterial z samą
-    // mapą koloru (tint hex zostaje). bumpMapa na drewnie to największa
-    // pojedyncza pozycja kosztu piksela w scenie (drewno pokrywa większość
-    // ekranu), a meshPhysical dokłada drugą — zmierzono +~30% czasu klatki.
-    // Kolor lazuru = map × color, identycznie jak na desktopie; znika tylko
-    // mikro-relief, niewidoczny na ekranie telefonu
+    // Te same parametry lakieru i reliefu na każdym urządzeniu.
     const makeWood = (tex, grain, grainAxis) => {
       const userData = { hsEdgeRadius: 0.0015, hsGrainAxis: grainAxis, hsGrainScale: appearance.grainScale };
       return HS_OFF.has('tex') ? (
         <meshStandardMaterial userData={userData} color={woodFinish?.hex ?? '#c8a165'} roughness={0.42} metalness={0} />
-      ) : lowPower ? (
-        <meshStandardMaterial
-          userData={userData}
-          map={isRalWood ? null : tex}
-          color={woodFinish?.hex ?? '#ffffff'}
-          roughness={isRalWood ? 0.4 : appearance.roughness}
-          metalness={0}
-        />
       ) : isRalWood ? (
         // RAL = lakier kryjący: jednolity kolor; sosna/dąb gładko, meranti ma
         // otwarte pory → delikatny relief przez lakier
@@ -1549,37 +1476,31 @@ function ProceduralHsModel({
     return {
       woodV: makeWood(textures.wood, textures.grain, 'y'),
       woodH: makeWood(textures.wood, textures.grain, 'x'),
-      // Mobile: szkło bez transmission — drabinka ?m=l/?m=m wskazała transmisję
-      // jako ostatni destabilizator (refrakcja renderuje scenę drugi raz co
-      // klatkę do mipmapowanego bufora). Przy płaskim jasnym tle za oknem
-      // refrakcji i tak nie widać: tint + odbicia env czytają się jak szkło.
-      // Desktop: jasne szkło i grubość pojedynczej tafli pakietu.
-      glass: lowPower ? (
+      // Wspólne szkło dielektryczne: przezroczystość i odbicia HDR bez
+      // metalicznego lustra ani niestabilnego na telefonach bufora refrakcji.
+      // Każda z trzech tafli ma niewielką nieprzezroczystość; depthWrite=false
+      // pozwala zobaczyć tylne skrzydło, kiedy pakiety zachodzą na siebie.
+      glass: (
         <meshPhysicalMaterial
-          transparent
-          metalness={0}
-          {...(MOBILE_GLASS_VARIANTS[HS_GLASS_VARIANT] ?? MOBILE_GLASS_VARIANTS[DEFAULT_MOBILE_GLASS])}
-        />
-      ) : (
-        <meshPhysicalMaterial
-          color="#f7fbfa"
+          userData={{ hsGlass: true }}
+          color="#c4d8d3"
           roughness={0.025}
           metalness={0}
-          transmission={0.96}
-          thickness={IGU.pane}
+          transparent
+          opacity={0.08}
+          depthWrite={false}
           ior={1.52}
           envMapIntensity={1.5}
+          {...(GLASS_TEST_VARIANTS[HS_GLASS_VARIANT] ?? {})}
         />
       ),
-      // Mobile: klamka bez anisotropy — anizotropowy spekular liczy kierunek
-      // z pochodnych UV, a na drzazgowatych trójkątach faz profili dawał NaN-y
-      // zawieszające mobilne GPU. Na ~20 px klamki szczotkowania i tak nie widać
+      // Wspólne okucia bez anizotropii zależnej od pochodnych UV — to ona
+      // sprawiała problemy na drobnych trójkątach klamki na mobilnych GPU.
       handle: (
         <meshPhysicalMaterial
           color={handleMat.color}
           roughness={handleMat.roughness}
           metalness={handleMat.metalness}
-          anisotropy={lowPower ? 0 : handleMat.anisotropy}
           envMapIntensity={1.3}
         />
       ),
@@ -1589,10 +1510,6 @@ function ProceduralHsModel({
           color={thresholdMat.color}
           roughness={thresholdMat.roughness}
           metalness={thresholdMat.metalness}
-          // Mobile: aniso 0 także na progu — anizotropowy wariant shadera
-          // physical to główny podejrzany o sporadyczne zawieszenia mobilnych
-          // GPU (kostka bez aniso: stabilna; szkielet z progiem aniso: flaky)
-          anisotropy={lowPower ? 0 : 0.5}
           envMapIntensity={1.2}
         />
       ),
@@ -1618,7 +1535,7 @@ function ProceduralHsModel({
         />
       ),
     };
-  }, [textures, thresholdType, handleFinish, aluColor, isRalWood, woodFinish, lowPower]);
+  }, [textures, thresholdType, handleFinish, aluColor, isRalWood, woodFinish]);
 
   const aluMaterial = isWoodAlu ? materials.alu : null;
 
@@ -1809,7 +1726,6 @@ function ProceduralHsModel({
             markerTexture={markerTexture}
             temperedGlass={temperedGlass}
             lapSeals={lapSealsByPanel[index]}
-            liteGlazing={lowPower}
           />
         );
       })}
@@ -1904,7 +1820,7 @@ export default function HsConfiguratorCanvas({
     if (!debugEnabled) return undefined;
     pushDebug(`ua: …${navigator.userAgent.slice(-52)}`);
     pushDebug(
-      `lowPower=${lowPower} devicePR=${window.devicePixelRatio} touch=${navigator.maxTouchPoints} m=${HS_PRESET ?? '-'} hsoff=${[...HS_OFF].join('+') || '-'} glass=${HS_GLASS_VARIANT ?? DEFAULT_MOBILE_GLASS}`
+      `lowPower=${lowPower} devicePR=${window.devicePixelRatio} touch=${navigator.maxTouchPoints} m=${HS_PRESET ?? '-'} hsoff=${[...HS_OFF].join('+') || '-'} glass=${HS_GLASS_VARIANT ?? 'standard'}`
     );
     const onError = (event) =>
       pushDebug(`ERR: ${event.message ?? event.reason?.message ?? String(event.reason ?? '?')}`);
@@ -1980,14 +1896,12 @@ export default function HsConfiguratorCanvas({
       shadows={!HS_OFF.has('shadow')}
       onCreated={handleCreated}
       camera={{ position: [3, 2, 4], fov: 45 }}
-      // Mobile: dpr 1.5 zamiast 2 — przy antyaliasingu różnica ostrości
-      // minimalna, a liczba pikseli do cieniowania spada prawie o połowę
-      dpr={lowPower ? [1, 1.5] : [1, 2]}
+      dpr={[1, 2]}
       gl={{
         // Log-depth pisze głębię we fragment shaderze (wyłącza early-Z) — na
         // mobilnych GPU podraża każdy piksel. Near/far ustawia FrontFit, więc
         // standardowy bufor 24-bit wystarcza na 1-milimetrowe odsadzenia sceny
-        logarithmicDepthBuffer: !lowPower,
+        logarithmicDepthBuffer: false,
         antialias: true,
         // Liniowy tor koloru: lazur na froncie ma być 1:1 z kolorem zmierzonym
         // z wzornika (hex × mapa słojów — dokładnie jak swatche CSS multiply).
@@ -2038,7 +1952,6 @@ export default function HsConfiguratorCanvas({
                 width={width}
                 height={height}
                 plinthHeight={plinthHeight}
-                lowPower={lowPower}
                 onReady={onReady}
                 exportRef={exportRef}
               />

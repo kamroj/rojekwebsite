@@ -8,7 +8,7 @@
 // +z od lica skrzydła w głąb pomieszczenia, wymiary w metrach.
 
 import { ExtrudeGeometry, Shape } from 'three';
-import { toCreasedNormals } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
+import { mergeVertices, toCreasedNormals } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 
 const MM = 0.001;
 
@@ -47,10 +47,14 @@ function extrudeOnContour(shape, { thickness, edge, curveSegments }) {
     bevelThickness: edge,
     bevelSize: edge,
     bevelOffset: -edge,
-    bevelSegments: 4,
+    bevelSegments: 2,
   });
   geometry.translate(0, 0, -(thickness - edge * 2) / 2);
-  return toCreasedNormals(geometry, 0.5);
+  // Wspólna siatka na desktopie i telefonie: mniej segmentów fazy i
+  // współdzielone wierzchołki zachowują kontur bez ciężkiej gęstej siatki.
+  const indexed = mergeVertices(toCreasedNormals(geometry, 0.5), 1e-6);
+  geometry.dispose();
+  return indexed;
 }
 
 export function createHandlePlateGeometry() {
@@ -58,7 +62,7 @@ export function createHandlePlateGeometry() {
   const geometry = extrudeOnContour(roundedRectShape(width, height, radius), {
     thickness: depth,
     edge: 1 * MM,
-    curveSegments: 8,
+    curveSegments: 6,
   });
   // Tył płytki na licu skrzydła (z=0), front na z = depth
   geometry.translate(0, axisFromTop - height / 2, depth / 2);
@@ -93,7 +97,7 @@ export function createHandleLeverGeometry() {
   const geometry = extrudeOnContour(p, {
     thickness: HANDLE.lever.width,
     edge: HANDLE.lever.edge,
-    curveSegments: 16,
+    curveSegments: 8,
   });
   // Profil leży w (x=z, y) — obrót mapuje wyciągnięcie na szerokość (oś x),
   // a płaszczyznę profilu na (z, y) świata
