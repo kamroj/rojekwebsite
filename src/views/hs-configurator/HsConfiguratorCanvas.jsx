@@ -27,6 +27,7 @@ import {
 import { ALU_COLORS, DEFAULT_ALU_COLOR, PLINTH_RANGE } from './hsOptions.js';
 import { HANDLE, createHandleLeverGeometry, createHandlePlateGeometry } from './hsHandleGeometry.js';
 import { createProfileGeometry, WOOD_GRAIN_SCALE } from './hsProfileGeometry.js';
+import { getWoodAppearance, getWoodGrainDrift } from './hsWoodAppearance.js';
 
 // Awaryjna mapa słojów (gdy resolver nie dostarczy ścieżek) — sosna
 const FALLBACK_GRAIN = '/models/lazur/grain-pine.jpg';
@@ -536,13 +537,14 @@ function BoxPart({ position, size, material, castShadow = true, receiveShadow = 
   const [width, height, depth] = size;
   const radius = material.props.userData?.hsEdgeRadius ?? 0;
   const grainAxis = material.props.userData?.hsGrainAxis ?? null;
+  const grainScale = material.props.userData?.hsGrainScale ?? WOOD_GRAIN_SCALE;
   const offsetU = uvHash(position[0], position[1], size[0], size[1]);
   const offsetV = uvHash(position[1], position[2] + 1.73, size[2], size[0]);
   const geometry = useMemo(() => {
-    const result = createProfileGeometry(width, height, depth, radius, grainAxis);
+    const result = createProfileGeometry(width, height, depth, radius, grainAxis, grainScale, offsetU);
     if (!HS_OFF.has('uv')) applyUvOffset(result, offsetU, offsetV);
     return result;
-  }, [width, height, depth, radius, grainAxis, offsetU, offsetV]);
+  }, [width, height, depth, radius, grainAxis, grainScale, offsetU, offsetV]);
   useEffect(() => () => geometry.dispose(), [geometry]);
   return (
     <mesh geometry={geometry} position={position} castShadow={castShadow} receiveShadow={receiveShadow}>
@@ -723,8 +725,9 @@ function AluSideWrap({
 // na ucios jak w stolarce
 const BEAD = { width: PROFILE.bead, depth: 0.022, land: 0.005 };
 
-function createBeadGeometry(length, uvSeed = 0) {
+function createBeadGeometry(length, uvSeed = 0, grainScale = WOOD_GRAIN_SCALE) {
   const { width: B, depth: D, land } = BEAD;
+  const drift = getWoodGrainDrift(grainScale, uvSeed);
 
   // Przekrój w (u, v): u=0 przy ramie skrzydła, u=B przy szybie; v wzdłuż osi Z
   const shape = new Shape();
@@ -754,7 +757,8 @@ function createBeadGeometry(length, uvSeed = 0) {
     pos.setZ(i, z);
     // uvSeed przesuwa próbkowanie wzdłuż mapy — każda listwa pokazuje inny
     // wycinek słojów (jak BoxPart z applyUvOffset)
-    uvAttr.setXY(i, z / WOOD_GRAIN_SCALE.along + uvSeed, u / WOOD_GRAIN_SCALE.across);
+    const grainU = z / grainScale.along;
+    uvAttr.setXY(i, grainU + uvSeed, u / grainScale.across + grainU * drift);
   }
   geo.computeVertexNormals();
   geo.translate(0, -D / 2, -length / 2);
@@ -771,14 +775,15 @@ const BEAD_ORIENTATIONS = {
 };
 
 function MiteredBeadRing({ cx, cy, z, width, height, material, flip = false }) {
+  const grainScale = material.props.userData?.hsGrainScale ?? WOOD_GRAIN_SCALE;
   const geometries = useMemo(
     () => ({
-      bottom: createBeadGeometry(width, uvHash(cx, cy, width, 1.1)).applyMatrix4(BEAD_ORIENTATIONS.bottom),
-      top: createBeadGeometry(width, uvHash(cx, cy, width, 2.3)).applyMatrix4(BEAD_ORIENTATIONS.top),
-      left: createBeadGeometry(height, uvHash(cx, cy, height, 3.7)).applyMatrix4(BEAD_ORIENTATIONS.left),
-      right: createBeadGeometry(height, uvHash(cx, cy, height, 4.9)).applyMatrix4(BEAD_ORIENTATIONS.right),
+      bottom: createBeadGeometry(width, uvHash(cx, cy, width, 1.1), grainScale).applyMatrix4(BEAD_ORIENTATIONS.bottom),
+      top: createBeadGeometry(width, uvHash(cx, cy, width, 2.3), grainScale).applyMatrix4(BEAD_ORIENTATIONS.top),
+      left: createBeadGeometry(height, uvHash(cx, cy, height, 3.7), grainScale).applyMatrix4(BEAD_ORIENTATIONS.left),
+      right: createBeadGeometry(height, uvHash(cx, cy, height, 4.9), grainScale).applyMatrix4(BEAD_ORIENTATIONS.right),
     }),
-    [cx, cy, width, height]
+    [cx, cy, width, height, grainScale]
   );
 
   useEffect(
@@ -1437,17 +1442,14 @@ function ProceduralHsModel({
   const openingBottom = PROFILE.threshold;
   const openingTop = modelHeight - PROFILE.frame;
 
-  // Konfiguracja tekstur — słoje drewna wzdłuż elementu (pion/poziom).
-  // Ta sama mapa słojów gatunku służy jako mapa koloru (sRGB, tintowana
-  // material.color) i jako mapa reliefu (liniowa)
+  // Kierunek włókien wyznaczają UV geometrii, więc piony, rygle i listwy
+  // współdzielą jedną mapę koloru oraz jedną liniową mapę reliefu.
   const textures = useMemo(() => {
-    // Mobile: wspólny, pomniejszony obraz POT dla wszystkich 4 klonów —
-    // z ~32 MB tekstur GPU robi się ~5,5 MB i znika wolna ścieżka mipmap
-    // dla wymiarów niebędących potęgą dwójki. Desktop bez zmian
+    // Mobile: jedna pomniejszona mapa POT, bez dodatkowej mapy reliefu.
     const image = lowPower
       ? downscaleToSquarePot(grainTexture.image, MOBILE_GRAIN_SIZE)
       : grainTexture.image;
-    const setup = (rotate, colorSpace) => {
+    const setup = (colorSpace) => {
       const tex = grainTexture.clone();
       tex.image = image;
       // Lustrzane zawijanie: elementy próbkują mapę z losowym offsetem UV
@@ -1459,21 +1461,13 @@ function ProceduralHsModel({
       tex.anisotropy = 16;
       tex.minFilter = LinearMipMapLinearFilter;
       tex.magFilter = LinearFilter;
-      if (rotate) {
-        tex.center.set(0.5, 0.5);
-        tex.rotation = Math.PI / 2;
-      }
       tex.needsUpdate = true;
       return tex;
     };
 
     return {
-      woodV: setup(true, SRGBColorSpace),
-      woodH: setup(false, SRGBColorSpace),
-      // Mapy reliefu tylko na desktopie — mobilne drewno nie używa bumpa,
-      // więc klonowanie ich tam było czystą stratą (dekodowanie + pamięć)
-      grainV: lowPower ? null : setup(true, NoColorSpace),
-      grainH: lowPower ? null : setup(false, NoColorSpace),
+      wood: setup(SRGBColorSpace),
+      grain: lowPower ? null : setup(NoColorSpace),
     };
   }, [grainTexture, lowPower]);
 
@@ -1501,7 +1495,7 @@ function ProceduralHsModel({
     // bardziej grają); sosna pozostaje gładsza.
     const isMeranti = woodFinish?.species === 'meranti';
     // Skala sceny to metry: relief lakierowanego drewna jest submilimetrowy.
-    const lazurBump = isMeranti ? 0.00045 : woodFinish?.species === 'oak' ? 0.00035 : 0.0002;
+    const appearance = getWoodAppearance(woodFinish?.species);
     // Mobile: drewno jak w wersji sprzed lazurów — meshStandardMaterial z samą
     // mapą koloru (tint hex zostaje). bumpMapa na drewnie to największa
     // pojedyncza pozycja kosztu piksela w scenie (drewno pokrywa większość
@@ -1509,7 +1503,7 @@ function ProceduralHsModel({
     // Kolor lazuru = map × color, identycznie jak na desktopie; znika tylko
     // mikro-relief, niewidoczny na ekranie telefonu
     const makeWood = (tex, grain, grainAxis) => {
-      const userData = { hsEdgeRadius: 0.0015, hsGrainAxis: grainAxis };
+      const userData = { hsEdgeRadius: 0.0015, hsGrainAxis: grainAxis, hsGrainScale: appearance.grainScale };
       return HS_OFF.has('tex') ? (
         <meshStandardMaterial userData={userData} color={woodFinish?.hex ?? '#c8a165'} roughness={0.42} metalness={0} />
       ) : lowPower ? (
@@ -1517,8 +1511,8 @@ function ProceduralHsModel({
           userData={userData}
           map={isRalWood ? null : tex}
           color={woodFinish?.hex ?? '#ffffff'}
-          roughness={0.5}
-          metalness={0.02}
+          roughness={isRalWood ? 0.4 : appearance.roughness}
+          metalness={0}
         />
       ) : isRalWood ? (
         // RAL = lakier kryjący: jednolity kolor; sosna/dąb gładko, meranti ma
@@ -1540,9 +1534,11 @@ function ProceduralHsModel({
           userData={userData}
           map={tex}
           bumpMap={grain}
-          bumpScale={lazurBump}
+          bumpScale={appearance.bump}
           color={woodFinish?.hex ?? '#ffffff'}
-          roughness={0.42}
+          roughness={appearance.roughness}
+          clearcoat={appearance.clearcoat}
+          clearcoatRoughness={0.32}
           metalness={0}
           specularIntensity={0.3}
           envMapIntensity={0.35}
@@ -1551,8 +1547,8 @@ function ProceduralHsModel({
     };
 
     return {
-      woodV: makeWood(textures.woodV, textures.grainV, 'y'),
-      woodH: makeWood(textures.woodH, textures.grainH, 'x'),
+      woodV: makeWood(textures.wood, textures.grain, 'y'),
+      woodH: makeWood(textures.wood, textures.grain, 'x'),
       // Mobile: szkło bez transmission — drabinka ?m=l/?m=m wskazała transmisję
       // jako ostatni destabilizator (refrakcja renderuje scenę drugi raz co
       // klatkę do mipmapowanego bufora). Przy płaskim jasnym tle za oknem
