@@ -1,7 +1,6 @@
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import {
-  AdaptiveDpr,
   Center,
   ContactShadows,
   Environment,
@@ -26,14 +25,14 @@ import {
 } from 'three';
 
 import { ALU_COLORS, DEFAULT_ALU_COLOR, PLINTH_RANGE } from './hsOptions.js';
-import { createHandleLeverGeometry, createHandlePlateGeometry } from './hsHandleGeometry.js';
+import { HANDLE, createHandleLeverGeometry, createHandlePlateGeometry } from './hsHandleGeometry.js';
 import { createProfileGeometry, WOOD_GRAIN_SCALE } from './hsProfileGeometry.js';
 import { getWoodAppearance, getWoodGrainDrift } from './hsWoodAppearance.js';
 
 // Awaryjna mapa słojów (gdy resolver nie dostarczy ścieżek) — sosna
 const FALLBACK_GRAIN = '/models/lazur/grain-pine.jpg';
 
-// Profil urządzenia dobiera koszt cieni i rozdzielczość w ruchu, nie model
+// Profil urządzenia dobiera rozdzielczość cieni i tryb renderowania, nie model
 // ani materiały. iPadOS wykrywamy również przez coarse pointer + dotyk.
 const detectLowPowerDevice = () => {
   if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
@@ -42,9 +41,9 @@ const detectLowPowerDevice = () => {
   return coarsePointer && (navigator.maxTouchPoints ?? 0) > 1;
 };
 
-// Wspólna rozdzielczość słojów i reliefu. POT zapewnia prostą ścieżkę
-// mipmap, a 1024 zachowuje drobne włókna również przy zbliżeniu na telefonie.
+// Mapy POT: desktop zachowuje relief i 1024 px, mobile sam kolor w 512 px.
 const GRAIN_SIZE = 1024;
+const MOBILE_GRAIN_SIZE = 512;
 
 const downscaleToSquarePot = (image, size) => {
   if (!image || (image.width <= size && image.height <= size)) return image;
@@ -113,7 +112,7 @@ const HS_PRESETS = Object.fromEntries(
 );
 
 // Historyczne warianty szkła dostępne wyłącznie przez jawne ?glass=1…7.
-// Domyślny materiał jest wspólny dla wszystkich urządzeń.
+// Mobile domyślnie używa wcześniejszego wariantu 7 bez refrakcji.
 const GLASS_TEST_VARIANTS = {
   1: { color: '#e7f1ee', opacity: 0.15, roughness: 0.04, envMapIntensity: 1.5 },
   2: { color: '#e7f1ee', opacity: 0.18, roughness: 0.02, envMapIntensity: 2.6 },
@@ -840,11 +839,25 @@ function FrameRing({ cx, cy, z, width, height, profile, depth, materialV, materi
 // i widać ją tylko krawędziowo pod ostrym kątem, nie jako czarną obwódkę
 const IGU = { pane: 0.004, gap: 0.012, spacerProfile: 0.012, underlap: 0.015 };
 
-function GlazingUnit({ cx, cy, z, width, height, materials }) {
+function GlazingUnit({ cx, cy, z, width, height, materials, lite = false }) {
   const pitch = IGU.pane + IGU.gap; // rozstaw osi sąsiednich tafli
   const paneW = width + IGU.underlap * 2;
   const paneH = height + IGU.underlap * 2;
   if (HS_OFF.has('glass')) return null;
+  // Mobile: pakiet jako jedna bryła 36 mm (geometria sprzed „Adjust wood
+  // view") — trzy nałożone tafle to 3x przebieg shadera szkła na piksel,
+  // a na ekranie telefonu różnicy między pakietem a bryłą nie widać
+  if (lite) {
+    return (
+      <BoxPart
+        position={[cx, cy, z]}
+        size={[paneW, paneH, 0.036]}
+        material={materials.glass}
+        castShadow={false}
+        receiveShadow={false}
+      />
+    );
+  }
   return (
     <group>
       {[-pitch, 0, pitch].map((offset) => (
@@ -901,10 +914,10 @@ function TopGuide({ z, width, openingTop, material }) {
 // trzpienia i 56 mm od lica szyldu. Trzpień leży powyżej środka szyldu. Bryły z
 // profili w hsHandleGeometry.js — dźwignia siedzi w grupie obracanej wokół
 // osi trzpienia (animacja otwierania)
-function PullHandle({ position, material, leverRef }) {
+function PullHandle({ position, material, leverRef, lite = false }) {
   const geometries = useMemo(
-    () => ({ plate: createHandlePlateGeometry(), lever: createHandleLeverGeometry() }),
-    []
+    () => (lite ? null : { plate: createHandlePlateGeometry(), lever: createHandleLeverGeometry() }),
+    [lite]
   );
 
   useEffect(
@@ -913,6 +926,37 @@ function PullHandle({ position, material, leverRef }) {
     },
     [geometries]
   );
+
+  // Mobile: klamka z prostych brył (indeksowane boxy) zamiast wyciąganych
+  // profili. Profile z ExtrudeGeometry mają na fazach mikroskopijne trójkąty
+  // (pola rzędu 1e-8 m²) — na mobilnych sterownikach zawieszały GPU (utrata
+  // kontekstu WebGL potwierdzona bisekcją ?m=a/?m=b na urządzeniu). Na ekranie
+  // telefonu klamka ma ~20 px, więc uproszczenie jest niewidoczne
+  if (lite) {
+    const { plate, lever } = HANDLE;
+    const outerZ = plate.depth + lever.projection;
+    return (
+      <group position={position}>
+        <mesh position={[0, plate.axisFromTop - plate.height / 2, plate.depth / 2]} castShadow receiveShadow>
+          <boxGeometry args={[plate.width, plate.height, plate.depth]} />
+          {material}
+        </mesh>
+        {/* userData jak w pełnej wersji — eksport AR zeruje obrót dźwigni */}
+        <group ref={leverRef} userData={{ hsLever: true }}>
+          {/* szyjka od płytki do dźwigni */}
+          <mesh position={[0, 0, (plate.depth - 0.001 + outerZ) / 2]} castShadow receiveShadow>
+            <boxGeometry args={[lever.width, 0.026, lever.projection + 0.001]} />
+            {material}
+          </mesh>
+          {/* dźwignia-płaskownik na osi trzpienia */}
+          <mesh position={[0, (lever.height + lever.bottom) / 2, outerZ - lever.gripDepth / 2]} castShadow receiveShadow>
+            <boxGeometry args={[lever.width, lever.height - lever.bottom, lever.gripDepth]} />
+            {material}
+          </mesh>
+        </group>
+      </group>
+    );
+  }
 
   return (
     <group position={position}>
@@ -958,6 +1002,7 @@ function GlazedPanel({
   markerTexture = null,
   temperedGlass = false,
   lapSeals = [],
+  liteGlazing = false,
 }) {
   const isSliding = panel.type === 'sliding';
   const isGlazing = panel.type === 'glazing';
@@ -1043,9 +1088,10 @@ function GlazedPanel({
 
     // W trybie demand pierwsza klatka może nadejść po długim bezruchu.
     // Nie zaliczamy tego czasu do animacji, żeby skrzydło nie przeskakiwało.
-    const step = animationStartingRef.current ? 0 : delta / SASH_ANIMATION.duration;
+    const step = state.frameloop === 'demand' && animationStartingRef.current
+      ? 0
+      : delta / SASH_ANIMATION.duration;
     animationStartingRef.current = false;
-    if (state.performance.min < 1) state.performance.regress();
     const p = previous < target ? Math.min(previous + step, target) : Math.max(previous - step, target);
     progressRef.current = p;
 
@@ -1160,7 +1206,7 @@ function GlazedPanel({
         />
       ))}
       {/* Pakiet szybowy: 3 tafle + ramki dystansowe (przekrój HS-90) */}
-      <GlazingUnit cx={cx} cy={cy} z={z} width={glassW} height={glassH} materials={materials} />
+      <GlazingUnit cx={cx} cy={cy} z={z} width={glassW} height={glassH} materials={materials} lite={liteGlazing} />
       {/* Uszczelki szczotkowe zakładów — na licu zwróconym ku sąsiedniemu polu
           (kierunek dz policzony w modelu, bo panel nie zna sąsiadów) */}
       {!HS_OFF.has('extras') && lapSeals.map(({ side, dz }) => (
@@ -1273,6 +1319,7 @@ function GlazedPanel({
           position={[handleX, handleY, z + depth / 2]}
           material={materials.handle}
           leverRef={animatable ? leverRef : undefined}
+          lite={liteGlazing}
         />
       )}
     </group>
@@ -1292,6 +1339,7 @@ function ProceduralHsModel({
   width,
   height,
   plinthHeight = PLINTH_RANGE.default,
+  lowPower = false,
   onReady,
   exportRef,
   ...props
@@ -1400,7 +1448,7 @@ function ProceduralHsModel({
   // Kierunek włókien wyznaczają UV geometrii, więc piony, rygle i listwy
   // współdzielą jedną mapę koloru oraz jedną liniową mapę reliefu.
   const textures = useMemo(() => {
-    const image = downscaleToSquarePot(grainTexture.image, GRAIN_SIZE);
+    const image = downscaleToSquarePot(grainTexture.image, lowPower ? MOBILE_GRAIN_SIZE : GRAIN_SIZE);
     const setup = (colorSpace) => {
       const tex = grainTexture.clone();
       tex.image = image;
@@ -1419,9 +1467,9 @@ function ProceduralHsModel({
 
     return {
       wood: setup(SRGBColorSpace),
-      grain: setup(NoColorSpace),
+      grain: lowPower ? null : setup(NoColorSpace),
     };
-  }, [grainTexture]);
+  }, [grainTexture, lowPower]);
 
   // Klony żyją poza cachem useTexture — bez sprzątania każda zmiana gatunku
   // drewna zostawiała na GPU 4 martwe tekstury (kolejne ~32 MB na mobile)
@@ -1448,11 +1496,19 @@ function ProceduralHsModel({
     const isMeranti = woodFinish?.species === 'meranti';
     // Skala sceny to metry: relief lakierowanego drewna jest submilimetrowy.
     const appearance = getWoodAppearance(woodFinish?.species);
-    // Te same parametry lakieru i reliefu na każdym urządzeniu.
+    // Mobile używa prostszego materiału bez reliefu i clearcoat.
     const makeWood = (tex, grain, grainAxis) => {
       const userData = { hsEdgeRadius: 0.0015, hsGrainAxis: grainAxis, hsGrainScale: appearance.grainScale };
       return HS_OFF.has('tex') ? (
         <meshStandardMaterial userData={userData} color={woodFinish?.hex ?? '#c8a165'} roughness={0.42} metalness={0} />
+      ) : lowPower ? (
+        <meshStandardMaterial
+          userData={userData}
+          map={isRalWood ? null : tex}
+          color={woodFinish?.hex ?? '#ffffff'}
+          roughness={isRalWood ? 0.4 : appearance.roughness}
+          metalness={0}
+        />
       ) : isRalWood ? (
         // RAL = lakier kryjący: jednolity kolor; sosna/dąb gładko, meranti ma
         // otwarte pory → delikatny relief przez lakier
@@ -1488,11 +1544,18 @@ function ProceduralHsModel({
     return {
       woodV: makeWood(textures.wood, textures.grain, 'y'),
       woodH: makeWood(textures.wood, textures.grain, 'x'),
-      // Wspólne szkło dielektryczne: przezroczystość i odbicia HDR bez
+      // Desktop: szkło dielektryczne, przezroczystość i odbicia HDR bez
       // metalicznego lustra ani niestabilnego na telefonach bufora refrakcji.
       // Każda z trzech tafli ma niewielką nieprzezroczystość; depthWrite=false
       // pozwala zobaczyć tylne skrzydło, kiedy pakiety zachodzą na siebie.
-      glass: (
+      glass: lowPower ? (
+        <meshPhysicalMaterial
+          userData={{ hsGlass: true }}
+          transparent
+          metalness={0}
+          {...(GLASS_TEST_VARIANTS[HS_GLASS_VARIANT] ?? GLASS_TEST_VARIANTS[7])}
+        />
+      ) : (
         <meshPhysicalMaterial
           userData={{ hsGlass: true }}
           color="#c4d8d3"
@@ -1547,7 +1610,7 @@ function ProceduralHsModel({
         />
       ),
     };
-  }, [textures, thresholdType, handleFinish, aluColor, isRalWood, woodFinish]);
+  }, [textures, thresholdType, handleFinish, aluColor, isRalWood, woodFinish, lowPower]);
 
   const aluMaterial = isWoodAlu ? materials.alu : null;
 
@@ -1738,6 +1801,7 @@ function ProceduralHsModel({
             markerTexture={markerTexture}
             temperedGlass={temperedGlass}
             lapSeals={lapSealsByPanel[index]}
+            liteGlazing={lowPower}
           />
         );
       })}
@@ -1818,9 +1882,6 @@ export default function HsConfiguratorCanvas({
 }) {
   const modelRef = useRef();
   const [lowPower] = useState(detectLowPowerDevice);
-  const motionPerformanceMin = typeof window === 'undefined'
-    ? 1
-    : 1 / Math.min(2, Math.max(1, window.devicePixelRatio || 1));
   const [cubeTest] = useState(isCubeTestEnabled);
   // Overlay ?debug3d=1 — czysta obserwacja (bez ingerencji w scenę): profil,
   // GPU, utraty kontekstu i błędy JS wypisywane na ekranie urządzenia
@@ -1835,7 +1896,7 @@ export default function HsConfiguratorCanvas({
     if (!debugEnabled) return undefined;
     pushDebug(`ua: …${navigator.userAgent.slice(-52)}`);
     pushDebug(
-      `lowPower=${lowPower} devicePR=${window.devicePixelRatio} touch=${navigator.maxTouchPoints} m=${HS_PRESET ?? '-'} hsoff=${[...HS_OFF].join('+') || '-'} glass=${HS_GLASS_VARIANT ?? 'standard'}`
+      `lowPower=${lowPower} devicePR=${window.devicePixelRatio} touch=${navigator.maxTouchPoints} m=${HS_PRESET ?? '-'} hsoff=${[...HS_OFF].join('+') || '-'} glass=${HS_GLASS_VARIANT ?? (lowPower ? 7 : 'standard')}`
     );
     const onError = (event) =>
       pushDebug(`ERR: ${event.message ?? event.reason?.message ?? String(event.reason ?? '?')}`);
@@ -1908,12 +1969,11 @@ export default function HsConfiguratorCanvas({
     )}
     <Canvas
       key={contextGeneration}
-      frameloop="demand"
-      performance={{ min: lowPower ? motionPerformanceMin : 1, debounce: 250 }}
+      frameloop={lowPower ? 'always' : 'demand'}
       shadows={!HS_OFF.has('shadow')}
       onCreated={handleCreated}
       camera={{ position: [3, 2, 4], fov: 45 }}
-      dpr={[1, 2]}
+      dpr={lowPower ? [1, 1.5] : [1, 2]}
       gl={{
         // Log-depth pisze głębię we fragment shaderze (wyłącza early-Z) — na
         // mobilnych GPU podraża każdy piksel. Near/far ustawia FrontFit, więc
@@ -1950,17 +2010,7 @@ export default function HsConfiguratorCanvas({
         />
         <directionalLight position={[-5, 3, -8]} intensity={0.45} />
         {!HS_OFF.has('env') && <Environment preset="city" />}
-        {/* W ruchu telefon renderuje mniej pikseli; po zatrzymaniu wraca
-            pełna ostrość. Geometria, szkło i materiały pozostają te same. */}
-        {lowPower && <AdaptiveDpr />}
-        <OrbitControls
-          makeDefault
-          enablePan
-          enableZoom
-          enableRotate
-          regress={lowPower}
-          dampingFactor={lowPower ? 0.15 : 0.05}
-        />
+        <OrbitControls makeDefault enablePan enableZoom enableRotate />
         <Center>
           <group ref={modelRef}>
             {cubeTest ? (
@@ -1979,6 +2029,7 @@ export default function HsConfiguratorCanvas({
                 width={width}
                 height={height}
                 plinthHeight={plinthHeight}
+                lowPower={lowPower}
                 onReady={onReady}
                 exportRef={exportRef}
               />
@@ -1991,10 +2042,6 @@ export default function HsConfiguratorCanvas({
         {!HS_OFF.has('cshadow') && (
           <ContactShadows
             key={`${selectedType}-${mirrored}-${width}-${height}-${plinthHeight}`}
-            // Na telefonie zapisujemy cień podstawy raz na konfigurację,
-            // zamiast ponownie renderować cały model i rozmycie co klatkę.
-            frames={lowPower ? 1 : Infinity}
-            smooth={!lowPower}
             position={[0, -(height + plinthHeight) / 2000 - 0.002, 0]}
             opacity={0.35}
             blur={2.5}
