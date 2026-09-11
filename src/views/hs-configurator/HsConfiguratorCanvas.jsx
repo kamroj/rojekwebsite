@@ -1,6 +1,7 @@
 import React, { Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import {
+  AdaptiveDpr,
   Center,
   ContactShadows,
   Environment,
@@ -32,7 +33,7 @@ import { getWoodAppearance, getWoodGrainDrift } from './hsWoodAppearance.js';
 // Awaryjna mapa słojów (gdy resolver nie dostarczy ścieżek) — sosna
 const FALLBACK_GRAIN = '/models/lazur/grain-pine.jpg';
 
-// Profil urządzenia wpływa tylko na rozdzielczość cieni, nie na model
+// Profil urządzenia dobiera koszt cieni i rozdzielczość w ruchu, nie model
 // ani materiały. iPadOS wykrywamy również przez coarse pointer + dotyk.
 const detectLowPowerDevice = () => {
   if (typeof window === 'undefined' || typeof navigator === 'undefined') return false;
@@ -1005,7 +1006,13 @@ function GlazedPanel({
   const sashRef = useRef();
   const leverRef = useRef();
   const progressRef = useRef(0);
-  const { gl } = useThree();
+  const animationStartingRef = useRef(true);
+  const { gl, invalidate } = useThree();
+
+  useEffect(() => {
+    animationStartingRef.current = true;
+    if (animatable) invalidate();
+  }, [open, animatable, invalidate]);
 
   const handleClick = useCallback(
     (event) => {
@@ -1028,13 +1035,17 @@ function GlazedPanel({
     gl.domElement.style.cursor = '';
   }, [gl]);
 
-  useFrame((_, delta) => {
+  useFrame((state, delta) => {
     if (!animatable || !sashRef.current) return;
     const target = open ? 1 : 0;
     const previous = progressRef.current;
     if (previous === target) return;
 
-    const step = delta / SASH_ANIMATION.duration;
+    // W trybie demand pierwsza klatka może nadejść po długim bezruchu.
+    // Nie zaliczamy tego czasu do animacji, żeby skrzydło nie przeskakiwało.
+    const step = animationStartingRef.current ? 0 : delta / SASH_ANIMATION.duration;
+    animationStartingRef.current = false;
+    if (state.performance.min < 1) state.performance.regress();
     const p = previous < target ? Math.min(previous + step, target) : Math.max(previous - step, target);
     progressRef.current = p;
 
@@ -1046,6 +1057,7 @@ function GlazedPanel({
     sashRef.current.position.y = SASH_ANIMATION.lift * easeInOut(phaseProgress(p, SASH_ANIMATION.phases.lift));
     sashRef.current.position.x =
       slideDirection * slideDistance * easeInOut(phaseProgress(p, SASH_ANIMATION.phases.slide));
+    if (p !== target) invalidate();
   });
 
   const groupProps = animatable
@@ -1806,6 +1818,9 @@ export default function HsConfiguratorCanvas({
 }) {
   const modelRef = useRef();
   const [lowPower] = useState(detectLowPowerDevice);
+  const motionPerformanceMin = typeof window === 'undefined'
+    ? 1
+    : 1 / Math.min(2, Math.max(1, window.devicePixelRatio || 1));
   const [cubeTest] = useState(isCubeTestEnabled);
   // Overlay ?debug3d=1 — czysta obserwacja (bez ingerencji w scenę): profil,
   // GPU, utraty kontekstu i błędy JS wypisywane na ekranie urządzenia
@@ -1893,6 +1908,8 @@ export default function HsConfiguratorCanvas({
     )}
     <Canvas
       key={contextGeneration}
+      frameloop="demand"
+      performance={{ min: lowPower ? motionPerformanceMin : 1, debounce: 250 }}
       shadows={!HS_OFF.has('shadow')}
       onCreated={handleCreated}
       camera={{ position: [3, 2, 4], fov: 45 }}
@@ -1933,7 +1950,17 @@ export default function HsConfiguratorCanvas({
         />
         <directionalLight position={[-5, 3, -8]} intensity={0.45} />
         {!HS_OFF.has('env') && <Environment preset="city" />}
-        <OrbitControls makeDefault enablePan enableZoom enableRotate />
+        {/* W ruchu telefon renderuje mniej pikseli; po zatrzymaniu wraca
+            pełna ostrość. Geometria, szkło i materiały pozostają te same. */}
+        {lowPower && <AdaptiveDpr />}
+        <OrbitControls
+          makeDefault
+          enablePan
+          enableZoom
+          enableRotate
+          regress={lowPower}
+          dampingFactor={lowPower ? 0.15 : 0.05}
+        />
         <Center>
           <group ref={modelRef}>
             {cubeTest ? (
@@ -1963,6 +1990,11 @@ export default function HsConfiguratorCanvas({
             leży na -(wysokość okna + podwalina)/2 */}
         {!HS_OFF.has('cshadow') && (
           <ContactShadows
+            key={`${selectedType}-${mirrored}-${width}-${height}-${plinthHeight}`}
+            // Na telefonie zapisujemy cień podstawy raz na konfigurację,
+            // zamiast ponownie renderować cały model i rozmycie co klatkę.
+            frames={lowPower ? 1 : Infinity}
+            smooth={!lowPower}
             position={[0, -(height + plinthHeight) / 2000 - 0.002, 0]}
             opacity={0.35}
             blur={2.5}
